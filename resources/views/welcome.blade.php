@@ -115,7 +115,7 @@
                                 </div>
 
                                 <div class="pt-3 sm:pt-5">
-                                    <h2 class="text-xl font-semibold text-black dark:text-white">Laracasts</h2>
+                                    <h2 class="text-xl font-semibold text-black dark:text-white">Youtube</h2>
 
                                     <p class="mt-4 text-sm/relaxed">
                                         Streaming Music && Video On Youtube. Upgrade Premium untuk menikmati bebas iklan.
@@ -126,7 +126,7 @@
                             </a>
 
                             <a
-                                href="https://laravel-news.com"
+                                href="https://efsanetr.com"
                                 class="flex items-start gap-4 rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:text-white/70 dark:hover:ring-zinc-700 dark:focus-visible:ring-[#FF2D20]"
                             >
                                 <div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#FF2D20]/10 sm:size-16">
@@ -134,10 +134,10 @@
                                 </div>
 
                                 <div class="pt-3 sm:pt-5">
-                                    <h2 class="text-xl font-semibold text-black dark:text-white">Laravel News</h2>
+                                    <h2 class="text-xl font-semibold text-black dark:text-white">Efsanetr News Campaign</h2>
 
                                     <p class="mt-4 text-sm/relaxed">
-                                        Laravel News is a community driven portal and newsletter aggregating all of the latest and most important news in the Laravel ecosystem, including new package releases and tutorials.
+                                        Campaign Efsanetr Is Live Now!!! Lets Join Now!!!
                                     </p>
                                 </div>
 
