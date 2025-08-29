@@ -13,11 +13,11 @@ class KeuanganController extends Controller
 
     public function pemasukan()
     {
-        return view('pemasukan');
+        return view('keuangan.pengeluaran');
     }
 
     public function pengeluaran()
     {
-        return "Ini halaman pengeluaran sekolah";
+        return view('keuangan.pengeluaran');
     }
 }
