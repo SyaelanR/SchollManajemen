@@ -1,5 +1,4 @@
 <?php
-<<<<<<< HEAD
 
 use Illuminate\Support\Facades\Route;
 
@@ -17,8 +16,6 @@ Route::get('/kelas10A', [kelasController::class, 'kelas10A'])->name('kelas10A');
 
 Route::get('/kelas10B', [kelasController::class, 'kelas10B'])->name('kelas10B');
 
-=======
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\KesiswaanController;
->>>>>>> bd27f5772cb83bd35a4cbbdc0ef7910ee2c30c91
+Route::get('/kelas11A', [kelasController::class, 'kelas11A'])->name('kelas11A');
 
+Route::get('/kelas11B', [kelasController::class, 'kelas11B'])->name('kelas11B');
