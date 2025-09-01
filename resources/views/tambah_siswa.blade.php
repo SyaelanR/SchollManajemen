@@ -93,10 +93,15 @@
                 </a>
             </nav>
             <div class="absolute bottom-0 w-full p-6">
-                 <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg">
-                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
-                    <span>Logout</span>
-                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <a href="{{ route('logout') }}"
+                       onclick="event.preventDefault(); this.closest('form').submit();"
+                       class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
+                        <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
+                        <span>Logout</span>
+                    </a>
+                </form>
             </div>
         </aside>
 
@@ -133,7 +138,8 @@
                     </div>
 
                     <!-- Students Form Table -->
-                    <form id="add-students-form">
+                    <form id="add-students-form" method="POST" action="{{ route('storeSiswa') }}">
+                        @csrf
                         <div class="overflow-x-auto">
                             <table class="w-full min-w-[800px] text-left">
                                 <thead class="bg-gray-50">
@@ -158,7 +164,7 @@
                                 Tambah Baris
                             </button>
                             <div class="flex w-full md:w-auto gap-4">
-                               <a href="#" class="w-full md:w-auto bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300 text-center">
+                               <a href="{{ route('manajemenSiswa') }}" class="w-full md:w-auto bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300 text-center flex items-center justify-center">
                                     Batal
                                 </a>
                                 <button type="submit" class="w-full md:w-auto bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">
@@ -199,19 +205,19 @@
             row.className = 'hover:bg-gray-50';
             row.innerHTML = `
                 <td class="p-2">
-                    <input type="text" name="students[${rowCount}][nisn]" placeholder="Contoh: 202400${rowCount}" class="table-input" required>
+                    <input type="text" name="students[${rowCount}][nisn]" placeholder="Contoh: 202400${rowCount}" class="table-input" />
                 </td>
                 <td class="p-2">
-                    <input type="text" name="students[${rowCount}][nama]" placeholder="Nama Lengkap Siswa" class="table-input" required>
+                    <input type="text" name="students[${rowCount}][nama]" placeholder="Nama Lengkap Siswa" class="table-input" />
                 </td>
                 <td class="p-2">
-                    <select name="students[${rowCount}][gender]" class="table-input" required>
+                    <select name="students[${rowCount}][gender]" class="table-input">
                         <option value="Laki-laki">Laki-laki</option>
                         <option value="Perempuan">Perempuan</option>
                     </select>
                 </td>
                 <td class="p-2">
-                    <input type="password" name="students[${rowCount}][password]" placeholder="Password default" class="table-input" required>
+                    <input type="password" name="students[${rowCount}][password]" placeholder="Password default" class="table-input" />
                 </td>
                 <td class="p-2 text-center">
                     <button type="button" class="text-red-500 hover:text-red-700 delete-row-btn" title="Hapus Baris">
@@ -238,24 +244,82 @@
                 if (tableBody.rows.length > 1) {
                     deleteButton.closest('tr').remove();
                 } else {
-                    // In a real app, you might show a message box here instead of an alert.
-                    console.warn("Cannot delete the last row.");
+                    alert("Tidak bisa menghapus baris terakhir.");
                 }
             }
         });
 
         // Handle form submission
         const form = document.getElementById('add-students-form');
-        form.addEventListener('submit', (event) => {
+        form.addEventListener('submit', async function(event) {
             event.preventDefault();
-            // In a real application, you would serialize the form data
-            // and send it to the server via an AJAX/Fetch request.
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-            console.log('Form Submitted. Data:', data);
-            // Example: show a success message
-            alert('Data siswa berhasil disimpan! (Ini adalah contoh, data tidak benar-benar disimpan.)');
+
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(el => el.remove());
+            document.querySelectorAll('.table-input.border-red-500').forEach(el => el.classList.remove('border-red-500'));
+
+            const formData = new FormData(this);
+
+            try {
+                const response = await fetch(this.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': formData.get('_token'),
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Handle success
+                    alert(result.message);
+                    window.location.href = "{{ route('manajemenSiswa') }}"; // Redirect on success
+                } else if (response.status === 422) {
+                    // Handle validation errors
+                    displayErrors(result.errors);
+                    alert('Terdapat kesalahan pada data yang Anda masukkan. Silakan periksa kembali.');
+                } else {
+                    // Handle other server errors
+                    throw new Error(result.message || 'Terjadi kesalahan pada server.');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Gagal mengirim data. Pastikan tidak ada NISN yang duplikat dan semua kolom terisi.');
+            }
         });
+
+        function displayErrors(errors) {
+            for (const key in errors) {
+                // key akan berbentuk seperti "students.1.nisn"
+                // Kita perlu mencari input yang sesuai
+                const parts = key.split('.');
+                if (parts[0] === 'students' && parts.length === 3) {
+                    const rowKey = parts[1];
+                    const fieldName = parts[2];
+                    const message = errors[key][0];
+
+                    // Cari input berdasarkan atribut 'name'
+                    let input;
+                    if (fieldName === 'gender') {
+                        input = document.querySelector(`select[name="students[${rowKey}][${fieldName}]"]`);
+                    } else {
+                        input = document.querySelector(`input[name="students[${rowKey}][${fieldName}]"]`);
+                    }
+                    
+                    if (input) {
+                        input.classList.add('border-red-500');
+                        const errorElement = document.createElement('p');
+                        errorElement.className = 'text-red-600 text-xs mt-1 error-message';
+                        errorElement.textContent = message;
+                        // Sisipkan pesan error setelah input
+                        input.parentNode.appendChild(errorElement);
+                    }
+                }
+            }
+        }
     </script>
 
 </body>

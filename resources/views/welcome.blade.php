@@ -34,23 +34,30 @@
             </div>
 
             <!-- Login Form -->
-            <form action="#" method="POST">
+            <form action="{{ route('login') }}" method="POST">
+                @csrf
+
                 <!-- Email Input -->
                 <div class="mb-4">
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                            <i class="fa-solid fa-user text-gray-400"></i>
+                            <i class="fa-solid fa-envelope text-gray-400"></i>
                         </span>
                         <input 
                             type="email" 
                             id="email" 
                             name="email"
-                            class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200"
-                            placeholder="Masukkan Username"
-                            required
+                            class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200 @error('email') border-red-500 @enderror"
+                            placeholder="Contoh: 12345@sekolah.sch.id"
+                            required autofocus
+                            value="{{ old('email') }}"
                         >
                     </div>
+                    {{-- Menampilkan pesan error validasi untuk email --}}
+                    @error('email')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Password Input -->
@@ -74,8 +81,8 @@
                 <!-- Remember Me & Forgot Password -->
                 <div class="flex items-center justify-between mb-6">
                     <div class="flex items-center">
-                        <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                        <label for="remember-me" class="ml-2 block text-sm text-gray-900">Ingat Saya</label>
+                        <input id="remember" name="remember" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                        <label for="remember" class="ml-2 block text-sm text-gray-900">Ingat Saya</label>
                     </div>
                     <div class="text-sm">
                     </div>

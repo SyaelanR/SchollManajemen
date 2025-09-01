@@ -80,10 +80,15 @@
                 </a>
             </nav>
             <div class="absolute bottom-0 w-full p-6">
-                 <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg">
-                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
-                    <span>Logout</span>
-                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <a href="{{ route('logout') }}"
+                       onclick="event.preventDefault(); this.closest('form').submit();"
+                       class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
+                        <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
+                        <span>Logout</span>
+                    </a>
+                </form>
             </div>
         </aside>
 
@@ -142,71 +147,40 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y">
-                                <!-- Sample Row 1 -->
+                                @forelse ($students as $student)
                                 <tr class="hover:bg-gray-50">
-                                    <td class="p-3 text-gray-700">2024001</td>
-                                    <td class="p-3 text-gray-800 font-medium">Budi Santoso</td>
-                                    <td class="p-3 text-gray-700">XII IPA 1</td>
-                                    <td class="p-3 text-gray-700">Laki-laki</td>
+                                    <td class="p-3 text-gray-700">{{ $student->nisn_nip }}</td>
+                                    <td class="p-3 text-gray-800 font-medium">{{ $student->name }}</td>
+                                    <td class="p-3 text-gray-700">{{ $student->kelas->nama_kelas ?? '-' }}</td>
+                                    <td class="p-3 text-gray-700">{{ $student->jenis_kelamin }}</td>
                                     <td class="p-3">
                                         <a href="#" class="bg-indigo-100 text-indigo-700 text-sm font-medium py-1.5 px-3 rounded-lg hover:bg-indigo-200 transition duration-300 whitespace-nowrap">Lihat Detail</a>
                                     </td>
                                     <td class="p-3 text-center">
                                         <div class="flex justify-center space-x-3">
                                             <a href="#" class="text-blue-600 hover:text-blue-800" title="Edit"><i class="fa-solid fa-pencil"></i></a>
-                                            <a href="#" class="text-red-600 hover:text-red-800" title="Hapus"><i class="fa-solid fa-trash"></i></a>
+                                            <form action="#" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus siswa ini?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-600 hover:text-red-800" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>
-                                <!-- Sample Row 2 -->
-                                <tr class="hover:bg-gray-50">
-                                    <td class="p-3 text-gray-700">2024002</td>
-                                    <td class="p-3 text-gray-800 font-medium">Citra Lestari</td>
-                                    <td class="p-3 text-gray-700">XI IPS 2</td>
-                                    <td class="p-3 text-gray-700">Perempuan</td>
-                                    <td class="p-3">
-                                        <a href="#" class="bg-indigo-100 text-indigo-700 text-sm font-medium py-1.5 px-3 rounded-lg hover:bg-indigo-200 transition duration-300 whitespace-nowrap">Lihat Detail</a>
-                                    </td>
-                                    <td class="p-3 text-center">
-                                        <div class="flex justify-center space-x-3">
-                                            <a href="#" class="text-blue-600 hover:text-blue-800" title="Edit"><i class="fa-solid fa-pencil"></i></a>
-                                            <a href="#" class="text-red-600 hover:text-red-800" title="Hapus"><i class="fa-solid fa-trash"></i></a>
-                                        </div>
+                                @empty
+                                <tr>
+                                    <td colspan="6" class="p-4 text-center text-gray-500">
+                                        Tidak ada data siswa untuk ditampilkan.
                                     </td>
                                 </tr>
-                                 <!-- Sample Row 3 -->
-                                <tr class="hover:bg-gray-50">
-                                    <td class="p-3 text-gray-700">2022015</td>
-                                    <td class="p-3 text-gray-800 font-medium">Doni Firmansyah</td>
-                                    <td class="p-3 text-gray-700">-</td>
-                                    <td class="p-3 text-gray-700">Laki-laki</td>
-                                    <td class="p-3">
-                                        <a href="#" class="bg-indigo-100 text-indigo-700 text-sm font-medium py-1.5 px-3 rounded-lg hover:bg-indigo-200 transition duration-300 whitespace-nowrap">Lihat Detail</a>
-                                    </td>
-                                    <td class="p-3 text-center">
-                                        <div class="flex justify-center space-x-3">
-                                            <a href="#" class="text-blue-600 hover:text-blue-800" title="Edit"><i class="fa-solid fa-pencil"></i></a>
-                                            <a href="#" class="text-red-600 hover:text-red-800" title="Hapus"><i class="fa-solid fa-trash"></i></a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <!-- Add more rows as needed -->
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
 
                     <!-- Pagination -->
-                    <div class="flex justify-between items-center mt-6">
-                        <span class="text-gray-600 text-sm">Menampilkan 1-10 dari 50 data</span>
-                        <div class="flex items-center space-x-1">
-                            <a href="#" class="px-3 py-1 border rounded-lg hover:bg-gray-100">Sebelumnya</a>
-                            <a href="#" class="px-3 py-1 border rounded-lg bg-indigo-600 text-white">1</a>
-                            <a href="#" class="px-3 py-1 border rounded-lg hover:bg-gray-100">2</a>
-                            <a href="#" class="px-3 py-1 border rounded-lg hover:bg-gray-100">3</a>
-                            <span class="px-3 py-1">...</span>
-                            <a href="#" class="px-3 py-1 border rounded-lg hover:bg-gray-100">5</a>
-                            <a href="#" class="px-3 py-1 border rounded-lg hover:bg-gray-100">Berikutnya</a>
-                        </div>
+                    <div class="mt-6">
+                        {{ $students->links() }}
                     </div>
                 </div>
             </main>
@@ -231,4 +205,3 @@
 
 </body>
 </html>
-
