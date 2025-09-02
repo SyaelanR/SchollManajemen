@@ -38,58 +38,59 @@
 <div class="flex h-screen overflow-hidden">
     <!-- Sidebar -->
     <aside id="sidebar"
-           class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
-        <div class="p-6">
-            <a href="#" class="flex items-center space-x-3">
-                <i class="fa-solid fa-school text-3xl text-indigo-600"></i>
-                <span class="text-2xl font-bold text-gray-800">EduSys</span>
-            </a>
-        </div>
-        <nav class="mt-6">
-            <a href="#"
-               class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="#"
-               class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
-                <span>Manajemen Siswa</span>
-            </a>
-            <a href="#"
-               class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
-                <span>Manajemen Guru</span>
-            </a>
-            <a href="#"
-               class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
-                <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
-                <span>Jadwal Pelajaran</span>
-            </a>
-            <a href="#"
-               class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                <i class="fa-solid fa-book w-6 h-6 mr-3"></i>
-                <span>Mata Pelajaran</span>
-            </a>
-            <a href="#"
-               class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                <i class="fa-solid fa-money-bill-wave w-6 h-6 mr-3"></i>
-                <span>Keuangan</span>
-            </a>
-            <a href="#"
-               class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                <i class="fa-solid fa-cog w-6 h-6 mr-3"></i>
-                <span>Pengaturan</span>
-            </a>
-        </nav>
-        <div class="absolute bottom-0 w-full p-6">
-            <a href="#"
-               class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg">
-                <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
-                <span>Logout</span>
-            </a>
-        </div>
-    </aside>
+    class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+    <div class="p-6">
+        <a href="#" class="flex items-center space-x-3">
+            <i class="fa-solid fa-school text-3xl text-indigo-600"></i>
+            <span class="text-2xl font-bold text-gray-800">EduSys</span>
+        </a>
+    </div>
+    <nav class="mt-6">
+        <a href="#"
+           class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition duration-300">
+            <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="#"
+           class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition duration-300">
+            <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
+            <span>Manajemen Siswa</span>
+        </a>
+        <a href="#"
+           class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition duration-300">
+            <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
+            <span>Manajemen Guru</span>
+        </a>
+        <a href="#"
+           class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 rounded-lg font-semibold">
+            <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
+            <span>Jadwal Pelajaran</span>
+        </a>
+        <a href="#"
+           class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition duration-300">
+            <i class="fa-solid fa-money-bill-wave w-6 h-6 mr-3"></i>
+            <span>Keuangan</span>
+        </a>
+        <a href="#"
+           class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition duration-300">
+            <i class="fa-solid fa-exclamation-triangle w-6 h-6 mr-3"></i>
+            <span>Pelanggaran</span>
+        </a>
+        <a href="#"
+           class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition duration-300">
+            <i class="fa-solid fa-cog w-6 h-6 mr-3"></i>
+            <span>Pengaturan</span>
+        </a>
+    </nav>
+    <div class="absolute bottom-0 w-full p-6">
+        <a href="#"
+           class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition duration-300">
+            <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+</aside>
+
 
     <!-- Overlay for mobile -->
     <div id="overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden lg:hidden"></div>
@@ -157,7 +158,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('kelas10A')}}"
+                    <a href="{{ route('kelas11A')}}"
                        class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
                         <div class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
@@ -169,7 +170,8 @@
                         </div>
                     </a>
 
-                    <div class="bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
+                    <a href="{{ route('kelas11B')}}"
+                       class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
                         <div class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
                         </div>
@@ -178,10 +180,11 @@
                             <i class="fa-solid fa-user-group text-sm mr-2"></i>
                             <span class="text-sm">25 Siswa</span>
                         </div>
-                    </div>
+                    </a>
 
-                    <div class="bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
-                        <div class="flex items-center mb-4">
+                    <a href="{{ route('kelas12A')}}"
+                       class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
+                        <div class="flex class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
                         </div>
                         <h3 class="text-xl font-semibold text-gray-800">Kelas 12A</h3>
@@ -189,9 +192,10 @@
                             <i class="fa-solid fa-user-group text-sm mr-2"></i>
                             <span class="text-sm">27 Siswa</span>
                         </div>
-                    </div>
+                    </a>
 
-                    <div class="bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
+                    <a href="{{ route('kelas12B')}}"
+                       class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
                         <div class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
                         </div>
@@ -200,7 +204,7 @@
                             <i class="fa-solid fa-user-group text-sm mr-2"></i>
                             <span class="text-sm">35 Siswa</span>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </main>
