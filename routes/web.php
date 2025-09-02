@@ -40,3 +40,5 @@ Route::prefix('keuangan')->group(function () {
     Route::put('/update/{id}', [KeuanganController::class, 'update'])->name('keuangan.update');
     Route::delete('/destroy/{id}', [KeuanganController::class, 'destroy'])->name('keuangan.destroy');
 });
+
+//hallo
