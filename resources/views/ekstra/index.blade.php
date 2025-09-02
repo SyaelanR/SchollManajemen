@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
+    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -95,6 +95,14 @@
                 <button id="add-button" class="mt-4 md:mt-0 bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 w-full md:w-auto">
                     <i class="fa-solid fa-plus-circle mr-2"></i> Tambah Ekstrakurikuler
                 </button>
+            </div>
+
+            <!-- Keterangan Warna Kategori -->
+            <div class="flex flex-wrap gap-4 mb-4 text-sm">
+                <div class="flex items-center gap-1"><span class="w-4 h-4 bg-green-500 rounded-full"></span> Olahraga</div>
+                <div class="flex items-center gap-1"><span class="w-4 h-4 bg-purple-500 rounded-full"></span> Seni</div>
+                <div class="flex items-center gap-1"><span class="w-4 h-4 bg-blue-500 rounded-full"></span> Sains</div>
+                <div class="flex items-center gap-1"><span class="w-4 h-4 bg-red-500 rounded-full"></span> Bahasa</div>
             </div>
 
             <!-- Extracurricular List -->
@@ -208,7 +216,7 @@ const openModal = (data=null) => {
         document.getElementById('description').value = data.description;
         document.getElementById('instructor').value = data.instructor;
         document.getElementById('schedule').value = data.schedule;
-        form.action = `/ekstra/update/${data.id}`;
+        form.action = "/ekstra/update/"+data.id;
     } else {
         modalTitle.textContent = "Tambah Ekstrakurikuler Baru";
         submitButton.textContent = "Simpan";
