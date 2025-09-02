@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Siswa - Sistem Manajemen Sekolah</title>
+    <title>Tambah Guru - Sistem Manajemen Sekolah</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
@@ -49,6 +49,10 @@
             border-color: #4f46e5;
             box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3);
         }
+        /* New style to always show horizontal scrollbar */
+        .force-scroll-x {
+            overflow-x: scroll;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -67,11 +71,11 @@
                     <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
+                <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
                     <span>Manajemen Siswa</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
                     <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
                     <span>Manajemen Guru</span>
                 </a>
@@ -118,7 +122,7 @@
                 <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
                     <i class="fa-solid fa-bars text-2xl"></i>
                 </button>
-                <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Tambah Siswa Baru</h1>
+                <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Tambah Guru Baru</h1>
                 <div class="flex items-center space-x-4">
                     <button class="text-gray-500 hover:text-gray-700">
                         <i class="fa-solid fa-bell"></i>
@@ -135,25 +139,29 @@
                 <div class="bg-white p-6 rounded-xl shadow-md">
                     <!-- Form Header -->
                     <div class="mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800">Form Tambah Siswa Massal</h2>
-                        <p class="text-gray-500 mt-1">Isi data siswa pada baris yang tersedia. Klik "Tambah Baris" untuk menambahkan lebih banyak siswa.</p>
+                        <h2 class="text-2xl font-bold text-gray-800">Form Tambah Guru Massal</h2>
+                        <p class="text-gray-500 mt-1">Isi data Guru pada baris yang tersedia. Klik "Tambah Baris" untuk menambahkan lebih banyak Guru.</p>
                     </div>
 
-                    <!-- Students Form Table -->
-                    <form id="add-students-form" method="POST" action="{{ route('storeSiswa') }}">
+                    <!-- teacher Form Table -->
+                    <form id="add-teacher-form" method="POST" action="{{ route('storeGuru') }}">
                         @csrf
-                        <div class="overflow-x-auto">
-                            <table class="w-full min-w-[800px] text-left">
+                        <!-- MODIFIED: Changed overflow-x-auto to our custom class force-scroll-x -->
+                        <div class="force-scroll-x">
+                            <!-- MODIFIED: Removed min-w-[800px] to let columns define the width -->
+                            <table class="w-full text-left">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <th class="p-3 font-semibold text-gray-600 w-1/5">NISN</th>
-                                        <th class="p-3 font-semibold text-gray-600 w-2/5">Nama Siswa</th>
-                                        <th class="p-3 font-semibold text-gray-600 w-1/5">Jenis Kelamin</th>
-                                        <th class="p-3 font-semibold text-gray-600 w-1/5">Password</th>
-                                        <th class="p-3 font-semibold text-gray-600 text-center w-[50px]">Aksi</th>
+                                        <!-- MODIFIED: Removed w-* classes and added style with min-width for better control -->
+                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">NIP</th>
+                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 250px;">Nama Guru</th>
+                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Mapel</th>
+                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 180px;">Username</th>
+                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 180px;">Password</th>
+                                        <th class="p-3 font-semibold text-gray-600 text-center" style="min-width: 80px;">Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody id="student-table-body" class="divide-y">
+                                <tbody id="teacher-table-body" class="divide-y">
                                     <!-- Dynamic rows will be inserted here -->
                                 </tbody>
                             </table>
@@ -166,7 +174,7 @@
                                 Tambah Baris
                             </button>
                             <div class="flex w-full md:w-auto gap-4">
-                               <a href="{{ route('manajemenSiswa') }}" class="w-full md:w-auto bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300 text-center flex items-center justify-center">
+                               <a href="{{ route('manajemenGuru') }}" class="w-full md:w-auto bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300 text-center flex items-center justify-center">
                                     Batal
                                 </a>
                                 <button type="submit" class="w-full md:w-auto bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">
@@ -197,7 +205,7 @@
 
         // --- Dynamic Table Row Functionality ---
         const addRowBtn = document.getElementById('add-row-btn');
-        const tableBody = document.getElementById('student-table-body');
+        const tableBody = document.getElementById('teacher-table-body');
         let rowCount = 0;
 
         // Function to create and add a new row
@@ -207,19 +215,19 @@
             row.className = 'hover:bg-gray-50';
             row.innerHTML = `
                 <td class="p-2">
-                    <input type="text" name="students[${rowCount}][nisn]" placeholder="Contoh: 202400${rowCount}" class="table-input" />
+                    <input type="text" name="teacher[${rowCount}][nip]" placeholder="Contoh: 19850315..." class="table-input" />
                 </td>
                 <td class="p-2">
-                    <input type="text" name="students[${rowCount}][nama]" placeholder="Nama Lengkap Siswa" class="table-input" />
+                    <input type="text" name="teacher[${rowCount}][nama]" placeholder="Nama Lengkap Guru" class="table-input" />
                 </td>
                 <td class="p-2">
-                    <select name="students[${rowCount}][gender]" class="table-input">
-                        <option value="Laki-laki">Laki-laki</option>
-                        <option value="Perempuan">Perempuan</option>
-                    </select>
+                    <input type="text" name="teacher[${rowCount}][mapel]" placeholder="mata pelajaran yang diampu" class="table-input" />
                 </td>
                 <td class="p-2">
-                    <input type="password" name="students[${rowCount}][password]" placeholder="Password default" class="table-input" />
+                    <input type="text" name="teacher[${rowCount}][username]" placeholder="Username unik" class="table-input" />
+                </td>
+                <td class="p-2">
+                    <input type="password" name="teacher[${rowCount}][password]" placeholder="Password default" class="table-input" />
                 </td>
                 <td class="p-2 text-center">
                     <button type="button" class="text-red-500 hover:text-red-700 delete-row-btn" title="Hapus Baris">
@@ -252,7 +260,7 @@
         });
 
         // Handle form submission
-        const form = document.getElementById('add-students-form');
+        const form = document.getElementById('add-teacher-form');
         form.addEventListener('submit', async function(event) {
             event.preventDefault();
 
@@ -277,7 +285,7 @@
                 if (response.ok) {
                     // Handle success
                     alert(result.message);
-                    window.location.href = "{{ route('manajemenSiswa') }}"; // Redirect on success
+                    window.location.href = "{{ route('manajemenGuru') }}"; // Redirect on success
                 } else if (response.status === 422) {
                     // Handle validation errors
                     displayErrors(result.errors);
@@ -295,20 +303,21 @@
 
         function displayErrors(errors) {
             for (const key in errors) {
-                // key akan berbentuk seperti "students.1.nisn"
-                // Kita perlu mencari input yang sesuai
+                // key will be in the format "teacher.1.nisn"
                 const parts = key.split('.');
-                if (parts[0] === 'students' && parts.length === 3) {
-                    const rowKey = parts[1];
+                if (parts[0] === 'teacher' && parts.length === 3) {
+                    // FIX: Laravel validation returns a 0-based index, but our rowCount is 1-based.
+                    // We adjust the index here by adding 1 to find the correct input element.
+                    const rowKey = parseInt(parts[1]) + 1;
                     const fieldName = parts[2];
                     const message = errors[key][0];
 
-                    // Cari input berdasarkan atribut 'name'
+                    // Find the input by its 'name' attribute, which is now 1-based.
                     let input;
                     if (fieldName === 'gender') {
-                        input = document.querySelector(`select[name="students[${rowKey}][${fieldName}]"]`);
+                        input = document.querySelector(`select[name="teacher[${rowKey}][${fieldName}]"]`);
                     } else {
-                        input = document.querySelector(`input[name="students[${rowKey}][${fieldName}]"]`);
+                        input = document.querySelector(`input[name="teacher[${rowKey}][${fieldName}]"]`);
                     }
                     
                     if (input) {
@@ -316,7 +325,7 @@
                         const errorElement = document.createElement('p');
                         errorElement.className = 'text-red-600 text-xs mt-1 error-message';
                         errorElement.textContent = message;
-                        // Sisipkan pesan error setelah input
+                        // Insert the error message after the input
                         input.parentNode.appendChild(errorElement);
                     }
                 }

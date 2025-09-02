@@ -19,6 +19,8 @@ return new class extends Migration
             $table->integer('id_kelas')->nullable()->after('role');
             $table->string('angkatan')->nullable()->after('id_kelas');
             $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan'])->nullable()->after('angkatan');
+            $table->string('username')->unique()->after('jenis_kelamin');
+
 
             // Tips: Jika Anda sudah memiliki tabel 'kelas', Anda bisa menambahkan foreign key constraint.
             // Cukup hapus komentar pada baris di bawah ini.

@@ -37,25 +37,25 @@
             <form action="{{ route('login') }}" method="POST">
                 @csrf
 
-                <!-- Email Input -->
+                <!-- username Input -->
                 <div class="mb-4">
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                            <i class="fa-solid fa-envelope text-gray-400"></i>
+                            <i class="fa-solid fa-user text-gray-400"></i>
                         </span>
                         <input 
-                            type="email" 
-                            id="email" 
-                            name="email"
+                            type="username" 
+                            id="username" 
+                            name="username"
                             class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200 @error('email') border-red-500 @enderror"
-                            placeholder="Contoh: 12345@sekolah.sch.id"
+                            placeholder="Contoh: Budi"
                             required autofocus
-                            value="{{ old('email') }}"
+                            value="{{ old('username') }}"
                         >
                     </div>
                     {{-- Menampilkan pesan error validasi untuk email --}}
-                    @error('email')
+                    @error('username')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>

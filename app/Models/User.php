@@ -26,7 +26,8 @@ class User extends Authenticatable
         'role',
         'id_kelas',
         'angkatan',
-        'jenis_kelamin'
+        'jenis_kelamin',
+        'username',
     ];
 
     /**

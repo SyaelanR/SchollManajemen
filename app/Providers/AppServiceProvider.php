@@ -25,13 +25,17 @@ class AppServiceProvider extends ServiceProvider
          * Mendefinisikan Gate untuk memeriksa apakah pengguna memiliki akses ke halaman pengaturan.
          * Hanya user dengan role 'admin' yang diizinkan.
          */
-        Gate::define('view-settings', function (User $user) {
+        Gate::define('view-guru', function (User $user) {
             return $user->role === 'guru';
             // return in_array($user->role, ['admin', 'editor']); //jika pengakses lebih dari satu
         });
 
         Gate::define('view-admin', function (User $user) {
             return $user->role === 'admin';
+        });
+
+        Gate::define('view-siswa', function (User $user) {
+            return $user->role === 'siswa';
         });
     }
 }

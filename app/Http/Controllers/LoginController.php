@@ -31,7 +31,7 @@ class LoginController extends Controller
     {
         // 1. Validasi data input dari form
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
+            'username' => ['required'],
             'password' => ['required'],
         ]);
 
@@ -39,7 +39,7 @@ class LoginController extends Controller
         // Sebaiknya gunakan Hashing (Bcrypt) yang merupakan standar industri.
  
         // Langkah 1: Mencari email dari tabel user.
-        $user = User::where('email', $credentials['email'])->first();
+        $user = User::where('username', $credentials['username'])->first();
  
         // Langkah 2, 3, & 4: Mengambil, mendekripsi, dan membandingkan password.
         // - `$user->password` secara otomatis mengambil dan mendekripsi password dari database
@@ -56,7 +56,7 @@ class LoginController extends Controller
         // Langkah 5 (Gagal): Jika user tidak ada atau password salah,
         // kembali ke halaman login dengan pesan error.
         throw ValidationException::withMessages([
-            'email' => __('auth.failed'),
+            'username' => __('auth.failed'),
         ]);
     }
 

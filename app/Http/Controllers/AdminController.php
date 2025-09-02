@@ -24,23 +24,23 @@ class AdminController extends Controller
     public function manajSiswa()
     {
         $students = User::where('role', 'siswa')->latest()->paginate(10);
-        return view('manajemen_siswa', ['students' => $students]);
+        return view('admin.manajemen_siswa', ['students' => $students]);
     }
 
     public function tambahSiswa()
     {
-        return view('tambah_siswa');
+        return view('admin.tambah_siswa');
     }
     
     public function manajGuru()
     {
         $teachers = User::where('role', 'guru')->latest()->paginate(10);
-        return view('manajemen_guru', ['teachers' => $teachers]);
+        return view('admin.manajemen_guru', ['teachers' => $teachers]);
     }
 
     public function tambahGuru()
     {
-        return view('tambah_guru');
+        return view('admin.tambah_guru');
     }
 
 
@@ -51,6 +51,7 @@ class AdminController extends Controller
             // 'distinct' memastikan keunikan dalam array yang dikirim.
             // 'unique' memastikan keunikan di tabel 'users'.
             'students.*.nisn' => 'required|string|distinct|unique:users,nisn_nip',
+            'students.*.username' => 'required|string|distinct|unique:users,username',
 
             // PERINGATAN: Menjadikan nama unik biasanya bukan praktik yang baik dalam sistem sekolah nyata
             // karena ada kemungkinan siswa memiliki nama yang sama. NISN adalah pengidentifikasi unik yang lebih baik.
@@ -71,10 +72,11 @@ class AdminController extends Controller
             if (isset($studentData['nama'], $studentData['nisn'], $studentData['gender'], $studentData['password'])) {
                 User::create([
                     'name' => $studentData['nama'],
-                    'email' => $studentData['nisn'] . '@sekolah.sch.id', // Membuat email unik berdasarkan NISN
+                    'email' => $studentData['username'] . '@sekolah.sch.id', // Membuat email unik berdasarkan NISN
                     'password' => $studentData['password'],
                     'nisn_nip' => $studentData['nisn'],
                     'jenis_kelamin' => $studentData['gender'],
+                    'username' => $studentData['username'],
                     'role' => 'siswa', // Otomatis mengatur role sebagai siswa
                 ]);
             }
@@ -89,6 +91,7 @@ class AdminController extends Controller
         $validator = Validator::make($request->all(), [
             'teacher' => 'required|array|min:1',
             'teacher.*.nip' => 'required|string|distinct|unique:users,nisn_nip',
+            'teacher.*.username' => 'required|string|distinct|unique:users,username',
 
             'teacher.*.nama' => 'required|string|max:255',
             'teacher.*.mapel' => 'required|string|max:255',
@@ -104,10 +107,11 @@ class AdminController extends Controller
             if (isset($teacherData['nama'], $teacherData['nip'], $teacherData['password'], $teacherData['mapel'])) {
                 User::create([
                     'name' => $teacherData['nama'],
-                    'email' => $teacherData['nip'] . '@sekolah.sch.id', // Membuat email unik berdasarkan NIP
+                    'email' => $teacherData['username'] . '@sekolah.sch.id', // Membuat email unik berdasarkan NIP
                     'password' => $teacherData['password'],
                     'nisn_nip' => $teacherData['nip'],
                     'mapel' => $teacherData['mapel'],
+                    'username' => $teacherData['username'],
                     'role' => 'guru', // Otomatis mengatur role sebagai guru
                 ]);
             }
