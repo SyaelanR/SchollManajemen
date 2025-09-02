@@ -21,7 +21,6 @@ class KeuanganController extends Controller
         $chartPemasukan = [];
         $chartPengeluaran = [];
 
-        // Ambil tanggal unik dari transaksi
         $dates = $transaksi->pluck('tanggal')->unique()->sort();
 
         foreach ($dates as $date) {
@@ -36,15 +35,15 @@ class KeuanganController extends Controller
                 ->sum('jumlah');
         }
 
-        return view('keuangan.index', [
-            'transaksi'        => $transaksi,
-            'totalPemasukan'   => $totalPemasukan,
-            'totalPengeluaran' => $totalPengeluaran,
-            'saldo'            => $saldo,
-            'chartLabels'      => $chartLabels,
-            'chartPemasukan'   => $chartPemasukan,
-            'chartPengeluaran' => $chartPengeluaran,
-        ]);
+        return view('keuangan.index', compact(
+            'transaksi',
+            'totalPemasukan',
+            'totalPengeluaran',
+            'saldo',
+            'chartLabels',
+            'chartPemasukan',
+            'chartPengeluaran'
+        ));
     }
 
     // ================== Pemasukan ==================
@@ -124,7 +123,7 @@ class KeuanganController extends Controller
         Keuangan::create([
             'tanggal'   => $request->tanggal,
             'jenis'     => 'tagihan',
-            'deskripsi' => $request->deskripsi . ' (NIS: ' . $request->nis . ', Siswa: ' . $request->siswa . ')',
+            'deskripsi' => $request->deskripsi . ' | NIS: ' . $request->nis . ' | Siswa: ' . $request->siswa,
             'jumlah'    => $request->jumlah,
         ]);
 
@@ -151,7 +150,7 @@ class KeuanganController extends Controller
         $tagihan = Keuangan::findOrFail($id);
         $tagihan->update([
             'tanggal'   => $request->tanggal,
-            'deskripsi' => $request->deskripsi . ' (NIS: ' . $request->nis . ', Siswa: ' . $request->siswa . ')',
+            'deskripsi' => $request->deskripsi . ' | NIS: ' . $request->nis . ' | Siswa: ' . $request->siswa,
             'jumlah'    => $request->jumlah,
         ]);
 
@@ -204,4 +203,15 @@ class KeuanganController extends Controller
         return redirect()->route('keuangan.index')
                          ->with('success', 'Transaksi berhasil dihapus!');
     }
+
+    public function getLiveData()
+{
+    $data = Keuangan::orderBy('tanggal', 'asc')
+        ->take(20) // ambil 20 data terakhir
+        ->get(['tanggal', 'jumlah']);
+
+    return response()->json($data);
+}
+
+
 }
