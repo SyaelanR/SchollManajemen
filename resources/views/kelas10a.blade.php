@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal Kelas 10A - Sistem Manajemen Sekolah</title>
+    <title>Jadwal Pelajaran</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
@@ -34,38 +34,6 @@
         /* Sidebar transition */
         .sidebar {
             transition: transform 0.3s ease-in-out;
-        }
-
-        /* Table styles to ensure proper alignment */
-        .table-row {
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .table-cell {
-            padding: 1rem 1.5rem;
-            min-width: 0;
-            flex-grow: 1;
-        }
-
-        .table-header .table-cell {
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            color: #4b5563;
-        }
-
-        .table-cell:nth-child(1) { flex-basis: 5%; }
-        .table-cell:nth-child(2) { flex-basis: 15%; }
-        .table-cell:nth-child(3) { flex-basis: 15%; }
-        .table-cell:nth-child(4) { flex-basis: 25%; }
-        .table-cell:nth-child(5) { flex-basis: 25%; }
-        .table-cell:nth-child(6) { flex-basis: 15%; }
-
-        .table-header {
-            background-color: #e5e7eb;
-            border-radius: 0.5rem 0.5rem 0 0;
         }
     </style>
 </head>
@@ -129,7 +97,7 @@
                 <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
                     <i class="fa-solid fa-bars text-2xl"></i>
                 </button>
-                <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Jadwal Kelas 10A</h1>
+                <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Jadwal Pelajaran</h1>
                 <div class="flex items-center space-x-4">
                     <button class="text-gray-500 hover:text-gray-700">
                         <i class="fa-solid fa-bell"></i>
@@ -143,282 +111,174 @@
 
             <!-- Page Content -->
             <main class="p-6 md:p-8 flex-1">
-                <div class="bg-white rounded-xl shadow-md p-6 mb-8">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 md:gap-0">
-                        <h2 class="text-2xl font-semibold text-gray-800">Jadwal Kelas</h2>
-                        <div class="flex items-center space-x-4">
-                            <button id="back-button" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-semibold hover:bg-gray-300 transition duration-300">
-                                <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
-                            </button>
-                            <button id="add-schedule-btn" class="bg-indigo-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-600 transition duration-300">
-                                <i class="fa-solid fa-plus-circle mr-2"></i>Tambah Jadwal
-                            </button>
-                        </div>
+                <!-- Main Title Block (unchanged) -->
+                <div class="bg-indigo-600 rounded-xl shadow-lg p-8 mb-8 text-white flex flex-col md:flex-row items-center justify-between">
+                    <div>
+                        <h2 class="text-3xl font-bold mb-2">Jadwal Pelajaran Kelas</h2>
+                        <p class="text-indigo-200">Lihat dan kelola jadwal pelajaran untuk setiap kelas.</p>
                     </div>
+                </div>
+                
+                <!-- Class Selection & Back Button -->
+                <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between">
+                    <div class="flex-1 mb-4 md:mb-0">
+                        <label for="class-select" class="block text-gray-700 font-semibold mb-2">Pilih Kelas:</label>
+                        <select id="class-select" class="w-full md:w-1/2 lg:w-1/3 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200">
+                            <option value="10A">Kelas 10A</option>
+                            <option value="10B">Kelas 10B</option>
+                            <option value="11A">Kelas 11A</option>
+                            <option value="11B">Kelas 11B</option>
+                            <option value="12A">Kelas 12A</option>
+                            <option value="12B">Kelas 12B</option>
+                        </select>
+                    </div>
+                    <button onclick="window.history.back()" class="flex items-center justify-center space-x-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition duration-200">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Kembali</span>
+                    </button>
+                </div>
 
-                    <!-- Schedule Table -->
-                    <div class="overflow-x-auto bg-gray-50 rounded-lg shadow-inner mb-8">
-                        <div class="w-full text-sm text-left text-gray-500">
-                            <!-- Table Header -->
-                            <div class="table-row table-header rounded-t-lg">
-                                <div class="table-cell">No</div>
-                                <div class="table-cell">Hari</div>
-                                <div class="table-cell">Jam</div>
-                                <div class="table-cell"></div>
-                                <div class="table-cell">Mata Pelajaran</div>
-                                <div class="table-cell">Guru Pengajar</div>
-                                <div class="table-cell"></div>
-                                <div class="table-cell">Aksi</div>
-                            </div>
-                            <!-- Table Body -->
-                            <div class="bg-white" id="schedule-table-body">
-                                <!-- Jadwal akan dirender di sini oleh JavaScript -->
-                            </div>
+                <!-- Schedule Table Container - Revised to match the top block's design -->
+                <div id="schedule-container" class="bg-indigo-50 p-8 rounded-xl shadow-lg text-gray-900">
+                    <!-- Jadwal will be loaded here by JavaScript -->
+                    <h3 id="schedule-title" class="text-xl font-semibold mb-4 text-indigo-800">Jadwal Kelas 10A</h3>
+                    <div id="schedule-placeholder">
+                        <div class="flex justify-center items-center h-48 text-indigo-400">
+                           <i class="fa-solid fa-spinner fa-spin-pulse text-4xl"></i>
                         </div>
                     </div>
                 </div>
             </main>
         </div>
     </div>
-    
-    <!-- Add/Edit Schedule Modal -->
-    <div id="schedule-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-[100]">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div class="mt-3 text-center">
-                <h3 id="modal-title" class="text-lg leading-6 font-medium text-gray-900 mb-4">Tambah Jadwal Baru</h3>
-                <form id="schedule-form" class="space-y-4">
-                    <input type="hidden" id="schedule-id">
-                    <div>
-                        <label for="modal-day" class="block text-sm font-medium text-gray-700 text-left">Hari</label>
-                        <select id="modal-day" class="mt-1 block w-full p-2 border border-gray-300 rounded-lg" required>
-                            <option value="Senin">Senin</option>
-                            <option value="Selasa">Selasa</option>
-                            <option value="Rabu">Rabu</option>
-                            <option value="Kamis">Kamis</option>
-                            <option value="Jumat">Jumat</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="modal-start-time" class="block text-sm font-medium text-gray-700 text-left">Jam Mulai</label>
-                        <div class="flex space-x-2 mt-1">
-                            <select id="modal-start-hour" class="block w-1/2 p-2 border border-gray-300 rounded-lg" required></select>
-                            <select id="modal-start-minute" class="block w-1/2 p-2 border border-gray-300 rounded-lg" required></select>
-                        </div>
-                    </div>
-                    <div>
-                        <label for="modal-end-time" class="block text-sm font-medium text-gray-700 text-left">Jam Selesai</label>
-                        <div class="flex space-x-2 mt-1">
-                            <select id="modal-end-hour" class="block w-1/2 p-2 border border-gray-300 rounded-lg" required></select>
-                            <select id="modal-end-minute" class="block w-1/2 p-2 border border-gray-300 rounded-lg" required></select>
-                        </div>
-                    </div>
-                    <div>
-                        <label for="modal-subject" class="block text-sm font-medium text-gray-700 text-left">Mata Pelajaran</label>
-                        <select id="modal-subject" class="mt-1 block w-full p-2 border border-gray-300 rounded-lg" required>
-                            <!-- Options will be populated by JavaScript -->
-                        </select>
-                    </div>
-                    <div>
-                        <label for="modal-teacher" class="block text-sm font-medium text-gray-700 text-left">Guru Pengajar</label>
-                        <select id="modal-teacher" class="mt-1 block w-full p-2 border border-gray-300 rounded-lg" required>
-                            <!-- Options will be populated by JavaScript -->
-                        </select>
-                    </div>
-                    <div class="mt-4 flex justify-end space-x-2">
-                        <button type="button" id="close-modal-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Batal</button>
-                        <button type="submit" class="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600">Simpan Jadwal</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    
+
     <script>
-        // Data simulasi untuk dropdown
-        const subjects = ["Matematika", "Bahasa Inggris", "Fisika", "Kimia", "Biologi", "Sejarah", "Sosiologi"];
-        const teachers = ["Ibu Sri Handayani", "Bapak Rahmat Susanto", "Ibu Siti Nurhayati", "Bapak Budi Santoso", "Ibu Kartika Sari"];
-
-        // Data simulasi jadwal
-        let schedules = [
-            { id: 1, day: "Senin", time: "08:00 - 09:30", subject: "Matematika", teacher: "Ibu Sri Handayani" },
-            { id: 2, day: "Senin", time: "09:30 - 11:00", subject: "Bahasa Inggris", teacher: "Bapak Rahmat Susanto" },
-        ];
-
-        const scheduleTableBody = document.getElementById('schedule-table-body');
         const menuButton = document.getElementById('menu-button');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
-        const addScheduleBtn = document.getElementById('add-schedule-btn');
-        const scheduleModal = document.getElementById('schedule-modal');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-        const scheduleForm = document.getElementById('schedule-form');
-        const modalTitle = document.getElementById('modal-title');
-        const scheduleIdInput = document.getElementById('schedule-id');
-        const modalDayInput = document.getElementById('modal-day');
-        const modalStartHourInput = document.getElementById('modal-start-hour');
-        const modalStartMinuteInput = document.getElementById('modal-start-minute');
-        const modalEndHourInput = document.getElementById('modal-end-hour');
-        const modalEndMinuteInput = document.getElementById('modal-end-minute');
-        const modalSubjectInput = document.getElementById('modal-subject');
-        const modalTeacherInput = document.getElementById('modal-teacher');
-        const backButton = document.getElementById('back-button');
+        const classSelect = document.getElementById('class-select');
+        const scheduleContainer = document.getElementById('schedule-container');
+        const scheduleTitle = document.getElementById('schedule-title');
+        const schedulePlaceholder = document.getElementById('schedule-placeholder');
 
-        // Fungsi untuk merender dropdown jam dan menit
-        const renderTimeSelectors = () => {
-            const createOptions = (start, end, step, format) => {
-                let options = '';
-                for (let i = start; i <= end; i += step) {
-                    const value = i.toString().padStart(2, '0');
-                    options += `<option value="${value}">${value}</option>`;
-                }
-                return options;
-            };
+        const daysOfWeek = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
 
-            modalStartHourInput.innerHTML = createOptions(0, 23, 1);
-            modalStartMinuteInput.innerHTML = createOptions(0, 59, 1);
-            modalEndHourInput.innerHTML = createOptions(0, 23, 1);
-            modalEndMinuteInput.innerHTML = createOptions(0, 59, 1);
-        };
-        
-        // Fungsi untuk merender dropdown mata pelajaran dan guru
-        const renderSubjectAndTeacherDropdowns = () => {
-            modalSubjectInput.innerHTML = subjects.map(subject => `<option value="${subject}">${subject}</option>`).join('');
-            modalTeacherInput.innerHTML = teachers.map(teacher => `<option value="${teacher}">${teacher}</option>`).join('');
-        };
-
-        // Fungsi untuk merender tabel
-        const renderTable = () => {
-            scheduleTableBody.innerHTML = '';
-            schedules.forEach((schedule, index) => {
-                const row = document.createElement('div');
-                row.className = 'table-row hover:bg-gray-100';
-                row.innerHTML = `
-                    <div class="table-cell font-medium text-gray-900 whitespace-nowrap">${index + 1}</div>
-                    <div class="table-cell">${schedule.day}</div>
-                    <div class="table-cell">${schedule.time}</div>
-                    <div class="table-cell">${schedule.subject}</div>
-                    <div class="table-cell">${schedule.teacher}</div>
-                    <div class="table-cell flex justify-center items-center">
-                        <button class="text-indigo-600 hover:text-indigo-900 mr-2 edit-btn" data-id="${schedule.id}">
-                            <i class="fa-solid fa-edit"></i>
-                        </button>
-                        <button class="text-red-600 hover:text-red-900 delete-btn" data-id="${schedule.id}">
-                            <i class="fa-solid fa-trash-alt"></i>
-                        </button>
-                    </div>
-                `;
-                scheduleTableBody.appendChild(row);
-            });
-
-            // Tambahkan event listener untuk tombol edit dan hapus setelah tabel dirender
-            document.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.addEventListener('click', handleEdit);
-            });
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', handleDelete);
-            });
+        // Data jadwal dalam format yang mudah dikelola
+        const schedules = {
+            '10A': [
+                { time: '07:30 - 08:30', subjects: ['Matematika', 'Bahasa Inggris', 'Fisika', 'Biologi', 'Pendidikan Agama'] },
+                { time: '08:30 - 09:30', subjects: ['Bahasa Indonesia', 'Sejarah', 'Matematika', 'Kimia', 'Pendidikan Jasmani'] },
+                { time: 'Istirahat', subjects: ['Istirahat', 'Istirahat', 'Istirahat', 'Istirahat', 'Istirahat'] },
+                { time: '10:00 - 11:00', subjects: ['Biologi', 'Seni Budaya', 'Bahasa Indonesia', 'Matematika', 'Sosiologi'] },
+                { time: '11:00 - 12:00', subjects: ['Kimia', 'Geografi', 'Bahasa Inggris', 'Sejarah', 'Bahasa Jerman'] },
+            ],
+            '10B': [
+                { time: '07:30 - 08:30', subjects: ['Bahasa Inggris', 'Matematika', 'Biologi', 'Kimia', 'Pendidikan Jasmani'] },
+                { time: '08:30 - 09:30', subjects: ['Fisika', 'Bahasa Indonesia', 'Sosiologi', 'Bahasa Inggris', 'Pendidikan Agama'] },
+                { time: 'Istirahat', subjects: ['Istirahat', 'Istirahat', 'Istirahat', 'Istirahat', 'Istirahat'] },
+                { time: '10:00 - 11:00', subjects: ['Geografi', 'Kimia', 'Sejarah', 'Fisika', 'Matematika'] },
+                { time: '11:00 - 12:00', subjects: ['Bahasa Indonesia', 'Pendidikan Agama', 'Seni Budaya', 'Geografi', 'Bahasa Perancis'] },
+            ],
+            '11A': [
+                { time: '07:30 - 08:30', subjects: ['Matematika Peminatan', 'Kimia', 'Fisika', 'Biologi', 'Pendidikan Agama'] },
+                { time: '08:30 - 09:30', subjects: ['Bahasa Indonesia', 'Ekonomi', 'Sejarah', 'Fisika', 'Matematika Wajib'] },
+                { time: 'Istirahat', subjects: ['Istirahat', 'Istirahat', 'Istirahat', 'Istirahat', 'Istirahat'] },
+                { time: '10:00 - 11:00', subjects: ['Biologi', 'Sosiologi', 'Matematika Peminatan', 'Bahasa Inggris', 'Pendidikan Jasmani'] },
+                { time: '11:00 - 12:00', subjects: ['Bahasa Inggris', 'Kimia', 'Bahasa Jerman', 'Seni Budaya', 'Bahasa Indonesia'] },
+            ],
+            '11B': [
+                { time: '07:30 - 08:30', subjects: ['Fisika', 'Bahasa Inggris', 'Biologi', 'Matematika Wajib', 'Pendidikan Jasmani'] },
+                { time: '08:30 - 09:30', subjects: ['Kimia', 'Ekonomi', 'Bahasa Indonesia', 'Biologi', 'Sejarah'] },
+                { time: 'Istirahat', subjects: ['Istirahat', 'Istirahat', 'Istirahat', 'Istirahat', 'Istirahat'] },
+                { time: '10:00 - 11:00', subjects: ['Matematika Wajib', 'Sejarah', 'Sosiologi', 'Kimia', 'Seni Budaya'] },
+                { time: '11:00 - 12:00', subjects: ['Bahasa Indonesia', 'Fisika', 'Bahasa Inggris', 'Pendidikan Agama', 'Bahasa Spanyol'] },
+            ],
+            '12A': [
+                { time: '07:30 - 08:30', subjects: ['Kimia', 'Biologi', 'Matematika Peminatan', 'Bahasa Inggris', 'Pendidikan Agama'] },
+                { time: '08:30 - 09:30', subjects: ['Fisika', 'Matematika Wajib', 'Bahasa Indonesia', 'Kimia', 'Sejarah'] },
+                { time: 'Istirahat', subjects: ['Istirahat', 'Istirahat', 'Istirahat', 'Istirahat', 'Istirahat'] },
+                { time: '10:00 - 11:00', subjects: ['Bahasa Indonesia', 'Sosiologi', 'Ekonomi', 'Bahasa Inggris', 'Seni Budaya'] },
+                { time: '11:00 - 12:00', subjects: ['Bahasa Inggris', 'Pendidikan Jasmani', 'Fisika', 'Kimia', 'Geografi'] },
+            ],
+            '12B': [
+                { time: '07:30 - 08:30', subjects: ['Matematika Wajib', 'Bahasa Indonesia', 'Fisika', 'Biologi', 'Sejarah'] },
+                { time: '08:30 - 09:30', subjects: ['Bahasa Inggris', 'Kimia', 'Pendidikan Agama', 'Matematika Wajib', 'Geografi'] },
+                { time: 'Istirahat', subjects: ['Istirahat', 'Istirahat', 'Istirahat', 'Istirahat', 'Istirahat'] },
+                { time: '10:00 - 11:00', subjects: ['Biologi', 'Fisika', 'Bahasa Inggris', 'Sosiologi', 'Ekonomi'] },
+                { time: '11:00 - 12:00', subjects: ['Seni Budaya', 'Kimia', 'Bahasa Indonesia', 'Pendidikan Jasmani', 'Pendidikan Agama'] },
+            ]
         };
 
-        // Fungsi untuk membuka modal tambah jadwal
-        const openAddModal = () => {
-            modalTitle.textContent = 'Tambah Jadwal Baru';
-            scheduleIdInput.value = '';
-            scheduleForm.reset();
-            scheduleModal.classList.remove('hidden');
+        // Function untuk menghasilkan HTML jadwal yang responsif
+        const generateScheduleHTML = (scheduleData) => {
+            let desktopHTML = `
+                <div class="hidden md:block">
+                    <table class="min-w-full divide-y divide-indigo-200">
+                        <thead class="bg-indigo-100">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-indigo-800 uppercase tracking-wider">Waktu</th>
+                                ${daysOfWeek.map(day => `<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-indigo-800 uppercase tracking-wider">${day}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody class="bg-indigo-50 divide-y divide-indigo-200">
+                            ${scheduleData.map(period => `
+                                <tr class="${period.time === 'Istirahat' ? 'bg-indigo-100 font-semibold' : ''}">
+                                    <td class="px-6 py-4 whitespace-nowrap ${period.time === 'Istirahat' ? 'text-center' : ''}">${period.time}</td>
+                                    ${period.subjects.map(subject => `<td class="px-6 py-4 whitespace-nowrap">${subject}</td>`).join('')}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            let mobileHTML = `
+                <div class="md:hidden space-y-4">
+                    ${daysOfWeek.map((day, dayIndex) => `
+                        <div class="bg-white rounded-lg shadow p-4">
+                            <h4 class="text-sm font-semibold text-indigo-800 mb-2">${day}</h4>
+                            <ul class="divide-y divide-gray-200">
+                                ${scheduleData.map(period => `
+                                    <li class="py-2">
+                                        <div class="flex justify-between items-center text-sm">
+                                            <span class="text-gray-500">${period.time}</span>
+                                            <span class="text-gray-800 font-medium">${period.subjects[dayIndex]}</span>
+                                        </div>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            return desktopHTML + mobileHTML;
         };
 
-        // Fungsi untuk membuka modal edit jadwal
-        const handleEdit = (event) => {
-            const id = parseInt(event.currentTarget.dataset.id);
-            const scheduleToEdit = schedules.find(s => s.id === id);
-            
-            modalTitle.textContent = 'Edit Jadwal';
-            scheduleIdInput.value = scheduleToEdit.id;
-            modalDayInput.value = scheduleToEdit.day;
-
-            // Memisahkan jam mulai dan selesai
-            const [startTime, endTime] = scheduleToEdit.time.split(' - ');
-            const [startHour, startMinute] = startTime.split(':');
-            const [endHour, endMinute] = endTime.split(':');
-
-            modalStartHourInput.value = startHour;
-            modalStartMinuteInput.value = startMinute;
-            modalEndHourInput.value = endHour;
-            modalEndMinuteInput.value = endMinute;
-
-            modalSubjectInput.value = scheduleToEdit.subject;
-            modalTeacherInput.value = scheduleToEdit.teacher;
-            
-            scheduleModal.classList.remove('hidden');
-        };
-
-        // Fungsi untuk menghapus jadwal
-        const handleDelete = (event) => {
-            const id = parseInt(event.currentTarget.dataset.id);
-            schedules = schedules.filter(s => s.id !== id);
-            renderTable();
-        };
-
-        // Fungsi untuk menutup modal
-        const closeModal = () => {
-            scheduleModal.classList.add('hidden');
-        };
-
-        // Fungsi untuk menangani submit form
-        const handleFormSubmit = (event) => {
-            event.preventDefault();
-            const id = scheduleIdInput.value ? parseInt(scheduleIdInput.value) : null;
-            
-            const startHour = modalStartHourInput.value;
-            const startMinute = modalStartMinuteInput.value;
-            const endHour = modalEndHourInput.value;
-            const endMinute = modalEndMinuteInput.value;
-            
-            const timeString = `${startHour}:${startMinute} - ${endHour}:${endMinute}`;
-
-            const newSchedule = {
-                day: modalDayInput.value,
-                time: timeString,
-                subject: modalSubjectInput.value,
-                teacher: modalTeacherInput.value,
-            };
-
-            if (id) {
-                // Edit jadwal yang ada
-                schedules = schedules.map(s => s.id === id ? { ...s, ...newSchedule } : s);
-            } else {
-                // Tambah jadwal baru
-                newSchedule.id = schedules.length > 0 ? Math.max(...schedules.map(s => s.id)) + 1 : 1;
-                schedules.push(newSchedule);
-            }
-            
-            renderTable();
-            closeModal();
-            scheduleForm.reset();
-        };
-        
-        // Fungsi untuk toggle sidebar
+        // Function to toggle sidebar
         const toggleSidebar = () => {
             sidebar.classList.toggle('-translate-x-full');
             overlay.classList.toggle('hidden');
         };
 
-        // Event Listeners
+        // Function to load the schedule based on selected class
+        const loadSchedule = () => {
+            const selectedClass = classSelect.value;
+            scheduleTitle.textContent = `Jadwal Kelas ${selectedClass}`;
+            const selectedScheduleData = schedules[selectedClass];
+            if (selectedScheduleData) {
+                schedulePlaceholder.innerHTML = generateScheduleHTML(selectedScheduleData);
+            }
+        };
+
+        // Event listeners
         menuButton.addEventListener('click', toggleSidebar);
         overlay.addEventListener('click', toggleSidebar);
-        addScheduleBtn.addEventListener('click', openAddModal);
-        closeModalBtn.addEventListener('click', closeModal);
-        scheduleForm.addEventListener('submit', handleFormSubmit);
-        
-        // Event listener untuk tombol kembali
-        backButton.addEventListener('click', () => {
-            window.history.back();
-        });
+        classSelect.addEventListener('change', loadSchedule);
 
-        // Render tabel dan dropdown saat halaman dimuat
-        renderTimeSelectors();
-        renderSubjectAndTeacherDropdowns();
-        renderTable();
+        // Initial load
+        window.onload = loadSchedule;
     </script>
+
 </body>
 </html>
