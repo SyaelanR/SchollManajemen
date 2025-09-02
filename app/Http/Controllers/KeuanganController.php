@@ -16,27 +16,35 @@ class KeuanganController extends Controller
         $totalPengeluaran = Keuangan::where('jenis', 'pengeluaran')->sum('jumlah');
         $saldo = $totalPemasukan - $totalPengeluaran;
 
+        // Data untuk chart
         $chartLabels = [];
         $chartPemasukan = [];
         $chartPengeluaran = [];
 
-        $dates = $transaksi->pluck('tanggal')->unique();
+        // Ambil tanggal unik dari transaksi
+        $dates = $transaksi->pluck('tanggal')->unique()->sort();
 
         foreach ($dates as $date) {
             $chartLabels[] = Carbon::parse($date)->format('d-m-Y');
-            $chartPemasukan[] = $transaksi->where('tanggal', $date)->where('jenis', 'pemasukan')->sum('jumlah');
-            $chartPengeluaran[] = $transaksi->where('tanggal', $date)->where('jenis', 'pengeluaran')->sum('jumlah');
+            $chartPemasukan[] = $transaksi
+                ->where('tanggal', $date)
+                ->where('jenis', 'pemasukan')
+                ->sum('jumlah');
+            $chartPengeluaran[] = $transaksi
+                ->where('tanggal', $date)
+                ->where('jenis', 'pengeluaran')
+                ->sum('jumlah');
         }
 
-        return view('keuangan.index', compact(
-            'transaksi',
-            'totalPemasukan',
-            'totalPengeluaran',
-            'saldo',
-            'chartLabels',
-            'chartPemasukan',
-            'chartPengeluaran'
-        ));
+        return view('keuangan.index', [
+            'transaksi'        => $transaksi,
+            'totalPemasukan'   => $totalPemasukan,
+            'totalPengeluaran' => $totalPengeluaran,
+            'saldo'            => $saldo,
+            'chartLabels'      => $chartLabels,
+            'chartPemasukan'   => $chartPemasukan,
+            'chartPengeluaran' => $chartPengeluaran,
+        ]);
     }
 
     // ================== Pemasukan ==================
@@ -48,16 +56,16 @@ class KeuanganController extends Controller
     public function storePemasukan(Request $request)
     {
         $request->validate([
-            'tanggal' => 'required|date',
+            'tanggal'   => 'required|date',
             'deskripsi' => 'required|string|max:255',
-            'jumlah' => 'required|numeric|min:0',
+            'jumlah'    => 'required|numeric|min:0',
         ]);
 
         Keuangan::create([
-            'tanggal' => $request->tanggal,
-            'jenis' => 'pemasukan',
+            'tanggal'   => $request->tanggal,
+            'jenis'     => 'pemasukan',
             'deskripsi' => $request->deskripsi,
-            'jumlah' => $request->jumlah,
+            'jumlah'    => $request->jumlah,
         ]);
 
         return redirect()->route('keuangan.index')
@@ -73,16 +81,16 @@ class KeuanganController extends Controller
     public function storePengeluaran(Request $request)
     {
         $request->validate([
-            'tanggal' => 'required|date',
+            'tanggal'   => 'required|date',
             'deskripsi' => 'required|string|max:255',
-            'jumlah' => 'required|numeric|min:0',
+            'jumlah'    => 'required|numeric|min:0',
         ]);
 
         Keuangan::create([
-            'tanggal' => $request->tanggal,
-            'jenis' => 'pengeluaran',
+            'tanggal'   => $request->tanggal,
+            'jenis'     => 'pengeluaran',
             'deskripsi' => $request->deskripsi,
-            'jumlah' => $request->jumlah,
+            'jumlah'    => $request->jumlah,
         ]);
 
         return redirect()->route('keuangan.index')
@@ -106,18 +114,18 @@ class KeuanganController extends Controller
     public function storeTagihan(Request $request)
     {
         $request->validate([
-            'tanggal' => 'required|date',
-            'nis' => 'required|string|max:20',
-            'siswa' => 'required|string|max:255',
+            'tanggal'   => 'required|date',
+            'nis'       => 'required|string|max:20',
+            'siswa'     => 'required|string|max:255',
             'deskripsi' => 'required|string|max:255',
-            'jumlah' => 'required|numeric|min:0',
+            'jumlah'    => 'required|numeric|min:0',
         ]);
 
         Keuangan::create([
-            'tanggal' => $request->tanggal,
-            'jenis' => 'tagihan',
+            'tanggal'   => $request->tanggal,
+            'jenis'     => 'tagihan',
             'deskripsi' => $request->deskripsi . ' (NIS: ' . $request->nis . ', Siswa: ' . $request->siswa . ')',
-            'jumlah' => $request->jumlah,
+            'jumlah'    => $request->jumlah,
         ]);
 
         return redirect()->route('keuangan.tagihan')
@@ -133,18 +141,18 @@ class KeuanganController extends Controller
     public function updateTagihan(Request $request, $id)
     {
         $request->validate([
-            'tanggal' => 'required|date',
-            'nis' => 'required|string|max:20',
-            'siswa' => 'required|string|max:255',
+            'tanggal'   => 'required|date',
+            'nis'       => 'required|string|max:20',
+            'siswa'     => 'required|string|max:255',
             'deskripsi' => 'required|string|max:255',
-            'jumlah' => 'required|numeric|min:0',
+            'jumlah'    => 'required|numeric|min:0',
         ]);
 
         $tagihan = Keuangan::findOrFail($id);
         $tagihan->update([
-            'tanggal' => $request->tanggal,
+            'tanggal'   => $request->tanggal,
             'deskripsi' => $request->deskripsi . ' (NIS: ' . $request->nis . ', Siswa: ' . $request->siswa . ')',
-            'jumlah' => $request->jumlah,
+            'jumlah'    => $request->jumlah,
         ]);
 
         return redirect()->route('keuangan.tagihan')
@@ -170,18 +178,18 @@ class KeuanganController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'tanggal' => 'required|date',
+            'tanggal'   => 'required|date',
             'deskripsi' => 'required|string|max:255',
-            'jumlah' => 'required|numeric|min:0',
-            'jenis' => 'required|in:pemasukan,pengeluaran',
+            'jumlah'    => 'required|numeric|min:0',
+            'jenis'     => 'required|in:pemasukan,pengeluaran',
         ]);
 
         $transaksi = Keuangan::findOrFail($id);
         $transaksi->update([
-            'tanggal' => $request->tanggal,
+            'tanggal'   => $request->tanggal,
             'deskripsi' => $request->deskripsi,
-            'jumlah' => $request->jumlah,
-            'jenis' => $request->jenis,
+            'jumlah'    => $request->jumlah,
+            'jenis'     => $request->jenis,
         ]);
 
         return redirect()->route('keuangan.index')

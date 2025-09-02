@@ -9,16 +9,6 @@
 <body class="bg-gray-100 p-6">
 
 <div class="max-w-xl mx-auto bg-white rounded-xl shadow-md p-8">
-    <!-- Tombol Kembali Panah -->
-    <div class="mb-6">
-        <a href="{{ route('keuangan.tagihan') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg shadow hover:bg-gray-200 hover:text-gray-900 transition duration-200">
-            <!-- Ikon panah kiri -->
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M12.707 15.707a1 1 0 01-1.414 0L6.586 11l4.707-4.707a1 1 0 011.414 1.414L9.414 11l3.293 3.293a1 1 0 010 1.414z" clip-rule="evenodd" />
-            </svg>
-            Kembali
-        </a>
-    </div>
 
     <!-- Judul Form -->
     <h2 class="text-2xl font-bold mb-6 text-gray-800">Tambah Tagihan Siswa</h2>
@@ -53,14 +43,20 @@
 
         <!-- Tombol Batal & Simpan -->
         <div class="flex justify-between items-center mt-6">
-            <a href="{{ route('keuangan.tagihan') }}" class="inline-flex items-center text-gray-500 hover:text-gray-900 hover:underline transition duration-200">
-                <!-- Ikon panah kiri kecil -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M12.707 15.707a1 1 0 01-1.414 0L6.586 11l4.707-4.707a1 1 0 011.414 1.414L9.414 11l3.293 3.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            <!-- Tombol Batal -->
+            <a href="{{ route('keuangan.tagihan') }}" 
+               class="flex items-center bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 transition duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
                 Batal
             </a>
-            <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition duration-200">Simpan</button>
+
+            <!-- Tombol Simpan -->
+            <button type="submit" 
+                    class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition duration-200">
+                Simpan
+            </button>
         </div>
     </form>
 </div>

@@ -11,7 +11,23 @@
 <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md p-6">
     <h2 class="text-2xl font-bold mb-4">Tagihan Siswa</h2>
 
-    <a href="{{ route('keuangan.createTagihan') }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mb-4 inline-block">Tambah Tagihan</a>
+    <div class="flex items-center justify-between mb-4">
+        <!-- Tombol Kembali ke halaman Keuangan -->
+        <a href="{{ route('keuangan.index') }}" 
+           class="flex items-center bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition">
+            <!-- Ikon panah -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            Kembali
+        </a>
+
+        <!-- Tombol Tambah Tagihan -->
+        <a href="{{ route('keuangan.createTagihan') }}" 
+           class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+            Tambah Tagihan
+        </a>
+    </div>
 
     <table class="w-full table-auto border-collapse border border-gray-300">
         <thead>

@@ -27,11 +27,6 @@ Route::prefix('keuangan')->group(function () {
     Route::get('/create-pengeluaran', [KeuanganController::class, 'createPengeluaran'])->name('keuangan.createPengeluaran');
     Route::post('/store-pengeluaran', [KeuanganController::class, 'storePengeluaran'])->name('keuangan.storePengeluaran');
 
-    // ===== Edit & Hapus Transaksi Umum =====
-    Route::get('/edit/{id}', [KeuanganController::class, 'edit'])->name('keuangan.edit');
-    Route::put('/update/{id}', [KeuanganController::class, 'update'])->name('keuangan.update');
-    Route::delete('/destroy/{id}', [KeuanganController::class, 'destroy'])->name('keuangan.destroy');
-
     // ===== Tagihan Siswa =====
     Route::get('/tagihan', [KeuanganController::class, 'tagihan'])->name('keuangan.tagihan');
     Route::get('/create-tagihan', [KeuanganController::class, 'createTagihan'])->name('keuangan.createTagihan');
@@ -39,4 +34,9 @@ Route::prefix('keuangan')->group(function () {
     Route::get('/edit-tagihan/{id}', [KeuanganController::class, 'editTagihan'])->name('keuangan.editTagihan');
     Route::put('/update-tagihan/{id}', [KeuanganController::class, 'updateTagihan'])->name('keuangan.updateTagihan');
     Route::delete('/destroy-tagihan/{id}', [KeuanganController::class, 'destroyTagihan'])->name('keuangan.destroyTagihan');
+
+    // ===== Transaksi Umum =====
+    Route::get('/edit/{id}', [KeuanganController::class, 'edit'])->name('keuangan.edit');
+    Route::put('/update/{id}', [KeuanganController::class, 'update'])->name('keuangan.update');
+    Route::delete('/destroy/{id}', [KeuanganController::class, 'destroy'])->name('keuangan.destroy');
 });
