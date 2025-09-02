@@ -31,6 +31,18 @@ class AdminController extends Controller
     {
         return view('tambah_siswa');
     }
+    
+    public function manajGuru()
+    {
+        $teachers = User::where('role', 'guru')->latest()->paginate(10);
+        return view('manajemen_guru', ['teachers' => $teachers]);
+    }
+
+    public function tambahGuru()
+    {
+        return view('tambah_guru');
+    }
+
 
     public function storeSiswa(Request $request)
     {
@@ -69,5 +81,38 @@ class AdminController extends Controller
         }
 
         return response()->json(['message' => 'Data semua siswa berhasil disimpan!'], 200);
+    }
+
+
+    public function storeGuru(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'teacher' => 'required|array|min:1',
+            'teacher.*.nip' => 'required|string|distinct|unique:users,nisn_nip',
+
+            'teacher.*.nama' => 'required|string|max:255',
+            'teacher.*.mapel' => 'required|string|max:255',
+            'teacher.*.password' => 'required|string|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        foreach ($request->teacher as $teacherData) {
+            // Pastikan semua data yang diperlukan ada sebelum membuat user
+            if (isset($teacherData['nama'], $teacherData['nip'], $teacherData['password'], $teacherData['mapel'])) {
+                User::create([
+                    'name' => $teacherData['nama'],
+                    'email' => $teacherData['nip'] . '@sekolah.sch.id', // Membuat email unik berdasarkan NIP
+                    'password' => $teacherData['password'],
+                    'nisn_nip' => $teacherData['nip'],
+                    'mapel' => $teacherData['mapel'],
+                    'role' => 'guru', // Otomatis mengatur role sebagai guru
+                ]);
+            }
+        }
+
+        return response()->json(['message' => 'Data semua guru berhasil disimpan!'], 200);
     }
 }

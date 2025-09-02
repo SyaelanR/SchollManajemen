@@ -21,9 +21,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/manajemen-siswa', [AdminController::class, 'manajSiswa'])->name('manajemenSiswa');
         Route::get('/tambah-siswa', [AdminController::class, 'tambahSiswa'])->name('tambahSiswa');
         Route::post('/tambah-siswa', [AdminController::class, 'storeSiswa'])->name('storeSiswa');
+        
+        Route::get('/manajemen-guru', [AdminController::class, 'manajGuru'])->name('manajemenGuru');
+        Route::get('/tambah-guru', [AdminController::class, 'tambahGuru'])->name('tambahGuru');
+        Route::post('/tambah-guru', [AdminController::class, 'storeGuru'])->name('storeGuru');
     });
 });
 
+
+
+####################################################################################################################
     // Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
     // Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     // Route::get('/manajemen siswa', [AdminController::class, 'manajSiswa'])->name('manajemenSiswa');

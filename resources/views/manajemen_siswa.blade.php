@@ -58,7 +58,7 @@
                     <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
                     <span>Manajemen Siswa</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
                     <span>Manajemen Guru</span>
                 </a>
@@ -74,10 +74,12 @@
                     <i class="fa-solid fa-money-bill-wave w-6 h-6 mr-3"></i>
                     <span>Keuangan</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-cog w-6 h-6 mr-3"></i>
-                    <span>Pengaturan</span>
-                </a>
+                @can('view-settings')
+                    <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                        <i class="fa-solid fa-cog w-6 h-6 mr-3"></i>
+                        <span>Pengaturan</span>
+                    </a>
+                @endcan
             </nav>
             <div class="absolute bottom-0 w-full p-6">
                 <form method="POST" action="{{ route('logout') }}">

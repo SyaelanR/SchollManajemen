@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Sistem Manajemen Sekolah</title>
+    <title>Manajemen Guru - Sistem Manajemen Sekolah</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
@@ -20,6 +20,7 @@
         /* Custom scrollbar for better aesthetics */
         ::-webkit-scrollbar {
             width: 8px;
+            height: 8px;
         }
         ::-webkit-scrollbar-track {
             background: #f1f1f1;
@@ -49,20 +50,18 @@
                 </a>
             </div>
             <nav class="mt-6">
-                <a href="#" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
+                <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
                     <span>Dashboard</span>
                 </a>
-                @can('view-admin')
                 <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
                     <span>Manajemen Siswa</span>
                 </a>
-                <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="#" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
                     <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
                     <span>Manajemen Guru</span>
                 </a>
-                @endcan
                 <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
                     <span>Jadwal Pelajaran</span>
@@ -75,12 +74,10 @@
                     <i class="fa-solid fa-money-bill-wave w-6 h-6 mr-3"></i>
                     <span>Keuangan</span>
                 </a>
-                @can('view-settings')
                 <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-cog w-6 h-6 mr-3"></i>
                     <span>Pengaturan</span>
                 </a>
-                @endcan
             </nav>
             <div class="absolute bottom-0 w-full p-6">
                 <form method="POST" action="{{ route('logout') }}">
@@ -106,7 +103,7 @@
                 <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
                     <i class="fa-solid fa-bars text-2xl"></i>
                 </button>
-                <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Selamat Datang, Admin!</h1>
+                <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Manajemen Data Guru</h1>
                 <div class="flex items-center space-x-4">
                     <button class="text-gray-500 hover:text-gray-700">
                         <i class="fa-solid fa-bell"></i>
@@ -120,78 +117,70 @@
 
             <!-- Page Content -->
             <main class="p-6 md:p-8 flex-1">
-                <!-- Welcome Banner -->
-                <div class="bg-indigo-600 rounded-xl shadow-lg p-8 mb-8 text-white flex flex-col md:flex-row items-center justify-between">
-                    <div>
-                        <h2 class="text-3xl font-bold mb-2">Dashboard Utama EduSys</h2>
-                        <p class="text-indigo-200">Ringkasan aktivitas sekolah Anda dalam satu tampilan.</p>
-                    </div>
-                    <a href="#" class="mt-4 md:mt-0 bg-white text-indigo-600 font-semibold py-2 px-5 rounded-lg hover:bg-indigo-100 transition duration-300">
-                        Lihat Laporan
-                    </a>
-                </div>
-
-                <!-- Stats Cards -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-xl shadow-md flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500">Total Siswa</p>
-                            <p class="text-3xl font-bold text-gray-800">1,250</p>
-                        </div>
-                        <div class="bg-indigo-100 text-indigo-600 p-4 rounded-full">
-                            <i class="fa-solid fa-user-graduate text-2xl"></i>
-                        </div>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-md flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500">Total Guru</p>
-                            <p class="text-3xl font-bold text-gray-800">75</p>
-                        </div>
-                        <div class="bg-teal-100 text-teal-600 p-4 rounded-full">
-                            <i class="fa-solid fa-chalkboard-user text-2xl"></i>
-                        </div>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-md flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500">Kelas</p>
-                            <p class="text-3xl font-bold text-gray-800">30</p>
-                        </div>
-                        <div class="bg-orange-100 text-orange-600 p-4 rounded-full">
-                            <i class="fa-solid fa-school-flag text-2xl"></i>
-                        </div>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-md flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500">Acara Mendatang</p>
-                            <p class="text-3xl font-bold text-gray-800">5</p>
-                        </div>
-                        <div class="bg-pink-100 text-pink-600 p-4 rounded-full">
-                            <i class="fa-solid fa-calendar-check text-2xl"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Main Section -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <!-- Students Overview -->
-                    <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
-                        <h3 class="text-xl font-semibold mb-4 text-gray-800">Ringkasan Kehadiran Siswa</h3>
-                        <p class="text-gray-500 mb-6">Data kehadiran untuk minggu ini.</p>
-                        <!-- Placeholder for a chart -->
-                        <div class="bg-gray-200 h-64 rounded-lg flex items-center justify-center">
-                            <p class="text-gray-500">Grafik Kehadiran Akan Ditampilkan Di Sini</p>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <!-- Action Bar -->
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                        <h2 class="text-2xl font-bold text-gray-800">Daftar Guru</h2>
+                        <div class="flex items-center gap-4 w-full md:w-auto">
+                            <div class="relative w-full md:w-64">
+                                <input type="text" placeholder="Cari guru..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            </div>
+                            <button onclick="window.location.href = '{{ route('tambahGuru') }}';" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap">
+                                <i class="fa-solid fa-plus mr-2"></i>
+                                Tambah Guru
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Quick Links -->
-                    <div class="bg-white p-6 rounded-xl shadow-md">
-                        <h3 class="text-xl font-semibold mb-4 text-gray-800">Akses Cepat</h3>
-                        <ul class="space-y-3">
-                            <li><a href="#" class="flex items-center p-3 bg-indigo-50 hover:bg-indigo-100 rounded-lg text-indigo-700 font-medium transition duration-300"><i class="fa-solid fa-plus-circle mr-3"></i> Tambah Siswa Baru</a></li>
-                            <li><a href="#" class="flex items-center p-3 bg-teal-50 hover:bg-teal-100 rounded-lg text-teal-700 font-medium transition duration-300"><i class="fa-solid fa-file-invoice mr-3"></i> Buat Tagihan SPP</a></li>
-                            <li><a href="#" class="flex items-center p-3 bg-orange-50 hover:bg-orange-100 rounded-lg text-orange-700 font-medium transition duration-300"><i class="fa-solid fa-bullhorn mr-3"></i> Kirim Pengumuman</a></li>
-                            <li><a href="#" class="flex items-center p-3 bg-pink-50 hover:bg-pink-100 rounded-lg text-pink-700 font-medium transition duration-300"><i class="fa-solid fa-calendar-plus mr-3"></i> Tambah Acara Sekolah</a></li>
-                        </ul>
+                    <!-- Students Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full min-w-[800px] text-left">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="p-3 font-semibold text-gray-600">NIP</th>
+                                    <th class="p-3 font-semibold text-gray-600">Nama</th>
+                                    <th class="p-3 font-semibold text-gray-600">Mapel</th>
+                                    <th class="p-3 font-semibold text-gray-600">Password</th>
+                                    <th class="p-3 font-semibold text-gray-600">Detail</th>
+                                    <th class="p-3 font-semibold text-gray-600 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                @forelse ($teachers as $teacher)
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-3 text-gray-700">{{ $teacher->nisn_nip }}</td>
+                                    <td class="p-3 text-gray-800 font-medium">{{ $teacher->name }}</td>
+                                    <td class="p-3 text-gray-700">{{ $teacher->kelas->nama_kelas ?? '-' }}</td>
+                                    <td class="p-3 text-gray-700">{{ $teacher->jenis_kelamin }}</td>
+                                    <td class="p-3">
+                                        <a href="#" class="bg-indigo-100 text-indigo-700 text-sm font-medium py-1.5 px-3 rounded-lg hover:bg-indigo-200 transition duration-300 whitespace-nowrap">Lihat Detail</a>
+                                    </td>
+                                    <td class="p-3 text-center">
+                                        <div class="flex justify-center space-x-3">
+                                            <a href="#" class="text-blue-600 hover:text-blue-800" title="Edit"><i class="fa-solid fa-pencil"></i></a>
+                                            <form action="#" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus siswa ini?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-600 hover:text-red-800" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="6" class="p-4 text-center text-gray-500">
+                                        Tidak ada data guru untuk ditampilkan.
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="mt-6">
+                        {{ $teachers->links() }}
                     </div>
                 </div>
             </main>
