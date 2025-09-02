@@ -4,21 +4,21 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\EkstraController;
 
-// Dashboard
+// ===================== Dashboard =====================
 Route::get('/', function () {
-    return view('dashboard');
+    return view('dashboard'); // Halaman utama kosong/dashboard
 })->name('dashboard');
 
-// Manajemen Siswa
+// ===================== Manajemen Siswa =====================
 Route::get('/manajemen-siswa', function () {
     return view('manajemenSiswa');
 })->name('manajemenSiswa');
 
 // ===================== Ekstrakurikuler =====================
-// Route halaman index
+// Halaman index ekstrakurikuler
 Route::get('/ekstra', [EkstraController::class, 'index'])->name('ekstra.index');
 
-// Store tambah ekstrakurikuler baru
+// Tambah ekstrakurikuler baru
 Route::post('/ekstra/store', [EkstraController::class, 'store'])->name('ekstra.store');
 
 // Update ekstrakurikuler
