@@ -35,4 +35,9 @@ class pelanggaranController extends Controller
         // Kembali ke halaman sebelumnya dengan pesan sukses
         return back()->with('success', 'Pelanggaran berhasil ditambahkan!');
     }
+
+    public function daftarPelanggar()
+    {
+        return view('pelanggaran.daftar-pelanggar');
+    }
 }
