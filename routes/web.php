@@ -55,15 +55,13 @@ Route::middleware('auth')->group(function () {
     // Route::post('/tambah-guru', [AdminController::class, 'storeGuru'])->name('storeGuru');
 
 
-<?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\pelanggaranController;
 use App\Http\Controllers\AbsensiController;
 
 // Dashboard (halaman utama)
-Route::get('/', [KelasController::class, 'index'])->name('dashboard');
+// Route::get('/', [KelasController::class, 'index'])->name('dashboard');
 
 // Jadwal
 Route::get('/jadwal', [KelasController::class, 'jadwal'])->name('jadwal');
