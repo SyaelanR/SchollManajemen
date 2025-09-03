@@ -51,7 +51,7 @@
                 </a>
             </div>
             <nav class="mt-6">
-                <a href="#" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
+                <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
                     <i class="fa-solid fa-tachometer-alt mr-3"></i>
                     <span>Dashboard</span>
                 </a>
@@ -70,7 +70,7 @@
                     <i class="fa-solid fa-solid fa-door-closed mr-3"></i>
                     <span>Manajemen Kelas</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="{{ route('jadwal') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-calendar-alt mr-3"></i>
                     <span>Jadwal Pelajaran</span>
                 </a>
@@ -97,8 +97,8 @@
                     <i class="fa-solid fa-puzzle-piece mr-3"></i>
                     <span>Ekstrakulikuler</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-circle-exclamation mr-3"></i>
+                <a href="{{ route('pelanggaran.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                    <i class="fa-solid fa-triangle-exclamation mr-3"></i>
                     <span>Pelanggaran Siswa</span>
                 </a>
                 @endcan

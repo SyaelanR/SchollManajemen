@@ -54,16 +54,21 @@ Route::middleware('auth')->group(function () {
     // Route::get('/tambah-guru', [AdminController::class, 'tambahGuru'])->name('tambahGuru');
     // Route::post('/tambah-guru', [AdminController::class, 'storeGuru'])->name('storeGuru');
 
+    // Route::get('/manajemen-siswa', [AdminController::class, 'manajSiswa'])->name('manajemenSiswa');
+    // Route::get('/tambah-siswa', [AdminController::class, 'tambahSiswa'])->name('tambahSiswa');
+    // Route::post('/tambah-siswa', [AdminController::class, 'storeSiswa'])->name('storeSiswa');
 
-<?php
+    // Route::get('/manajemen-klien', [AdminDevController::class, 'manajKlien'])->name('manajemenKlien');
+    // Route::get('/tambah-admin-klien', [AdminDevController::class, 'tambahKlien'])->name('tambahKlien');
+    // Route::post('/tambah-admin-klien', [AdminDevController::class, 'storeAdmin'])->name('storeAdmin');
 
-use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\pelanggaranController;
 use App\Http\Controllers\AbsensiController;
 
 // Dashboard (halaman utama)
-Route::get('/', [KelasController::class, 'index'])->name('dashboard');
+// Route::get('/', [KelasController::class, 'index'])->name('dashboard');
 
 // Jadwal
 Route::get('/jadwal', [KelasController::class, 'jadwal'])->name('jadwal');
