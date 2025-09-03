@@ -21,6 +21,13 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'nisn_nip',
+        'mapel',
+        'role',
+        'id_kelas',
+        'angkatan',
+        'jenis_kelamin',
+        'username',
     ];
 
     /**
@@ -42,7 +49,8 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password' => 'encrypted',
+            'nisn_nip' => 'encrypted',
         ];
     }
 }
