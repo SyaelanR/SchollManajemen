@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Sistem Manajemen Sekolah</title>
+    <title>Daftar Kelas - Sistem Manajemen Sekolah</title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -45,9 +45,13 @@
             </a>
         </div>
         <nav class="mt-6 space-y-2 px-4">
-            <a href="#" class="flex items-center px-4 py-3 text-gray-700 bg-gray-200 rounded-lg font-semibold shadow-sm">
+            <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">
                 <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
                 <span>Dashboard</span>
+            </a>
+            <a href="#" class="flex items-center px-4 py-3 text-gray-700 bg-gray-200 rounded-lg font-semibold shadow-sm">
+                <i class="fa-solid fa-user-check w-6 h-6 mr-3"></i>
+                <span>Input Absensi</span>
             </a>
             <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">
                 <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
@@ -90,42 +94,61 @@
                 <button id="mobile-menu-button" class="text-gray-600 focus:outline-none">
                     <i class="fa-solid fa-bars text-xl"></i>
                 </button>
-                <h1 class="text-xl font-bold text-gray-800">Dashboard</h1>
+                <h1 class="text-xl font-bold text-gray-800">Daftar Kelas</h1>
             </div>
         </header>
 
         <!-- Content Area -->
         <div class="p-6 md:p-8">
-            <h1 class="hidden lg:block text-3xl font-bold text-gray-800 mb-6">Dashboard</h1>
-
-            <!-- Statistik Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="bg-white p-6 rounded-2xl shadow-md flex flex-col items-center text-center">
-                    <i class="fa-solid fa-user-graduate text-indigo-500 text-3xl mb-2"></i>
-                    <h2 class="text-lg font-semibold text-gray-700">Siswa</h2>
-                    <p class="text-3xl font-bold text-gray-800">320</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow-md flex flex-col items-center text-center">
-                    <i class="fa-solid fa-chalkboard-user text-green-500 text-3xl mb-2"></i>
-                    <h2 class="text-lg font-semibold text-gray-700">Guru</h2>
-                    <p class="text-3xl font-bold text-gray-800">45</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow-md flex flex-col items-center text-center">
-                    <i class="fa-solid fa-calendar-alt text-orange-500 text-3xl mb-2"></i>
-                    <h2 class="text-lg font-semibold text-gray-700">Kelas Aktif</h2>
-                    <p class="text-3xl font-bold text-gray-800">18</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow-md flex flex-col items-center text-center">
-                    <i class="fa-solid fa-money-bill-wave text-red-500 text-3xl mb-2"></i>
-                    <h2 class="text-lg font-semibold text-gray-700">Pendapatan</h2>
-                    <p class="text-3xl font-bold text-gray-800">Rp 125 jt</p>
-                </div>
-            </div>
-
-            <!-- Bagian Tambahan -->
-            <div class="mt-10 bg-white p-6 rounded-2xl shadow-md">
-                <h2 class="text-xl font-bold text-gray-700 mb-4">Ringkasan</h2>
-                <p class="text-gray-600 leading-relaxed">Selamat datang di sistem manajemen sekolah. Gunakan menu di sebelah kiri untuk mengakses fitur-fitur seperti manajemen siswa, guru, jadwal, dan lainnya. Dasbor ini memberikan gambaran umum data penting secara sekilas.</p>
+            <h1 class="hidden lg:block text-3xl font-bold text-gray-800 mb-6">Pilih Kelas untuk Absensi</h1>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Kelas 10A -->
+                <a href="absen_kelas_10a.html" class="bg-white p-6 rounded-2xl shadow-md flex flex-col items-center text-center hover:shadow-xl transition-shadow duration-300">
+                    <div class="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-3xl mb-4">
+                        <i class="fa-solid fa-building-columns"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Kelas 10A</h2>
+                    <p class="text-sm text-gray-500 mt-2">
+                        <i class="fa-solid fa-user-group mr-1"></i>
+                        30 Siswa
+                    </p>
+                </a>
+                
+                <!-- Kelas 10B -->
+                <a href="#" class="bg-white p-6 rounded-2xl shadow-md flex flex-col items-center text-center hover:shadow-xl transition-shadow duration-300">
+                    <div class="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-3xl mb-4">
+                        <i class="fa-solid fa-building-columns"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Kelas 10B</h2>
+                    <p class="text-sm text-gray-500 mt-2">
+                        <i class="fa-solid fa-user-group mr-1"></i>
+                        28 Siswa
+                    </p>
+                </a>
+                
+                <!-- Tambahkan kartu kelas lainnya di sini... -->
+                <a href="#" class="bg-white p-6 rounded-2xl shadow-md flex flex-col items-center text-center hover:shadow-xl transition-shadow duration-300">
+                    <div class="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-3xl mb-4">
+                        <i class="fa-solid fa-building-columns"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Kelas 11A</h2>
+                    <p class="text-sm text-gray-500 mt-2">
+                        <i class="fa-solid fa-user-group mr-1"></i>
+                        32 Siswa
+                    </p>
+                </a>
+                
+                <a href="#" class="bg-white p-6 rounded-2xl shadow-md flex flex-col items-center text-center hover:shadow-xl transition-shadow duration-300">
+                    <div class="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-3xl mb-4">
+                        <i class="fa-solid fa-building-columns"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Kelas 11B</h2>
+                    <p class="text-sm text-gray-500 mt-2">
+                        <i class="fa-solid fa-user-group mr-1"></i>
+                        29 Siswa
+                    </p>
+                </a>
             </div>
         </div>
     </main>
