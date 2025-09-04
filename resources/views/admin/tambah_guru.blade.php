@@ -79,7 +79,7 @@
                     <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
                     <span>Manajemen Guru</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="{{ route('jadwal') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
                     <span>Jadwal Pelajaran</span>
                 </a>

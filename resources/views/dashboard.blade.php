@@ -74,6 +74,10 @@
                     <i class="fa-solid fa-calendar-alt mr-3"></i>
                     <span>Jadwal Pelajaran</span>
                 </a>
+                <a href="{{ route('pelanggaran.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                    <i class="fa-solid fa-triangle-exclamation mr-3"></i>
+                    <span>Pelanggaran Siswa</span>
+                </a>
                 <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-money-bill-wave mr-3"></i>
                     <span>Keuangan</span>

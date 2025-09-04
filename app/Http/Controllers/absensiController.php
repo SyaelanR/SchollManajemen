@@ -26,7 +26,7 @@ class absensiController extends Controller
             (object)['id' => 6, 'nama_kelas' => 'Kelas 12B'],
         ];
 
-        return view('absensi.index', compact('kelas'));
+        return view('absensi', compact('kelas'));
     }
 
     /**

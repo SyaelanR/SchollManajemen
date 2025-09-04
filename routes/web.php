@@ -83,7 +83,7 @@ Route::get('/kelas12B', [KelasController::class, 'kelas12B'])->name('kelas12B');
 
 // Rute untuk Absensi
 Route::prefix('absensi')->group(function () {
-    Route::get('/absensi', [absensiController::class, 'index'])->name('absensi.index');
+    Route::get('/', [absensiController::class, 'index'])->name('absensi.index');
     Route::get('/{id}', [absensiController::class, 'show'])->name('absensi.show');
     Route::post('/store', [absensiController::class, 'store'])->name('absensi.store');
 });

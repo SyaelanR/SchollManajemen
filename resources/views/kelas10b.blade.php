@@ -49,40 +49,89 @@
                 </a>
             </div>
             <nav class="mt-6">
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
+                <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold   ">
+                    <i class="fa-solid fa-tachometer-alt mr-3"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
+
+
+                @can('view-admin')
+                <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                    <i class="fa-solid fa-user-graduate mr-3"></i>
                     <span>Manajemen Siswa</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
+                <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                    <i class="fa-solid fa-chalkboard-user mr-3"></i>
                     <span>Manajemen Guru</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                    <i class="fa-solid fa-solid fa-door-closed mr-3"></i>
+                    <span>Manajemen Kelas</span>
+                </a>
+                <a href="{{ route('jadwal') }}" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
                     <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
                     <span>Jadwal Pelajaran</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-book w-6 h-6 mr-3"></i>
-                    <span>Mata Pelajaran</span>
                 </a>
                 <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-money-bill-wave w-6 h-6 mr-3"></i>
+                    <i class="fa-solid fa-money-bill-wave mr-3"></i>
                     <span>Keuangan</span>
                 </a>
                 <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-cog w-6 h-6 mr-3"></i>
-                    <span>Pengaturan</span>
+                    <i class="fa-solid fa-layer-group mr-3"></i>
+                    <span>Raport</span>
                 </a>
+                @endcan
+
+                @can('view-guru')
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                    <i class="fa-solid fa-pen mr-3"></i>
+                    <span>Input Nilai</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                    <i class="fa-solid fa-list-check mr-3"></i>
+                    <span>Input Absensi</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                    <i class="fa-solid fa-puzzle-piece mr-3"></i>
+                    <span>Ekstrakulikuler</span>
+                </a>
+                <a href="{{ route('pelanggaran.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                    <i class="fa-solid fa-triangle-exclamation mr-3"></i>
+                    <span>Pelanggaran Siswa</span>
+                </a>
+                @endcan
+
+                @can('view-siswa')
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                    <i class="fa-solid fa-pen mr-3"></i>
+                    <span>Lihat Nilai</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                    <i class="fa-solid fa-list-check mr-3"></i>
+                    <span>Lihat Absensi</span>
+                </a>
+                @endcan
+
+                @can('view-adminDev')
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                    <i class="fa-solid fa-users w-6 h-6 mr-3"></i>
+                    <span>Manajemen Klien</span>
+                </a>
+                @endcan
+
+
             </nav>
             <div class="absolute bottom-0 w-full p-6">
-                 <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg">
-                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
-                    <span>Logout</span>
-                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <a href="{{ route('logout') }}"
+                       onclick="event.preventDefault(); this.closest('form').submit();"
+                       class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
+                        <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
+                        <span>Logout</span>
+                    </a>
+                </form>
             </div>
         </aside>
 
@@ -111,34 +160,22 @@
 
             <!-- Page Content -->
             <main class="p-6 md:p-8 flex-1">
-                <!-- Main Title Block (unchanged) -->
+                <!-- Main Title Block -->
                 <div class="bg-indigo-600 rounded-xl shadow-lg p-8 mb-8 text-white flex flex-col md:flex-row items-center justify-between">
                     <div>
                         <h2 class="text-3xl font-bold mb-2">Jadwal Pelajaran Kelas</h2>
                         <p class="text-indigo-200">Lihat dan kelola jadwal pelajaran untuk setiap kelas.</p>
                     </div>
-                </div>
-                
-                <!-- Class Selection & Back Button -->
-                <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between">
-                    <div class="flex-1 mb-4 md:mb-0">
-                        <label for="class-select" class="block text-gray-700 font-semibold mb-2">Pilih Kelas:</label>
-                        <select id="class-select" class="w-full md:w-1/2 lg:w-1/3 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200">
-                            
-                            <option value="10B">Kelas 10B</option>
-                            
-                        </select>
-                    </div>
-                    <button onclick="window.history.back()" class="flex items-center justify-center space-x-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition duration-200">
-                        <i class="fa-solid fa-arrow-left"></i>
+                    <button onclick="window.history.back()" class="flex items-center justify-center space-x-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition duration-200 mt-4 md:mt-0">
+                        <i class="fa-solid fa-arrow-left text-xl"></i>
                         <span>Kembali</span>
                     </button>
                 </div>
-
-                <!-- Schedule Table Container - Revised to match the top block's design -->
+                
+                <!-- Schedule Table Container -->
                 <div id="schedule-container" class="bg-indigo-50 p-8 rounded-xl shadow-lg text-gray-900">
                     <!-- Jadwal will be loaded here by JavaScript -->
-                    <h3 id="schedule-title" class="text-xl font-semibold mb-4 text-indigo-800">Jadwal Kelas 10A</h3>
+                    <h3 id="schedule-title" class="text-xl font-semibold mb-4 text-indigo-800">Jadwal Kelas 10B</h3>
                     <div id="schedule-placeholder">
                         <div class="flex justify-center items-center h-48 text-indigo-400">
                            <i class="fa-solid fa-spinner fa-spin-pulse text-4xl"></i>
@@ -153,56 +190,18 @@
         const menuButton = document.getElementById('menu-button');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
-        const classSelect = document.getElementById('class-select');
-        const scheduleContainer = document.getElementById('schedule-container');
-        const scheduleTitle = document.getElementById('schedule-title');
         const schedulePlaceholder = document.getElementById('schedule-placeholder');
 
         const daysOfWeek = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
 
         // Data jadwal dalam format yang mudah dikelola
         const schedules = {
-            '10A': [
-                { time: '07:30 - 08:30', subjects: ['Matematika', 'Bahasa Inggris', 'Fisika', 'Biologi', 'Pendidikan Agama'] },
-                { time: '08:30 - 09:30', subjects: ['Bahasa Indonesia', 'Sejarah', 'Matematika', 'Kimia', 'Pendidikan Jasmani'] },
-                { time: 'Istirahat', subjects: ['Istirahat', 'Istirahat', 'Istirahat', 'Istirahat', 'Istirahat'] },
-                { time: '10:00 - 11:00', subjects: ['Biologi', 'Seni Budaya', 'Bahasa Indonesia', 'Matematika', 'Sosiologi'] },
-                { time: '11:00 - 12:00', subjects: ['Kimia', 'Geografi', 'Bahasa Inggris', 'Sejarah', 'Bahasa Jerman'] },
-            ],
             '10B': [
                 { time: '07:30 - 08:30', subjects: ['Bahasa Inggris', 'Matematika', 'Biologi', 'Kimia', 'Pendidikan Jasmani'] },
                 { time: '08:30 - 09:30', subjects: ['Fisika', 'Bahasa Indonesia', 'Sosiologi', 'Bahasa Inggris', 'Pendidikan Agama'] },
                 { time: 'Istirahat', subjects: ['Istirahat', 'Istirahat', 'Istirahat', 'Istirahat', 'Istirahat'] },
                 { time: '10:00 - 11:00', subjects: ['Geografi', 'Kimia', 'Sejarah', 'Fisika', 'Matematika'] },
                 { time: '11:00 - 12:00', subjects: ['Bahasa Indonesia', 'Pendidikan Agama', 'Seni Budaya', 'Geografi', 'Bahasa Perancis'] },
-            ],
-            '11A': [
-                { time: '07:30 - 08:30', subjects: ['Matematika Peminatan', 'Kimia', 'Fisika', 'Biologi', 'Pendidikan Agama'] },
-                { time: '08:30 - 09:30', subjects: ['Bahasa Indonesia', 'Ekonomi', 'Sejarah', 'Fisika', 'Matematika Wajib'] },
-                { time: 'Istirahat', subjects: ['Istirahat', 'Istirahat', 'Istirahat', 'Istirahat', 'Istirahat'] },
-                { time: '10:00 - 11:00', subjects: ['Biologi', 'Sosiologi', 'Matematika Peminatan', 'Bahasa Inggris', 'Pendidikan Jasmani'] },
-                { time: '11:00 - 12:00', subjects: ['Bahasa Inggris', 'Kimia', 'Bahasa Jerman', 'Seni Budaya', 'Bahasa Indonesia'] },
-            ],
-            '11B': [
-                { time: '07:30 - 08:30', subjects: ['Fisika', 'Bahasa Inggris', 'Biologi', 'Matematika Wajib', 'Pendidikan Jasmani'] },
-                { time: '08:30 - 09:30', subjects: ['Kimia', 'Ekonomi', 'Bahasa Indonesia', 'Biologi', 'Sejarah'] },
-                { time: 'Istirahat', subjects: ['Istirahat', 'Istirahat', 'Istirahat', 'Istirahat', 'Istirahat'] },
-                { time: '10:00 - 11:00', subjects: ['Matematika Wajib', 'Sejarah', 'Sosiologi', 'Kimia', 'Seni Budaya'] },
-                { time: '11:00 - 12:00', subjects: ['Bahasa Indonesia', 'Fisika', 'Bahasa Inggris', 'Pendidikan Agama', 'Bahasa Spanyol'] },
-            ],
-            '12A': [
-                { time: '07:30 - 08:30', subjects: ['Kimia', 'Biologi', 'Matematika Peminatan', 'Bahasa Inggris', 'Pendidikan Agama'] },
-                { time: '08:30 - 09:30', subjects: ['Fisika', 'Matematika Wajib', 'Bahasa Indonesia', 'Kimia', 'Sejarah'] },
-                { time: 'Istirahat', subjects: ['Istirahat', 'Istirahat', 'Istirahat', 'Istirahat', 'Istirahat'] },
-                { time: '10:00 - 11:00', subjects: ['Bahasa Indonesia', 'Sosiologi', 'Ekonomi', 'Bahasa Inggris', 'Seni Budaya'] },
-                { time: '11:00 - 12:00', subjects: ['Bahasa Inggris', 'Pendidikan Jasmani', 'Fisika', 'Kimia', 'Geografi'] },
-            ],
-            '12B': [
-                { time: '07:30 - 08:30', subjects: ['Matematika Wajib', 'Bahasa Indonesia', 'Fisika', 'Biologi', 'Sejarah'] },
-                { time: '08:30 - 09:30', subjects: ['Bahasa Inggris', 'Kimia', 'Pendidikan Agama', 'Matematika Wajib', 'Geografi'] },
-                { time: 'Istirahat', subjects: ['Istirahat', 'Istirahat', 'Istirahat', 'Istirahat', 'Istirahat'] },
-                { time: '10:00 - 11:00', subjects: ['Biologi', 'Fisika', 'Bahasa Inggris', 'Sosiologi', 'Ekonomi'] },
-                { time: '11:00 - 12:00', subjects: ['Seni Budaya', 'Kimia', 'Bahasa Indonesia', 'Pendidikan Jasmani', 'Pendidikan Agama'] },
             ]
         };
 
@@ -258,23 +257,18 @@
             overlay.classList.toggle('hidden');
         };
 
-        // Function to load the schedule based on selected class
-        const loadSchedule = () => {
-            const selectedClass = classSelect.value;
-            scheduleTitle.textContent = `Jadwal Kelas ${selectedClass}`;
-            const selectedScheduleData = schedules[selectedClass];
+        // Event listeners
+        menuButton.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
+
+        // Initial load
+        window.onload = () => {
+            // Langsung muat jadwal untuk Kelas 10A
+            const selectedScheduleData = schedules['10B'];
             if (selectedScheduleData) {
                 schedulePlaceholder.innerHTML = generateScheduleHTML(selectedScheduleData);
             }
         };
-
-        // Event listeners
-        menuButton.addEventListener('click', toggleSidebar);
-        overlay.addEventListener('click', toggleSidebar);
-        classSelect.addEventListener('change', loadSchedule);
-
-        // Initial load
-        window.onload = loadSchedule;
     </script>
 
 </body>

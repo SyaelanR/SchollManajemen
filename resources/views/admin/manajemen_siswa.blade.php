@@ -43,54 +43,52 @@
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
         <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
-            <div class="p-6">
+            <div class="p-6 border-b border-gray-200">
                 <a href="#" class="flex items-center space-x-3">
                     <i class="fa-solid fa-school text-3xl text-indigo-600"></i>
                     <span class="text-2xl font-bold text-gray-800">EduSys</span>
                 </a>
             </div>
             <nav class="mt-6">
-                <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
+                <!-- Navigation links, using dynamic styling for active state -->
+                <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                    <i class="fa-solid fa-tachometer-alt mr-3 w-5 h-5"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
-                    <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
+                <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
+                    <i class="fa-solid fa-user-graduate mr-3 w-5 h-5"></i>
                     <span>Manajemen Siswa</span>
                 </a>
-                <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
+                <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                    <i class="fa-solid fa-chalkboard-user mr-3 w-5 h-5"></i>
                     <span>Manajemen Guru</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                    <i class="fa-solid fa-door-closed mr-3 w-5 h-5"></i>
+                    <span>Manajemen Kelas</span>
+                </a>
+                <a href="{{ route('jadwal') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                    <i class="fa-solid fa-calendar-alt mr-3 w-5 h-5"></i>
                     <span>Jadwal Pelajaran</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-book w-6 h-6 mr-3"></i>
-                    <span>Mata Pelajaran</span>
+                <a href="{{ route('pelanggaran.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                    <i class="fa-solid fa-triangle-exclamation mr-3 w-5 h-5"></i>
+                    <span>Pelanggaran Siswa</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-money-bill-wave w-6 h-6 mr-3"></i>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                    <i class="fa-solid fa-money-bill-wave mr-3 w-5 h-5"></i>
                     <span>Keuangan</span>
                 </a>
-                @can('view-settings')
-                    <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                        <i class="fa-solid fa-cog w-6 h-6 mr-3"></i>
-                        <span>Pengaturan</span>
-                    </a>
-                @endcan
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                    <i class="fa-solid fa-layer-group mr-3 w-5 h-5"></i>
+                    <span>Raport</span>
+                </a>
             </nav>
             <div class="absolute bottom-0 w-full p-6">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <a href="{{ route('logout') }}"
-                       onclick="event.preventDefault(); this.closest('form').submit();"
-                       class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
-                        <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
-                        <span>Logout</span>
-                    </a>
-                </form>
+                <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg w-full transition duration-200">
+                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
+                    <span>Logout</span>
+                </a>
             </div>
         </aside>
 
