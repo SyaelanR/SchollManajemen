@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Angkatan;
+use App\Models\Kelas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -118,5 +120,60 @@ class AdminController extends Controller
         }
 
         return response()->json(['message' => 'Data semua guru berhasil disimpan!'], 200);
+    }
+
+    public function manajAngkatan()
+    {
+        // Mengambil semua data dari tabel angkatan, diurutkan dari yang terbaru
+        $angkatans = Angkatan::latest()->get();
+        return view('admin.manajemen_angkatan', ['angkatans' => $angkatans]);
+        // return view('admin.manajemen_angkatan');
+    }
+
+    public function storeAngkatan(Request $request)
+    {
+        // Validasi input dari form
+        $request->validate([
+            // Validasi untuk satu input 'angkatan' dengan aturan unik di tabel 'angkatans'
+            'angkatan' => 'required|string|max:255|unique:angkatans,angkatan',
+        ], [
+            'angkatan.required' => 'Tahun ajaran tidak boleh kosong.',
+            'angkatan.unique' => 'Tahun ajaran ini sudah ada.',
+        ]);
+
+        // Buat entri baru di tabel angkatan
+        Angkatan::create([
+            'angkatan' => $request->angkatan,
+        ]);
+
+        // Arahkan kembali ke halaman manajemen angkatan dengan pesan sukses
+        return redirect()->route('manajemenAngkatan')->with('success', 'Angkatan berhasil ditambahkan!');
+    }
+
+    public function manajKelas()
+    {
+        $angkatans = Angkatan::latest()->get();
+
+        $kelas = Kelas::latest()->get();
+        return view('admin.manajemen_kelas', ['angkatans' => $angkatans, 'kelasList' => $kelas]);
+    }
+
+    public function storeKelas(Request $request)
+    {
+        $request->validate([
+            'nama_kelas' => 'required|string|max:255',
+            'id_angkatan' => 'required|integer'
+        ], [
+            'nama_kelas.required' => 'Nama kelas tidak boleh kosong.',
+            'angkatan.required' => 'Tahun ajaran tidak boleh kosong'
+        ]);
+
+        Kelas::create([
+            'nama_kelas' => $request->nama_kelas,
+            'id_angkatan' => $request->id_angkatan
+        ]);
+
+        return redirect()->route('manajemenKelas')->with('success', 'Kelas berhasil ditambahkan!');
+
     }
 }

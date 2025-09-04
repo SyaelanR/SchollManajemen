@@ -15,9 +15,41 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        User::create([
+            'nisn_nip' => '220103190',
+            'name' => 'SyaelanR',
+            'email' => 'syaelanr@gmail.com',
+            'password' => ('password'),
+            'username' => 'syaelanr',
+            'role' => 'adminDev'
+        ]);
+
+        User::create([
+            'nisn_nip' => '220103191',
+            'name' => 'yanto',
+            'email' => 'yanto@gmail.com',
+            'password' => 'password',
+            'username' => 'yanto',
+            'role' => 'admin'
+        ]);
+
+        User::create([
+            'nisn_nip' => '220103192',
+            'name' => 'jarwo',
+            'email' => 'jarwo@gmail.com',
+            'password' => 'password',
+            'username' => 'jarwo',
+            'mapel' => 'Matematika',
+            'role' => 'guru'
+        ]);
+
+        User::create([
+            'nisn_nip' => '220103193',
+            'name' => 'yono',
+            'email' => 'yono@gmail.com',
+            'password' => 'password',
+            'username' => 'yono',
+            'role' => 'siswa'
         ]);
     }
 }
