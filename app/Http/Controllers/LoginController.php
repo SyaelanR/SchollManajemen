@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
+use Carbon\Carbon;
 
 class LoginController extends Controller
 {
@@ -15,6 +17,15 @@ class LoginController extends Controller
      *
      * @return \Illuminate\View\View
      */
+
+    public function dashboard(Request $request)
+    {
+        $username = $request->cookie('name');
+        $time = Carbon::now()->isoFormat('dddd, D MMMM YYYY');
+        // return view('admin.add_users'); //gunakan titik untuk masuk kedalam folder
+        return view('dashboard', ['username' => $username, 'time' => $time]);
+    }
+
     public function create()
     {
         // Mengarahkan ke view yang berisi form login
@@ -50,9 +61,23 @@ class LoginController extends Controller
             // (Bagian ini menangani session dan redirect, sesuai standar Laravel)
             Auth::login($user, $request->boolean('remember'));
             $request->session()->regenerate();
-            return redirect()->intended('dashboard');
+
+            // Membuat cookie dengan data pengguna
+            $cookieLifetime = 120; // 2 jam dalam menit
+            $response = redirect()->intended('dashboard');
+
+            // Menambahkan cookie ke response
+            $response->withCookie(cookie('name', $user->name, $cookieLifetime));
+            $response->withCookie(cookie('username', $user->username, $cookieLifetime));
+            $response->withCookie(cookie('nisn_nip', $user->nisn_nip, $cookieLifetime));
+            $response->withCookie(cookie('role', $user->role, $cookieLifetime));
+            $response->withCookie(cookie('mapel', $user->mapel, $cookieLifetime));
+            $response->withCookie(cookie('id_kelas', $user->id_kelas, $cookieLifetime));
+            $response->withCookie(cookie('angkatan', $user->id_angkatan, $cookieLifetime)); // Menggunakan id_angkatan sesuai migrasi
+
+            return $response;
         }
- 
+
         // Langkah 5 (Gagal): Jika user tidak ada atau password salah,
         // kembali ke halaman login dengan pesan error.
         throw ValidationException::withMessages([

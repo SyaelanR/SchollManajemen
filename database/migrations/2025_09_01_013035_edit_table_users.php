@@ -17,11 +17,12 @@ return new class extends Migration
             $table->string('mapel')->nullable()->after('nisn_nip');
             $table->string('role')->default('siswa')->after('mapel');
             $table->unsignedBigInteger('id_kelas')->nullable()->after('role');
-            $table->string('angkatan')->nullable()->after('id_kelas');
-            $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan'])->nullable()->after('angkatan');
+            $table->unsignedBigInteger('id_angkatan')->nullable()->after('id_kelas');
+            $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan'])->nullable()->after('id_angkatan');
             $table->string('username')->unique()->after('jenis_kelamin');
 
             $table->foreign('id_kelas')->references('id_kelas')->on('kelas')->onDelete('set null');
+            $table->foreign('id_angkatan')->references('id_angkatan')->on('angkatans')->onDelete('set null');
 
 
             // Tips: Jika Anda sudah memiliki tabel 'kelas', Anda bisa menambahkan foreign key constraint.

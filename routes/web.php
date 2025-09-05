@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AdminDevController;
+use Illuminate\Auth\Events\Login;
 
 // Rute Autentikasi Kustom
 // Menggunakan middleware 'guest' agar pengguna yang sudah login tidak bisa mengakses halaman login lagi.
@@ -12,45 +13,47 @@ Route::middleware('guest')->group(function () {
     Route::post('/', [LoginController::class, 'store']);
 });
 
+
 // Rute yang memerlukan autentikasi (hanya bisa diakses setelah login)
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [LoginController::class, 'dashboard'])->name('dashboard');
 
-    // Grup rute ini sekarang hanya bisa diakses oleh pengguna dengan role 'admin'.
-Route::middleware('role:admin')->group(function () {
+        // Grup rute ini sekarang hanya bisa diakses oleh pengguna dengan role 'admin'.
+    Route::middleware('role:admin')->group(function () {
+        Route::prefix('manajemen-siswa')->group(function () {
+            Route::get('/', [AdminController::class, 'manajSiswa'])->name('manajemenSiswa');
+            Route::get('/tambah-siswa', [AdminController::class, 'tambahSiswa'])->name('tambahSiswa');
+            Route::post('/tambah-siswa', [AdminController::class, 'storeSiswa'])->name('storeSiswa');
+        });
+        
+        Route::prefix('manajemen-guru')->group(function () {
+            Route::get('/', [AdminController::class, 'manajGuru'])->name('manajemenGuru');
+            Route::get('/tambah-guru', [AdminController::class, 'tambahGuru'])->name('tambahGuru');
+            Route::post('/tambah-guru', [AdminController::class, 'storeGuru'])->name('storeGuru');
+        });
 
-    Route::prefix('manajemen-siswa')->group(function () {
-        Route::get('/', [AdminController::class, 'manajSiswa'])->name('manajemenSiswa');
-        Route::get('/tambah-siswa', [AdminController::class, 'tambahSiswa'])->name('tambahSiswa');
-        Route::post('/tambah-siswa', [AdminController::class, 'storeSiswa'])->name('storeSiswa');
+        Route::prefix('manajemen-angkatan')->group(function () {
+            Route::get('/', [AdminController::class, 'manajAngkatan'])->name('manajemenAngkatan');
+            Route::post('/', [AdminController::class, 'storeAngkatan'])->name('storeAngkatan');
+        });
+
+        Route::prefix('manajemen-kelas')->group(function () {
+            Route::get('/', [AdminController::class, 'manajKelas'])->name('manajemenKelas');
+            Route::post('/', [AdminController::class, 'storeKelas'])->name('storeKelas');
+            Route::post('/lihat-kelas', [AdminController::class, 'lihatKelas'])->name('lihatKelas');
+            Route::get('/lihat-kelas', [AdminController::class, 'lihatKelasD'])->name('lihatKelasD');
+        });
+
     });
-    
-    Route::prefix('manajemen-guru')->group(function () {
-        Route::get('/', [AdminController::class, 'manajGuru'])->name('manajemenGuru');
-        Route::get('/tambah-guru', [AdminController::class, 'tambahGuru'])->name('tambahGuru');
-        Route::post('/tambah-guru', [AdminController::class, 'storeGuru'])->name('storeGuru');
-    });
 
-    Route::prefix('manajemen-angkatan')->group(function () {
-        Route::get('/', [AdminController::class, 'manajAngkatan'])->name('manajemenAngkatan');
-        Route::post('/', [AdminController::class, 'storeAngkatan'])->name('storeAngkatan');
-    });
+        
 
-    Route::prefix('manajemen-kelas')->group(function () {
-        Route::get('/', [AdminController::class, 'manajKelas'])->name('manajemenKelas');
-        Route::post('/', [AdminController::class, 'storeKelas'])->name('storeKelas');
-    });
-
-});
-
-    
-
-    // Grup rute ini sekarang hanya bisa diakses oleh pengguna dengan role 'adminDev'.
-Route::middleware('role:adminDev')->group(function () {
-    Route::get('/manajemen-klien', [AdminDevController::class, 'manajKlien'])->name('manajemenKlien');
-    Route::get('/tambah-admin-klien', [AdminDevController::class, 'tambahKlien'])->name('tambahKlien');
-    Route::post('/tambah-admin-klien', [AdminDevController::class, 'storeAdmin'])->name('storeAdmin');
+        // Grup rute ini sekarang hanya bisa diakses oleh pengguna dengan role 'adminDev'.
+    Route::middleware('role:adminDev')->group(function () {
+        Route::get('/manajemen-klien', [AdminDevController::class, 'manajKlien'])->name('manajemenKlien');
+        Route::get('/tambah-admin-klien', [AdminDevController::class, 'tambahKlien'])->name('tambahKlien');
+        Route::post('/tambah-admin-klien', [AdminDevController::class, 'storeAdmin'])->name('storeAdmin');
     });
 
 });

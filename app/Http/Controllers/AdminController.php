@@ -17,11 +17,6 @@ class AdminController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function dashboard()
-    {
-        // return view('admin.add_users'); //gunakan titik untuk masuk kedalam folder
-        return view('dashboard');
-    }
 
     public function manajSiswa()
     {
@@ -165,7 +160,7 @@ class AdminController extends Controller
             'id_angkatan' => 'required|integer'
         ], [
             'nama_kelas.required' => 'Nama kelas tidak boleh kosong.',
-            'angkatan.required' => 'Tahun ajaran tidak boleh kosong'
+            'id_angkatan.required' => 'Tahun ajaran tidak boleh kosong, buat angkatan terlebih dahulu'
         ]);
 
         Kelas::create([
@@ -175,5 +170,23 @@ class AdminController extends Controller
 
         return redirect()->route('manajemenKelas')->with('success', 'Kelas berhasil ditambahkan!');
 
+    }
+
+    public function lihatKelas(Request $request)
+    {
+        $id_kelas = $request->input('id_kelas');
+        // dd($id_kelas);
+        $namaKelas = Kelas::where('id_kelas', $id_kelas)->first();
+        // $angkatan = Angkatan::where('id', $kelas->id_angkatan)->first();
+        return view('admin.lihat_kelas', ['namaKelas' => $namaKelas]);
+    }
+
+    public function lihatKelasD()
+    {
+        $dummy = new Kelas();
+        $dummy->nama_kelas = "null";
+        $dummy->id_angkatan = 0;
+        $dummy->id_kelas = 0;
+        return view('admin.lihat_kelas',['namaKelas' => $dummy]);
     }
 }

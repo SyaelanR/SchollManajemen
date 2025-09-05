@@ -109,6 +109,21 @@
 
             <!-- Page Content -->
             <main class="p-4 md:p-8 flex-1">
+                @if (session('success'))
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md" role="alert">
+                        <p class="font-bold">Berhasil!</p>
+                        <p>{{ session('success') }}</p>
+                    </div>
+                @endif
+
+                {{-- Menampilkan error validasi --}}
+                @if ($errors->any())
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md" role="alert">
+                        <p class="font-bold">Gagal!</p>
+                        <ul class="list-disc list-inside">@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
+                    </div>
+                @endif
+                
                 <div class="bg-white rounded-xl shadow-md p-6">
                     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                         <h2 class="text-xl sm:text-2xl font-semibold text-gray-800">Daftar Kelas Tersedia</h2>
@@ -124,7 +139,7 @@
                             @forelse ($angkatans as $angkatan)
                                 <option value="{{$angkatan->angkatan}}">{{$angkatan->angkatan}}</option>
                             @empty
-                                <option value="">Belum ada</option>
+                                <option value="" disabled selected>Belum ada</option>
                             @endforelse
                         </select>
                     </div>
@@ -132,18 +147,26 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         @foreach ($kelasList as $kelas)
                         <!-- Class Card -->
-                         <div class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300">
-                            <div class="flex items-center mb-4">
-                                <div class="bg-blue-100 text-blue-600 p-4 rounded-full flex items-center justify-center">
-                                    <i class="fa-solid fa-school text-2xl"></i>
+                        <form action="{{route('lihatKelas')}}" method="POST">
+                                <a href="{{route('lihatKelas')}}" onclick="event.preventDefault(); this.closest('form').submit();">
+                            @csrf
+                                <div class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300">
+                                    <div class="flex items-center mb-4">
+                                        <div class="bg-blue-100 text-blue-600 p-4 rounded-full flex items-center justify-center">
+                                            <i class="fa-solid fa-school text-2xl"></i>
+                                        </div>
+                                    </div>
+                                    <h3 class="text-xl font-semibold text-gray-800">{{$kelas->nama_kelas}}</h3>
+                                    <div class="flex items-center text-gray-600 mt-4">
+                                        <i class="fa-solid fa-user-friends text-sm mr-2"></i>
+                                        <span class="text-sm">31 Siswa</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <h3 class="text-xl font-semibold text-gray-800">{{$kelas->nama_kelas}}</h3>
-                            <div class="flex items-center text-gray-600 mt-4">
-                                <i class="fa-solid fa-user-friends text-sm mr-2"></i>
-                                <span class="text-sm">31 Siswa</span>
-                            </div>
-                        </div>
+                                <select name="id_kelas" id="" class="hidden">
+                                    <option value="{{$kelas->id_kelas}}"></option>
+                                </select>
+                            </a> 
+                        </form>
                         @endforeach
                     </div>
                     @else
@@ -178,7 +201,7 @@
                         @forelse ($angkatans as $angkatan)
                             <option value="{{$angkatan->id_angkatan}}">{{$angkatan->angkatan}}</option>
                         @empty
-                            <option value="">Belum ada</option>
+                            <option value="" disabled selected>Belum ada</option>
                         @endforelse
                     </select>
                 </div>
