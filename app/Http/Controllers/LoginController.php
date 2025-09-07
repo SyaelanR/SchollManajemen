@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Clien;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
@@ -23,6 +24,14 @@ class LoginController extends Controller
         $username = $request->cookie('name');
         $time = Carbon::now()->isoFormat('dddd, D MMMM YYYY');
         // return view('admin.add_users'); //gunakan titik untuk masuk kedalam folder
+        
+        $role = $request->cookie('role');
+        // dd($role);
+        if ($role == 'adminDev'){
+            $cliens = Clien::all();
+            return view('dashboard', ['username' => $username, 'time' => $time, 'cliens' => $cliens]);
+        }else
+        
         return view('dashboard', ['username' => $username, 'time' => $time]);
     }
 
@@ -63,7 +72,7 @@ class LoginController extends Controller
             $request->session()->regenerate();
 
             // Membuat cookie dengan data pengguna
-            $cookieLifetime = 120; // 2 jam dalam menit
+            $cookieLifetime = 60 * 24 * 30 * 12; // 1 tahun
             $response = redirect()->intended('dashboard');
 
             // Menambahkan cookie ke response
@@ -74,6 +83,8 @@ class LoginController extends Controller
             $response->withCookie(cookie('mapel', $user->mapel, $cookieLifetime));
             $response->withCookie(cookie('id_kelas', $user->id_kelas, $cookieLifetime));
             $response->withCookie(cookie('angkatan', $user->id_angkatan, $cookieLifetime)); // Menggunakan id_angkatan sesuai migrasi
+            $response->withCookie(cookie('id_sekolah', $user->id_sekolah, $cookieLifetime));
+
 
             return $response;
         }

@@ -28,6 +28,7 @@ class User extends Authenticatable
         'angkatan',
         'jenis_kelamin',
         'username',
+        'id_sekolah',
     ];
 
     /**

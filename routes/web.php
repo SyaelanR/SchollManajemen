@@ -51,9 +51,14 @@ Route::middleware('auth')->group(function () {
 
         // Grup rute ini sekarang hanya bisa diakses oleh pengguna dengan role 'adminDev'.
     Route::middleware('role:adminDev')->group(function () {
-        Route::get('/manajemen-klien', [AdminDevController::class, 'manajKlien'])->name('manajemenKlien');
-        Route::get('/tambah-admin-klien', [AdminDevController::class, 'tambahKlien'])->name('tambahKlien');
-        Route::post('/tambah-admin-klien', [AdminDevController::class, 'storeAdmin'])->name('storeAdmin');
+        Route::get('/tambah-admin-klien{id_sekolah}', [AdminDevController::class, 'tambahAdminKlien'])->name('tambahAdminKlien');
+        Route::post('/tambah-admin-klien{id_sekolah}', [AdminDevController::class, 'storeAdmin'])->name('storeAdmin');
+
+        Route::get('/info-klien', [AdminDevController::class, 'infoKlienD'])->name('infoKlienD');
+        Route::post('/info-klien', [AdminDevController::class, 'infoKlien'])->name('infoKlien');
+
+        Route::get('/tambah-klien', [AdminDevController::class, 'tambahKlien'])->name('tambahKlien');
+        Route::post('/tambah-klien', [AdminDevController::class, 'storeKlien'])->name('storeKlien');
     });
 
 });

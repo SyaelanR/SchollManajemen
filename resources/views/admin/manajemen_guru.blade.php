@@ -167,8 +167,12 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="6" class="p-4 text-center text-gray-500">
-                                        Tidak ada data guru untuk ditampilkan.
+                                    <td colspan="4" class="p-3 text-center text-gray-500">
+                                        <div class="text-center py-12">
+                                            <i class="fa-solid fa-exclamation-circle text-5xl text-gray-400 mb-4"></i>
+                                            <p class="text-gray-600 font-semibold text-lg">Belum ada data Guru.</p>
+                                            <p class="text-gray-500 mt-2">Silakan tambahkan Guru</p>
+                                        </div>
                                     </td>
                                 </tr>
                                 @endforelse

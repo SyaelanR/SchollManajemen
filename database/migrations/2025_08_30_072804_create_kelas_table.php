@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id('id_kelas'); // ->primary() sudah implisit
             $table->string('nama_kelas');
             $table->unsignedBigInteger('id_angkatan')->nullable(); // Tambahkan kolomnya dulu dan buat nullable
+            $table->unsignedBigInteger('id_sekolah')->nullable();
+            $table->timestamps();
             
             $table->foreign('id_angkatan')->references('id_angkatan')->on('angkatans')->onDelete('set null');
-            $table->timestamps();
+            $table->foreign('id_sekolah')->references('id_sekolah')->on('cliens')->onDelete('set null');
         });
     }
 

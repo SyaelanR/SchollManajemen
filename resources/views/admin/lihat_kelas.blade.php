@@ -99,7 +99,7 @@
                     <!-- Action Bar -->
                     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-800">Daftar Siswa Kelas: <span class="text-indigo-600">{{$namaKelas->nama_kelas}}</span></h2>
+                            <h2 class="text-2xl font-bold text-gray-800">Daftar Siswa Kelas: <span class="text-indigo-600">{{ $namaKelas->nama_kelas ?? 'Belum Dipilih' }}</span></h2>
                             <p class="text-gray-500 mt-1">Total: 32 Siswa</p>
                         </div>
                         <div class="flex items-center gap-4">
@@ -107,7 +107,7 @@
                                 <i class="fa-solid fa-arrow-left mr-2"></i>
                                 Kembali
                             </a>
-                            @if ($namaKelas->id_kelas == 0 || $namaKelas->id_angkatan == 0)
+                            @if (($namaKelas->id_kelas ?? 0) == 0 || ($namaKelas->id_angkatan ?? 0) == 0)
                                 <a href="#" class="bg-gray-400 text-white font-semibold py-2 px-4 rounded-lg cursor-not-allowed flex items-center whitespace-nowrap" title="Lengkapi data kelas terlebih dahulu">
                                     <i class="fa-solid fa-user-plus mr-2"></i>
                                     Tambah Siswa

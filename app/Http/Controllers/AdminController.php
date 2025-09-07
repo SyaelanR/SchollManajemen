@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Angkatan;
 use App\Models\Kelas;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -18,9 +19,10 @@ class AdminController extends Controller
      * @return \Illuminate\View\View
      */
 
-    public function manajSiswa()
+    public function manajSiswa(Request $request)
     {
-        $students = User::where('role', 'siswa')->latest()->paginate(10);
+        $id_sekolah = $request->cookie('id_sekolah');
+        $students = User::where('role', 'siswa')->where('id_sekolah', $id_sekolah)->latest()->paginate(10);
         return view('admin.manajemen_siswa', ['students' => $students]);
     }
 
@@ -28,12 +30,19 @@ class AdminController extends Controller
     {
         return view('admin.tambah_siswa');
     }
+
+
+
     
-    public function manajGuru()
+    public function manajGuru(Request $request)
     {
-        $teachers = User::where('role', 'guru')->latest()->paginate(10);
+        $id_sekolah = $request->cookie('id_sekolah');
+        $teachers = User::where('role', 'guru')->where('id_sekolah', $id_sekolah)->latest()->paginate(10);
         return view('admin.manajemen_guru', ['teachers' => $teachers]);
     }
+
+
+
 
     public function tambahGuru()
     {
@@ -41,8 +50,12 @@ class AdminController extends Controller
     }
 
 
+
+
     public function storeSiswa(Request $request)
     {
+        $id_sekolah = $request->cookie('id_sekolah');
+
         $validator = Validator::make($request->all(), [
             'students' => 'required|array|min:1',
             // 'distinct' memastikan keunikan dalam array yang dikirim.
@@ -75,6 +88,7 @@ class AdminController extends Controller
                     'jenis_kelamin' => $studentData['gender'],
                     'username' => $studentData['username'],
                     'role' => 'siswa', // Otomatis mengatur role sebagai siswa
+                    'id_sekolah' => $id_sekolah,
                 ]);
             }
         }
@@ -83,8 +97,12 @@ class AdminController extends Controller
     }
 
 
+
+
+
     public function storeGuru(Request $request)
     {
+        $id_sekolah = $request->cookie('id_sekolah');
         $validator = Validator::make($request->all(), [
             'teacher' => 'required|array|min:1',
             'teacher.*.nip' => 'required|string|distinct|unique:users,nisn_nip',
@@ -110,6 +128,7 @@ class AdminController extends Controller
                     'mapel' => $teacherData['mapel'],
                     'username' => $teacherData['username'],
                     'role' => 'guru', // Otomatis mengatur role sebagai guru
+                    'id_sekolah' => $id_sekolah,
                 ]);
             }
         }
@@ -117,17 +136,22 @@ class AdminController extends Controller
         return response()->json(['message' => 'Data semua guru berhasil disimpan!'], 200);
     }
 
-    public function manajAngkatan()
+
+
+
+    public function manajAngkatan(Request $request)
     {
+        $id_sekolah = $request->cookie('id_sekolah');
         // Mengambil semua data dari tabel angkatan, diurutkan dari yang terbaru
-        $angkatans = Angkatan::latest()->get();
+        $angkatans = Angkatan::where('id_sekolah', $id_sekolah)->latest()->get();
         return view('admin.manajemen_angkatan', ['angkatans' => $angkatans]);
         // return view('admin.manajemen_angkatan');
     }
 
     public function storeAngkatan(Request $request)
-    {
-        // Validasi input dari form
+    {   
+        $id_sekolah = $request->cookie('id_sekolah');
+
         $request->validate([
             // Validasi untuk satu input 'angkatan' dengan aturan unik di tabel 'angkatans'
             'angkatan' => 'required|string|max:255|unique:angkatans,angkatan',
@@ -139,22 +163,30 @@ class AdminController extends Controller
         // Buat entri baru di tabel angkatan
         Angkatan::create([
             'angkatan' => $request->angkatan,
+            'id_sekolah' => $id_sekolah,
         ]);
 
         // Arahkan kembali ke halaman manajemen angkatan dengan pesan sukses
         return redirect()->route('manajemenAngkatan')->with('success', 'Angkatan berhasil ditambahkan!');
     }
 
+
+
+
     public function manajKelas()
     {
-        $angkatans = Angkatan::latest()->get();
+        $id_sekolah = request()->cookie('id_sekolah');
 
-        $kelas = Kelas::latest()->get();
+        $angkatans = Angkatan::where('id_sekolah', $id_sekolah)->where('id_sekolah', $id_sekolah)->latest()->get();
+        $kelas = Kelas::latest()->where('id_sekolah', $id_sekolah)->get();
+
         return view('admin.manajemen_kelas', ['angkatans' => $angkatans, 'kelasList' => $kelas]);
     }
 
     public function storeKelas(Request $request)
     {
+        $id_sekolah = $request->cookie('id_sekolah');
+
         $request->validate([
             'nama_kelas' => 'required|string|max:255',
             'id_angkatan' => 'required|integer'
@@ -165,21 +197,28 @@ class AdminController extends Controller
 
         Kelas::create([
             'nama_kelas' => $request->nama_kelas,
-            'id_angkatan' => $request->id_angkatan
+            'id_angkatan' => $request->id_angkatan,
+            'id_sekolah' => $id_sekolah
         ]);
 
         return redirect()->route('manajemenKelas')->with('success', 'Kelas berhasil ditambahkan!');
 
     }
 
+
+
+
     public function lihatKelas(Request $request)
     {
+        $id_sekolah = $request->cookie('id_sekolah');
         $id_kelas = $request->input('id_kelas');
         // dd($id_kelas);
-        $namaKelas = Kelas::where('id_kelas', $id_kelas)->first();
+        $namaKelas = Kelas::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->first();
         // $angkatan = Angkatan::where('id', $kelas->id_angkatan)->first();
         return view('admin.lihat_kelas', ['namaKelas' => $namaKelas]);
     }
+
+    
 
     public function lihatKelasD()
     {

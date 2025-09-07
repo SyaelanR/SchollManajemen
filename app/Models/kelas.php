@@ -10,5 +10,6 @@ class Kelas extends Model
         'id_kelas',
         'nama_kelas',
         'id_angkatan',
+        'id_sekolah'
 ];  
 }

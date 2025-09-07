@@ -461,7 +461,7 @@
                     </div>
 
                     <!-- Add Client Button -->
-                    <a href="{{ route('tambahKlien')}}">
+                    <a href="{{ route('tambahKlien') }}">
                         <button class="bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 w-full md:w-auto">
                             <i class="fa-solid fa-plus-circle mr-2"></i> Tambah Klien
                         </button>
@@ -476,7 +476,7 @@
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Klien</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Klien</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Sekolah</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
@@ -484,42 +484,45 @@
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 <!-- Example client row (can be populated with a loop) -->
+                                @forelse ($cliens as $clien)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">CL-001</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">PT. Maju Bersama</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">maju.bersama@example.com</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{$clien->id_sekolah}}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{$clien->nama_sekolah}}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{$clien->email}}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
+                                        @if ($clien->status == 'Aktif')
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Aktif</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-2">Edit</a>
-                                        <a href="#" class="text-red-600 hover:text-red-900">Hapus</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">CL-002</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">CV. Sejahtera Abadi</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">cv.sejahtera@example.com</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        
+                                        @elseif ($clien->status == 'Pending')
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+                                        
+                                        @elseif ($clien->status == 'Non-Aktif')
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Non Aktif</span>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-2">Edit</a>
-                                        <a href="#" class="text-red-600 hover:text-red-900">Hapus</a>
+                                        <form action="{{ route('infoKlien')}}" method="POST">
+                                            @csrf
+                                            <a href="{{ route('infoKlien')}}" class="text-indigo-600 hover:text-indigo-900 mr-2" onclick="event.preventDefault(); this.closest('form').submit();" class="text-indigo-600 hover:text-indigo-900 mr-2">Info</a>
+                                        <select name="id_sekolah" class="hidden">
+                                            <option value="{{$clien->id_sekolah}}"></option>
+                                        </select>
+                                    </form>
+                                    <a href="#" class="text-red-600 hover:text-red-900">Hapus</a>
                                     </td>
                                 </tr>
+                                @empty
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">CL-003</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">PT. Cepat Tumbuh</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">cepat.tumbuh@example.com</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Aktif</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-2">Edit</a>
-                                        <a href="#" class="text-red-600 hover:text-red-900">Hapus</a>
+                                    <td colspan="4" class="p-3 text-center text-gray-500">
+                                        <div class="text-center py-12">
+                                            <i class="fa-solid fa-exclamation-circle text-5xl text-gray-400 mb-4"></i>
+                                            <p class="text-gray-600 font-semibold text-lg">Belum ada data Angkatan.</p>
+                                            <p class="text-gray-500 mt-2">Silakan tambahkan Angkatan baru</p>
+                                        </div>
                                     </td>
                                 </tr>
+                                @endforelse
+                                
                             </tbody>
                         </table>
                     </div>

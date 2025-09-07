@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('angkatans', function (Blueprint $table) {
-            $table->id('id_angkatan'); // ->primary() sudah implisit
-            $table->string('angkatan');
-            $table->unsignedBigInteger('id_sekolah')->nullable();
+        Schema::create('cliens', function (Blueprint $table) {
+            $table->id('id_sekolah');
+            $table->string('nama_sekolah');
+            $table->string('email')->unique();
+            $table->string('alamat');
+            $table->string('no_telp');
+            $table->enum('status', ['Aktif', 'Pending', 'Non-Aktif'])->default('Aktif');
             $table->timestamps();
-
-            $table->foreign('id_sekolah')->references('id_sekolah')->on('cliens')->onDelete('set null');
         });
     }
 
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('angkatans');
+        Schema::dropIfExists('cliens');
     }
 };

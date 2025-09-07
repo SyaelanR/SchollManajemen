@@ -8,7 +8,7 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     */
+     */ 
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
@@ -20,9 +20,11 @@ return new class extends Migration
             $table->unsignedBigInteger('id_angkatan')->nullable()->after('id_kelas');
             $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan'])->nullable()->after('id_angkatan');
             $table->string('username')->unique()->after('jenis_kelamin');
+            $table->unsignedBigInteger('id_sekolah')->nullable()->after('username');
 
             $table->foreign('id_kelas')->references('id_kelas')->on('kelas')->onDelete('set null');
             $table->foreign('id_angkatan')->references('id_angkatan')->on('angkatans')->onDelete('set null');
+            $table->foreign('id_sekolah')->references('id_sekolah')->on('cliens')->onDelete('set null');
 
 
             // Tips: Jika Anda sudah memiliki tabel 'kelas', Anda bisa menambahkan foreign key constraint.
