@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
             'nisn_nip' => '220103190',
             'name' => 'SyaelanR',
             'email' => 'syaelanr@gmail.com',
-            'password' => ('password'),
+            'password' => 'password',
             'username' => 'syaelanr',
             'role' => 'adminDev'
         ]);
