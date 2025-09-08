@@ -119,4 +119,14 @@ class AdminController extends Controller
 
         return response()->json(['message' => 'Data semua guru berhasil disimpan!'], 200);
     }
+
+    /**
+     * Tampilkan halaman input nilai siswa.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function inputNilai()
+    {
+        return view('inputnilai');
+    }
 }

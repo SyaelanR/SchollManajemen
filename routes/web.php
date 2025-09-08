@@ -83,7 +83,7 @@ Route::get('/kelas12B', [KelasController::class, 'kelas12B'])->name('kelas12B');
 
 // Rute untuk Absensi
 Route::prefix('absensi')->group(function () {
-    Route::get('/', [absensiController::class, 'index'])->name('absensi.index');
+    Route::get('/   ', [absensiController::class, 'index'])->name('absensi.index');
     Route::get('/{id}', [absensiController::class, 'show'])->name('absensi.show');
     Route::post('/store', [absensiController::class, 'store'])->name('absensi.store');
 });
@@ -92,3 +92,5 @@ Route::prefix('absensi')->group(function () {
 Route::get('/pelanggaran', [pelanggaranController::class, 'index'])->name('pelanggaran.index');
 Route::post('/pelanggaran', [pelanggaranController::class, 'store'])->name('pelanggaran.store');
 Route::get('/daftarPelanggar', [pelanggaranController::class, 'daftarPelanggar'])->name('pelanggaran.daftar');
+
+Route::get('/input-nilai', [AdminController::class, 'inputnilai'])->name('inputnilai');

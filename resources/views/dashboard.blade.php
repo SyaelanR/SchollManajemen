@@ -51,7 +51,7 @@
                 </a>
             </div>
             <nav class="mt-6">
-                <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
+                <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
                     <i class="fa-solid fa-tachometer-alt mr-3"></i>
                     <span>Dashboard</span>
                 </a>
@@ -89,19 +89,19 @@
                 @endcan
 
                 @can('view-guru')
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="{{ route('inputnilai') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
                     <i class="fa-solid fa-pen mr-3"></i>
                     <span>Input Nilai</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
                     <i class="fa-solid fa-list-check mr-3"></i>
                     <span>Input Absensi</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
                     <i class="fa-solid fa-puzzle-piece mr-3"></i>
                     <span>Ekstrakulikuler</span>
                 </a>
-                <a href="{{ route('pelanggaran.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="{{ route('pelanggaran.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
                     <i class="fa-solid fa-triangle-exclamation mr-3"></i>
                     <span>Pelanggaran Siswa</span>
                 </a>
@@ -311,7 +311,7 @@
                                <i class="fa-solid fa-calendar-alt text-xl text-indigo-600 mr-4"></i>
                                <span class="font-medium text-gray-700">Lihat Semua Jadwal</span>
                            </a>
-                           <a href="#" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-300">
+                           <a href="{{ route('inputnilai') }}" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-300">
                                <i class="fa-solid fa-pen-to-square text-xl text-green-600 mr-4"></i>
                                <span class="font-medium text-gray-700">Input Nilai Siswa</span>
                            </a>
