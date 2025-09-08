@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\RiwayatKeuangan;
 use App\Models\User;
 use App\Models\Angkatan;
 use App\Models\Kelas;
+use App\Models\DaftarTagihan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -227,5 +231,110 @@ class AdminController extends Controller
         $dummy->id_angkatan = 0;
         $dummy->id_kelas = 0;
         return view('admin.lihat_kelas',['namaKelas' => $dummy]);
+    }
+
+    public function manajKeuangan()
+    {
+        $id_sekolah = request()->cookie('id_sekolah');
+
+        // Mengambil semua transaksi diurutkan berdasarkan tanggal terlama untuk grafik
+        $transaksi = RiwayatKeuangan::where('id_sekolah', $id_sekolah)
+            ->orderBy('tanggal', 'asc') // Diubah ke 'asc' untuk urutan grafik yang benar
+            ->get();
+
+        // Menghitung total pemasukan dan pengeluaran untuk sekolah terkait
+        $totalPemasukan = RiwayatKeuangan::where('id_sekolah', $id_sekolah)->where('jenis', 'pemasukan')->sum('jumlah');
+        $totalPengeluaran = RiwayatKeuangan::where('id_sekolah', $id_sekolah)->where('jenis', 'pengeluaran')->sum('jumlah');
+        
+        // Mengambil saldo terakhir dari transaksi paling baru
+        $saldo = $transaksi->last()->saldo ?? 0;
+
+        // Mengambil data tanggal untuk label dan saldo untuk data grafik
+        $labels = $transaksi->pluck('tanggal')->map(function ($tanggal) {
+            return Carbon::parse($tanggal)->format('Y-m-d');
+        });
+        $saldoKumulatifData = $transaksi->pluck('saldo');
+
+        return view('admin.keuangan', compact('transaksi', 'totalPemasukan', 'totalPengeluaran', 'saldo', 'labels', 'saldoKumulatifData'));
+    }
+
+
+    public function storePemasukan(Request $request)
+    {
+        $id_sekolah = request()->cookie('id_sekolah');
+
+        $request->validate([
+            'tanggal' => 'required|date',
+            'jumlah' => 'required|numeric|min:0.01',
+            'keterangan' => 'nullable|string|max:255',
+        ], [
+            'tanggal.required' => 'Tanggal tidak boleh kosong.',
+            'jumlah.required' => 'Jumlah tidak boleh kosong.',
+            'jumlah.numeric' => 'Jumlah harus berupa angka.',
+            'jumlah.min' => 'Jumlah harus lebih besar dari 0.',
+            'keterangan.max' => 'Keterangan maksimal 255 karakter.',
+        ]);
+
+        // Ambil saldo terakhir
+        $lastTransaction = RiwayatKeuangan::where('id_sekolah', $id_sekolah)->orderBy('tanggal', 'desc')->first();
+        $lastSaldo = $lastTransaction ? $lastTransaction->saldo : 0;
+
+        // Hitung saldo baru
+        $newSaldo = $lastSaldo + $request->jumlah;
+
+        // Simpan transaksi pemasukan baru
+        RiwayatKeuangan::create([
+            'id_sekolah' => $id_sekolah,
+            'tanggal' => $request->tanggal,
+            'jenis' => 'pemasukan',
+            'jumlah' => $request->jumlah,
+            'keterangan' => $request->keterangan,
+            'saldo' => $newSaldo,
+        ]);
+
+        return redirect()->route('manajemenKeuangan')->with('success', 'Pemasukan berhasil ditambahkan!');
+    }
+
+    public function storePengeluaran(Request $request)
+    {
+        $id_sekolah = request()->cookie('id_sekolah');
+
+        $request->validate([
+            'tanggal' => 'required|date',
+            'jumlah' => 'required|numeric|min:0.01',
+            'keterangan' => 'nullable|string|max:255',
+        ], [
+            'tanggal.required' => 'Tanggal tidak boleh kosong.',
+            'jumlah.required' => 'Jumlah tidak boleh kosong.',
+            'jumlah.numeric' => 'Jumlah harus berupa angka.',
+            'jumlah.min' => 'Jumlah harus lebih besar dari 0.',
+            'keterangan.max' => 'Keterangan maksimal 255 karakter.',
+        ]);
+
+        // Ambil saldo terakhir
+        $lastTransaction = RiwayatKeuangan::where('id_sekolah', $id_sekolah)->orderBy('tanggal', 'desc')->first();
+        $lastSaldo = $lastTransaction ? $lastTransaction->saldo : 0;
+
+        // Hitung saldo baru
+        $newSaldo = $lastSaldo - $request->jumlah;
+
+        // Simpan transaksi pengeluaran baru
+        RiwayatKeuangan::create([
+            'id_sekolah' => $id_sekolah,
+            'tanggal' => $request->tanggal,
+            'jenis' => 'pengeluaran',
+            'jumlah' => $request->jumlah,
+            'keterangan' => $request->keterangan,
+            'saldo' => $newSaldo,
+        ]);
+
+        return redirect()->route('manajemenKeuangan')->with('success', 'Pengeluaran berhasil ditambahkan!');
+    }
+
+    public function tagihanSiswa()
+    {
+        $id_sekolah = request()->cookie('id_sekolah');
+        $daftarTagihan = DaftarTagihan::where('id_sekolah', $id_sekolah)->latest()->get();
+        return view('admin.tagihan_siswa', ['daftarTagihan' => $daftarTagihan]);
     }
 }

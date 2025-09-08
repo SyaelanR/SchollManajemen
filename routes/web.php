@@ -45,6 +45,13 @@ Route::middleware('auth')->group(function () {
             Route::get('/lihat-kelas', [AdminController::class, 'lihatKelasD'])->name('lihatKelasD');
         });
 
+            Route::prefix('manajemen-keuangan')->group(function () {
+                Route::get('/', [AdminController::class, 'manajKeuangan'])->name('manajemenKeuangan');
+                Route::post('/pemasukan', [AdminController::class, 'storePemasukan'])->name('storePemasukan');
+                Route::post('/pengeluaran', [AdminController::class, 'storePengeluaran'])->name('storePengeluaran');
+                Route::get('/tagihan-siswa', [AdminController::class, 'tagihanSiswa'])->name('tagihanSiswa');
+            });
+
     });
 
         
