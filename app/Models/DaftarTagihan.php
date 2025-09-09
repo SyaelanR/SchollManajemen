@@ -15,5 +15,6 @@ class DaftarTagihan extends Model
         'jatuh_tempo',
         'target_angkatan',
         'persentase_terbayar',
+        'nama_angkatan',
     ];
 }

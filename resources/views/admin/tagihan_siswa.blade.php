@@ -107,9 +107,11 @@
                         <div class="flex items-center gap-4 w-full md:w-auto">
                             <select id="filter-angkatan" class="w-full md:w-auto p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white">
                                 <option value="">Semua Angkatan</option>
-                                <option value="2025/2026">2025/2026</option>
-                                <option value="2024/2025">2024/2025</option>
-                                <option value="2023/2024">2023/2024</option>
+                                @forelse ($angkatans as $angkatan)
+                                <option value="{{$angkatan->angkatan}}">{{$angkatan->angkatan}}</option>
+                                @empty
+                                <option value="" disabled selected>Belum ada</option>
+                                @endforelse
                             </select>
                             <button id="add-bill-btn" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap">
                                 <i class="fa-solid fa-plus mr-2"></i>
@@ -138,12 +140,16 @@
                                     <td class="p-3 text-gray-800 font-medium">Rp {{$tagihan->jumlah_tagihan}}</td>
                                     <td class="p-3 text-gray-700">{{$tagihan->jatuh_tempo}}</td>
                                     <td class="p-3 text-gray-700">{{$tagihan->keterangan}}</td>
-                                    <td class="p-3 text-gray-700">{{$tagihan->target_angkatan}}</td>
+                                    <td class="p-3 text-gray-700">{{$tagihan->nama_angkatan}}</td>
                                     <td class="p-3 text-blue-600 font-semibold">{{$tagihan->persentase_terbayar}} %</td>
                                     <td class="p-3 text-center">
+                                        <form action="{{route('pembayaranTagihanSiswa')}}" method="POST">
+                                        @csrf
                                         <button class="text-indigo-600 hover:text-indigo-800" title="Lihat Info Pembayaran">
                                             <i class="fa-solid fa-circle-info fa-lg"></i>
+                                            <input type="hidden" name="id_daftar_tagihan" value="{{$tagihan->id_daftar_tagihan}}">
                                         </button>
+                                        </form>
                                     </td>
                                 </tr>
                                 @empty
@@ -151,7 +157,7 @@
                                     <td colspan="4" class="p-3 text-center text-gray-500">
                                         <div class="text-center py-12">
                                             <i class="fa-solid fa-exclamation-circle text-5xl text-gray-400 mb-4"></i>
-                                            <p class="text-gray-600 font-semibold text-lg">Belum Tagihan.</p>
+                                            <p class="text-gray-600 font-semibold text-lg">Belum ada Tagihan.</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -171,26 +177,29 @@
                 <h3 class="text-2xl font-semibold text-gray-800">Tambah Tagihan Baru</h3>
                 <button id="close-modal-btn" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
             </div>
-            <form>
+            <form action="{{ route('storeTagihan') }}" method="POST">
+                @csrf
                 <div class="mb-4">
                     <label for="bill-amount" class="block text-gray-700 font-medium mb-2">Jumlah Tagihan (Rp)</label>
-                    <input type="number" id="bill-amount" placeholder="Contoh: 750000" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <input name="jumlah_tagihan"" type="number" id="bill-amount" placeholder="Contoh: 750000" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
                 </div>
                  <div class="mb-4">
-                    <label for="bill-due-date" class="block text-gray-700 font-medium mb-2">Tenggat Pembayaran</label>
-                    <input type="date" id="bill-due-date" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <label for="bill-due-date" class="block text-gray-700 font-medium mb-2">Jatuh Tempo</label>
+                    <input name="jatuh_tempo" type="date" id="bill-due-date" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
                 </div>
                  <div class="mb-4">
                     <label for="bill-description" class="block text-gray-700 font-medium mb-2">Keterangan</label>
-                    <textarea id="bill-description" rows="3" placeholder="Contoh: SPP Bulan Oktober 2025" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required></textarea>
+                    <textarea name="keterangan"" id="bill-description" rows="3" placeholder="Contoh: SPP Bulan Oktober 2025" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required></textarea>
                 </div>
                 <div class="mb-6">
                     <label for="bill-target" class="block text-gray-700 font-medium mb-2">Target Angkatan</label>
-                    <select id="bill-target" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white" required>
+                    <select name="target_angkatan" id="bill-target" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white" required>
                         <option value="">Pilih Angkatan</option>
-                        <option value="2025/2026">2025/2026</option>
-                        <option value="2024/2025">2024/2025</option>
-                        <option value="2023/2024">2023/2024</option>
+                        @forelse ($angkatans as $angkatan)
+                                <option value="{{$angkatan->id_angkatan}}">{{$angkatan->angkatan}}</option>
+                        @empty
+                                <option value="" disabled selected>Belum ada</option>
+                        @endforelse
                     </select>
                 </div>
                 <div class="flex justify-end gap-4">

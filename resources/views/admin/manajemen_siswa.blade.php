@@ -153,7 +153,7 @@
                                 <tr class="hover:bg-gray-50">
                                     <td class="p-3 text-gray-700">{{ $student->nisn_nip }}</td>
                                     <td class="p-3 text-gray-800 font-medium">{{ $student->name }}</td>
-                                    <td class="p-3 text-gray-700">{{ $student->kelas->nama_kelas ?? '-' }}</td>
+                                    <td class="p-3 text-gray-700">{{ $student->nama_kelas ?? '-' }}</td>
                                     <td class="p-3 text-gray-700">{{ $student->jenis_kelamin }}</td>
                                     <td class="p-3">
                                         <a href="#" class="bg-indigo-100 text-indigo-700 text-sm font-medium py-1.5 px-3 rounded-lg hover:bg-indigo-200 transition duration-300 whitespace-nowrap">Lihat Detail</a>

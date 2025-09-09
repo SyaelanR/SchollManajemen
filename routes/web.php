@@ -43,14 +43,17 @@ Route::middleware('auth')->group(function () {
             Route::post('/', [AdminController::class, 'storeKelas'])->name('storeKelas');
             Route::post('/lihat-kelas', [AdminController::class, 'lihatKelas'])->name('lihatKelas');
             Route::get('/lihat-kelas', [AdminController::class, 'lihatKelasD'])->name('lihatKelasD');
+            Route::post('/lihat-kelas/tambah-siswa-ke-kelas', [AdminController::class, 'tambahSiswaKeKelas'])->name('tambahSiswaKeKelas');
         });
 
-            Route::prefix('manajemen-keuangan')->group(function () {
-                Route::get('/', [AdminController::class, 'manajKeuangan'])->name('manajemenKeuangan');
-                Route::post('/pemasukan', [AdminController::class, 'storePemasukan'])->name('storePemasukan');
-                Route::post('/pengeluaran', [AdminController::class, 'storePengeluaran'])->name('storePengeluaran');
-                Route::get('/tagihan-siswa', [AdminController::class, 'tagihanSiswa'])->name('tagihanSiswa');
-            });
+        Route::prefix('manajemen-keuangan')->group(function () {
+            Route::get('/', [AdminController::class, 'manajKeuangan'])->name('manajemenKeuangan');
+            Route::post('/pemasukan', [AdminController::class, 'storePemasukan'])->name('storePemasukan');
+            Route::post('/pengeluaran', [AdminController::class, 'storePengeluaran'])->name('storePengeluaran');
+            Route::get('/tagihan-siswa', [AdminController::class, 'tagihanSiswa'])->name('tagihanSiswa');
+            Route::post('/tagihan-siswa', [AdminController::class, 'storeTagihan'])->name('storeTagihan');
+            Route::post('/tagihan-siswa/pembayaran-tagihan', [AdminController::class, 'pembayaranTagihansiswa'])->name('pembayaranTagihanSiswa');
+        });
 
     });
 

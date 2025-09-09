@@ -35,6 +35,35 @@
         .sidebar {
             transition: transform 0.3s ease-in-out;
         }
+        .modal {
+            transition: opacity 0.3s ease-in-out;
+        }
+        .custom-checkbox {
+            appearance: none;
+            background-color: #fff;
+            border: 1px solid #d1d5db;
+            border-radius: 0.25rem;
+            width: 1.25rem;
+            height: 1.25rem;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .custom-checkbox:checked {
+            background-color: #4f46e5;
+            border-color: #4f46e5;
+        }
+        .custom-checkbox:checked::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: white;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.75rem;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -107,17 +136,10 @@
                                 <i class="fa-solid fa-arrow-left mr-2"></i>
                                 Kembali
                             </a>
-                            @if (($namaKelas->id_kelas ?? 0) == 0 || ($namaKelas->id_angkatan ?? 0) == 0)
-                                <a href="#" class="bg-gray-400 text-white font-semibold py-2 px-4 rounded-lg cursor-not-allowed flex items-center whitespace-nowrap" title="Lengkapi data kelas terlebih dahulu">
-                                    <i class="fa-solid fa-user-plus mr-2"></i>
-                                    Tambah Siswa
-                                </a>
-                            @else
-                                <a href="#" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap">
-                                    <i class="fa-solid fa-user-plus mr-2"></i>
-                                    Tambah Siswa
-                                </a>
-                            @endif
+                            <button id="add-student-btn" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap">
+                                <i class="fa-solid fa-user-plus mr-2"></i>
+                                Tambah Siswa
+                            </button>
                         </div>
                     </div>
 
@@ -141,39 +163,29 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y">
+                                @forelse ($daftarSiswa as $siswa)
                                 <!-- Sample Row 1 -->
                                 <tr class="hover:bg-gray-50">
-                                    <td class="p-3 text-gray-700">2024001</td>
-                                    <td class="p-3 text-gray-800 font-medium">Budi Santoso</td>
-                                    <td class="p-3 text-gray-700">Laki-laki</td>
+                                    <td class="p-3 text-gray-700">{{$siswa->nisn_nip}}</td>
+                                    <td class="p-3 text-gray-800 font-medium">{{$siswa->name}}</td>
+                                    <td class="p-3 text-gray-700">{{$siswa->jenis_kelamin}}</td>
                                     <td class="p-3 text-center">
                                         <button class="text-red-500 hover:text-red-700" title="Keluarkan dari Kelas">
                                             <i class="fa-solid fa-user-minus"></i>
                                         </button>
                                     </td>
                                 </tr>
-                                <!-- Sample Row 2 -->
-                                <tr class="hover:bg-gray-50">
-                                    <td class="p-3 text-gray-700">2024002</td>
-                                    <td class="p-3 text-gray-800 font-medium">Citra Lestari</td>
-                                    <td class="p-3 text-gray-700">Perempuan</td>
-                                     <td class="p-3 text-center">
-                                        <button class="text-red-500 hover:text-red-700" title="Keluarkan dari Kelas">
-                                            <i class="fa-solid fa-user-minus"></i>
-                                        </button>
+                                @empty
+                                <tr>
+                                    <td colspan="4" class="p-3 text-center text-gray-500">
+                                        <div class="text-center py-12">
+                                            <i class="fa-solid fa-exclamation-circle text-5xl text-gray-400 mb-4"></i>
+                                            <p class="text-gray-600 font-semibold text-lg">Belum ada data Siswa.</p>
+                                            <p class="text-gray-500 mt-2">Silakan tambahkan Siswa</p>
+                                        </div>
                                     </td>
                                 </tr>
-                                <!-- Sample Row 3 -->
-                                <tr class="hover:bg-gray-50">
-                                    <td class="p-3 text-gray-700">2024003</td>
-                                    <td class="p-3 text-gray-800 font-medium">Doni Firmansyah</td>
-                                    <td class="p-3 text-gray-700">Laki-laki</td>
-                                     <td class="p-3 text-center">
-                                        <button class="text-red-500 hover:text-red-700" title="Keluarkan dari Kelas">
-                                            <i class="fa-solid fa-user-minus"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -181,6 +193,56 @@
             </main>
         </div>
     </div>
+    
+    <!-- Add Student Modal -->
+    <div id="add-student-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden opacity-0">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-11/12 md:w-2/3 lg:w-1/2 transform transition-transform duration-300 scale-95">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-semibold text-gray-800">Tambah Siswa ke Kelas <span class="text-indigo-600">{{ $namaKelas->nama_kelas ?? '' }}</span></h3>
+                <button id="close-modal-btn" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            <form action="{{ route('tambahSiswaKeKelas') }}" method="POST">
+                @csrf
+                <input type="hidden" name="id_kelas" value="{{ $id_kelas }}">
+                <div class="border rounded-lg max-h-64 overflow-y-auto">
+                    <table class="w-full table-fixed">
+                        <thead class="bg-gray-50 sticky top-0">
+                            <tr>
+                                <th class="p-3 font-semibold text-gray-600 text-left">NISN</th>
+                                <th class="p-3 font-semibold text-gray-600 text-left">Nama Siswa</th>
+                                <th class="p-3 w-16 text-center">
+                                    <input type="checkbox" id="select-all" class="custom-checkbox">
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+                            @forelse ($daftarSiswaBelumPunyaKelas as $siswa)
+                            <tr>
+                                <td class="p-3 text-gray-700">{{ $siswa->nisn_nip }}</td>
+                                <td class="p-3 truncate">{{ $siswa->name }}</td>
+                                <td class="p-3 text-center"><input type="checkbox" name="siswa_ids[]" value="{{ $siswa->id }}" class="custom-checkbox student-checkbox"></td>
+                           </tr>
+                           @empty
+                            <tr>
+                                  <td colspan="3" class="p-3 text-center text-gray-500">
+                                        <div class="text-center py-12">
+                                         <i class="fa-solid fa-exclamation-circle text-5xl text-gray-400 mb-4"></i>
+                                         <p class="text-gray-600 font-semibold text-lg">Semua Siswa sudah memiliki kelas.</p>
+                                        </div>
+                                  </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                <div class="flex justify-end gap-4 mt-6">
+                    <button type="button" id="cancel-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300">Batal</button>
+                    <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">Tambahkan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 
     <script>
         // --- Sidebar Toggle Functionality ---
@@ -195,6 +257,49 @@
 
         menuButton.addEventListener('click', toggleSidebar);
         overlay.addEventListener('click', toggleSidebar);
+        
+        // --- Modal Functionality ---
+        const addStudentModal = document.getElementById('add-student-modal');
+        const modalContent = addStudentModal.querySelector('div');
+        const addStudentBtn = document.getElementById('add-student-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
+
+        const openModal = () => {
+            addStudentModal.classList.remove('hidden');
+            setTimeout(() => {
+                addStudentModal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+            }, 10);
+        };
+
+        const closeModal = () => {
+            addStudentModal.classList.add('opacity-0');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => {
+                addStudentModal.classList.add('hidden');
+            }, 300);
+        };
+
+        addStudentBtn.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+        addStudentModal.addEventListener('click', (event) => {
+            if (event.target === addStudentModal) {
+                closeModal();
+            }
+        });
+        
+        // --- Checkbox functionality ---
+        const selectAllCheckbox = document.getElementById('select-all');
+        const studentCheckboxes = document.querySelectorAll('.student-checkbox');
+        
+        selectAllCheckbox.addEventListener('change', (event) => {
+            studentCheckboxes.forEach(checkbox => {
+                checkbox.checked = event.target.checked;
+            });
+        });
+
     </script>
 
 </body>

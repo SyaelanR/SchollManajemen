@@ -6,6 +6,7 @@ use App\Models\RiwayatKeuangan;
 use App\Models\User;
 use App\Models\Angkatan;
 use App\Models\Kelas;
+use App\Models\PmabayaranSiswa;
 use App\Models\DaftarTagihan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -26,7 +27,13 @@ class AdminController extends Controller
     public function manajSiswa(Request $request)
     {
         $id_sekolah = $request->cookie('id_sekolah');
-        $students = User::where('role', 'siswa')->where('id_sekolah', $id_sekolah)->latest()->paginate(10);
+        // Menggunakan leftJoin untuk memastikan semua siswa tetap tampil meskipun belum punya kelas.
+        // 'nama_kelas' akan bernilai null jika siswa belum masuk kelas.
+        $students = User::where('users.role', 'siswa')
+                        ->where('users.id_sekolah', $id_sekolah)
+                        ->leftJoin('kelas', 'users.id_kelas', '=', 'kelas.id_kelas')
+                        ->select('users.*', 'kelas.nama_kelas')
+                        ->latest('users.created_at')->paginate(10);
         return view('admin.manajemen_siswa', ['students' => $students]);
     }
 
@@ -218,8 +225,10 @@ class AdminController extends Controller
         $id_kelas = $request->input('id_kelas');
         // dd($id_kelas);
         $namaKelas = Kelas::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->first();
+        $daftarSiswa = User::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->get();
+        $daftarSiswaBelumPunyaKelas = User::where('id_kelas', null)->where('id_sekolah', $id_sekolah)->where('role', 'siswa')->get();
         // $angkatan = Angkatan::where('id', $kelas->id_angkatan)->first();
-        return view('admin.lihat_kelas', ['namaKelas' => $namaKelas]);
+        return view('admin.lihat_kelas', ['id_kelas' => $id_kelas,'namaKelas' => $namaKelas, 'daftarSiswa' => $daftarSiswa, 'daftarSiswaBelumPunyaKelas' => $daftarSiswaBelumPunyaKelas]);
     }
 
     
@@ -231,6 +240,29 @@ class AdminController extends Controller
         $dummy->id_angkatan = 0;
         $dummy->id_kelas = 0;
         return view('admin.lihat_kelas',['namaKelas' => $dummy]);
+    }
+
+    public function tambahSiswaKeKelas(Request $request)
+    {
+        // 1. Validasi input
+        $request->validate([
+            'id_kelas' => 'required|integer|exists:kelas,id_kelas',
+            'siswa_ids' => 'required|array|min:1',
+            'siswa_ids.*' => 'integer|exists:users,id', // Pastikan setiap ID siswa ada di tabel users
+        ], [
+            'id_kelas.required' => 'ID Kelas tidak valid.',
+            'siswa_ids.required' => 'Anda harus memilih setidaknya satu siswa.',
+        ]);
+
+        $id_kelas = $request->input('id_kelas');
+        $siswa_ids = $request->input('siswa_ids');
+
+        // 2. Update id_kelas untuk semua siswa yang dipilih
+        User::whereIn('id', $siswa_ids)->update(['id_kelas' => $id_kelas]);
+
+        // 3. Redirect kembali ke halaman sebelumnya dengan pesan sukses
+        // return back()->with('success', 'Siswa berhasil ditambahkan ke kelas!');
+        return redirect()->route('manajemenKelas')->with('success', 'Siswa berhasil ditambahkan ke kelas!');
     }
 
     public function manajKeuangan()
@@ -334,7 +366,88 @@ class AdminController extends Controller
     public function tagihanSiswa()
     {
         $id_sekolah = request()->cookie('id_sekolah');
+        $angkatans = Angkatan::where('id_sekolah', $id_sekolah)->latest()->get();
         $daftarTagihan = DaftarTagihan::where('id_sekolah', $id_sekolah)->latest()->get();
-        return view('admin.tagihan_siswa', ['daftarTagihan' => $daftarTagihan]);
+        return view('admin.tagihan_siswa', ['daftarTagihan' => $daftarTagihan, 'angkatans' => $angkatans]);
     }
+
+    public function storeTagihan(Request $request)
+    {
+        $id_sekolah = request()->cookie('id_sekolah');
+
+        $request->validate([
+            'jumlah_tagihan' => 'required|numeric|min:0.01',
+            'jatuh_tempo' => 'required|date',
+            'keterangan' => 'nullable|string|max:255',
+            // 'target_angkatan' => 'required|string|exists:angkatans,angkatan,id_sekolah,' . $id_sekolah,
+        ], [
+            'jumlah_tagihan.required' => 'Jumlah tagihan tidak boleh kosong.',
+            'jumlah_tagihan.numeric' => 'Jumlah tagihan harus berupa angka.',
+            'jumlah_tagihan.min' => 'Jumlah tagihan harus lebih besar dari 0.',
+            'jatuh_tempo.required' => 'Jatuh tempo tidak boleh kosong.',
+            'jatuh_tempo.date' => 'Jatuh tempo harus berupa tanggal yang valid.',
+            'keterangan.max' => 'Keterangan maksimal 255 karakter.',
+            // 'target_angkatan.required' => 'Target angkatan tidak boleh kosong.',
+            // 'target_angkatan.exists' => 'Target angkatan tidak valid.',
+        ]);
+
+        // 1. Buat tagihan baru dan simpan hasilnya ke dalam variabel.
+        // Ini lebih aman daripada menggunakan latest()->first() setelahnya.
+        $daftarTagihan = DaftarTagihan::create([
+            'id_sekolah' => $id_sekolah,
+            'jumlah_tagihan' => $request->jumlah_tagihan,
+            'jatuh_tempo' => $request->jatuh_tempo,
+            'keterangan' => $request->keterangan,
+            'target_angkatan' => $request->target_angkatan,
+            'nama_angkatan' => Angkatan::where('id_angkatan', $request->target_angkatan)->where('id_sekolah', $id_sekolah)->value('angkatan'),
+        ]);
+
+        // 2. Ambil semua siswa yang menjadi target tagihan.
+        // Menggunakan 'pluck('id')' lebih efisien jika hanya butuh ID, tapi di sini kita butuh objeknya.
+        $targetSiswa = User::where('id_angkatan', $request->target_angkatan)
+                            ->where('id_sekolah', $id_sekolah)
+                            ->get();
+
+        // 3. Lakukan perulangan untuk membuat entri pembayaran untuk setiap siswa.
+        foreach($targetSiswa as $siswa){
+            PmabayaranSiswa::create([
+                'id_siswa' => $siswa->id,
+                'id_sekolah' => $id_sekolah,
+                'id_daftar_tagihan' => $daftarTagihan->id_daftar_tagihan, // Gunakan ID dari tagihan yang baru dibuat.
+                'jumlah_tagihan' => $request->jumlah_tagihan,
+                'status_pembayaran' => 'belum lunas', // Sesuai dengan ENUM di migrasi ('lunas', 'belum lunas').
+            ]);
+        }
+
+        return redirect()->route('tagihanSiswa')->with('success', 'Tagihan berhasil ditambahkan!');
+    }
+
+
+    public function pembayaranTagihansiswa(Request $request)
+    {
+        $id_daftar_tagihan = $request->input('id_daftar_tagihan');
+        $id_sekolah = request()->cookie('id_sekolah');
+
+        // Mengambil data siswa yang belum membayar menggunakan join
+        $belumMembayar = User::join('pmabayaran_siswas', 'users.id', '=', 'pmabayaran_siswas.id_siswa')
+            ->where('pmabayaran_siswas.id_sekolah', $id_sekolah)
+            ->where('pmabayaran_siswas.id_daftar_tagihan', $id_daftar_tagihan)
+            ->where('pmabayaran_siswas.status_pembayaran', 'belum lunas')
+            ->select('users.name', 'users.nisn_nip')
+            ->get();
+
+        // Mengambil data siswa yang sudah membayar menggunakan join
+        $sudahMembayar = User::join('pmabayaran_siswas', 'users.id', '=', 'pmabayaran_siswas.id_siswa')
+            ->where('pmabayaran_siswas.id_sekolah', $id_sekolah)
+            ->where('pmabayaran_siswas.id_daftar_tagihan', $id_daftar_tagihan)
+            ->where('pmabayaran_siswas.status_pembayaran', 'lunas')
+            ->select('users.name', 'users.nisn_nip', 'pmabayaran_siswas.updated_at')
+            ->get();
+
+        return view('admin.pembayaran_tagihan', [
+            'sudahMembayar' => $sudahMembayar, 
+            'belumMembayar' => $belumMembayar
+        ]);
+    }
+
 }

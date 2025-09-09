@@ -17,7 +17,8 @@ return new class extends Migration
             $table->decimal('jumlah_tagihan', 15, 2);
             $table->string('keterangan');
             $table->date('jatuh_tempo');
-            $table->string('target_angkatan');
+            $table->unsignedBigInteger('target_angkatan');
+            $table->string('nama_angkatan');
             $table->integer('persentase_terbayar')->default(0); // 0: belum lunas, 1: lunas
             $table->timestamps();
 
