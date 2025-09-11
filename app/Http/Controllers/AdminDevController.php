@@ -39,8 +39,8 @@ class AdminDevController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'admin' => 'required|array|min:1',
-            'admin.*.nip' => 'required|string|distinct|unique:users,nisn_nip',
-            'admin.*.username' => 'required|string|distinct|unique:users,nisn_nip',
+            'admin.*.nip' => 'required|string|distinct|unique:users,nisn_nik',
+            'admin.*.username' => 'required|string|distinct|unique:users,nisn_nik',
 
             'admin.*.nama' => 'required|string|max:255',
             'admin.*.password' => 'required|string|min:6',
@@ -57,7 +57,7 @@ class AdminDevController extends Controller
                     'name' => $adminData['nama'],
                     'email' => $adminData['username'] . '@sekolah.sch.id', // Membuat email unik berdasarkan NIP
                     'password' => $adminData['password'],
-                    'nisn_nip' => $adminData['nip'],
+                    'nisn_nik' => $adminData['nip'],
                     'username' => $adminData['username'],
                     'role' => 'admin', // Otomatis mengatur role sebagai guru
                     'id_sekolah' => $id_sekolah,

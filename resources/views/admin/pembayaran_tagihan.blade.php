@@ -171,7 +171,7 @@
                                 </thead>
                                 <tbody class="divide-y">
                                     @forelse ($sudahMembayar as $membayar)
-                                    <tr class="hover:bg-gray-50"><td class="p-3">{{$membayar->nisn_nip}}</td><td class="p-3 font-medium">{{$membayar->name}}</td><td class="p-3">{{ \Carbon\Carbon::parse($membayar->updated_at)->format('d M Y') }}</td></tr>
+                                    <tr class="hover:bg-gray-50"><td class="p-3">{{$membayar->nisn_nik}}</td><td class="p-3 font-medium">{{$membayar->name}}</td><td class="p-3">{{ \Carbon\Carbon::parse($membayar->updated_at)->format('d M Y') }}</td></tr>
                                     @empty
                                     <tr>
                                         <td colspan="4" class="p-3 text-center text-gray-500">
@@ -206,7 +206,7 @@
                                 </thead>
                                 <tbody class="divide-y">
                                     @forelse ($belumMembayar as $belum)
-                                    <tr class="hover:bg-gray-50"><td class="p-3">{{$belum->nisn_nip}}</td><td class="p-3 font-medium">{{$belum->name}}</td></tr>
+                                    <tr class="hover:bg-gray-50"><td class="p-3">{{$belum->nisn_nik}}</td><td class="p-3 font-medium">{{$belum->name}}</td></tr>
                                     @empty
                                     <tr>
                                         <td colspan="4" class="p-3 text-center text-gray-500">

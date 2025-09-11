@@ -13,14 +13,27 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->text('password')->change();
-            $table->text('nisn_nip')->unique()->after('password');
-            $table->string('mapel')->nullable()->after('nisn_nip');
-            $table->string('role')->default('siswa')->after('mapel');
+            $table->text('nisn_nik')->unique()->after('password');
+            $table->string('alamat')->nullable()->after('nisn_nik');
+            $table->string('role')->default('siswa')->after('alamat');
             $table->unsignedBigInteger('id_kelas')->nullable()->after('role');
             $table->unsignedBigInteger('id_angkatan')->nullable()->after('id_kelas');
             $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan'])->nullable()->after('id_angkatan');
             $table->string('username')->unique()->after('jenis_kelamin');
             $table->unsignedBigInteger('id_sekolah')->nullable()->after('username');
+
+            //tambahan guru
+            $table->string('no_telp')->nullable()->after('id_sekolah');
+            $table->string('tempat_lahir')->nullable()->after('no_telp');
+            $table->date('tanggal_lahir')->nullable()->after('tempat_lahir');
+            $table->integer('usia')->nullable()->after('tanggal_lahir');
+
+            //tambahan siswa
+            $table->date('tanggal_masuk')->nullable()->after('usia');
+            $table->date('tanggal_lulus')->nullable()->after('tanggal_masuk');
+            $table->string('nama_orang_tua')->nullable()->after('tanggal_lulus');
+            $table->integer('gaji_orang_tua')->nullable()->after('nama_orang_tua');
+            $table->integer('jumlah_sodara')->nullable()->after('gaji_orang_tua');
 
             $table->foreign('id_kelas')->references('id_kelas')->on('kelas')->onDelete('set null');
             $table->foreign('id_angkatan')->references('id_angkatan')->on('angkatans')->onDelete('set null');
@@ -41,7 +54,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropForeign(['id_kelas']); // Pastikan foreign key dihapus dulu
             $table->dropColumn([
-                'nisn_nip',
+                'nisn_nik',
                 'mapel',
                 'role',
                 'id_kelas',

@@ -191,7 +191,7 @@
                                 <tr class="hover:bg-gray-50">
                                     <td class="p-3 text-gray-800 font-medium">{{$admin->name}}</td>
                                     <td class="p-3 text-gray-700">{{$admin->email}}</td>
-                                    <td class="p-3 text-gray-700">{{$admin->nisn_nip}}</td>
+                                    <td class="p-3 text-gray-700">{{$admin->nisn_nik}}</td>
                                     <td class="p-3 text-center">
                                         <button class="text-red-500 hover:text-red-700" title="Hapus Admin">
                                             <i class="fa-solid fa-trash"></i>

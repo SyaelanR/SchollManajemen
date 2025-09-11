@@ -151,7 +151,7 @@
                             <tbody class="divide-y">
                                 @forelse ($students as $student)
                                 <tr class="hover:bg-gray-50">
-                                    <td class="p-3 text-gray-700">{{ $student->nisn_nip }}</td>
+                                    <td class="p-3 text-gray-700">{{ $student->nisn_nik }}</td>
                                     <td class="p-3 text-gray-800 font-medium">{{ $student->name }}</td>
                                     <td class="p-3 text-gray-700">{{ $student->nama_kelas ?? '-' }}</td>
                                     <td class="p-3 text-gray-700">{{ $student->jenis_kelamin }}</td>

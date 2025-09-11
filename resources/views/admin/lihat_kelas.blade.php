@@ -166,7 +166,7 @@
                                 @forelse ($daftarSiswa as $siswa)
                                 <!-- Sample Row 1 -->
                                 <tr class="hover:bg-gray-50">
-                                    <td class="p-3 text-gray-700">{{$siswa->nisn_nip}}</td>
+                                    <td class="p-3 text-gray-700">{{$siswa->nisn_nik}}</td>
                                     <td class="p-3 text-gray-800 font-medium">{{$siswa->name}}</td>
                                     <td class="p-3 text-gray-700">{{$siswa->jenis_kelamin}}</td>
                                     <td class="p-3 text-center">
@@ -218,7 +218,7 @@
                         <tbody class="divide-y">
                             @forelse ($daftarSiswaBelumPunyaKelas as $siswa)
                             <tr>
-                                <td class="p-3 text-gray-700">{{ $siswa->nisn_nip }}</td>
+                                <td class="p-3 text-gray-700">{{ $siswa->nisn_nik }}</td>
                                 <td class="p-3 truncate">{{ $siswa->name }}</td>
                                 <td class="p-3 text-center"><input type="checkbox" name="siswa_ids[]" value="{{ $siswa->id }}" class="custom-checkbox student-checkbox"></td>
                            </tr>

@@ -8,6 +8,7 @@ use App\Models\Angkatan;
 use App\Models\Kelas;
 use App\Models\PmabayaranSiswa;
 use App\Models\DaftarTagihan;
+use App\Models\Mapel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -48,7 +49,9 @@ class AdminController extends Controller
     public function manajGuru(Request $request)
     {
         $id_sekolah = $request->cookie('id_sekolah');
-        $teachers = User::where('role', 'guru')->where('id_sekolah', $id_sekolah)->latest()->paginate(10);
+        // Menggunakan whereIn untuk mengambil pengguna dengan role 'guru' atau 'staf'
+        $teachers = User::whereIn('role', ['guru', 'staf'])
+                        ->where('id_sekolah', $id_sekolah)->latest()->paginate(10);
         return view('admin.manajemen_guru', ['teachers' => $teachers]);
     }
 
@@ -69,37 +72,47 @@ class AdminController extends Controller
 
         $validator = Validator::make($request->all(), [
             'students' => 'required|array|min:1',
-            // 'distinct' memastikan keunikan dalam array yang dikirim.
-            // 'unique' memastikan keunikan di tabel 'users'.
-            'students.*.nisn' => 'required|string|distinct|unique:users,nisn_nip',
+            'students.*.nisn' => 'required|string|distinct|unique:users,nisn_nik',
             'students.*.username' => 'required|string|distinct|unique:users,username',
-
-            // PERINGATAN: Menjadikan nama unik biasanya bukan praktik yang baik dalam sistem sekolah nyata
-            // karena ada kemungkinan siswa memiliki nama yang sama. NISN adalah pengidentifikasi unik yang lebih baik.
-            // Aturan ini ditambahkan sesuai permintaan Anda.
-
             'students.*.nama' => 'required|string|max:255',
-            // 'students.*.nama' => 'required|string|max:255|distinct|unique:users,name',
-
             'students.*.gender' => 'required|in:Laki-laki,Perempuan',
             'students.*.password' => 'required|string|min:6',
+            'students.*.address' => 'nullable|string|max:255',
+            'students.*.birthplace' => 'nullable|string|max:100',
+            'students.*.dob' => 'nullable|date',
+            'students.*.entry_date' => 'nullable|date',
+            'students.*.parent_name' => 'nullable|string|max:255',
+            'students.*.parent_phone' => 'nullable|string|max:20',
+            'students.*.siblings_count' => 'nullable|integer',
+            'students.*.parent_salary' => 'nullable|string|max:50', // Menggunakan string untuk fleksibilitas format
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        foreach ($request->students as $studentData) {
-            if (isset($studentData['nama'], $studentData['nisn'], $studentData['gender'], $studentData['password'])) {
+        foreach ($request->input('students', []) as $studentData) {
+            // Memastikan field wajib ada sebelum membuat user
+            if (isset($studentData['nama'], $studentData['nisn'], $studentData['username'], $studentData['gender'], $studentData['password'])) {
                 User::create([
-                    'name' => $studentData['nama'],
-                    'email' => $studentData['username'] . '@sekolah.sch.id', // Membuat email unik berdasarkan NISN
-                    'password' => $studentData['password'],
-                    'nisn_nip' => $studentData['nisn'],
-                    'jenis_kelamin' => $studentData['gender'],
-                    'username' => $studentData['username'],
-                    'role' => 'siswa', // Otomatis mengatur role sebagai siswa
-                    'id_sekolah' => $id_sekolah,
+                    'name'              => $studentData['nama'],
+                    'email'             => $studentData['username'] . '@sekolah.sch.id', // Membuat email unik
+                    'password'          => $studentData['password'], // Eloquent akan mengenkripsi ini secara otomatis
+                    'nisn_nik'          => $studentData['nisn'],
+                    'jenis_kelamin'     => $studentData['gender'],
+                    'username'          => $studentData['username'],
+                    'role'              => 'siswa', // Otomatis mengatur role sebagai siswa
+                    'id_sekolah'        => $id_sekolah,
+                    
+                    // Menambahkan field baru
+                    'alamat'            => $studentData['address'],
+                    'tempat_lahir'      => $studentData['birthplace'],
+                    'tanggal_lahir'     => $studentData['dob'],
+                    'tanggal_masuk'     => $studentData['entry_date'] ,
+                    'nama_orang_tua'         => $studentData['parent_name'],
+                    'no_telp'      => $studentData['parent_phone'],
+                    'jumlah_sodara'    => $studentData['siblings_count'],
+                    'gaji_orang_tua'         => $studentData['parent_salary'],
                 ]);
             }
         }
@@ -115,36 +128,44 @@ class AdminController extends Controller
     {
         $id_sekolah = $request->cookie('id_sekolah');
         $validator = Validator::make($request->all(), [
-            'teacher' => 'required|array|min:1',
-            'teacher.*.nip' => 'required|string|distinct|unique:users,nisn_nip',
+            'teacher'          => 'required|array|min:1',
+            'teacher.*.nik'    => 'required|string|distinct|unique:users,nisn_nik',
             'teacher.*.username' => 'required|string|distinct|unique:users,username',
-
-            'teacher.*.nama' => 'required|string|max:255',
-            'teacher.*.mapel' => 'required|string|max:255',
+            'teacher.*.nama'     => 'required|string|max:255',
             'teacher.*.password' => 'required|string|min:6',
+            'teacher.*.alamat' => 'nullable|string|max:255',
+            'teacher.*.tempat_lahir' => 'nullable|string|max:100',
+            'teacher.*.tanggal_lahir' => 'nullable|date',
+            'teacher.*.usia' => 'nullable|integer',
+            'teacher.*.nomor_telp' => 'nullable|string|max:15',
+            'teacher.*.jabatan' => 'required|string|in:guru,staf', // 'jabatan' dari form akan menjadi 'role'
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        foreach ($request->teacher as $teacherData) {
+        foreach ($request->input('teacher', []) as $teacherData) {
             // Pastikan semua data yang diperlukan ada sebelum membuat user
-            if (isset($teacherData['nama'], $teacherData['nip'], $teacherData['password'], $teacherData['mapel'])) {
+            if (isset($teacherData['nama'], $teacherData['nik'], $teacherData['password'], $teacherData['username'])) {
                 User::create([
-                    'name' => $teacherData['nama'],
-                    'email' => $teacherData['username'] . '@sekolah.sch.id', // Membuat email unik berdasarkan NIP
-                    'password' => $teacherData['password'],
-                    'nisn_nip' => $teacherData['nip'],
-                    'mapel' => $teacherData['mapel'],
-                    'username' => $teacherData['username'],
-                    'role' => 'guru', // Otomatis mengatur role sebagai guru
-                    'id_sekolah' => $id_sekolah,
+                    'name'          => $teacherData['nama'],
+                    'email'         => $teacherData['username'] . '@sekolah.sch.id', // Membuat email unik
+                    'password'      => $teacherData['password'], // Eloquent akan mengenkripsi ini secara otomatis
+                    'nisn_nik'      => $teacherData['nik'],
+                    'username'      => $teacherData['username'],
+                    'role'          => $teacherData['jabatan'], // Menggunakan 'jabatan' dari form sebagai 'role'
+                    'id_sekolah'    => $id_sekolah,
+                    'alamat'        => $teacherData['alamat'],
+                    'tempat_lahir'  => $teacherData['tempat_lahir'],
+                    'tanggal_lahir' => $teacherData['tanggal_lahir'],
+                    'usia'          => $teacherData['usia'],
+                    'no_telp'       => $teacherData['nomor_telp'],
                 ]);
             }
         }
 
-        return response()->json(['message' => 'Data semua guru berhasil disimpan!'], 200);
+        return response()->json(['message' => 'Data semua staf/guru berhasil disimpan!'], 200);
     }
 
 
@@ -433,7 +454,7 @@ class AdminController extends Controller
             ->where('pmabayaran_siswas.id_sekolah', $id_sekolah)
             ->where('pmabayaran_siswas.id_daftar_tagihan', $id_daftar_tagihan)
             ->where('pmabayaran_siswas.status_pembayaran', 'belum lunas')
-            ->select('users.name', 'users.nisn_nip')
+            ->select('users.name', 'users.nisn_nik')
             ->get();
 
         // Mengambil data siswa yang sudah membayar menggunakan join
@@ -441,13 +462,29 @@ class AdminController extends Controller
             ->where('pmabayaran_siswas.id_sekolah', $id_sekolah)
             ->where('pmabayaran_siswas.id_daftar_tagihan', $id_daftar_tagihan)
             ->where('pmabayaran_siswas.status_pembayaran', 'lunas')
-            ->select('users.name', 'users.nisn_nip', 'pmabayaran_siswas.updated_at')
+            ->select('users.name', 'users.nisn_nik', 'pmabayaran_siswas.updated_at')
             ->get();
 
         return view('admin.pembayaran_tagihan', [
             'sudahMembayar' => $sudahMembayar, 
             'belumMembayar' => $belumMembayar
         ]);
+    }
+
+    public function manajMapel()
+    {
+        $id_sekolah = request()->cookie('id_sekolah');
+        // Menggunakan Eloquent untuk mengambil data agar casting (dekripsi) otomatis diterapkan.
+        // 'with('guru')' akan melakukan eager loading relasi 'guru'.
+        $mapels = Mapel::where('id_sekolah', $id_sekolah)
+                       ->with('guru') // Eager load relasi guru
+                       ->latest() // Mengurutkan berdasarkan created_at di tabel mapels
+                       ->get();
+
+        $teachers = User::where('role', 'guru')->where('id_sekolah', $id_sekolah)->get();
+        
+        return view('admin.manajemen_mapel', ['mapels' => $mapels, 'teachers' => $teachers]);
+
     }
 
 }

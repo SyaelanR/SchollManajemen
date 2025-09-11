@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
         ]);
             
         User::create([
-            'nisn_nip' => '220103190',
+            'nisn_nik' => '220103190',
             'name' => 'SyaelanR',
             'email' => 'syaelanr@gmail.com',
             'password' => 'password',
@@ -51,7 +51,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::create([
-            'nisn_nip' => '220103191',
+            'nisn_nik' => '220103191',
             'name' => 'yanto',
             'email' => 'yanto@gmail.com',
             'password' => 'password',
@@ -61,27 +61,40 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::create([
-            'nisn_nip' => '220103192',
+            'nisn_nik' => '220103192',
             'name' => 'jarwo',
+            'alamat' => 'Wonogiri',
+            'tempat_lahir' => 'Wonogiri',
+            'tanggal_lahir' => '1990-05-15',
+            'usia' => 34,
+            'no_telp' => '081234567892',
+            'role' => 'guru', 
             'email' => 'jarwo@gmail.com',
             'password' => 'password',
             'username' => 'jarwo',
-            'mapel' => 'Matematika',
-            'role' => 'guru',
-            'id_sekolah' => 1
+            'id_sekolah' => 1,
         ]);
 
         User::create([
-            'nisn_nip' => '220103193',
+            'nisn_nik' => '220103193',
             'name' => 'yono',
+            'alamat' => 'Wonogiri',
+            'tempat_lahir' => 'Wonogiri',
+            'tanggal_lahir' => '2007-08-20',
+            'tanggal_masuk' => '2025-07-01',
+            'tanggal_lulus' => '2028-06-30',
+            'nama_orang_tua' => 'sulami',
+            'no_telp' => '081234567891',
+            'jumlah_sodara' => 2,
+            'gaji_orang_tua' => 1500000,
+            'jenis_kelamin' => 'Laki-laki',
+            'id_angkatan' => 1,
             'email' => 'yono@gmail.com',
             'password' => 'password',
             'username' => 'yono',
             'role' => 'siswa',
             'id_sekolah' => 1,
             'id_kelas' => 1,
-            'id_angkatan' => 1,
-            'jenis_kelamin' => 'Laki-laki',
         ]);
     }
 }

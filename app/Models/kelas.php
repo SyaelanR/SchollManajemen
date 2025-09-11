@@ -12,4 +12,17 @@ class Kelas extends Model
         'id_angkatan',
         'id_sekolah'
 ];  
+
+    protected $primaryKey = 'id_kelas';
+    protected $table = 'kelas';
+
+    public function angkatan()
+    {
+        return $this->belongsTo(Angkatan::class, 'id_angkatan', 'id_angkatan');
+    }
+
+    public function sekolah()
+    {
+        return $this->belongsTo(User::class, 'id_sekolah', 'id_sekolah');
+    }
 }

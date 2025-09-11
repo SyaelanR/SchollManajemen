@@ -55,6 +55,12 @@ Route::middleware('auth')->group(function () {
             Route::post('/tagihan-siswa/pembayaran-tagihan', [AdminController::class, 'pembayaranTagihansiswa'])->name('pembayaranTagihanSiswa');
         });
 
+        Route::prefix('manajemen-mapel')->group(function () {
+            Route::get('/', [AdminController::class, 'manajMapel'])->name('manajemenMapel');
+            // Route::get('/tambah-mapel', [AdminController::class, 'tambahMapel'])->name('tambahMapel');
+            // Route::post('/tambah-mapel', [AdminController::class, 'storeMapel'])->name('storeMapel');
+        });
+
     });
 
         

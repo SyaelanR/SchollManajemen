@@ -138,9 +138,10 @@
                         <table class="w-full min-w-[800px] text-left">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="p-3 font-semibold text-gray-600">NIP</th>
                                     <th class="p-3 font-semibold text-gray-600">Nama</th>
-                                    <th class="p-3 font-semibold text-gray-600">Mapel</th>
+                                    <th class="p-3 font-semibold text-gray-600">Alamat</th>
+                                    <th class="p-3 font-semibold text-gray-600">No Telp</th>
+                                    <th class="p-3 font-semibold text-gray-600">Jabatan</th>
                                     <th class="p-3 font-semibold text-gray-600">Detail</th>
                                     <th class="p-3 font-semibold text-gray-600 text-center">Aksi</th>
                                 </tr>
@@ -148,9 +149,10 @@
                             <tbody class="divide-y">
                                 @forelse ($teachers as $teacher)
                                 <tr class="hover:bg-gray-50">
-                                    <td class="p-3 text-gray-700">{{ $teacher->nisn_nip }}</td>
-                                    <td class="p-3 text-gray-800 font-medium">{{ $teacher->name }}</td>
-                                    <td class="p-3 text-gray-700">{{ $teacher->mapel ?? '-' }}</td>
+                                    <td class="p-3 text-gray-700">{{ $teacher->name }}</td>
+                                    <td class="p-3 text-gray-800 font-medium">{{ $teacher->alamat }}</td>
+                                    <td class="p-3 text-gray-700">{{ $teacher->no_telp}}</td>
+                                    <td class="p-3 text-gray-700">{{ $teacher->role}}</td>
                                     <td class="p-3">
                                         <a href="#" class="bg-indigo-100 text-indigo-700 text-sm font-medium py-1.5 px-3 rounded-lg hover:bg-indigo-200 transition duration-300 whitespace-nowrap">Lihat Detail</a>
                                     </td>

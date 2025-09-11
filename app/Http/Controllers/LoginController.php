@@ -78,7 +78,7 @@ class LoginController extends Controller
             // Menambahkan cookie ke response
             $response->withCookie(cookie('name', $user->name, $cookieLifetime));
             $response->withCookie(cookie('username', $user->username, $cookieLifetime));
-            $response->withCookie(cookie('nisn_nip', $user->nisn_nip, $cookieLifetime));
+            $response->withCookie(cookie('nisn_nik', $user->nisn_nik, $cookieLifetime));
             $response->withCookie(cookie('role', $user->role, $cookieLifetime));
             $response->withCookie(cookie('mapel', $user->mapel, $cookieLifetime));
             $response->withCookie(cookie('id_kelas', $user->id_kelas, $cookieLifetime));

@@ -4,13 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Siswa - Sistem Manajemen Sekolah</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         /* Custom styles */
@@ -58,7 +55,6 @@
 <body class="bg-gray-100">
 
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
         <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
             <div class="p-6">
                 <a href="#" class="flex items-center space-x-3">
@@ -111,14 +107,10 @@
             </div>
         </aside>
 
-        <!-- Overlay for mobile -->
         <div id="overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden lg:hidden"></div>
 
-        <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-y-auto">
-            <!-- Header -->
             <header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-30">
-                <!-- Mobile Menu Button -->
                 <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
                     <i class="fa-solid fa-bars text-2xl"></i>
                 </button>
@@ -134,40 +126,40 @@
                 </div>
             </header>
 
-            <!-- Page Content -->
             <main class="p-6 md:p-8 flex-1">
                 <div class="bg-white p-6 rounded-xl shadow-md">
-                    <!-- Form Header -->
                     <div class="mb-6">
                         <h2 class="text-2xl font-bold text-gray-800">Form Tambah Siswa Massal</h2>
                         <p class="text-gray-500 mt-1">Isi data siswa pada baris yang tersedia. Klik "Tambah Baris" untuk menambahkan lebih banyak siswa.</p>
                     </div>
 
-                    <!-- Students Form Table -->
                     <form id="add-students-form" method="POST" action="{{ route('storeSiswa') }}">
                         @csrf
-                        <!-- MODIFIED: Changed overflow-x-auto to our custom class force-scroll-x -->
                         <div class="force-scroll-x">
-                            <!-- MODIFIED: Removed min-w-[800px] to let columns define the width -->
                             <table class="w-full text-left">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <!-- MODIFIED: Removed w-* classes and added style with min-width for better control -->
                                         <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">NISN</th>
                                         <th class="p-3 font-semibold text-gray-600" style="min-width: 250px;">Nama Siswa</th>
                                         <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Jenis Kelamin</th>
+                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 300px;">Alamat</th>
+                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 200px;">Tempat lahir</th>
+                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 180px;">Tanggal lahir</th>
+                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 180px;">Tanggal masuk</th>
+                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 250px;">nama Ortu</th>
+                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 200px;">No Telp Ortu</th>
+                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 180px;">Jumlah saudara</th>
+                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 200px;">Gaji Ortu</th>
                                         <th class="p-3 font-semibold text-gray-600" style="min-width: 180px;">Username</th>
                                         <th class="p-3 font-semibold text-gray-600" style="min-width: 180px;">Password</th>
                                         <th class="p-3 font-semibold text-gray-600 text-center" style="min-width: 80px;">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="student-table-body" class="divide-y">
-                                    <!-- Dynamic rows will be inserted here -->
-                                </tbody>
+                                    </tbody>
                             </table>
                         </div>
 
-                        <!-- Action Buttons for Table -->
                         <div class="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
                             <button type="button" id="add-row-btn" class="w-full md:w-auto bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 flex items-center justify-center">
                                 <i class="fa-solid fa-plus mr-2"></i>
@@ -215,22 +207,46 @@
             row.className = 'hover:bg-gray-50';
             row.innerHTML = `
                 <td class="p-2">
-                    <input type="text" name="students[${rowCount}][nisn]" placeholder="Contoh: 202400${rowCount}" class="table-input" />
+                    <input type="text" name="students[${rowCount}][nisn]" placeholder="Contoh: 202400${rowCount}" class="table-input" required/>
                 </td>
                 <td class="p-2">
-                    <input type="text" name="students[${rowCount}][nama]" placeholder="Nama Lengkap Siswa" class="table-input" />
+                    <input type="text" name="students[${rowCount}][nama]" placeholder="Nama Lengkap Siswa" class="table-input" required/>
                 </td>
                 <td class="p-2">
-                    <select name="students[${rowCount}][gender]" class="table-input">
+                    <select name="students[${rowCount}][gender]" class="table-input" required>
                         <option value="Laki-laki">Laki-laki</option>
                         <option value="Perempuan">Perempuan</option>
                     </select>
                 </td>
                 <td class="p-2">
-                    <input type="text" name="students[${rowCount}][username]" placeholder="Username unik" class="table-input" />
+                    <input type="text" name="students[${rowCount}][address]" placeholder="Alamat Lengkap" class="table-input" required/>
                 </td>
                 <td class="p-2">
-                    <input type="password" name="students[${rowCount}][password]" placeholder="Password default" class="table-input" />
+                    <input type="text" name="students[${rowCount}][birthplace]" placeholder="Contoh: Jakarta" class="table-input" required/>
+                </td>
+                <td class="p-2">
+                    <input type="date" name="students[${rowCount}][dob]" placeholder="YYYY-MM-DD" class="table-input" required/>
+                </td>
+                <td class="p-2">
+                    <input type="date" name="students[${rowCount}][entry_date]" placeholder="YYYY-MM-DD" class="table-input" required/>
+                </td>
+                <td class="p-2">
+                    <input type="text" name="students[${rowCount}][parent_name]" placeholder="Nama Orang Tua/Wali" class="table-input" required/>
+                </td>
+                <td class="p-2">
+                    <input type="text" name="students[${rowCount}][parent_phone]" placeholder="Contoh: 081234567890" class="table-input" required/>
+                </td>
+                <td class="p-2">
+                    <input type="number" name="students[${rowCount}][siblings_count]" placeholder="Jumlah Saudara Kandung" class="table-input" required/>
+                </td>
+                <td class="p-2">
+                    <input type="text" name="students[${rowCount}][parent_salary]" placeholder="Contoh: 5.000.000" class="table-input" required/>
+                </td>
+                <td class="p-2">
+                    <input type="text" name="students[${rowCount}][username]" placeholder="Username unik" class="table-input" required/>
+                </td>
+                <td class="p-2">
+                    <input type="password" name="students[${rowCount}][password]" placeholder="Password default" class="table-input" required/>
                 </td>
                 <td class="p-2 text-center">
                     <button type="button" class="text-red-500 hover:text-red-700 delete-row-btn" title="Hapus Baris">
@@ -277,7 +293,7 @@
                 const response = await fetch(this.action, {
                     method: 'POST',
                     headers: {
-                        'X-CSRF-TOKEN': formData.get('_token'),
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
                         'Accept': 'application/json',
                     },
                     body: formData
@@ -306,15 +322,12 @@
 
         function displayErrors(errors) {
             for (const key in errors) {
-                // key will be in the format "students.1.nisn"
-                // We need to find the corresponding input
                 const parts = key.split('.');
                 if (parts[0] === 'students' && parts.length === 3) {
                     const rowKey = parts[1];
                     const fieldName = parts[2];
                     const message = errors[key][0];
 
-                    // Find the input by its 'name' attribute
                     let input;
                     if (fieldName === 'gender') {
                         input = document.querySelector(`select[name="students[${rowKey}][${fieldName}]"]`);
@@ -327,7 +340,6 @@
                         const errorElement = document.createElement('p');
                         errorElement.className = 'text-red-600 text-xs mt-1 error-message';
                         errorElement.textContent = message;
-                        // Insert the error message after the input
                         input.parentNode.appendChild(errorElement);
                     }
                 }
