@@ -158,8 +158,12 @@
                                     </div>
                                     <h3 class="text-xl font-semibold text-gray-800">{{$kelas->nama_kelas}}</h3>
                                     <div class="flex items-center text-gray-600 mt-4">
-                                        <i class="fa-solid fa-user-friends text-sm mr-2"></i>
-                                        <span class="text-sm">31 Siswa</span>
+                                        <i class="fa-solid fa-magnifying-glass text-sm mr-2"></i>
+                                        <span class="text-sm">{{$kelas->jurusan}}</span>
+                                    </div>
+                                    <div class="flex items-center text-gray-600 mt-2">
+                                        <i class="fa-solid fa-user-tie text-sm mr-2"></i>
+                                        <span class="text-sm">{{$kelas->wali_kelas}}</span>
                                     </div>
                                 </div>
                                 <select name="id_kelas" id="" class="hidden">
@@ -193,6 +197,14 @@
                 <div class="mb-4">
                     <label for="class-name" class="block text-gray-700 font-medium mb-2">Nama Kelas</label>
                     <input type="text" id="class-name" name="nama_kelas" placeholder="Contoh: 10 IPA 1" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                <div class="mb-4">
+                    <label for="class-name" class="block text-gray-700 font-medium mb-2">Wali Kelas</label>
+                    <input type="text" id="class-name" name="wali_kelas" placeholder="Contoh: Budi" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                <div class="mb-4">
+                    <label for="class-name" class="block text-gray-700 font-medium mb-2">Jurusan</label>
+                    <input type="text" id="class-name" name="jurusan" placeholder="Contoh: Teknik Informatika" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
                 </div>
                 <div class="mb-6">
                     <label for="class-year" class="block text-gray-700 font-medium mb-2">Angkatan</label>

@@ -10,7 +10,9 @@ class Kelas extends Model
         'id_kelas',
         'nama_kelas',
         'id_angkatan',
-        'id_sekolah'
+        'id_sekolah',
+        'jurusan',
+        'wali_kelas',
 ];  
 
     protected $primaryKey = 'id_kelas';

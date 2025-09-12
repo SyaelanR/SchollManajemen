@@ -143,8 +143,10 @@
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th class="p-3 font-semibold text-gray-600">Tahun Ajaran</th>
-                                    <th class="p-3 font-semibold text-gray-600">Jumlah Kelas</th>
-                                    <th class="p-3 font-semibold text-gray-600">Jumlah Siswa</th>
+                                    <th class="p-3 font-semibold text-gray-600">Semester</th>
+                                    <th class="p-3 font-semibold text-gray-600">Tanggal mulai</th>
+                                    <th class="p-3 font-semibold text-gray-600">Tanggal selesai</th>
+                                    <th class="p-3 font-semibold text-gray-600">Status</th>
                                     <th class="p-3 font-semibold text-gray-600 text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -154,8 +156,10 @@
                                     <tr class="hover:bg-gray-50">
                                         <td class="p-3 text-gray-800 font-medium">{{ $item->angkatan }}</td>
                                         {{-- Kolom Jumlah Kelas dan Siswa masih statis, perlu relasi untuk data dinamis --}}
-                                        <td class="p-3 text-gray-700">0</td>
-                                        <td class="p-3 text-gray-700">0</td>
+                                        <td class="p-3 text-gray-700">{{$item->semester}}</td>
+                                        <td class="p-3 text-gray-700">{{$item->tanggal_mulai}}</td>
+                                        <td class="p-3 text-gray-700">{{$item->tanggal_selesai}}</td>
+                                        <td class="p-3 text-gray-700">{{$item->status}}</td>
                                         <td class="p-3 text-center">
                                             <div class="flex justify-center space-x-3">
                                                 <button class="text-blue-600 hover:text-blue-800" title="Edit"><i class="fa-solid fa-pencil"></i></button>
@@ -196,6 +200,14 @@
                 <div class="mb-4">
                     <label for="angkatan" class="block text-gray-700 font-medium mb-2">Tahun Ajaran</label>
                     <input type="text" id="angkatan" name="angkatan" placeholder="Contoh: 2026/2027" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required value="{{ old('angkatan') }}">
+                </div>
+                <div class="mb-4">
+                    <label for="tanggal_mulai" class="block text-gray-700 font-medium mb-2">tanggal_mulai</label>
+                    <input type="date" id="tanggal_mulai" name="tanggal_mulai" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 mt-4" required value="{{ old('tanggal_mulai') }}">
+                </div>
+                <div class="mb-4">
+                    <label for="tanggal_selesai" class="block text-gray-700 font-medium mb-2">tanggal_selesai</label>
+                    <input type="date" id="tanggal_selesai" name="tanggal_selesai" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 mt-4" required value="{{ old('tanggal_mulai') }}">
                 </div>
                 
                 <div class="flex justify-end gap-4">

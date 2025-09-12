@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('nama_kelas');
             $table->unsignedBigInteger('id_angkatan')->nullable(); // Tambahkan kolomnya dulu dan buat nullable
             $table->unsignedBigInteger('id_sekolah')->nullable();
+            $table->string('jurusan')->nullable();
+            $table->string('wali_kelas')->nullable();
             $table->timestamps();
             
             $table->foreign('id_angkatan')->references('id_angkatan')->on('angkatans')->onDelete('set null');

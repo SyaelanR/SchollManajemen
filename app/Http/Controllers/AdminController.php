@@ -187,6 +187,8 @@ class AdminController extends Controller
         $request->validate([
             // Validasi untuk satu input 'angkatan' dengan aturan unik di tabel 'angkatans'
             'angkatan' => 'required|string|max:255|unique:angkatans,angkatan',
+            'tanggal_mulai' => 'required|date',
+            'tanggal_selesai' => 'required|date'
         ], [
             'angkatan.required' => 'Tahun ajaran tidak boleh kosong.',
             'angkatan.unique' => 'Tahun ajaran ini sudah ada.',
@@ -196,6 +198,8 @@ class AdminController extends Controller
         Angkatan::create([
             'angkatan' => $request->angkatan,
             'id_sekolah' => $id_sekolah,
+            'tanggal_mulai' => $request->tanggal_mulai,
+            'tanggal_selesai' => $request->tanggal_selesai,
         ]);
 
         // Arahkan kembali ke halaman manajemen angkatan dengan pesan sukses
@@ -221,16 +225,22 @@ class AdminController extends Controller
 
         $request->validate([
             'nama_kelas' => 'required|string|max:255',
-            'id_angkatan' => 'required|integer'
+            'id_angkatan' => 'required|integer',
+            'wali_kelas' => 'required|string|max:255',
+            'jurusan' => 'nullable|string|max:20'
         ], [
             'nama_kelas.required' => 'Nama kelas tidak boleh kosong.',
-            'id_angkatan.required' => 'Tahun ajaran tidak boleh kosong, buat angkatan terlebih dahulu'
+            'id_angkatan.required' => 'Tahun ajaran tidak boleh kosong, buat angkatan terlebih dahulu',
+            'wali_kelas.required' => 'Wali kelas tidak boleh kosong.',
+            'jurusan.max' => 'Jurusan maksimal 20 karakter.'
         ]);
 
         Kelas::create([
             'nama_kelas' => $request->nama_kelas,
             'id_angkatan' => $request->id_angkatan,
-            'id_sekolah' => $id_sekolah
+            'id_sekolah' => $id_sekolah,
+            'wali_kelas' => $request->wali_kelas,
+            'jurusan' => $request->jurusan,
         ]);
 
         return redirect()->route('manajemenKelas')->with('success', 'Kelas berhasil ditambahkan!');
@@ -245,11 +255,12 @@ class AdminController extends Controller
         $id_sekolah = $request->cookie('id_sekolah');
         $id_kelas = $request->input('id_kelas');
         // dd($id_kelas);
-        $namaKelas = Kelas::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->first();
+        $infoKelas = Kelas::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->with('angkatan')->first();
         $daftarSiswa = User::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->get();
         $daftarSiswaBelumPunyaKelas = User::where('id_kelas', null)->where('id_sekolah', $id_sekolah)->where('role', 'siswa')->get();
+        $jumlahSiswa = $daftarSiswa->count();
         // $angkatan = Angkatan::where('id', $kelas->id_angkatan)->first();
-        return view('admin.lihat_kelas', ['id_kelas' => $id_kelas,'namaKelas' => $namaKelas, 'daftarSiswa' => $daftarSiswa, 'daftarSiswaBelumPunyaKelas' => $daftarSiswaBelumPunyaKelas]);
+        return view('admin.lihat_kelas', ['id_kelas' => $id_kelas,'infoKelas' => $infoKelas, 'daftarSiswa' => $daftarSiswa, 'daftarSiswaBelumPunyaKelas' => $daftarSiswaBelumPunyaKelas, 'jumlahSiswa' => $jumlahSiswa]);
     }
 
     

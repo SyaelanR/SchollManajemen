@@ -27,18 +27,28 @@ class DatabaseSeeder extends Seeder
 
         Angkatan::create([
             'angkatan' => '2025/2026',
-            'id_sekolah' => 1
+            'id_sekolah' => 1,
+            'status' => 'aktif',
+            'semester' => 'ganjil',
+            'tanggal_mulai' => '2025-07-01',
+            'tanggal_selesai' => '2026-06-30'
         ]);
     
         Angkatan::create([
             'angkatan' => '2026/2027',
-            'id_sekolah' => 1
+            'id_sekolah' => 1,
+            'status' => 'aktif',
+            'semester' => 'genap',
+            'tanggal_mulai' => '2026-07-01',
+            'tanggal_selesai' => '2027-06-30'
         ]);
 
         Kelas::create([
             'nama_kelas' => 'X RPL 1',
             'id_angkatan' => 1,
             'id_sekolah' => 1,
+            'jurusan' => 'RPL',
+            'wali_kelas' => 'jarwo',
         ]);
             
         User::create([

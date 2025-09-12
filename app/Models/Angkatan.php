@@ -11,6 +11,10 @@ class Angkatan extends Model
     protected $fillable = [
         'id_angkatan',
         'angkatan',
-        'id_sekolah'
+        'id_sekolah',
+        'status',
+        'semester',
+        'tanggal_mulai',
+        'tanggal_selesai'
 ];
 }

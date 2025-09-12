@@ -126,12 +126,25 @@
             <main class="p-6 md:p-8 flex-1">
                 <div class="bg-white p-6 rounded-xl shadow-md">
                     <!-- Action Bar -->
-                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                    <div class="flex flex-col md:flex-row justify-between items-start mb-6 gap-4 border-b pb-6">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-800">Daftar Siswa Kelas: <span class="text-indigo-600">{{ $namaKelas->nama_kelas ?? 'Belum Dipilih' }}</span></h2>
-                            <p class="text-gray-500 mt-1">Total: 32 Siswa</p>
+                            <h2 class="text-2xl font-bold text-gray-800">Kelas: <span class="text-indigo-600">{{ $infoKelas->nama_kelas ?? 'Belum Dipilih' }}</span></h2>
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-x-6 gap-y-2 mt-2 text-gray-600">
+                                <div class="flex items-center">
+                                    <i class="fa-solid fa-user-tie mr-2 text-gray-400"></i>
+                                    <span>Wali Kelas: <strong>{{$infoKelas->wali_kelas ?? 'Belum Dipilih'}}</strong></span>
+                                </div>
+                                <div class="flex items-center">
+                                     <i class="fa-solid fa-calendar-days mr-2 text-gray-400"></i>
+                                     <span>Tahun Ajaran: <strong>{{$infoKelas->angkatan->angkatan ?? 'Belum Dipilih'}}</strong></span>
+                                </div>
+                                <div class="flex items-center">
+                                     <i class="fa-solid fa-users mr-2 text-gray-400"></i>
+                                     <span>Total Siswa: <strong>{{$jumlahSiswa}}</strong></span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-4 flex-shrink-0">
                              <a href="#" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300 flex items-center whitespace-nowrap">
                                 <i class="fa-solid fa-arrow-left mr-2"></i>
                                 Kembali
@@ -198,7 +211,7 @@
     <div id="add-student-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden opacity-0">
         <div class="bg-white rounded-xl shadow-2xl p-8 w-11/12 md:w-2/3 lg:w-1/2 transform transition-transform duration-300 scale-95">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-semibold text-gray-800">Tambah Siswa ke Kelas <span class="text-indigo-600">{{ $namaKelas->nama_kelas ?? '' }}</span></h3>
+                <h3 class="text-2xl font-semibold text-gray-800">Tambah Siswa ke Kelas <span class="text-indigo-600">{{ $infoKelas->nama_kelas ?? '' }}</span></h3>
                 <button id="close-modal-btn" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
             </div>
             <form action="{{ route('tambahSiswaKeKelas') }}" method="POST">
@@ -304,3 +317,4 @@
 
 </body>
 </html>
+
