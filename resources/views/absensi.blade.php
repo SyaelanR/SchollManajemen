@@ -45,7 +45,7 @@
             </a>
         </div>
         <nav class="mt-6 space-y-2 px-4">
-            <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">
+            <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">
                 <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
                 <span>Dashboard</span>
             </a>

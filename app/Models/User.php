@@ -41,7 +41,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
      * @return array<string, string>
      */
@@ -49,8 +49,17 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'encrypted',
-            'nisn_nip' => 'encrypted',
+            'password'   => 'encrypted',
+            'nisn_nip'   => 'encrypted',
         ];
+    }
+
+    /**
+     * Relasi ke tabel kelas.
+     * Pastikan kamu punya model Kelas dan tabel `kelas`.
+     */
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class, 'id_kelas');
     }
 }

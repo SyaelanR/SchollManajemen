@@ -20,16 +20,11 @@
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
-        /* Custom styles */
         body { font-family: 'Inter', sans-serif; }
-
-        /* Custom scrollbar for better aesthetics */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #555; }
-
-        /* Sidebar transition */
         .sidebar { transition: transform 0.3s ease-in-out; }
     </style>
 </head>
@@ -38,103 +33,98 @@
 <div class="flex h-screen overflow-hidden">
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
-            <div class="p-6">
-                <a href="#" class="flex items-center space-x-3">
-                    <i class="fa-solid fa-school text-3xl text-indigo-600"></i>
-                    <span class="text-2xl font-bold text-gray-800">EduSys</span>
-                </a>
-            </div>
-            <nav class="mt-6">
-                <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
-                    <i class="fa-solid fa-tachometer-alt mr-3"></i>
-                    <span>Dashboard</span>
-                </a>
+        <div class="p-6">
+            <a href="#" class="flex items-center space-x-3">
+                <i class="fa-solid fa-school text-3xl text-indigo-600"></i>
+                <span class="text-2xl font-bold text-gray-800">EduSys</span>
+            </a>
+        </div>
+        <nav class="mt-6">
+            <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
+                <i class="fa-solid fa-tachometer-alt mr-3"></i>
+                <span>Dashboard</span>
+            </a>
 
+            @can('view-admin')
+            <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-user-graduate mr-3"></i>
+                <span>Manajemen Siswa</span>
+            </a>
+            <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-chalkboard-user mr-3"></i>
+                <span>Manajemen Guru</span>
+            </a>
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-solid fa-door-closed mr-3"></i>
+                <span>Manajemen Kelas</span>
+            </a>
+            <a href="{{ route('jadwal') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-alt mr-3 w-5 h-5"></i>
+                <span>Jadwal Pelajaran</span>
+            </a>
+            <a href="{{ route('pelanggaran.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-triangle-exclamation mr-3"></i>
+                <span>Pelanggaran Siswa</span>
+            </a>
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-money-bill-wave mr-3"></i>
+                <span>Keuangan</span>
+            </a>
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-layer-group mr-3"></i>
+                <span>Raport</span>
+            </a>
+            @endcan
 
-                @can('view-admin')
-                <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                    <i class="fa-solid fa-user-graduate mr-3"></i>
-                    <span>Manajemen Siswa</span>
-                </a>
-                <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                    <i class="fa-solid fa-chalkboard-user mr-3"></i>
-                    <span>Manajemen Guru</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                    <i class="fa-solid fa-solid fa-door-closed mr-3"></i>
-                    <span>Manajemen Kelas</span>
-                </a>
-                <a href="{{ route('jadwal') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
-                    <i class="fa-solid fa-calendar-alt mr-3 w-5 h-5"></i>
-                    <span>Jadwal Pelajaran</span>
-                </a>
-                <a href="{{ route('pelanggaran.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                    <i class="fa-solid fa-triangle-exclamation mr-3"></i>
-                    <span>Pelanggaran Siswa</span>
-                </a>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                    <i class="fa-solid fa-money-bill-wave mr-3"></i>
-                    <span>Keuangan</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                    <i class="fa-solid fa-layer-group mr-3"></i>
-                    <span>Raport</span>
-                </a>
-                @endcan
+            @can('view-guru')
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <i class="fa-solid fa-pen mr-3"></i>
+                <span>Input Nilai</span>
+            </a>
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <i class="fa-solid fa-list-check mr-3"></i>
+                <span>Input Absensi</span>
+            </a>
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <i class="fa-solid fa-puzzle-piece mr-3"></i>
+                <span>Ekstrakulikuler</span>
+            </a>
+            <a href="{{ route('pelanggaran.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <i class="fa-solid fa-triangle-exclamation mr-3"></i>
+                <span>Pelanggaran Siswa</span>
+            </a>
+            @endcan
 
-                @can('view-guru')
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-pen mr-3"></i>
-                    <span>Input Nilai</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-list-check mr-3"></i>
-                    <span>Input Absensi</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-puzzle-piece mr-3"></i>
-                    <span>Ekstrakulikuler</span>
-                </a>
-                <a href="{{ route('pelanggaran.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-triangle-exclamation mr-3"></i>
-                    <span>Pelanggaran Siswa</span>
-                </a>
-                @endcan
+            @can('view-siswa')
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <i class="fa-solid fa-pen mr-3"></i>
+                <span>Lihat Nilai</span>
+            </a>
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <i class="fa-solid fa-list-check mr-3"></i>
+                <span>Lihat Absensi</span>
+            </a>
+            @endcan
 
-                @can('view-siswa')
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-pen mr-3"></i>
-                    <span>Lihat Nilai</span>
+            @can('view-adminDev')
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <i class="fa-solid fa-users w-6 h-6 mr-3"></i>
+                <span>Manajemen Klien</span>
+            </a>
+            @endcan
+        </nav>
+        <div class="absolute bottom-0 w-full p-6">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <a href="{{ route('logout') }}"
+                   onclick="event.preventDefault(); this.closest('form').submit();"
+                   class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
+                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
+                    <span>Logout</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-list-check mr-3"></i>
-                    <span>Lihat Absensi</span>
-                </a>
-                @endcan
-
-                @can('view-adminDev')
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-users w-6 h-6 mr-3"></i>
-                    <span>Manajemen Klien</span>
-                </a>
-                @endcan
-
-
-            </nav>
-            <div class="absolute bottom-0 w-full p-6">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <a href="{{ route('logout') }}"
-                       onclick="event.preventDefault(); this.closest('form').submit();"
-                       class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
-                        <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
-                        <span>Logout</span>
-                    </a>
-                </form>
-            </div>
-        </aside>
-
+            </form>
+        </div>
+    </aside>
 
     <!-- Overlay for mobile -->
     <div id="overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden lg:hidden"></div>
@@ -143,7 +133,6 @@
     <div class="flex-1 flex flex-col overflow-y-auto">
         <!-- Header -->
         <header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-30">
-            <!-- Mobile Menu Button -->
             <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
                 <i class="fa-solid fa-bars text-2xl"></i>
             </button>
@@ -163,7 +152,6 @@
 
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
-            <!-- Class Card Section -->
             <div class="bg-white rounded-xl shadow-md p-6">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 md:gap-0">
                     <h2 class="text-2xl font-semibold text-gray-800">Daftar Kelas</h2>
@@ -176,10 +164,8 @@
 
                 <div id="class-grid"
                      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    <!-- Elemen-elemen ini akan di-loop menggunakan Blade. Contoh di bawah menunjukkan struktur yang akan diulang. -->
-
-                    <a href="{{ route('kelas10A')}}"
-                       class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
+                    
+                    <a href="{{ route('kelas10a') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
                         <div class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
                         </div>
@@ -190,8 +176,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('kelas10B')}}"
-                       class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
+                    <a href="{{ route('kelas10b') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
                         <div class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
                         </div>
@@ -202,8 +187,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('kelas11A')}}"
-                       class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
+                    <a href="{{ route('kelas11a') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
                         <div class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
                         </div>
@@ -214,8 +198,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('kelas11B')}}"
-                       class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
+                    <a href="{{ route('kelas11b') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
                         <div class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
                         </div>
@@ -226,9 +209,8 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('kelas12A')}}"
-                       class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
-                        <div class="flex class="flex items-center mb-4">
+                    <a href="{{ route('kelas12a') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
+                        <div class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
                         </div>
                         <h3 class="text-xl font-semibold text-gray-800">Kelas 12A</h3>
@@ -238,8 +220,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('kelas12B')}}"
-                       class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
+                    <a href="{{ route('kelas12b') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
                         <div class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
                         </div>
@@ -261,16 +242,13 @@
     const overlay = document.getElementById('overlay');
     const classSearchInput = document.getElementById('class-search-input');
 
-    // Fungsi untuk toggle sidebar
     const toggleSidebar = () => {
         sidebar.classList.toggle('-translate-x-full');
         overlay.classList.toggle('hidden');
     };
 
-    // Event listener untuk class search
     classSearchInput.addEventListener('input', () => {
         console.log("Input pencarian kelas...");
-        // Logika pencarian akan diimplementasikan di sisi server menggunakan Blade.
     });
 
     menuButton.addEventListener('click', toggleSidebar);
