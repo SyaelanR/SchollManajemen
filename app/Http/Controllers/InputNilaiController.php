@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 
 class InputNilaiController extends Controller
 {
-    // Halaman Pilih Kelas
     public function index()
     {
         $classes = ['10A', '10B', '11A', '11B'];
@@ -15,15 +14,7 @@ class InputNilaiController extends Controller
         return view('inputnilaisiswa', compact('classes', 'classCounts'));
     }
 
-    // Halaman Input Tugas per kelas
     public function tugasPerKelas($kelas)
-    {
-        $gradeTypes = ['Tugas', 'UTS', 'UAS']; // Bisa diambil dari DB juga
-        return view('inputtugas', compact('kelas', 'gradeTypes'));
-    }
-
-    // Halaman Input Nilai per kelas
-    public function kelasInput($kelas)
     {
         $students = [
             '10A' => ['Siswa 1','Siswa 2','Siswa 3','Siswa 4','Siswa 5'],
@@ -36,35 +27,53 @@ class InputNilaiController extends Controller
         $gradeTypes = ['Tugas', 'UTS', 'UAS'];
 
         return view('inputtugas', compact('kelas', 'studentList', 'gradeTypes'));
-    }public function inputNilai($kelas)
-{
-    $students = [
-        '10A' => ['Siswa 1','Siswa 2','Siswa 3','Siswa 4','Siswa 5'],
-        '10B' => ['Siswa 6','Siswa 7','Siswa 8'],
-        '11A' => ['Siswa 9','Siswa 10'],
-        '11B' => ['Siswa 11','Siswa 12','Siswa 13','Siswa 14'],
-    ];
+    }
 
-     $classes = ['10A', '10B', '11A', '11B'];
-    $studentList = $students[$kelas] ?? [];
-    $gradeTypes = ['Tugas', 'UTS', 'UAS'];
+    public function inputNilai($kelas)
+    {
+        $students = [
+            '10A' => ['Siswa 1','Siswa 2','Siswa 3','Siswa 4','Siswa 5'],
+            '10B' => ['Siswa 6','Siswa 7','Siswa 8'],
+            '11A' => ['Siswa 9','Siswa 10'],
+            '11B' => ['Siswa 11','Siswa 12','Siswa 13','Siswa 14'],
+        ];
 
-    return view('inputnilai', compact('kelas', 'studentList', 'gradeTypes', 'classes'));
-}
+        $studentList = $students[$kelas] ?? [];
+        $gradeTypes = ['Tugas', 'UTS', 'UAS'];
+        $classes = ['10A', '10B', '11A', '11B'];
 
+        return view('inputnilaisiswa', compact('kelas', 'studentList', 'gradeTypes', 'classes'));
+    }
 
-    // Simpan Nilai
+    public function inputNilaiQuery(Request $request)
+    {
+        $kelas = $request->query('kelas');
+
+        $students = [
+            '10A' => ['Siswa 1','Siswa 2','Siswa 3','Siswa 4','Siswa 5'],
+            '10B' => ['Siswa 6','Siswa 7','Siswa 8'],
+            '11A' => ['Siswa 9','Siswa 10'],
+            '11B' => ['Siswa 11','Siswa 12','Siswa 13','Siswa 14'],
+        ];
+
+        $studentList = $students[$kelas] ?? [];
+        $gradeTypes = ['Tugas', 'UTS', 'UAS'];
+        $classes = ['10A', '10B', '11A', '11B'];
+
+        // ✅ Perbaikan disini: view harus sama seperti file blade yang ada
+        return view('inputnilaisiswa', compact('kelas', 'studentList', 'gradeTypes', 'classes'));
+    }
+
     public function simpanNilai(Request $request)
     {
-        $grades = $request->input('grades');
-        
-        // Validasi sederhana
         $request->validate([
             'grades' => 'required|array',
             'grades.*' => 'numeric|min:0|max:100',
         ]);
 
-        // Simpan ke DB sesuai kebutuhan
+        // $grades = $request->input('grades');
+        // TODO: Simpan ke database
+
         return redirect()->back()->with('success','Nilai berhasil disimpan!');
     }
 }

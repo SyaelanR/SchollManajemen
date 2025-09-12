@@ -6,11 +6,12 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AdminDevController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\PelanggaranController;
-use App\Http\Controllers\AbsensiController; 
+use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\InputNilaiController;
+use App\Http\Controllers\InputTugasController;
 
 // ======================
-// Rute Autentikasi Kustom
+// Rute Autentikasi
 // ======================
 Route::middleware('guest')->group(function () {
     Route::get('/', [LoginController::class, 'create'])->name('login');
@@ -18,32 +19,26 @@ Route::middleware('guest')->group(function () {
 });
 
 // ======================
-// Rute dengan Autentikasi
+// Rute dengan Auth
 // ======================
 Route::middleware('auth')->group(function () {
+
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
     // -------- Rute Admin --------
-    Route::middleware('role:admin')->group(function () {
-        // Manajemen Siswa
+    Route::prefix('admin')->group(function () {
         Route::prefix('siswa')->group(function () {
             Route::get('/', [AdminController::class, 'manajSiswa'])->name('manajemenSiswa');
             Route::get('/tambah', [AdminController::class, 'tambahSiswa'])->name('tambahSiswa');
             Route::post('/tambah', [AdminController::class, 'storeSiswa'])->name('storeSiswa');
         });
 
-        // Manajemen Guru
         Route::prefix('guru')->group(function () {
             Route::get('/', [AdminController::class, 'manajGuru'])->name('manajemenGuru');
             Route::get('/tambah', [AdminController::class, 'tambahGuru'])->name('tambahGuru');
             Route::post('/tambah', [AdminController::class, 'storeGuru'])->name('storeGuru');
         });
-
-        // Input Nilai (Admin)
-        Route::get('/input-nilai', [AdminController::class, 'inputNilai'])->name('inputnilai'); // route blade
-        Route::get('/kelas/{id}/input-nilai', [AdminController::class, 'inputNilaiKelas'])->name('kelas.inputNilai');
-        Route::post('/kelas/{id}/store-nilai', [AdminController::class, 'storeNilai'])->name('kelas.storeNilai');
     });
 
     // -------- Rute Admin Dev --------
@@ -53,13 +48,26 @@ Route::middleware('auth')->group(function () {
         Route::post('/tambah-admin-klien', [AdminDevController::class, 'storeAdmin'])->name('storeAdmin');
     });
 
+    // Rute Input Tugas
+    Route::prefix('input-tugas')->group(function () {
+        Route::get('/', [InputTugasController::class, 'index'])->name('inputtugas.index');
+        Route::post('/', [InputTugasController::class, 'store'])->name('inputtugas.store');
+    });
+
+    // ======================
+    // Rute Nilai
+    // ======================
+    Route::prefix('input-nilai')->group(function () {
+        Route::get('/', [InputNilaiController::class, 'index'])->name('input.nilai');
+        Route::get('/tugas/{kelas}', [InputNilaiController::class, 'tugasPerKelas'])->name('tugas.perkelas');
+        Route::get('/kelas/{kelas}/input-nilai', [InputNilaiController::class, 'inputNilai'])->name('kelas.inputnilai');
+        Route::get('/inputnilaisiswa', [InputNilaiController::class, 'inputNilaiQuery'])->name('input.nilai.siswa');
+        Route::post('/simpan-nilai', [InputNilaiController::class, 'simpanNilai'])->name('simpan.nilai');
+    });
+
 });
 
-// ======================
-// Rute Tanpa Autentikasi
-// ======================
-
-// Jadwal
+// Jadwal Kelas
 Route::prefix('kelas')->group(function () {
     Route::get('/', [KelasController::class, 'jadwal'])->name('jadwal');
     Route::get('/kelas10a', [KelasController::class, 'kelas10A'])->name('kelas10a');
@@ -71,11 +79,9 @@ Route::prefix('kelas')->group(function () {
 });
 
 // Absensi
-Route::prefix('absensi')->group(function () {
-    Route::get('/', [AbsensiController::class, 'index'])->name('absensi.index');
-    Route::get('/{id}', [AbsensiController::class, 'show'])->name('absensi.show');
-    Route::post('/store', [AbsensiController::class, 'store'])->name('absensi.store');
-});
+Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
+Route::post('/absensi', [AbsensiController::class, 'store'])->name('absensi.store');
+Route::get('/absensi/{kelas}', [AbsensiController::class, 'index'])->name('absensi.input');
 
 // Pelanggaran
 Route::prefix('pelanggaran')->group(function () {
@@ -83,14 +89,3 @@ Route::prefix('pelanggaran')->group(function () {
     Route::post('/', [PelanggaranController::class, 'store'])->name('pelanggaran.store');
     Route::get('/daftar', [PelanggaranController::class, 'daftarPelanggar'])->name('pelanggaran.daftar');
 });
-
-Route::middleware(['auth'])->group(function () {
-    // Halaman input nilai & absensi
-    Route::get('/input-nilai', [InputNilaiController::class, 'index'])->name('input.nilai');
-
-    // Simpan nilai
-    Route::post('/input-nilai/simpan', [InputNilaiController::class, 'simpanNilai'])->name('simpan.nilai');
-
-    // Simpan absensi
-    Route::post('/input-absensi/simpan', [InputNilaiController::class, 'simpanAbsensi'])->name('simpan.absensi');
-}); 
