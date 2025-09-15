@@ -8,6 +8,7 @@ use App\Models\Angkatan;
 use App\Models\Kelas;
 use App\Models\PmabayaranSiswa;
 use App\Models\DaftarTagihan;
+use App\Models\Jadwal;
 use App\Models\Mapel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -267,11 +268,7 @@ class AdminController extends Controller
 
     public function lihatKelasD()
     {
-        $dummy = new Kelas();
-        $dummy->nama_kelas = "null";
-        $dummy->id_angkatan = 0;
-        $dummy->id_kelas = 0;
-        return view('admin.lihat_kelas',['namaKelas' => $dummy]);
+        return view('admin.lihat_kelas');
     }
 
     public function tambahSiswaKeKelas(Request $request)
@@ -487,15 +484,125 @@ class AdminController extends Controller
         $id_sekolah = request()->cookie('id_sekolah');
         // Menggunakan Eloquent untuk mengambil data agar casting (dekripsi) otomatis diterapkan.
         // 'with('guru')' akan melakukan eager loading relasi 'guru'.
-        $mapels = Mapel::where('id_sekolah', $id_sekolah)
-                       ->with('guru') // Eager load relasi guru
-                       ->latest() // Mengurutkan berdasarkan created_at di tabel mapels
-                       ->get();
+        $mapels = Mapel::where('id_sekolah', $id_sekolah)->latest()->get();
 
         $teachers = User::where('role', 'guru')->where('id_sekolah', $id_sekolah)->get();
         
         return view('admin.manajemen_mapel', ['mapels' => $mapels, 'teachers' => $teachers]);
 
+    }
+
+    public function storeMapel(Request $request)
+    {
+        $id_sekolah = request()->cookie('id_sekolah');
+
+        $request->validate([
+            'kode_mapel' => 'required|string|max:20|unique:mapels,kode_mapel,NULL,id_mapel,id_sekolah,' . $id_sekolah,
+            'nama_mapel' => 'required|string|max:255',
+            'kategori' => 'required|string|max:100',
+            'sks' => 'required|integer|min:1',
+            'guru_pengampu' => 'nullable|exists:users,id',
+        ], [
+            'kode_mapel.required' => 'Kode mata pelajaran tidak boleh kosong.',
+            'kode_mapel.unique' => 'Kode mata pelajaran ini sudah ada.',
+            'nama_mapel.required' => 'Nama mata pelajaran tidak boleh kosong.',
+            'kategori.required' => 'Kategori mata pelajaran tidak boleh kosong.',
+            'sks.required' => 'SKS tidak boleh kosong.',
+            'sks.integer' => 'SKS harus berupa angka.',
+            'sks.min' => 'SKS harus minimal 1.',
+            'guru_pengampu.exists' => 'Guru pengampu tidak valid.',
+        ]);
+
+        $namaGuru = User::where('id', $request->guru_pengampu)->where('id_sekolah', $id_sekolah)->value('name') ?? null;
+
+        Mapel::create([
+            'id_sekolah' => $id_sekolah,
+            'kode_mapel' => $request->kode_mapel,
+            'nama_mapel' => $request->nama_mapel,
+            'kategori' => $request->kategori,
+            'sks' => $request->sks,
+            'id_guru' => $request->guru_pengampu,
+            'nama_guru' => $namaGuru
+        ]);
+
+        return redirect()->route('manajemenMapel')->with('success', 'Mata pelajaran berhasil ditambahkan!');    
+
+    }
+
+    public function manajJadwal(){
+        $id_sekolah = request()->cookie('id_sekolah');
+
+        $kelaslist = Kelas::where('id_sekolah', $id_sekolah)->get();
+        return view('admin.manajemen_jadwal', ['kelasList' => $kelaslist]);
+    }
+
+    public function tambahJadwal(Request $request ,int $id_kelas){
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        // Menggunakan `firstOrFail` untuk menangani kasus jika kelas tidak ditemukan
+        // dan `with('angkatan')` untuk eager loading, mengurangi jumlah query.
+        $kelas = Kelas::with('angkatan')
+                      ->where('id_kelas', $id_kelas)
+                      ->where('id_sekolah', $id_sekolah)
+                      ->firstOrFail(); // Akan melempar 404 Not Found jika kelas tidak ada
+
+        // Mengambil semester dari relasi angkatan yang sudah di-load, bukan query baru.
+        $semesterAktif = $kelas->angkatan->semester ?? null;
+
+        // Mengambil semua mapel yang tersedia untuk sekolah ini untuk form tambah jadwal.
+        $mapels = Mapel::where('id_sekolah', $id_sekolah)->get();
+
+        // Mengambil data jadwal yang sudah ada untuk kelas ini.
+        // Menggunakan nested eager loading 'mapel.guru' untuk mendapatkan nama mapel dan nama guru.
+        $jadwals = Jadwal::with('mapel') // Memuat relasi mapel, dan relasi guru di dalam mapel
+                        ->where('id_kelas', $id_kelas)
+                        ->where('id_sekolah', $id_sekolah)
+                        ->where('semester', $semesterAktif) // Hanya jadwal untuk semester aktif
+                        ->orderBy('hari') // Mengurutkan berdasarkan hari
+                        ->orderBy('jam_mulai') // Kemudian berdasarkan jam mulai
+                        ->get();
+
+        // Mengirimkan data yang diperlukan ke view.
+        return view('admin.tambah_jadwal', ['kelas' => $kelas, 'jadwals' => $jadwals, 'mapels' => $mapels,]);
+    }
+
+    public function storeJadwal(Request $request, int $id_kelas)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $request->validate([
+            'hari' => 'required|string|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
+            'jam_mulai' => 'required|date_format:H:i',
+            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
+            'id_mapel' => 'required|exists:mapels,id_mapel',
+            'ruangan' => 'required|string|nullable|string|max:100',
+        ], [
+            'hari.required' => 'Hari tidak boleh kosong.',
+            'hari.in' => 'Hari tidak valid.',
+            'jam_mulai.required' => 'Jam mulai tidak boleh kosong.',
+            'jam_mulai.date_format' => 'Format jam mulai tidak valid. Gunakan format HH:MM.',
+            'jam_selesai.required' => 'Jam selesai tidak boleh kosong.',
+            'jam_selesai.date_format' => 'Format jam selesai tidak valid. Gunakan format HH:MM.',
+            'jam_selesai.after' => 'Jam selesai harus setelah jam mulai.',
+            'id_mapel.required' => 'Mata pelajaran tidak boleh kosong.',
+            'id_mapel.exists' => 'Mata pelajaran tidak valid.',
+            'ruangan.max' => 'ruangan maksimal 100 karakter.',
+            'ruangan.required' => 'ruangan tidak boleh kosong.',
+        ]);
+
+        $idAngkatan = Kelas::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->value('id_angkatan');
+        $semesterAktif = Angkatan::where('id_angkatan', $idAngkatan)->where('id_sekolah', $id_sekolah)->value('semester');
+
+        Jadwal::create([
+            'id_sekolah' => $id_sekolah,
+            'id_kelas' => $id_kelas,
+            'hari' => $request->hari,
+            'jam_mulai' => $request->jam_mulai,
+            'jam_selesai' => $request->jam_selesai,
+            'id_mapel' => $request->id_mapel,
+            'semester' => $semesterAktif,
+            'ruangan' => $request->ruangan,
+        ]);
+        return redirect()->route('storeJadwal', ['id_kelas' => $id_kelas])->with('success', 'Jadwal berhasil ditambahkan!');
     }
 
 }

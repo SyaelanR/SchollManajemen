@@ -12,6 +12,11 @@ class Mapel extends Model
         'nama_mapel',
         'id_guru',
         'id_sekolah',
+        'kategori',
+        'sks',
+        'kode_mapel',
+        'status',
+        'nama_guru',
     ];
 
     public function guru()

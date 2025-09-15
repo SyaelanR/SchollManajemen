@@ -13,13 +13,18 @@ return new class extends Migration
     {
         Schema::create('mapels', function (Blueprint $table) {
             $table->id('id_mapel');
+            $table->string('kode_mapel');
+            $table->string('kategori');
             $table->string('nama_mapel');
+            $table->string('nama_guru')->nullable();
+            $table->integer('sks');
             $table->unsignedBigInteger('id_guru')->nullable();
             $table->unsignedBigInteger('id_sekolah')->nullable();
+            $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');
             $table->timestamps();
 
             $table->foreign('id_guru')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('id_sekolah')->references('id_sekolah')->on('users')->onDelete('set null');
+            $table->foreign('id_sekolah')->references('id_sekolah')->on('cliens')->onDelete('set null');
         });
     }
 

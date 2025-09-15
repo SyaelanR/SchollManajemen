@@ -58,7 +58,13 @@ Route::middleware('auth')->group(function () {
         Route::prefix('manajemen-mapel')->group(function () {
             Route::get('/', [AdminController::class, 'manajMapel'])->name('manajemenMapel');
             // Route::get('/tambah-mapel', [AdminController::class, 'tambahMapel'])->name('tambahMapel');
-            // Route::post('/tambah-mapel', [AdminController::class, 'storeMapel'])->name('storeMapel');
+            Route::post('/', [AdminController::class, 'storeMapel'])->name('storeMapel');
+        });
+
+        Route::prefix('manajemen-jadwal')->group(function () {
+            Route::get('/', [AdminController::class, 'manajJadwal'])->name('manajemenJadwal');
+            Route::get('/tambah-jadwal{id_kelas}', [AdminController::class, 'tambahJadwal'])->name('tambahJadwal');
+            Route::post('/tambah-jadwal{id_kelas}', [AdminController::class, 'storeJadwal'])->name('storeJadwal');
         });
 
     });

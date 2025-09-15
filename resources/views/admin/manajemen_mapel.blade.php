@@ -115,19 +115,28 @@
                         <table class="w-full min-w-[800px] text-left">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="p-3 font-semibold text-gray-600">Mata Pelajaran</th>
-                                    <th class="p-3 font-semibold text-gray-600">Guru Pengampu</th>
-                                    <th class="p-3 font-semibold text-gray-600">NIP</th>
+                                    <th class="p-3 font-semibold text-gray-600">Mapel</th>
+                                    <th class="p-3 font-semibold text-gray-600">Kategori</th>
+                                    <th class="p-3 font-semibold text-gray-600">SKS</th>
+                                    <th class="p-3 font-semibold text-gray-600">Guru</th>
+                                    <th class="p-3 font-semibold text-gray-600">Status</th>
                                     <th class="p-3 font-semibold text-gray-600 text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y">
-                                <!-- Sample Row 1 -->
-                                @forelse ($mapels as $mapel)
+                                 @forelse ($mapels as $mapel)
                                 <tr class="hover:bg-gray-50">
                                     <td class="p-3 text-gray-800 font-medium">{{$mapel->nama_mapel}}</td>
-                                    <td class="p-3 text-gray-700">{{ $mapel->guru->name ?? 'Belum ada guru' }}</td>
-                                    <td class="p-3 text-gray-700">{{ $mapel->guru->nisn_nik ?? '-' }}</td>
+                                    <td class="p-3 text-gray-700">{{$mapel->kategori}}</td>
+                                    <td class="p-3 text-gray-700">{{$mapel->sks}}</td>
+                                    <td class="p-3 text-gray-700">{{$mapel->nama_guru}}</td>
+                                    <td class="p-3">
+                                        @if ($mapel->status === 'nonaktif')
+                                        <span class="bg-red-100 text-red-700 font-medium py-1 px-3 rounded-full text-xs">Nonaktif</span>
+                                        @else
+                                        <span class="bg-green-100 text-green-700 font-medium py-1 px-3 rounded-full text-xs">Aktif</span>
+                                        @endif
+                                    </td>
                                     <td class="p-3 text-center">
                                         <div class="flex justify-center space-x-3">
                                             <button class="text-blue-600 hover:text-blue-800" title="Edit"><i class="fa-solid fa-pencil"></i></button>
@@ -137,16 +146,14 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="4" class="p-3 text-center text-gray-500">
+                                    <td colspan="6" class="p-3 text-center text-gray-500">
                                         <div class="text-center py-12">
                                             <i class="fa-solid fa-exclamation-circle text-5xl text-gray-400 mb-4"></i>
-                                            <p class="text-gray-600 font-semibold text-lg">Belum ada data Siswa.</p>
-                                            <p class="text-gray-500 mt-2">Silakan tambahkan Siswa</p>
+                                            <p class="text-gray-600 font-semibold text-lg">Belum ada data Mapel.</p>
                                         </div>
                                     </td>
                                 </tr>
                                 @endforelse
-                                
                             </tbody>
                         </table>
                     </div>
@@ -162,18 +169,38 @@
                 <h3 class="text-2xl font-semibold text-gray-800">Tambah Mata Pelajaran</h3>
                 <button id="close-modal-btn" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
             </div>
-            <form>
+            <form actin="{{ route('storeMapel') }}" method="POST">
+                @csrf
                 <div class="mb-4">
-                    <label for="nama-mapel" class="block text-gray-700 font-medium mb-2">Nama Mata Pelajaran</label>
-                    <input type="text" id="nama-mapel" placeholder="Contoh: Fisika" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <label for="nama-mapel" class="block text-gray-700 font-medium mb-2">Nama Mapel</label>
+                    <input name="nama_mapel" type="text" id="nama-mapel" placeholder="Contoh: Kimia" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
                 </div>
-                <div class="mb-6">
+                <div class="mb-4">
+                    <label for="kode-mapel" class="block text-gray-700 font-medium mb-2">Kode Mapel</label>
+                    <input name="kode_mapel" type="text" id="kode-mapel" placeholder="Contoh: STR21" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="kategori-mapel" class="block text-gray-700 font-medium mb-2">Kategori</label>
+                        <select name="kategori" id="kategori-mapel" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white" required>
+                            <option value="Umum">Umum</option>
+                            <option value="IT">IT</option>
+                            <option value="Tahfisz">Tahfidz</option>
+                            <option value="Eskul">Eskul</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="sks-mapel" class="block text-gray-700 font-medium mb-2">SKS</label>
+                        <input name="sks" type="number" id="sks-mapel" placeholder="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                </div>
+                <div class="mb-4">
                     <label for="guru-pengampu" class="block text-gray-700 font-medium mb-2">Guru Pengampu</label>
-                    <select id="guru-pengampu" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white" required>
+                    <select name="guru_pengampu" id="guru-pengampu" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white" required>
                         <option value="" disabled selected>Pilih Guru</option>
-                        <option value="1">Ahmad Dahlan, S.Pd.</option>
-                        <option value="2">Siti Nurbaya, S.Pd.</option>
-                        <option value="3">Budi Santoso, M.Si.</option>
+                        @foreach ($teachers as $teacher)
+                            <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="flex justify-end gap-4">
@@ -234,3 +261,4 @@
 
 </body>
 </html>
+

@@ -128,7 +128,7 @@
                     <!-- Action Bar -->
                     <div class="flex flex-col md:flex-row justify-between items-start mb-6 gap-4 border-b pb-6">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-800">Kelas: <span class="text-indigo-600">{{ $infoKelas->nama_kelas ?? 'Belum Dipilih' }}</span></h2>
+                            <h2 class="text-2xl font-bold text-gray-800">Kelas: <span class="text-indigo-600">{{ $infoKelas->nama_kelas ?? 'Belum Ada' }}</span></h2>
                             <div class="flex flex-col sm:flex-row sm:items-center gap-x-6 gap-y-2 mt-2 text-gray-600">
                                 <div class="flex items-center">
                                     <i class="fa-solid fa-user-tie mr-2 text-gray-400"></i>
@@ -140,7 +140,7 @@
                                 </div>
                                 <div class="flex items-center">
                                      <i class="fa-solid fa-users mr-2 text-gray-400"></i>
-                                     <span>Total Siswa: <strong>{{$jumlahSiswa}}</strong></span>
+                                     <span>Total Siswa: <strong>{{$jumlahSiswa ?? '0'}}</strong></span>
                                 </div>
                             </div>
                         </div>
@@ -176,7 +176,7 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y">
-                                @forelse ($daftarSiswa as $siswa)
+                                @forelse ($daftarSiswa ?? [] as $siswa)
                                 <!-- Sample Row 1 -->
                                 <tr class="hover:bg-gray-50">
                                     <td class="p-3 text-gray-700">{{$siswa->nisn_nik}}</td>
@@ -211,12 +211,12 @@
     <div id="add-student-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden opacity-0">
         <div class="bg-white rounded-xl shadow-2xl p-8 w-11/12 md:w-2/3 lg:w-1/2 transform transition-transform duration-300 scale-95">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-semibold text-gray-800">Tambah Siswa ke Kelas <span class="text-indigo-600">{{ $infoKelas->nama_kelas ?? '' }}</span></h3>
+                <h3 class="text-2xl font-semibold text-gray-800">Tambah Siswa ke Kelas <span class="text-indigo-600">{{ $infoKelas->nama_kelas ?? '-' }}</span></h3>
                 <button id="close-modal-btn" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
             </div>
             <form action="{{ route('tambahSiswaKeKelas') }}" method="POST">
                 @csrf
-                <input type="hidden" name="id_kelas" value="{{ $id_kelas }}">
+                <input type="hidden" name="id_kelas" value="{{ $id_kelas ?? '' }}">
                 <div class="border rounded-lg max-h-64 overflow-y-auto">
                     <table class="w-full table-fixed">
                         <thead class="bg-gray-50 sticky top-0">
@@ -229,7 +229,7 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y">
-                            @forelse ($daftarSiswaBelumPunyaKelas as $siswa)
+                            @forelse ($daftarSiswaBelumPunyaKelas ?? [] as $siswa)
                             <tr>
                                 <td class="p-3 text-gray-700">{{ $siswa->nisn_nik }}</td>
                                 <td class="p-3 truncate">{{ $siswa->name }}</td>
