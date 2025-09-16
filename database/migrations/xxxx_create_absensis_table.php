@@ -1,3 +1,4 @@
+
 public function up(): void
 {
     Schema::create('absensis', function (Blueprint $table) {

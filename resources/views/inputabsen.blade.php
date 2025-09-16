@@ -4,38 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Input Absensi - EduSys</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background: #eef2ff; }
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236B7280'%3e%3cpath d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.5em;
+        }
+        select::-ms-expand { display: none; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #555; }
         .sidebar { transition: transform 0.3s ease-in-out; }
-        select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            background-image: url('data:image/svg+xml;utf8,<svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>');
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            background-size: 1em;
-            padding-right: 2.5rem;
-        }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-20px); } }
         .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
         .animate-fade-out { animation: fadeOut 0.5s ease-in forwards; }
     </style>
 </head>
-<body class="flex bg-gray-100 min-h-screen">
+<body class="flex min-h-screen">
 
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar w-64 bg-white shadow-2xl p-6 flex flex-col justify-between fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
@@ -51,19 +48,26 @@
             </nav>
         </div>
         <div class="mt-8">
-            <button class="w-full text-left px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition duration-200"><i class="fa-solid fa-sign-out-alt mr-3"></i>Logout</button>
+            <a href="#" class="w-full text-left px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition duration-200 block">
+                <i class="fa-solid fa-sign-out-alt mr-3"></i>Logout
+            </a>
         </div>
     </aside>
 
-    <!-- Overlay for mobile -->
+    <!-- Overlay -->
     <div id="overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden lg:hidden"></div>
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col overflow-y-auto">
-        <!-- Header -->
         <header class="bg-white shadow-lg p-4 flex justify-between items-center sticky top-0 z-30">
             <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none"><i class="fa-solid fa-bars text-2xl"></i></button>
-            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Input Absensi Siswa</h1>
+            <div class="flex items-center">
+                <!-- Tombol kembali -->
+                <a href="#" class="text-gray-600 hover:text-indigo-600 transition-colors mr-4">
+                    <i class="fa-solid fa-arrow-left text-2xl"></i>
+                </a>
+                <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Input Absensi Siswa</h1>
+            </div>
             <div class="flex items-center space-x-4">
                 <button class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-bell"></i></button>
                 <div class="relative">
@@ -73,11 +77,10 @@
             </div>
         </header>
 
-        <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
             <div class="w-full">
                 <header class="mb-8">
-                    <h1 class="text-4xl font-extrabold text-gray-900">Input Absensi Kelas IX-A</h1>
+                    <h1 class="text-4xl font-extrabold text-gray-900">Input Absensi Kelas XI-A</h1>
                     <p class="text-gray-500 mt-2 text-lg">Silakan tandai kehadiran untuk masing-masing siswa.</p>
                 </header>
 
@@ -91,7 +94,139 @@
                                 <th class="px-4 py-3 text-sm font-semibold border-b border-gray-300">Status Kehadiran</th>
                             </tr>
                         </thead>
-                        <tbody id="student-table-body" class="divide-y divide-gray-200"></tbody>
+                        <tbody>
+                            <!-- Mock data to replace backend loop -->
+                            <tr class="text-center hover:bg-gray-50 transition-colors">
+                                <td class="px-4 py-3">1</td>
+                                <td class="px-4 py-3 text-left">Budi Santoso</td>
+                                <td class="px-4 py-3">101</td>
+                                <td class="px-4 py-3">
+                                    <select name="status[101]" class="w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        <option value="Hadir">Hadir</option>
+                                        <option value="Sakit">Sakit</option>
+                                        <option value="Izin">Izin</option>
+                                        <option value="Alpha">Alpha</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="text-center hover:bg-gray-50 transition-colors">
+                                <td class="px-4 py-3">2</td>
+                                <td class="px-4 py-3 text-left">Siti Aminah</td>
+                                <td class="px-4 py-3">102</td>
+                                <td class="px-4 py-3">
+                                    <select name="status[102]" class="w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        <option value="Hadir">Hadir</option>
+                                        <option value="Sakit">Sakit</option>
+                                        <option value="Izin">Izin</option>
+                                        <option value="Alpha">Alpha</option>
+                                    </select>
+                                </td>
+                            </tr>
+                             <tr class="text-center hover:bg-gray-50 transition-colors">
+                                <td class="px-4 py-3">3</td>
+                                <td class="px-4 py-3 text-left">Joko Susilo</td>
+                                <td class="px-4 py-3">103</td>
+                                <td class="px-4 py-3">
+                                    <select name="status[103]" class="w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        <option value="Hadir">Hadir</option>
+                                        <option value="Sakit">Sakit</option>
+                                        <option value="Izin">Izin</option>
+                                        <option value="Alpha">Alpha</option>
+                                    </select>
+                                </td>
+                            </tr>
+                             <tr class="text-center hover:bg-gray-50 transition-colors">
+                                <td class="px-4 py-3">4</td>
+                                <td class="px-4 py-3 text-left">Dewi Lestari</td>
+                                <td class="px-4 py-3">104</td>
+                                <td class="px-4 py-3">
+                                    <select name="status[104]" class="w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        <option value="Hadir">Hadir</option>
+                                        <option value="Sakit">Sakit</option>
+                                        <option value="Izin">Izin</option>
+                                        <option value="Alpha">Alpha</option>
+                                    </select>
+                                </td>
+                            </tr>
+                             <tr class="text-center hover:bg-gray-50 transition-colors">
+                                <td class="px-4 py-3">5</td>
+                                <td class="px-4 py-3 text-left">Agus Nugroho</td>
+                                <td class="px-4 py-3">105</td>
+                                <td class="px-4 py-3">
+                                    <select name="status[105]" class="w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        <option value="Hadir">Hadir</option>
+                                        <option value="Sakit">Sakit</option>
+                                        <option value="Izin">Izin</option>
+                                        <option value="Alpha">Alpha</option>
+                                    </select>
+                                </td>
+                            </tr>
+                             <tr class="text-center hover:bg-gray-50 transition-colors">
+                                <td class="px-4 py-3">6</td>
+                                <td class="px-4 py-3 text-left">Faisal Ramadhan</td>
+                                <td class="px-4 py-3">106</td>
+                                <td class="px-4 py-3">
+                                    <select name="status[106]" class="w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        <option value="Hadir">Hadir</option>
+                                        <option value="Sakit">Sakit</option>
+                                        <option value="Izin">Izin</option>
+                                        <option value="Alpha">Alpha</option>
+                                    </select>
+                                </td>
+                            </tr>
+                             <tr class="text-center hover:bg-gray-50 transition-colors">
+                                <td class="px-4 py-3">7</td>
+                                <td class="px-4 py-3 text-left">Putri Cahyani</td>
+                                <td class="px-4 py-3">107</td>
+                                <td class="px-4 py-3">
+                                    <select name="status[107]" class="w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        <option value="Hadir">Hadir</option>
+                                        <option value="Sakit">Sakit</option>
+                                        <option value="Izin">Izin</option>
+                                        <option value="Alpha">Alpha</option>
+                                    </select>
+                                </td>
+                            </tr>
+                             <tr class="text-center hover:bg-gray-50 transition-colors">
+                                <td class="px-4 py-3">8</td>
+                                <td class="px-4 py-3 text-left">Ridwan Prasetyo</td>
+                                <td class="px-4 py-3">108</td>
+                                <td class="px-4 py-3">
+                                    <select name="status[108]" class="w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        <option value="Hadir">Hadir</option>
+                                        <option value="Sakit">Sakit</option>
+                                        <option value="Izin">Izin</option>
+                                        <option value="Alpha">Alpha</option>
+                                    </select>
+                                </td>
+                            </tr>
+                             <tr class="text-center hover:bg-gray-50 transition-colors">
+                                <td class="px-4 py-3">9</td>
+                                <td class="px-4 py-3 text-left">Lina Wulandari</td>
+                                <td class="px-4 py-3">109</td>
+                                <td class="px-4 py-3">
+                                    <select name="status[109]" class="w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        <option value="Hadir">Hadir</option>
+                                        <option value="Sakit">Sakit</option>
+                                        <option value="Izin">Izin</option>
+                                        <option value="Alpha">Alpha</option>
+                                    </select>
+                                </td>
+                            </tr>
+                             <tr class="text-center hover:bg-gray-50 transition-colors">
+                                <td class="px-4 py-3">10</td>
+                                <td class="px-4 py-3 text-left">Kevin Pratama</td>
+                                <td class="px-4 py-3">110</td>
+                                <td class="px-4 py-3">
+                                    <select name="status[110]" class="w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        <option value="Hadir">Hadir</option>
+                                        <option value="Sakit">Sakit</option>
+                                        <option value="Izin">Izin</option>
+                                        <option value="Alpha">Alpha</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
                     </table>
 
                     <div class="flex justify-end mt-8">
@@ -102,78 +237,58 @@
         </main>
     </div>
 
-    <script>
-        // Mock student data
-        const students = [
-            { id: 1, nama: 'Budi Santoso', nis: '12345' },
-            { id: 2, nama: 'Citra Dewi', nis: '12346' },
-            { id: 3, nama: 'Dedi Kurniawan', nis: '12347' },
-            { id: 4, nama: 'Eka Lestari', nis: '12348' },
-            { id: 5, nama: 'Fajar Hidayat', nis: '12349' }
-        ];
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 hidden z-50 animate-fade-in">
+        <div class="bg-white rounded-xl shadow-2xl p-8 max-w-sm w-full text-center transform scale-95 transition-all duration-300 ease-out">
+            <div class="flex justify-center mb-4">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                    <i class="fa-solid fa-check-circle text-green-500 text-3xl"></i>
+                </div>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Berhasil!</h2>
+            <p class="text-gray-600 mb-6">Data absensi telah berhasil disimpan.</p>
+            <button id="close-modal" class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition duration-300">Tutup</button>
+        </div>
+    </div>
 
-        // DOM Elements
+    <script>
+        // Sidebar toggle
         const menuButton = document.getElementById('menu-button');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
-        const tableBody = document.getElementById('student-table-body');
-        const attendanceForm = document.getElementById('attendance-form');
 
-        // Render students
-        const renderStudents = () => {
-            if (students.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-gray-500">Belum ada siswa di kelas ini.</td></tr>`;
-                return;
-            }
-            tableBody.innerHTML = students.map((student, index) => `
-                <tr class="text-center hover:bg-gray-50 transition-colors">
-                    <td class="px-4 py-3">${index + 1}</td>
-                    <td class="px-4 py-3 text-left">${student.nama}</td>
-                    <td class="px-4 py-3">${student.nis}</td>
-                    <td class="px-4 py-3">
-                        <select name="status-${student.id}" class="w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <option value="Hadir">Hadir</option>
-                            <option value="Sakit">Sakit</option>
-                            <option value="Izin">Izin</option>
-                            <option value="Alpha">Alpha</option>
-                        </select>
-                    </td>
-                </tr>
-            `).join('');
-        };
-
-        // Sidebar toggle
         const toggleSidebar = () => {
             sidebar.classList.toggle('-translate-x-full');
             overlay.classList.toggle('hidden');
         };
-
         menuButton.addEventListener('click', toggleSidebar);
         overlay.addEventListener('click', toggleSidebar);
 
-        // Handle form submit
-        attendanceForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const attendanceData = {};
-            attendanceForm.querySelectorAll('select').forEach(select => {
-                const studentId = select.name.split('-')[1];
-                attendanceData[studentId] = select.value;
-            });
-            console.log("Data absensi:", attendanceData);
+        // Handle form submission
+        const attendanceForm = document.getElementById('attendance-form');
+        const successModal = document.getElementById('success-modal');
+        const closeModalButton = document.getElementById('close-modal');
 
-            // Show success message
-            const msg = document.createElement('div');
-            msg.className = "fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-lg shadow-xl animate-fade-in z-[200]";
-            msg.textContent = "Absensi berhasil disimpan!";
-            document.body.appendChild(msg);
-            setTimeout(() => {
-                msg.classList.add('animate-fade-out');
-                msg.addEventListener('animationend', () => msg.remove());
-            }, 3000);
+        attendanceForm.addEventListener('submit', (event) => {
+            event.preventDefault(); // Prevent default form submission
+
+            // Here you would collect the data and perform an action
+            const formData = new FormData(attendanceForm);
+            const attendanceData = {};
+            for (const [name, value] of formData.entries()) {
+                // Example of how to parse the form data
+                const nis = name.match(/\[(.*?)\]/)[1];
+                attendanceData[nis] = value;
+            }
+            console.log("Data absensi yang dikumpulkan:", attendanceData);
+            
+            // Show the success modal
+            successModal.classList.remove('hidden');
         });
 
-        // Initial render
-        renderStudents();
+        closeModalButton.addEventListener('click', () => {
+            successModal.classList.add('hidden');
+        });
     </script>
 </body>
 </html>

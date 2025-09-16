@@ -21,7 +21,6 @@
 <body class="bg-gray-100">
 
 <div class="flex h-screen overflow-hidden">
-    <!-- Sidebar -->
     <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
         <div class="p-6">
             <a href="#" class="flex items-center space-x-3">
@@ -29,30 +28,30 @@
                 <span class="text-2xl font-bold text-gray-800">EduSys</span>
             </a>
         </div>
-                <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                    <i class="fa-solid fa-tachometer-alt mr-3"></i>
-                    <span>Dashboard</span>
-                </a>
-        
-                <a href="{{ route('inputtugas.index') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
-                    <i class="fa-solid fa-pen mr-3"></i>
-                    <span>Input Nilai</span>
-                </a>
-
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
-                    <i class="fa-solid fa-list-check mr-3"></i>
-                    <span>Input Absensi</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
-                    <i class="fa-solid fa-puzzle-piece mr-3"></i>
-                    <span>Ekstrakulikuler</span>
-                </a>
-                <a href="{{ route('pelanggaran.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
-                    <i class="fa-solid fa-triangle-exclamation mr-3"></i>
-                    <span>Pelanggaran Siswa</span>
-                </a>
+        <nav class="mt-6">
+            <a href="/dashboard" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-tachometer-alt mr-3"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/input-nilai" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
+                <i class="fa-solid fa-pen mr-3"></i>
+                <span>Input Nilai</span>
+            </a>
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
+                <i class="fa-solid fa-list-check mr-3"></i>
+                <span>Input Absensi</span>
+            </a>
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
+                <i class="fa-solid fa-puzzle-piece mr-3"></i>
+                <span>Ekstrakulikuler</span>
+            </a>
+            <a href="/pelanggaran" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
+                <i class="fa-solid fa-triangle-exclamation mr-3"></i>
+                <span>Pelanggaran Siswa</span>
+            </a>
+        </nav>
         <div class="absolute bottom-0 w-full p-6">
-            <form action="{{ route('logout') }}" method="POST">
+            <form action="/logout" method="POST">
                 @csrf
                 <button type="submit" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg">
                     <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i><span>Logout</span>
@@ -61,10 +60,8 @@
         </div>
     </aside>
 
-    <!-- Overlay -->
     <div id="overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden lg:hidden"></div>
 
-    <!-- Main Content -->
     <div class="flex-1 flex flex-col overflow-y-auto">
         <header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-30">
             <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
@@ -80,6 +77,7 @@
                     <span class="font-semibold">Kembali</span>
                 </a>
             </div>
+
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-800">Semua Tugas</h2>
                 <button id="add-task-btn" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-indigo-700 transition duration-300">
@@ -91,12 +89,42 @@
                 <div class="text-center p-4 text-gray-500">
                     <p>Daftar tugas akan muncul di sini.</p>
                 </div>
+
+                <div class="mt-4 space-y-3">
+                    <div class="grid grid-cols-4 gap-4 items-center p-4 bg-gray-100 rounded-xl shadow-sm hover:bg-gray-200 transition-colors">
+                        <div class="col-span-2 font-medium text-gray-800">Latihan Soal Matematika</div>
+                        <div class="col-span-1 text-gray-600">25 Nov 2025</div>
+                        <div class="col-span-1">
+                            <a href="{{ route('inputnilai.siswa-view') }}" class="bg-indigo-600 text-white font-semibold py-1 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">Masuk</a>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-4 items-center p-4 bg-gray-100 rounded-xl shadow-sm hover:bg-gray-200 transition-colors">
+                        <div class="col-span-2 font-medium text-gray-800">Esai Bahasa Indonesia</div>
+                        <div class="col-span-1 text-gray-600">27 Nov 2025</div>
+                        <div class="col-span-1">
+                            <a href="/input-nilai/nilai/kelas-10A/esai-b-indo" class="bg-indigo-600 text-white font-semibold py-1 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">Masuk</a>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-4 items-center p-4 bg-gray-100 rounded-xl shadow-sm hover:bg-gray-200 transition-colors">
+                        <div class="col-span-2 font-medium text-gray-800">Ulangan Fisika</div>
+                        <div class="col-span-1 text-gray-600">01 Des 2025</div>
+                        <div class="col-span-1">
+                            <a href="/input-nilai/nilai/kelas-11A/ulangan-fisika" class="bg-indigo-600 text-white font-semibold py-1 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">Masuk</a>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-4 items-center p-4 bg-gray-100 rounded-xl shadow-sm hover:bg-gray-200 transition-colors">
+                        <div class="col-span-2 font-medium text-gray-800">Ulangan Kimia</div>
+                        <div class="col-span-1 text-gray-600">03 Des 2025</div>
+                        <div class="col-span-1">
+                            <a href="/input-nilai/nilai/kelas-11B/ulangan-kimia" class="bg-indigo-600 text-white font-semibold py-1 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">Masuk</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
 </div>
 
-<!-- Modal Tambah Tugas -->
 <div id="task-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-gray-900 bg-opacity-50">
     <div class="bg-white rounded-xl shadow-lg w-11/12 md:w-1/2 p-6 relative">
         <h2 class="text-2xl font-bold text-gray-800 mb-4">Form Tambah Tugas Baru</h2>
@@ -133,60 +161,22 @@ const menuButton = document.getElementById('menu-button');
 const sidebar = document.getElementById('sidebar');
 const overlay = document.getElementById('overlay');
 const addTaskBtn = document.getElementById('add-task-btn');
-const detailsContainer = document.getElementById('assignment-details-container');
 const taskModal = document.getElementById('task-modal');
 const closeTaskModalBtn = document.getElementById('close-task-modal-btn');
 const taskForm = document.getElementById('task-form');
-
-// Mock data tugas
-let mockTasks = [
-    { id: 'pr1', name: 'Latihan Soal Matematika', dueDate: '25 Nov 2025', kelas: '10A' },
-    { id: 'pr2', name: 'Esai Bahasa Indonesia', dueDate: '27 Nov 2025', kelas: '10B' },
-    { id: 'uts1', name: 'Ulangan Fisika', dueDate: '01 Des 2025', kelas: '11A' },
-    { id: 'uts2', name: 'Ulangan Kimia', dueDate: '03 Des 2025', kelas: '11B' }
-];
 
 // Toggle sidebar
 const toggleSidebar = () => { sidebar.classList.toggle('-translate-x-full'); overlay.classList.toggle('hidden'); };
 menuButton.addEventListener('click', toggleSidebar);
 overlay.addEventListener('click', toggleSidebar);
 
-// Render tugas
-const renderAllTasks = () => {
-    if(mockTasks.length===0){
-        detailsContainer.innerHTML='<div class="text-center p-4 text-gray-500"><p>Belum ada tugas.</p></div>';
-        return;
-    }
-    let html=`<div class="grid grid-cols-4 gap-4 bg-gray-200 text-gray-700 font-semibold p-4 rounded-xl shadow-sm">
-        <div class="col-span-2">Nama Tugas</div>
-        <div class="col-span-1">Tanggal</div>
-        <div class="col-span-1">Aksi</div>
-    </div><div class="mt-4 space-y-3">`;
-    mockTasks.forEach(task=>{
-        html+=`
-        <div class="task-row grid grid-cols-4 gap-4 items-center p-4 bg-gray-100 rounded-xl shadow-sm hover:bg-gray-200 transition-colors">
-            <div class="col-span-2 font-medium text-gray-800">${task.name}</div>
-            <div class="col-span-1 text-gray-600">${task.dueDate}</div>
-            <div class="col-span-1">
-                <a href="/input-nilai/kelas/${task.kelas}/input-nilai" class="bg-indigo-600 text-white font-semibold py-1 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">Masuk</a>
-            </div>
-        </div>`;
-    });
-    html+='</div>';
-    detailsContainer.innerHTML=html;
-}
-renderAllTasks();
-
 // Modal tambah tugas
 addTaskBtn.addEventListener('click',()=>{taskModal.classList.remove('hidden');});
 closeTaskModalBtn.addEventListener('click',()=>{taskModal.classList.add('hidden');});
 taskForm.addEventListener('submit',(e)=>{
     e.preventDefault();
-    const name=document.getElementById('task-name').value;
-    const dueDate=document.getElementById('task-due-date').value;
-    const kelas=document.getElementById('task-type-select').value;
-    mockTasks.push({id:'t'+(mockTasks.length+1), name, dueDate, kelas});
-    renderAllTasks();
+    // Logika penambahan tugas (opsional, tergantung implementasi backend Anda)
+    // Untuk saat ini, kita hanya menutup modal
     taskModal.classList.add('hidden');
     taskForm.reset();
 });

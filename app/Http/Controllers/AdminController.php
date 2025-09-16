@@ -10,10 +10,20 @@ use Illuminate\Support\Facades\Hash;
 class AdminController extends Controller
 {
     // Menampilkan dashboard
-    public function dashboard()
-    {
-        return view('dashboard');
-    }
+    // public function dashboard()
+    // {
+    //     return view('dashboard');
+        public function dashboard()
+{
+    $classes = [
+        (object)['id' => '10A', 'nama' => 'Kelas 10A'],
+        (object)['id' => '10B', 'nama' => 'Kelas 10B'],
+    ];
+
+    return view('dashboard', compact('classes'));
+}
+
+    
 
     // -----------------------------
     // Manajemen Siswa
