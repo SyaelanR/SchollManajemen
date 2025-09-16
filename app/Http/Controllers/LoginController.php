@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Angkatan;
 use App\Models\User;
 use App\Models\Clien;
+use App\Models\Jadwal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
@@ -30,9 +32,36 @@ class LoginController extends Controller
         if ($role == 'adminDev'){
             $cliens = Clien::all();
             return view('dashboard', ['username' => $username, 'time' => $time, 'cliens' => $cliens]);
-        }else
+        }else if ($role == 'admin'){
+            return view('dashboard', ['username' => $username, 'time' => $time]);
+        }elseif ($role == 'guru'){
+            $idUser = $request->cookie('id_user');
+
+            $jadwalHariIni = Jadwal::where('hari', Carbon::now()->isoFormat('dddd'))
+                ->with(['kelas.angkatan', 'mapel']) // Eager load relasi yang dibutuhkan
+                ->whereHas('mapel', function ($query) use ($idUser) {
+                    $query->where('id_guru', $idUser);
+                })
+                ->whereHas('kelas.angkatan', function ($query) {
+                    // Filter Jadwal berdasarkan semester yang ada di relasi angkatan
+                    $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                })
+                ->whereHas('kelas.angkatan', function ($query) {
+                    // Filter Jadwal berdasarkan semester yang ada di relasi angkatan
+                    $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+                })
+                ->get();
+                
+            $jumlahSesi = $jadwalHariIni->count();
+            return view('dashboard', ['username' => $username, 'time' => $time, 'jadwalHariIni' => $jadwalHariIni, 'jumlahSesi' => $jumlahSesi]);
         
-        return view('dashboard', ['username' => $username, 'time' => $time]);
+        }elseif ($role == 'siswa'){
+            return view('dashboard', ['username' => $username, 'time' => $time]);
+        }elseif ($role == 'staf'){
+            return view('dashboard', ['username' => $username, 'time' => $time]);
+        }else{
+            return view('dashboard', ['username' => $username, 'time' => $time]);
+        }
     }
 
     public function create()
@@ -84,6 +113,8 @@ class LoginController extends Controller
             $response->withCookie(cookie('id_kelas', $user->id_kelas, $cookieLifetime));
             $response->withCookie(cookie('angkatan', $user->id_angkatan, $cookieLifetime)); // Menggunakan id_angkatan sesuai migrasi
             $response->withCookie(cookie('id_sekolah', $user->id_sekolah, $cookieLifetime));
+            $response->withCookie(cookie('id_user', $user->id, $cookieLifetime));
+            
 
 
             return $response;

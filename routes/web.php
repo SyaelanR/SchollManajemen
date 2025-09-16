@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AdminDevController;
+use App\Http\Controllers\GuruController;
 use Illuminate\Auth\Events\Login;
 
 // Rute Autentikasi Kustom
@@ -67,6 +68,11 @@ Route::middleware('auth')->group(function () {
             Route::post('/tambah-jadwal{id_kelas}', [AdminController::class, 'storeJadwal'])->name('storeJadwal');
         });
 
+        Route::prefix('manajemen-tingkat')->group(function () {
+            Route::get('/', [AdminController::class, 'manajTingkat'])->name('manajemenTingkat');
+            Route::post('/', [AdminController::class, 'storeTingkat'])->name('storeTingkat');
+        });
+
     });
 
         
@@ -81,6 +87,10 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/tambah-klien', [AdminDevController::class, 'tambahKlien'])->name('tambahKlien');
         Route::post('/tambah-klien', [AdminDevController::class, 'storeKlien'])->name('storeKlien');
+    });
+
+    Route::middleware('role:guru')->group(function () {
+        Route::get('/lihat-jadwal-guru', [GuruController::class, 'lihatjadwalG'])->name('lihatjadwalG');
     });
 
 });

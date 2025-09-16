@@ -12,9 +12,10 @@ class Angkatan extends Model
         'id_angkatan',
         'angkatan',
         'id_sekolah',
-        'status',
         'semester',
         'tanggal_mulai',
-        'tanggal_selesai'
+        'tanggal_selesai',
+        'id_tingkat',
+        'tingkat',
 ];
 }

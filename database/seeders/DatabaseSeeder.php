@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Clien;
 use App\Models\Angkatan;
 use App\Models\Kelas;
+use App\Models\Tingkat;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -25,22 +26,34 @@ class DatabaseSeeder extends Seeder
             'status' => 'Aktif'
         ]);
 
+        Tingkat::create([
+            'tingkat' => 1,
+            'id_sekolah' => 1,
+        ]);
+
+        Tingkat::create([
+            'tingkat' => 2,
+            'id_sekolah' => 1,
+        ]);
+
         Angkatan::create([
             'angkatan' => '2025/2026',
             'id_sekolah' => 1,
-            'status' => 'aktif',
             'semester' => 'ganjil',
             'tanggal_mulai' => '2025-07-01',
-            'tanggal_selesai' => '2026-06-30'
+            'tanggal_selesai' => '2026-06-30',
+            'tingkat' => 2,
+            'id_tingkat' => 2,
         ]);
     
         Angkatan::create([
             'angkatan' => '2026/2027',
             'id_sekolah' => 1,
-            'status' => 'aktif',
             'semester' => 'genap',
             'tanggal_mulai' => '2026-07-01',
-            'tanggal_selesai' => '2027-06-30'
+            'tanggal_selesai' => '2027-06-30',
+            'tingkat' => 1,
+            'id_tingkat' => 1,
         ]);
 
         Kelas::create([

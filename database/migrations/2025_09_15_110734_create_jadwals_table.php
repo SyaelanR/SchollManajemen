@@ -21,6 +21,7 @@ return new class extends Migration
             $table->time('jam_selesai');
             $table->string('ruangan');
             $table->enum('semester', ['ganjil', 'genap'])->nullable();
+            $table->integer('tingkat');
             $table->timestamps();
 
             $table->foreign('id_sekolah')->references('id_sekolah')->on('cliens')->onDelete('set null');

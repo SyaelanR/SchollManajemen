@@ -10,6 +10,7 @@ use App\Models\PmabayaranSiswa;
 use App\Models\DaftarTagihan;
 use App\Models\Jadwal;
 use App\Models\Mapel;
+use App\Models\Tingkat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -177,7 +178,8 @@ class AdminController extends Controller
         $id_sekolah = $request->cookie('id_sekolah');
         // Mengambil semua data dari tabel angkatan, diurutkan dari yang terbaru
         $angkatans = Angkatan::where('id_sekolah', $id_sekolah)->latest()->get();
-        return view('admin.manajemen_angkatan', ['angkatans' => $angkatans]);
+        $tingkats = Tingkat::where('id_sekolah', $id_sekolah)->get();
+        return view('admin.manajemen_angkatan', ['angkatans' => $angkatans, 'tingkats' => $tingkats]);
         // return view('admin.manajemen_angkatan');
     }
 
@@ -201,6 +203,8 @@ class AdminController extends Controller
             'id_sekolah' => $id_sekolah,
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
+            'id_tingkat' => $request->id_tingkat,
+            'tingkat' => Tingkat::where('id_tingkat', $request->id_tingkat)->value('tingkat'),
         ]);
 
         // Arahkan kembali ke halaman manajemen angkatan dengan pesan sukses
@@ -548,6 +552,7 @@ class AdminController extends Controller
 
         // Mengambil semester dari relasi angkatan yang sudah di-load, bukan query baru.
         $semesterAktif = $kelas->angkatan->semester ?? null;
+        $tingkatAktif = $kelas->angkatan->tingkat ?? null;
 
         // Mengambil semua mapel yang tersedia untuk sekolah ini untuk form tambah jadwal.
         $mapels = Mapel::where('id_sekolah', $id_sekolah)->get();
@@ -558,6 +563,7 @@ class AdminController extends Controller
                         ->where('id_kelas', $id_kelas)
                         ->where('id_sekolah', $id_sekolah)
                         ->where('semester', $semesterAktif) // Hanya jadwal untuk semester aktif
+                        ->where('tingkat', $tingkatAktif) // Hanya jadwal untuk tingkat aktif
                         ->orderBy('hari') // Mengurutkan berdasarkan hari
                         ->orderBy('jam_mulai') // Kemudian berdasarkan jam mulai
                         ->get();
@@ -572,7 +578,7 @@ class AdminController extends Controller
         $request->validate([
             'hari' => 'required|string|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
             'jam_mulai' => 'required|date_format:H:i',
-            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
+            'jam_selesai' => 'required|date_format:H:i',
             'id_mapel' => 'required|exists:mapels,id_mapel',
             'ruangan' => 'required|string|nullable|string|max:100',
         ], [
@@ -582,7 +588,6 @@ class AdminController extends Controller
             'jam_mulai.date_format' => 'Format jam mulai tidak valid. Gunakan format HH:MM.',
             'jam_selesai.required' => 'Jam selesai tidak boleh kosong.',
             'jam_selesai.date_format' => 'Format jam selesai tidak valid. Gunakan format HH:MM.',
-            'jam_selesai.after' => 'Jam selesai harus setelah jam mulai.',
             'id_mapel.required' => 'Mata pelajaran tidak boleh kosong.',
             'id_mapel.exists' => 'Mata pelajaran tidak valid.',
             'ruangan.max' => 'ruangan maksimal 100 karakter.',
@@ -590,7 +595,7 @@ class AdminController extends Controller
         ]);
 
         $idAngkatan = Kelas::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->value('id_angkatan');
-        $semesterAktif = Angkatan::where('id_angkatan', $idAngkatan)->where('id_sekolah', $id_sekolah)->value('semester');
+        $angkatan = Angkatan::where('id_angkatan', $idAngkatan)->where('id_sekolah', $id_sekolah)->get();
 
         Jadwal::create([
             'id_sekolah' => $id_sekolah,
@@ -599,10 +604,36 @@ class AdminController extends Controller
             'jam_mulai' => $request->jam_mulai,
             'jam_selesai' => $request->jam_selesai,
             'id_mapel' => $request->id_mapel,
-            'semester' => $semesterAktif,
+            'semester' => $angkatan->first()->semester ?? null,
+            'tingkat' => $angkatan->first()->tingkat ?? null,
             'ruangan' => $request->ruangan,
         ]);
         return redirect()->route('storeJadwal', ['id_kelas' => $id_kelas])->with('success', 'Jadwal berhasil ditambahkan!');
+    }
+
+    public function manajTingkat()
+    {
+        return view('admin.manajemen_tingkat');
+    }
+
+    public function storeTingkat(Request $request)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        
+        // Tambahkan validasi sederhana untuk memastikan cookie ada
+        if (!$id_sekolah) {
+            return redirect()->back()->with('error', 'Gagal menambahkan tingkat. Sesi sekolah tidak ditemukan.');
+        }
+        
+        $jumlahTingkat = Tingkat::where('id_sekolah', $id_sekolah)->count() ?? 0;
+
+        // Simpan tingkat baru ke database
+        Tingkat::create([
+            'id_sekolah' => $id_sekolah,
+            'tingkat' => $jumlahTingkat + 1,
+        ]);
+
+        return redirect()->route('manajemenTingkat')->with('success', 'Tingkat berhasil ditambahkan!');
     }
 
 }

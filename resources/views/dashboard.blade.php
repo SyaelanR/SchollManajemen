@@ -249,7 +249,7 @@
                         </div>
                         <div>
                             <p class="text-gray-500">Jadwal Hari Ini</p>
-                            <p class="text-2xl font-bold text-gray-800">3 Sesi</p>
+                            <p class="text-2xl font-bold text-gray-800">{{$jumlahSesi}} Sesi</p>
                         </div>
                     </div>
                 </div>
@@ -260,42 +260,24 @@
                     <div class="bg-white p-6 rounded-xl shadow-md">
                         <h3 class="text-xl font-bold text-gray-800 mb-4">Jadwal Mengajar Hari Ini</h3>
                         <div class="space-y-4">
-                            <!-- Schedule Item 1 -->
+                            <!-- Schedule Item -->
+                            @forelse ($jadwalHariIni as $jadwal)
                             <div class="flex items-center bg-gray-50 p-4 rounded-lg">
                                 <div class="w-20 text-center mr-4">
-                                    <p class="font-bold text-indigo-600 text-lg">08:00</p>
-                                    <p class="text-sm text-gray-500">09:30</p>
-                                </div>
-                                <div class="border-l-4 border-indigo-500 pl-4 flex-1">
-                                    <p class="font-semibold text-gray-800">Matematika Wajib</p>
-                                    <p class="text-sm text-gray-600"><i class="fa-solid fa-users mr-2"></i>Kelas XII IPA 1</p>
-                                </div>
-                                <a href="#" class="ml-4 text-indigo-600 hover:text-indigo-800 font-semibold whitespace-nowrap">Mulai Kelas <i class="fa-solid fa-arrow-right ml-1"></i></a>
-                            </div>
-                             <!-- Schedule Item 2 -->
-                            <div class="flex items-center bg-gray-50 p-4 rounded-lg">
-                                <div class="w-20 text-center mr-4">
-                                    <p class="font-bold text-green-600 text-lg">10:00</p>
-                                    <p class="text-sm text-gray-500">11:30</p>
+                                    <p class="font-bold text-green-600 text-lg">{{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }}</p>
+                                    <p class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i') }}</p>
                                 </div>
                                 <div class="border-l-4 border-green-500 pl-4 flex-1">
-                                    <p class="font-semibold text-gray-800">Fisika</p>
-                                    <p class="text-sm text-gray-600"><i class="fa-solid fa-users mr-2"></i>Kelas XII IPA 2</p>
+                                    <p class="font-semibold text-gray-800">{{$jadwal->mapel->nama_mapel}}</p>
+                                    <p class="text-sm text-gray-600"><i class="fa-solid fa-users mr-2"></i>{{$jadwal->kelas->nama_kelas}}&nbsp;&nbsp;&nbsp;<i class="fa-solid fa-house mr-1"></i> {{$jadwal->ruangan}}</p>
                                 </div>
-                                <a href="#" class="ml-4 text-green-600 hover:text-green-800 font-semibold whitespace-nowrap">Mulai Kelas <i class="fa-solid fa-arrow-right ml-1"></i></a>
                             </div>
-                             <!-- Schedule Item 3 -->
-                            <div class="flex items-center bg-gray-50 p-4 rounded-lg">
-                                <div class="w-20 text-center mr-4">
-                                    <p class="font-bold text-yellow-600 text-lg">13:00</p>
-                                    <p class="text-sm text-gray-500">14:30</p>
-                                </div>
-                                <div class="border-l-4 border-yellow-500 pl-4 flex-1">
-                                    <p class="font-semibold text-gray-800">Matematika Peminatan</p>
-                                    <p class="text-sm text-gray-600"><i class="fa-solid fa-users mr-2"></i>Kelas XII IPA 1</p>
-                                </div>
-                                <a href="#" class="ml-4 text-yellow-600 hover:text-yellow-800 font-semibold whitespace-nowrap">Mulai Kelas <i class="fa-solid fa-arrow-right ml-1"></i></a>
+                             @empty
+                            <div class="text-center text-gray-500 py-10">
+                                <i class="fa-solid fa-calendar-xmark text-4xl mb-4"></i>
+                                <p class="text-lg">Tidak ada jadwal mengajar hari ini.</p>
                             </div>
+                            @endforelse
                         </div>
                     </div>
 
@@ -303,7 +285,7 @@
                      <div class="bg-white p-6 rounded-xl shadow-md">
                         <h3 class="text-xl font-bold text-gray-800 mb-4">Pintasan</h3>
                         <div class="space-y-3">
-                           <a href="#" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-300">
+                           <a href="{{ route('lihatjadwalG') }}" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-300">
                                <i class="fa-solid fa-calendar-alt text-xl text-indigo-600 mr-4"></i>
                                <span class="font-medium text-gray-700">Lihat Semua Jadwal</span>
                            </a>
