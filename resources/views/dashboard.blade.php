@@ -95,12 +95,12 @@
                 </a>
 
                 @foreach ($classes as $kelas)
-    <a href="{{ route('absensi.daftar') }}" 
-       class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
-        <i class="fa-solid fa-list-check mr-3"></i>
-        <span>Input Absensi </span>
-    </a>
-@endforeach
+                <a href="{{ route('absensi.daftar') }}" 
+                    class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
+                    <i class="fa-solid fa-list-check mr-3"></i>
+                    <span>Input Absensi </span>
+                </a>
+                @endforeach
 
                 <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
                     <i class="fa-solid fa-puzzle-piece mr-3"></i>

@@ -9,6 +9,7 @@ use App\Http\Controllers\PelanggaranController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\InputNilaiController;
 use App\Http\Controllers\InputTugasController;
+use App\Http\Controllers\JadwalController; // <-- Tambahkan ini
 
 // ======================
 // Rute untuk guest (belum login)
@@ -81,4 +82,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/', [PelanggaranController::class, 'store'])->name('pelanggaran.store');
         Route::get('/daftar', [PelanggaranController::class, 'daftarPelanggar'])->name('pelanggaran.daftar');
     });
+
+    // ---------- Jadwal ---------- Tambahkan ini supaya route('jadwal') tidak error
+    Route::get('/jadwal/{kelas?}', [JadwalController::class, 'index'])->name('jadwal');
+
 });
