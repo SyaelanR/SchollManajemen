@@ -143,7 +143,7 @@
                 <!-- Schedule Table Container -->
                 <div id="schedule-container" class="bg-indigo-50 p-8 rounded-xl shadow-lg text-gray-900">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 id="schedule-title" class="text-xl font-semibold text-indigo-800">Jadwal {{$kelas->nama_kelas}} : {{$kelas->angkatan->angkatan}} : {{$kelas->angkatan->semester}}</h3>
+                        <h3 id="schedule-title" class="text-xl font-semibold text-indigo-800">Jadwal {{$kelas->nama_kelas}} : {{$kelas->angkatan->angkatan}} : Tingkat {{$kelas->angkatan->tingkat}} : {{$kelas->angkatan->semester}}</h3>
                         <button id="add-schedule-button"
                             class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition duration-200">
                             <i class="fa-solid fa-plus mr-2"></i>Tambah Jadwal
