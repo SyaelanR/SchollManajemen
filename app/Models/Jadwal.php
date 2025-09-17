@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 <?php
 
 namespace App\Models;
@@ -37,4 +35,3 @@ class Jadwal extends Model
         return $this->belongsTo(Mapel::class, 'id_mapel', 'id_mapel');
     }
 }
->>>>>>> a6adbf5193a184152a171d35876dc6c673c84630

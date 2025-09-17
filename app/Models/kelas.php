@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 <?php
 
 namespace App\Models;
@@ -30,4 +28,3 @@ class Kelas extends Model
         return $this->belongsTo(User::class, 'id_sekolah', 'id_sekolah');
     }
 }
->>>>>>> a6adbf5193a184152a171d35876dc6c673c84630

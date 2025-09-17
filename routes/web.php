@@ -14,14 +14,9 @@ Route::middleware('guest')->group(function () {
     Route::post('/', [LoginController::class, 'store']);
 });
 
-<<<<<<< HEAD
+
 // Rute yang memerlukan autentikasi (hanya bisa diakses setelah login)\
 
-
-=======
-
-// Rute yang memerlukan autentikasi (hanya bisa diakses setelah login)
->>>>>>> a6adbf5193a184152a171d35876dc6c673c84630
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
     Route::get('/dashboard', [LoginController::class, 'dashboard'])->name('dashboard');
@@ -43,6 +38,8 @@ Route::middleware('auth')->group(function () {
         Route::prefix('manajemen-angkatan')->group(function () {
             Route::get('/', [AdminController::class, 'manajAngkatan'])->name('manajemenAngkatan');
             Route::post('/', [AdminController::class, 'storeAngkatan'])->name('storeAngkatan');
+            Route::put('/{id}', [AdminController::class, 'updateAngkatan'])->name('updateAngkatan');
+            Route::delete('/{id}', [AdminController::class, 'destroyAngkatan'])->name('destroyAngkatan');
         });
 
         Route::prefix('manajemen-kelas')->group(function () {
@@ -118,22 +115,18 @@ Route::middleware('auth')->group(function () {
     // Route::get('/tambah-guru', [AdminController::class, 'tambahGuru'])->name('tambahGuru');
     // Route::post('/tambah-guru', [AdminController::class, 'storeGuru'])->name('storeGuru');
 
-<<<<<<< HEAD
+
     // Route::get('/manajemen-siswa', [AdminController::class, 'manajSiswa'])->name('manajemenSiswa');
     // Route::get('/tambah-siswa', [AdminController::class, 'tambahSiswa'])->name('tambahSiswa');
     // Route::post('/tambah-siswa', [AdminController::class, 'storeSiswa'])->name('storeSiswa');
 
-=======
->>>>>>> a6adbf5193a184152a171d35876dc6c673c84630
     // Route::get('/manajemen-klien', [AdminDevController::class, 'manajKlien'])->name('manajemenKlien');
     // Route::get('/tambah-admin-klien', [AdminDevController::class, 'tambahKlien'])->name('tambahKlien');
     // Route::post('/tambah-admin-klien', [AdminDevController::class, 'storeAdmin'])->name('storeAdmin');
 
-<<<<<<< HEAD
     // Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
     // Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-=======
->>>>>>> a6adbf5193a184152a171d35876dc6c673c84630
+
 
 
 use App\Http\Controllers\KelasController;

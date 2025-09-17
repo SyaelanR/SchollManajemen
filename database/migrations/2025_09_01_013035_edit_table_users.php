@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->text('password')->change();
-            $table->text('nisn_nik')->unique()->after('password');
+            $table->string('nisn_nik')->unique()->after('password');
             $table->string('alamat')->nullable()->after('nisn_nik');
             $table->string('role')->default('siswa')->after('alamat');
             $table->unsignedBigInteger('id_kelas')->nullable()->after('role');

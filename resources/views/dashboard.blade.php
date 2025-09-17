@@ -51,7 +51,7 @@
                 </a>
             </div>
             <nav class="mt-6">
-                <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
+                <a href="#" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
                     <i class="fa-solid fa-tachometer-alt mr-3"></i>
                     <span>Dashboard</span>
                 </a>
@@ -74,10 +74,6 @@
                     <i class="fa-solid fa-calendar-alt mr-3"></i>
                     <span>Jadwal Pelajaran</span>
                 </a>
-                <a href="{{ route('pelanggaran.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-triangle-exclamation mr-3"></i>
-                    <span>Pelanggaran Siswa</span>
-                </a>
                 <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-money-bill-wave mr-3"></i>
                     <span>Keuangan</span>
@@ -89,25 +85,20 @@
                 @endcan
 
                 @can('view-guru')
-                <a href="{{ route('inputnilai.kelas') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-pen mr-3"></i>
                     <span>Input Nilai</span>
                 </a>
-
-                @foreach ($classes as $kelas)
-                <a href="{{ route('absensi.daftar') }}" 
-                    class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-list-check mr-3"></i>
-                    <span>Input Absensi </span>
+                    <span>Input Absensi</span>
                 </a>
-                @endforeach
-
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-puzzle-piece mr-3"></i>
                     <span>Ekstrakulikuler</span>
                 </a>
-                <a href="{{ route('pelanggaran.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
-                    <i class="fa-solid fa-triangle-exclamation mr-3"></i>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                    <i class="fa-solid fa-circle-exclamation mr-3"></i>
                     <span>Pelanggaran Siswa</span>
                 </a>
                 @endcan

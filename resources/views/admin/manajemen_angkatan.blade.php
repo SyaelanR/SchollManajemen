@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    {{-- SweetAlert2 untuk notifikasi (opsional, bisa digunakan untuk konfirmasi hapus nanti) --}}
+    {{-- SweetAlert2 untuk notifikasi dan konfirmasi hapus --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Custom styles */
@@ -155,22 +155,36 @@
                                 @forelse ($angkatans as $item)
                                     <tr class="hover:bg-gray-50">
                                         <td class="p-3 text-gray-800 font-medium">{{ $item->angkatan }}</td>
-                                        {{-- Kolom Jumlah Kelas dan Siswa masih statis, perlu relasi untuk data dinamis --}}
                                         <td class="p-3 text-gray-700">{{$item->semester}}</td>
                                         <td class="p-3 text-gray-700">{{$item->tanggal_mulai}}</td>
                                         <td class="p-3 text-gray-700">{{$item->tanggal_selesai}}</td>
                                         <td class="p-3 text-gray-700">{{$item->tingkat}}</td>
                                         <td class="p-3 text-center">
                                             <div class="flex justify-center space-x-3">
-                                                <button class="text-blue-600 hover:text-blue-800" title="Edit"><i class="fa-solid fa-pencil"></i></button>
-                                                <button class="text-red-600 hover:text-red-800" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+                                                {{-- Tombol Edit dengan data attributes untuk di-pass ke JS --}}
+                                                <button class="text-blue-600 hover:text-blue-800 edit-btn" title="Edit"
+                                                    data-id="{{ $item->id_angkatan }}"
+                                                    data-angkatan="{{ $item->angkatan }}"
+                                                    data-id-tingkat="{{ $item->id_tingkat }}"
+                                                    data-tanggal-mulai="{{ $item->tanggal_mulai }}"
+                                                    data-tanggal-selesai="{{ $item->tanggal_selesai }}">
+                                                    <i class="fa-solid fa-pencil"></i>
+                                                </button>
+                                                {{-- Form untuk Hapus --}}
+                                                <form action="{{ route('destroyAngkatan', $item->id_angkatan) }}" method="POST" class="inline-block delete-form">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 hover:text-red-800" title="Hapus">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </form>
                                             </div>
                                         </td>
                                     </tr>
                                 @empty
                                     {{-- Pesan jika tidak ada data --}}
                                     <tr>
-                                        <td colspan="4" class="p-3 text-center text-gray-500">
+                                        <td colspan="6" class="p-3 text-center text-gray-500">
                                             <div class="text-center py-12">
                                                 <i class="fa-solid fa-exclamation-circle text-5xl text-gray-400 mb-4"></i>
                                                 <p class="text-gray-600 font-semibold text-lg">Belum ada data Angkatan.</p>
@@ -187,16 +201,15 @@
         </div>
     </div>
 
-    <!-- Add/Edit Modal -->
-    <div id="angkatan-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden opacity-0">
+    <!-- Add Modal -->
+    <div id="add-angkatan-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden opacity-0">
         <div class="bg-white rounded-xl shadow-2xl p-8 w-11/12 md:w-1/2 lg:w-1/3 transform transition-transform duration-300 scale-95">
             <div class="flex justify-between items-center mb-6">
-                <h3 id="modal-title" class="text-2xl font-semibold text-gray-800">Tambah Angkatan Baru</h3>
-                <button id="close-modal-btn" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                <h3 class="text-2xl font-semibold text-gray-800">Tambah Angkatan Baru</h3>
+                <button id="add-close-modal-btn" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
             </div>
-            {{-- Form HTML standar dengan method POST --}}
-            <form id="angkatan-form" action="{{ route('storeAngkatan') }}" method="POST">
-                @csrf {{-- Token keamanan Laravel, wajib untuk form POST --}}
+            <form id="add-angkatan-form" action="{{ route('storeAngkatan') }}" method="POST">
+                @csrf
                 <div class="mb-4">
                     <label for="angkatan" class="block text-gray-700 font-medium mb-2">Tahun Ajaran</label>
                     <input type="text" id="angkatan" name="angkatan" placeholder="Contoh: 2026/2027" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required value="{{ old('angkatan') }}">
@@ -206,7 +219,7 @@
                     <select id="tingkat" name="id_tingkat" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white" required>
                         <option value="" disabled selected>Pilih Tingkat</option>
                         @forelse ($tingkats as $tingkat)
-                            <option value="{{ $tingkat->id_tingkat }}" {{ old('tingkat') == $tingkat->tingkat ? 'selected' : '' }}>
+                            <option value="{{ $tingkat->id_tingkat }}" {{ old('id_tingkat') == $tingkat->id_tingkat ? 'selected' : '' }}>
                                 {{ $tingkat->tingkat }}
                             </option>
                         @empty
@@ -224,8 +237,52 @@
                 </div>
                 
                 <div class="flex justify-end gap-4">
-                    <button type="button" id="cancel-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300">Batal</button>
+                    <button type="button" id="add-cancel-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300">Batal</button>
                     <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Edit Modal -->
+    <div id="edit-angkatan-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden opacity-0">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-11/12 md:w-1/2 lg:w-1/3 transform transition-transform duration-300 scale-95">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="edit-modal-title" class="text-2xl font-semibold text-gray-800">Edit Angkatan</h3>
+                <button id="edit-close-modal-btn" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            <form id="edit-angkatan-form" action="" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="mb-4">
+                    <label for="edit_angkatan" class="block text-gray-700 font-medium mb-2">Tahun Ajaran</label>
+                    <input type="text" id="edit_angkatan" name="angkatan" placeholder="Contoh: 2026/2027" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                 <div class="mb-4">
+                    <label for="edit_tingkat" class="block text-gray-700 font-medium mb-2">Tingkat</label>
+                    <select id="edit_tingkat" name="id_tingkat" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white" required>
+                        <option value="" disabled>Pilih Tingkat</option>
+                        @forelse ($tingkats as $tingkat)
+                            <option value="{{ $tingkat->id_tingkat }}">
+                                {{ $tingkat->tingkat }}
+                            </option>
+                        @empty
+                            <option value="" disabled>Tidak ada data tingkat</option>
+                        @endforelse
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="edit_tanggal_mulai" class="block text-gray-700 font-medium mb-2">Tanggal Mulai</label>
+                    <input type="date" id="edit_tanggal_mulai" name="tanggal_mulai" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                <div class="mb-4">
+                    <label for="edit_tanggal_selesai" class="block text-gray-700 font-medium mb-2">Tanggal Selesai</label>
+                    <input type="date" id="edit_tanggal_selesai" name="tanggal_selesai" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                
+                <div class="flex justify-end gap-4">
+                    <button type="button" id="edit-cancel-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300">Batal</button>
+                    <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">Update</button>
                 </div>
             </form>
         </div>
@@ -233,59 +290,126 @@
 
 
     <script>
-        // --- Sidebar Toggle Functionality ---
-        const menuButton = document.getElementById('menu-button');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Sidebar Toggle Functionality ---
+            const menuButton = document.getElementById('menu-button');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
 
-        const toggleSidebar = () => {
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
-        };
+            const toggleSidebar = () => {
+                sidebar.classList.toggle('-translate-x-full');
+                overlay.classList.toggle('hidden');
+            };
 
-        menuButton.addEventListener('click', toggleSidebar);
-        overlay.addEventListener('click', toggleSidebar);
+            menuButton.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', toggleSidebar);
 
-        // --- Modal Functionality ---
-        const angkatanModal = document.getElementById('angkatan-modal');
-        const modalContent = angkatanModal.querySelector('div');
-        const addAngkatanBtn = document.getElementById('add-angkatan-btn');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-        const cancelBtn = document.getElementById('cancel-btn');
+            // --- Add Modal Elements ---
+            const addAngkatanModal = document.getElementById('add-angkatan-modal');
+            const addModalContent = addAngkatanModal.querySelector('div > div');
+            const addAngkatanBtn = document.getElementById('add-angkatan-btn');
+            const addCloseModalBtn = document.getElementById('add-close-modal-btn');
+            const addCancelBtn = document.getElementById('add-cancel-btn');
+            const addAngkatanForm = document.getElementById('add-angkatan-form');
+            
+            // --- Edit Modal Elements ---
+            const editAngkatanModal = document.getElementById('edit-angkatan-modal');
+            const editModalContent = editAngkatanModal.querySelector('div > div');
+            const editCloseModalBtn = document.getElementById('edit-close-modal-btn');
+            const editCancelBtn = document.getElementById('edit-cancel-btn');
+            const editAngkatanForm = document.getElementById('edit-angkatan-form');
+            
+            // --- Base URL for Form Actions ---
+            const updateUrlBase = "{{ url('manajemen-angkatan') }}"; // URL diperbaiki
 
-        const openModal = () => {
-            angkatanModal.classList.remove('hidden');
-            setTimeout(() => {
-                angkatanModal.classList.remove('opacity-0');
-                modalContent.classList.remove('scale-95');
-            }, 10);
-        };
+            // --- Generic Modal Open/Close Functions ---
+            const openModal = (modal, content) => {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    content.classList.remove('scale-95');
+                }, 10);
+            };
 
-        const closeModal = () => {
-            angkatanModal.classList.add('opacity-0');
-            modalContent.classList.add('scale-95');
-            setTimeout(() => {
-                angkatanModal.classList.add('hidden');
-            }, 300);
-        };
+            const closeModal = (modal, content) => {
+                modal.classList.add('opacity-0');
+                content.classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            };
 
-        addAngkatanBtn.addEventListener('click', openModal);
-        closeModalBtn.addEventListener('click', closeModal);
-        cancelBtn.addEventListener('click', closeModal);
-        angkatanModal.addEventListener('click', (event) => {
-            if (event.target === angkatanModal) {
-                closeModal();
-            }
-        });
-
-        // Jika ada error validasi saat halaman dimuat ulang,
-        // buka kembali modal agar pengguna bisa langsung memperbaiki.
-        @if ($errors->any())
-            document.addEventListener('DOMContentLoaded', function() {
-                openModal();
+            // --- ADD MODAL LOGIC ---
+            addAngkatanBtn.addEventListener('click', () => {
+                addAngkatanForm.reset();
+                openModal(addAngkatanModal, addModalContent);
             });
-        @endif
+            addCloseModalBtn.addEventListener('click', () => closeModal(addAngkatanModal, addModalContent));
+            addCancelBtn.addEventListener('click', () => closeModal(addAngkatanModal, addModalContent));
+            addAngkatanModal.addEventListener('click', (event) => {
+                if (event.target === addAngkatanModal) {
+                    closeModal(addAngkatanModal, addModalContent);
+                }
+            });
+
+            // --- EDIT MODAL LOGIC ---
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const id = button.dataset.id;
+                    const angkatan = button.dataset.angkatan;
+                    const idTingkat = button.dataset.idTingkat;
+                    const tanggalMulai = button.dataset.tanggalMulai;
+                    const tanggalSelesai = button.dataset.tanggalSelesai;
+
+                    // Populate form
+                    editAngkatanForm.querySelector('#edit_angkatan').value = angkatan;
+                    editAngkatanForm.querySelector('#edit_tingkat').value = idTingkat;
+                    editAngkatanForm.querySelector('#edit_tanggal_mulai').value = tanggalMulai;
+                    editAngkatanForm.querySelector('#edit_tanggal_selesai').value = tanggalSelesai;
+
+                    // Set action
+                    editAngkatanForm.action = `${updateUrlBase}/${id}`;
+
+                    // Open modal
+                    openModal(editAngkatanModal, editModalContent);
+                });
+            });
+            editCloseModalBtn.addEventListener('click', () => closeModal(editAngkatanModal, editModalContent));
+            editCancelBtn.addEventListener('click', () => closeModal(editAngkatanModal, editModalContent));
+            editAngkatanModal.addEventListener('click', (event) => {
+                if (event.target === editAngkatanModal) {
+                    closeModal(editAngkatanModal, editModalContent);
+                }
+            });
+
+            // --- Functionality for DELETE Confirmation ---
+            document.querySelectorAll('.delete-form').forEach(form => {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault(); 
+                    Swal.fire({
+                        title: 'Apakah Anda yakin?',
+                        text: "Data yang dihapus tidak dapat dikembalikan!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Ya, hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            this.submit();
+                        }
+                    });
+                });
+            });
+
+            // Jika ada error validasi dari Laravel, buka kembali modal tambah
+            @if ($errors->any())
+                openModal(addAngkatanModal, addModalContent);
+            @endif
+        });
     </script>
 
 </body>
 </html>
+

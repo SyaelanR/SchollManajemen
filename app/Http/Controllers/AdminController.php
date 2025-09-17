@@ -211,6 +211,58 @@ class AdminController extends Controller
         return redirect()->route('manajemenAngkatan')->with('success', 'Angkatan berhasil ditambahkan!');
     }
 
+    public function updateAngkatan(Request $request, $id)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $request->validate([
+            // Validasi unik mengecualikan ID saat ini agar tidak bentrok dengan dirinya sendiri
+            'angkatan' => 'required|string|max:255|unique:angkatans,angkatan,' . $id . ',id_angkatan',
+            'id_tingkat' => 'required|integer|exists:tingkats,id_tingkat',
+            'tanggal_mulai' => 'required|date',
+            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai'
+        ], [
+            'angkatan.required' => 'Tahun ajaran tidak boleh kosong.',
+            'angkatan.unique' => 'Tahun ajaran ini sudah ada.',
+            'id_tingkat.required' => 'Tingkat tidak boleh kosong.',
+            'tanggal_selesai.after_or_equal' => 'Tanggal selesai harus setelah atau sama dengan tanggal mulai.'
+        ]);
+
+        // Cari angkatan yang akan diupdate
+        $angkatan = Angkatan::where('id_angkatan', $id)
+                           ->where('id_sekolah', $id_sekolah)
+                           ->firstOrFail(); // Gagal jika tidak ditemukan
+
+        // Update data
+        $angkatan->update([
+            'angkatan' => $request->angkatan,
+            'id_tingkat' => $request->id_tingkat,
+            'tingkat' => Tingkat::where('id_tingkat', $request->id_tingkat)->value('tingkat'),
+            'tanggal_mulai' => $request->tanggal_mulai,
+            'tanggal_selesai' => $request->tanggal_selesai,
+        ]);
+
+        // Arahkan kembali dengan pesan sukses
+        return redirect()->route('manajemenAngkatan')->with('success', 'Angkatan berhasil diperbarui!');
+    }
+
+    public function destroyAngkatan(Request $request, $id)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        // Cari angkatan yang akan dihapus berdasarkan ID dan ID Sekolah untuk keamanan
+        $angkatan = Angkatan::where('id_angkatan', $id)
+                           ->where('id_sekolah', $id_sekolah)
+                           ->firstOrFail(); // Gagal jika tidak ditemukan
+
+        // Hapus data
+        $angkatan->delete();
+
+        // Arahkan kembali dengan pesan sukses
+        return redirect()->route('manajemenAngkatan')->with('success', 'Angkatan berhasil dihapus!');
+    }
+
+
 
 
 
@@ -543,13 +595,8 @@ class AdminController extends Controller
     public function tambahJadwal(Request $request ,int $id_kelas){
         $id_sekolah = $request->cookie('id_sekolah');
 
-<<<<<<< HEAD
         // Menggunakan firstOrFail untuk menangani kasus jika kelas tidak ditemukan
         // dan with('angkatan') untuk eager loading, mengurangi jumlah query.
-=======
-        // Menggunakan `firstOrFail` untuk menangani kasus jika kelas tidak ditemukan
-        // dan `with('angkatan')` untuk eager loading, mengurangi jumlah query.
->>>>>>> a6adbf5193a184152a171d35876dc6c673c84630
         $kelas = Kelas::with('angkatan')
                       ->where('id_kelas', $id_kelas)
                       ->where('id_sekolah', $id_sekolah)
@@ -641,8 +688,9 @@ class AdminController extends Controller
         return redirect()->route('manajemenTingkat')->with('success', 'Tingkat berhasil ditambahkan!');
     }
 
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> a6adbf5193a184152a171d35876dc6c673c84630
+
+
+/////////////YOGA////////////////
+
+///letak logic controller
