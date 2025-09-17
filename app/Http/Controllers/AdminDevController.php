@@ -95,4 +95,8 @@ class AdminDevController extends Controller
 
         return redirect()->route('dashboard')->with('success', 'Data klien berhasil disimpan!');
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> a6adbf5193a184152a171d35876dc6c673c84630

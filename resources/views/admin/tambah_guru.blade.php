@@ -325,7 +325,11 @@
                     const message = errors[key][0];
 
                     // Cari input berdasarkan atribut 'name'
+<<<<<<< HEAD
                     const input = document.querySelector([name="teacher[${rowKey}][${fieldName}]"]);
+=======
+                    const input = document.querySelector(`[name="teacher[${rowKey}][${fieldName}]"]`);
+>>>>>>> a6adbf5193a184152a171d35876dc6c673c84630
                     
                     if (input) {
                         input.classList.add('border-red-500');

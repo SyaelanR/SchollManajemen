@@ -543,8 +543,13 @@ class AdminController extends Controller
     public function tambahJadwal(Request $request ,int $id_kelas){
         $id_sekolah = $request->cookie('id_sekolah');
 
+<<<<<<< HEAD
         // Menggunakan firstOrFail untuk menangani kasus jika kelas tidak ditemukan
         // dan with('angkatan') untuk eager loading, mengurangi jumlah query.
+=======
+        // Menggunakan `firstOrFail` untuk menangani kasus jika kelas tidak ditemukan
+        // dan `with('angkatan')` untuk eager loading, mengurangi jumlah query.
+>>>>>>> a6adbf5193a184152a171d35876dc6c673c84630
         $kelas = Kelas::with('angkatan')
                       ->where('id_kelas', $id_kelas)
                       ->where('id_sekolah', $id_sekolah)
@@ -636,4 +641,8 @@ class AdminController extends Controller
         return redirect()->route('manajemenTingkat')->with('success', 'Tingkat berhasil ditambahkan!');
     }
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> a6adbf5193a184152a171d35876dc6c673c84630

@@ -90,51 +90,6 @@
                     <i class="fa-solid fa-triangle-exclamation mr-3"></i>
                     <span>Pelanggaran Siswa</span>
                 </a>
-                <a href="#"
-                    class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-money-bill-wave mr-3"></i>
-                    <span>Keuangan</span>
-                </a>
-                <a href="#"
-                    class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-layer-group mr-3"></i>
-                    <span>Raport</span>
-                </a>
-                <a href="#"
-                    class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-pen mr-3"></i>
-                    <span>Input Nilai</span>
-                </a>
-                <a href="#"
-                    class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-list-check mr-3"></i>
-                    <span>Input Absensi</span>
-                </a>
-                <a href="#"
-                    class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-puzzle-piece mr-3"></i>
-                    <span>Ekstrakulikuler</span>
-                </a>
-                <a href="#"
-                    class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-triangle-exclamation mr-3"></i>
-                    <span>Pelanggaran Siswa</span>
-                </a>
-                <a href="#"
-                    class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-pen mr-3"></i>
-                    <span>Lihat Nilai</span>
-                </a>
-                <a href="#"
-                    class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-list-check mr-3"></i>
-                    <span>Lihat Absensi</span>
-                </a>
-                <a href="#"
-                    class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-users w-6 h-6 mr-3"></i>
-                    <span>Manajemen Klien</span>
-                </a>
             </nav>
             <div class="absolute bottom-0 w-full p-6">
                 <a href="#"
@@ -175,7 +130,7 @@
                 <div
                     class="bg-indigo-600 rounded-xl shadow-lg p-8 mb-8 text-white flex flex-col md:flex-row items-center justify-between">
                     <div>
-                        <h2 class="text-3xl font-bold mb-2">Jadwal Pelajaran Kelas</h2>
+                        <h2 class="text-3xl font-bold mb-2">Jadwal Pelajaran Kelas {{$kelas->nama_kelas}}</h2>
                         <p class="text-indigo-200">Lihat dan kelola jadwal pelajaran untuk setiap kelas.</p>
                     </div>
                     <button onclick="window.history.back()"
@@ -188,7 +143,7 @@
                 <!-- Schedule Table Container -->
                 <div id="schedule-container" class="bg-indigo-50 p-8 rounded-xl shadow-lg text-gray-900">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 id="schedule-title" class="text-xl font-semibold text-indigo-800">Jadwal Kelas 10A</h3>
+                        <h3 id="schedule-title" class="text-xl font-semibold text-indigo-800">Jadwal {{$kelas->nama_kelas}} : {{$kelas->angkatan->angkatan}} : Tingkat {{$kelas->angkatan->tingkat}} : {{$kelas->angkatan->semester}}</h3>
                         <button id="add-schedule-button"
                             class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition duration-200">
                             <i class="fa-solid fa-plus mr-2"></i>Tambah Jadwal
@@ -214,16 +169,21 @@
                                         Guru</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Ruangan</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 <!-- Baris jadwal dari Senin sampai Jumat -->
+                                @forelse ($jadwals as $jadwal)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">Senin</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">08.00-10.00</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">Matematika</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">Budi Santoso, S.Pd</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $jadwal->hari }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $jadwal->mapel->nama_mapel ?? 'Mapel Dihapus' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $jadwal->mapel->nama_guru ?? 'Guru Belum Diatur' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $jadwal->ruangan ?? '-' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <button onclick="window.showEditModal()"
                                             class="text-indigo-600 hover:text-indigo-900 mx-1">
@@ -235,70 +195,16 @@
                                         </button>
                                     </td>
                                 </tr>
+                                @empty
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">Selasa</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">08.00-10.30</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">Pemrograman Python</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">Pramono, M.Kom</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <button onclick="window.showEditModal()"
-                                            class="text-indigo-600 hover:text-indigo-900 mx-1">
-                                            <i class="fa-solid fa-edit"></i>
-                                        </button>
-                                        <button onclick="window.showDeleteModal()"
-                                            class="text-red-600 hover:text-red-900 mx-1">
-                                            <i class="fa-solid fa-trash-alt"></i>
-                                        </button>
+                                    <td colspan="6" class="p-3 text-center text-gray-500">
+                                        <div class="text-center py-12">
+                                            <i class="fa-solid fa-exclamation-circle text-5xl text-gray-400 mb-4"></i>
+                                            <p class="text-gray-600 font-semibold text-lg">Belum ada data Jadwal.</p>
+                                        </div>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">Rabu</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">10.30-13.00</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">Pengantar Internet of Things</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">Afu Ihsan Pradana, M.Kom</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <button onclick="window.showEditModal()"
-                                            class="text-indigo-600 hover:text-indigo-900 mx-1">
-                                            <i class="fa-solid fa-edit"></i>
-                                        </button>
-                                        <button onclick="window.showDeleteModal()"
-                                            class="text-red-600 hover:text-red-900 mx-1">
-                                            <i class="fa-solid fa-trash-alt"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">Kamis</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">09.00-11.00</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">Bahasa Inggris</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">Siti Aminah, S.S</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <button onclick="window.showEditModal()"
-                                            class="text-indigo-600 hover:text-indigo-900 mx-1">
-                                            <i class="fa-solid fa-edit"></i>
-                                        </button>
-                                        <button onclick="window.showDeleteModal()"
-                                            class="text-red-600 hover:text-red-900 mx-1">
-                                            <i class="fa-solid fa-trash-alt"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">Jumat</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">07.30-09.30</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">Pendidikan Agama Islam</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">H. Ahmad, S.Ag</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <button onclick="window.showEditModal()"
-                                            class="text-indigo-600 hover:text-indigo-900 mx-1">
-                                            <i class="fa-solid fa-edit"></i>
-                                        </button>
-                                        <button onclick="window.showDeleteModal()"
-                                            class="text-red-600 hover:text-red-900 mx-1">
-                                            <i class="fa-solid fa-trash-alt"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -320,7 +226,8 @@
             </div>
 
             <!-- Modal Body (Form) -->
-            <form id="schedule-form" action="#" method="POST">
+            <form id="schedule-form" action="{{ route('storeJadwal', ['id_kelas' => $kelas->id_kelas]) }}" method="POST">
+                @csrf
                 <div class="mb-4">
                     <label for="hari" class="block text-sm font-medium text-gray-700">Hari</label>
                     <select id="hari" name="hari"
@@ -336,26 +243,35 @@
                     </select>
                 </div>
                 <div class="mb-4">
-                    <label for="jam" class="block text-sm font-medium text-gray-700">Jam</label>
-                    <input type="text" id="jam" name="jam"
+                    <label for="jamM" class="block text-sm font-medium text-gray-700">Jam Mulai</label>
+                    <input type="time" id="jamM" name="jam_mulai"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="Contoh: 08:00-10:00" required>
+                </div>
+                <div class="mb-4">
+                    <label for="jamS" class="block text-sm font-medium text-gray-700">Jam Selesai</label>
+                    <input type="time" id="jamS" name="jam_selesai"
                         class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                         placeholder="Contoh: 08:00-10:00" required>
                 </div>
                 <div class="mb-4">
                     <label for="mapel" class="block text-sm font-medium text-gray-700">Mata Pelajaran</label>
-                    <select id="mapel" name="mapel"
+                    <select id="mapel" name="id_mapel"
                         class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                         required>
-                        <option value="">Pilih Mata Pelajaran</option>
-                        <option value="Matematika">Matematika</option>
-                        <option value="Bahasa Indonesia">Bahasa Indonesia</option>
-                        <option value="Bahasa Inggris">Bahasa Inggris</option>
-                        <option value="Fisika">Fisika</option>
-                        <option value="Kimia">Kimia</option>
-                        <option value="Biologi">Biologi</option>
-                        <option value="Sejarah">Sejarah</option>
-                        <option value="Geografi">Geografi</option>
+                        <option disabled value="">Pilih Mata Pelajaran</option>
+                        @forelse ($mapels ?? [] as $mapel)
+                            <option value="{{ $mapel->id_mapel }}">{{ $mapel->nama_mapel }} ({{$mapel->nama_guru}})</option>
+                        @empty
+                            <option value="" disabled>Tidak ada mata pelajaran tersedia</option>
+                        @endforelse
                     </select>
+                </div>
+                <div class="mb-4">
+                    <label for="ruangan" class="block text-sm font-medium text-gray-700">Ruangan</label>
+                    <input type="text" id="ruangan" name="ruangan"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="Contoh: Lab Komputer 1" required>
                 </div>
 
                 <!-- Modal Footer -->
@@ -453,8 +369,4 @@
 
 </body>
 
-<<<<<<< HEAD
 </html>
-=======
-</html>
->>>>>>> a6adbf5193a184152a171d35876dc6c673c84630

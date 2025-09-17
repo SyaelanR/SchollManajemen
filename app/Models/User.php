@@ -43,20 +43,30 @@ class User extends Authenticatable
         'email',
 
         'password',
+<<<<<<< HEAD
 
         'nisn_nik',
 
         'alamat',
 
+=======
+        'nisn_nik',
+        'alamat',
+>>>>>>> a6adbf5193a184152a171d35876dc6c673c84630
         'role',
 
         'id_kelas',
+<<<<<<< HEAD
 
         'id_angkatan',
 
+=======
+        'id_angkatan',
+>>>>>>> a6adbf5193a184152a171d35876dc6c673c84630
         'jenis_kelamin',
 
         'username',
+<<<<<<< HEAD
 
         'id_sekolah',
 
@@ -78,6 +88,18 @@ class User extends Authenticatable
 
         'jumlah_sodara',
 
+=======
+        'id_sekolah',
+        'no_telp',
+        'tempat_lahir',
+        'tanggal_lahir',
+        'usia',
+        'tanggal_masuk',
+        'tanggal_lulus',
+        'nama_orang_tua',
+        'gaji_orang_tua',
+        'jumlah_sodara',
+>>>>>>> a6adbf5193a184152a171d35876dc6c673c84630
     ];
 
 
@@ -121,9 +143,13 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
 
             'password' => 'encrypted',
+<<<<<<< HEAD
 
             'nisn_nik' => 'encrypted',
 
+=======
+            'nisn_nik' => 'encrypted',
+>>>>>>> a6adbf5193a184152a171d35876dc6c673c84630
         ];
 
     }
