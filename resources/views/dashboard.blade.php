@@ -70,7 +70,7 @@
                     <i class="fa-solid fa-solid fa-door-closed mr-3"></i>
                     <span>Manajemen Kelas</span>
                 </a>
-                <a href="{{ route('jadwal') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-calendar-alt mr-3"></i>
                     <span>Jadwal Pelajaran</span>
                 </a>
