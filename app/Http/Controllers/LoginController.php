@@ -47,7 +47,7 @@ class LoginController extends Controller
                     $query->whereColumn('angkatans.semester', 'jadwals.semester');
                 })
                 ->whereHas('kelas.angkatan', function ($query) {
-                    // Filter Jadwal berdasarkan semester yang ada di relasi angkatan
+                    // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
                     $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
                 })
                 ->get();

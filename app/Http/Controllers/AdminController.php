@@ -12,6 +12,7 @@ use App\Models\Jadwal;
 use App\Models\Mapel;
 use App\Models\Tingkat;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cookie;
@@ -188,13 +189,18 @@ class AdminController extends Controller
         $id_sekolah = $request->cookie('id_sekolah');
 
         $request->validate([
-            // Validasi untuk satu input 'angkatan' dengan aturan unik di tabel 'angkatans'
-            'angkatan' => 'required|string|max:255|unique:angkatans,angkatan',
+            'angkatan' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('angkatans', 'angkatan')
+                    ->where('id_sekolah', $request->cookie('id_sekolah'))
+            ],
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date'
         ], [
             'angkatan.required' => 'Tahun ajaran tidak boleh kosong.',
-            'angkatan.unique' => 'Tahun ajaran ini sudah ada.',
+            'angkatan.unique' => 'Tahun ajaran ini sudah ada di sekolah Anda.',
         ]);
 
         // Buat entri baru di tabel angkatan
@@ -552,7 +558,7 @@ class AdminController extends Controller
 
         // Mengambil semester dari relasi angkatan yang sudah di-load, bukan query baru.
         $semesterAktif = $kelas->angkatan->semester ?? null;
-        $tingkatAktif = $kelas->angkatan->tingkat ?? null;
+        $tingkatAktif = $kelas->angkatan->id_tingkat ?? null;
 
         // Mengambil semua mapel yang tersedia untuk sekolah ini untuk form tambah jadwal.
         $mapels = Mapel::where('id_sekolah', $id_sekolah)->get();
@@ -605,7 +611,7 @@ class AdminController extends Controller
             'jam_selesai' => $request->jam_selesai,
             'id_mapel' => $request->id_mapel,
             'semester' => $angkatan->first()->semester ?? null,
-            'tingkat' => $angkatan->first()->tingkat ?? null,
+            'tingkat' => $angkatan->first()->id_tingkat ?? null,
             'ruangan' => $request->ruangan,
         ]);
         return redirect()->route('storeJadwal', ['id_kelas' => $id_kelas])->with('success', 'Jadwal berhasil ditambahkan!');
