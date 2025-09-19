@@ -89,14 +89,17 @@ Route::middleware('auth')->group(function () {
         Route::post('/tambah-klien', [AdminDevController::class, 'storeKlien'])->name('storeKlien');
     });
 
+
+        //Grup rute ini hanya bisa diakses oleh pengguna dengan role 'guru'.
     Route::middleware('role:guru')->group(function () {
         Route::get('/lihat-jadwal-guru', [GuruController::class, 'lihatjadwalG'])->name('lihatjadwalG');
 
         Route::prefix('manajemen-nilai')->group(function () {
         Route::get('/', [GuruController::class, 'manajNilaiKelas'])->name('manajemenNilai');
-        Route::get('/input-nilai', [GuruController::class, 'inputNilai'])->name('inputNilai');
+        Route::get('/input-nilai{id_kelas}&{id_mapel}&{id_daftar_nilai}', [GuruController::class, 'inputNilai'])->name('inputNilai');
         Route::get('/manajemen-nilai-daftar{id_kelas}&{id_mapel}', [GuruController::class, 'manajNilaiDaftar'])->name('manajemenNilaiDaftar');
         Route::post('/manajemen-nilai-daftar{id_kelas}&{id_mapel}', [GuruController::class, 'storeDaftarNilai'])->name('storeDaftarNilai');
+        Route::post('/input-nilai', [GuruController::class, 'storeNilaiSiswa'])->name('storeNilai');
         });
         
     });

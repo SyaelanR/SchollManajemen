@@ -17,6 +17,7 @@ class DaftarNilai extends Model
         'tingkat',
         'semester',
         'id_kelas',
+        'sifat',
     ];
 
     public function mapel()

@@ -85,6 +85,7 @@
                                 <th class="p-3 font-semibold text-gray-600">Keterangan</th>
                                 <th class="p-3 font-semibold text-gray-600">Tipe Nilai</th>
                                 <th class="p-3 font-semibold text-gray-600">Tanggal</th>
+                                <th class="p-3 font-semibold text-gray-600">Sifat</th>
                                 <th class="p-3 font-semibold text-gray-600 text-center">Aksi</th>
                             </tr>
                         </thead>
@@ -96,9 +97,16 @@
                                     <span class="bg-blue-100 text-blue-700 font-medium py-1 px-3 rounded-full text-xs capitalize">{{$nilai->tipe_nilai}}</span>
                                 </td>
                                 <td class="p-3 text-gray-600">{{$nilai->tanggal}}</td>
-                                <td class="p-3 text-center">
-                                    <a href="#" class="text-indigo-600 hover:text-indigo-800 font-semibold">Masuk</a>
-                                </td>
+                                <td class="p-3 text-gray-600">{{$nilai->sifat}}</td>
+                                @if ($nilai->sifat == 'online')
+                                    <td class="p-3 text-center">
+                                        <a href="#" class="text-indigo-600 hover:text-indigo-800 font-semibold">Masuk</a>
+                                    </td>
+                                @elseif ($nilai->sifat == 'offline')
+                                    <td class="p-3 text-center">
+                                        <a href="{{route('inputNilai',[$nilai->id_kelas, $nilai->id_mapel, $nilai->id_daftar_nilai])}}" class="text-indigo-600 hover:text-indigo-800 font-semibold">Masuk</a>
+                                    </td>
+                                @endif
                             </tr>
                         @empty
                             <tr>

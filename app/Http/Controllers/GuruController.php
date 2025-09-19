@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Angkatan;
 use App\Models\DaftarNilai;
+use App\Models\DaftarNilaiSiswa;
 use App\Models\Jadwal;
 use App\Models\Kelas;
 use App\Models\User;
@@ -57,17 +58,81 @@ class GuruController extends Controller
         return view('guru.manajemen_nilai_kelas', ['daftarkelasYangDiampu' => $daftarkelasYangDiampu]);
     }
 
-    public function inputNilai()
+    public function inputNilai(Request $request, int $id_kelas, int $id_mapel, int $id_daftar_nilai)
     {
-        return view('guru.input_nilai');
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+        
+        $infoKelas = Jadwal::with('kelas')
+                    ->where('id_kelas', $id_kelas)
+                    ->where('id_mapel', $id_mapel)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->firstOrFail();
+        $infoMapel = Mapel::where('id_mapel', $id_mapel)
+                    ->where('id_guru', $id_user)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->firstOrFail();
+        $infoDaftarNilai = DaftarNilai::where('id_daftar_nilai', $id_daftar_nilai)
+                    ->where('id_mapel', $id_mapel)
+                    ->where('id_kelas', $id_kelas)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->firstOrFail();
+
+
+        $infoAngkatan = Angkatan::where('id_angkatan', $infoKelas->kelas->id_angkatan)->first();
+
+        if(!$infoAngkatan || $infoKelas->semester != $infoAngkatan->semester || $infoKelas->tingkat != $infoAngkatan->id_tingkat){
+            abort(404);
+        }
+        
+        $daftarSiswa = DaftarNilaiSiswa::where('id_kelas', $id_kelas)
+                    ->where('semester', $infoAngkatan->semester)
+                    ->where('tingkat', $infoAngkatan->id_tingkat)
+                    ->where('id_mapel', $id_mapel)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->where('id_daftar_nilai', $id_daftar_nilai)
+                    ->with('siswa')->get();
+
+        return view('guru.input_nilai', compact('daftarSiswa', 'infoKelas', 'infoMapel', 'infoDaftarNilai'));
     }
+
+    public function storeNilaiSiswa(Request $request)
+    {
+        // 1. Validasi input dari form
+        $request->validate([
+            // 'nilai' harus ada dan berupa array
+            'nilai' => 'present|array',
+            // Setiap item di dalam array 'nilai' boleh kosong (nullable), tapi jika diisi harus berupa angka antara 0-100
+            'nilai.*' => 'nullable|numeric|min:0|max:100',
+        ]);
+
+        // dd($request->nilai);
+
+        // 2. Lakukan perulangan untuk setiap nilai yang dikirim
+        foreach ($request->nilai as $id_daftar_nilai_siswa => $input_nilai) {
+            // Jika input nilai kosong (null), atur nilainya menjadi 0. Jika tidak, gunakan nilai dari input.
+            $nilai_final = $input_nilai ?? 0;
+            // Cari record nilai siswa berdasarkan ID dan perbarui nilainya
+            DaftarNilaiSiswa::where('id_daftar_nilai_siswa', $id_daftar_nilai_siswa)->update(['nilai' => $nilai_final]);
+        }
+
+        // 3. Kembali ke halaman sebelumnya dengan pesan sukses
+        return back()->with('success', 'Nilai siswa berhasil disimpan!');
+    }
+
+
+
 
     public function manajNilaiDaftar(Request $request, $id_kelas, $id_mapel) 
     {
         $id_sekolah = $request->cookie('id_sekolah');
         $id_user = $request->cookie('id_user');
 
-        $infoKelas = Jadwal::with('kelas')->where('id_kelas', $id_kelas)->firstOrFail();
+        $infoKelas = Jadwal::with('kelas')
+                    ->where('id_kelas', $id_kelas)
+                    ->where('id_mapel', $id_mapel)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->firstOrFail();
         $infoMapel = Mapel::where('id_mapel', $id_mapel)
                     ->where('id_guru', $id_user)
                     ->firstOrFail();
@@ -114,16 +179,34 @@ class GuruController extends Controller
         $tingkat = $infoKelas->angkatan->id_tingkat;
         $semester = $infoKelas->angkatan->semester;
 
-        DaftarNilai::create([
-            'id_sekolah' => $id_sekolah,
-            'id_kelas' => $id_kelas,
-            'id_mapel' => $id_mapel,
-            'keterangan' => $request->keterangan_nilai,
-            'tipe_nilai' => $request->tipe_nilai,
-            'tanggal' => $request->tanggal,
-            'tingkat' => $tingkat,
-            'semester' => $semester,
-        ]);
+        $DaftarNilai = DaftarNilai::create([
+                'id_sekolah' => $id_sekolah,
+                'id_kelas' => $id_kelas,
+                'id_mapel' => $id_mapel,
+                'keterangan' => $request->keterangan_nilai,
+                'tipe_nilai' => $request->tipe_nilai,
+                'tanggal' => $request->tanggal,
+                'tingkat' => $tingkat,
+                'semester' => $semester,
+            ]);
+
+
+        $targetSiswa = User::where('id_kelas', $id_kelas)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->where('role', 'siswa')
+                    ->get();
+
+        foreach ($targetSiswa as $siswa) {
+            DaftarNilaiSiswa::create([
+                'id_sekolah' => $id_sekolah,
+                'id_kelas' => $id_kelas,
+                'id_mapel' => $id_mapel,
+                'id_siswa' => $siswa->id,
+                'id_daftar_nilai' => $DaftarNilai->id_daftar_nilai,
+                'tingkat' => $tingkat,
+                'semester' => $semester,
+            ]);
+        }
 
         return redirect()->route('manajemenNilaiDaftar', ['id_kelas' => $id_kelas, 'id_mapel' => $id_mapel])->with('success', 'Nilai berhasil ditambahkan!');
 
