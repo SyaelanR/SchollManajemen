@@ -119,6 +119,19 @@
 
             <!-- Page Content -->
             <main class="p-6 md:p-8 flex-1">
+                {{-- Notifikasi Sukses --}}
+                @if(session('success'))
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md shadow-sm" role="alert">
+                    <div class="flex">
+                        <div class="py-1"><i class="fa-solid fa-check-circle mr-3"></i></div>
+                        <div>
+                            <p class="font-bold">Berhasil!</p>
+                            <p>{{ session('success') }}</p>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
                 <div class="bg-white p-6 rounded-xl shadow-md">
                     <!-- Action Bar -->
                     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
@@ -128,7 +141,7 @@
                                 <input type="text" placeholder="Cari siswa..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                 <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                             </div>
-                            <button onclick="window.location.href = '{{ route('tambahSiswa') }}';" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap">
+                            <button onclick="window.location.href = '{{ route('admin.tambahSiswa') }}';" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap">
                                 <i class="fa-solid fa-plus mr-2"></i>
                                 Tambah Siswa
                             </button>
@@ -160,7 +173,7 @@
                                     </td>
                                     <td class="p-3 text-center">
                                         <div class="flex justify-center space-x-3">
-                                            <a href="#" class="text-blue-600 hover:text-blue-800" title="Edit"><i class="fa-solid fa-pencil"></i></a>
+                                            <a href="{{ route('admin.editSiswa', $student->id) }}" class="text-blue-600 hover:text-blue-800" title="Edit"><i class="fa-solid fa-pencil"></i></a>
                                             <form action="#" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus siswa ini?');">
                                                 @csrf
                                                 @method('DELETE')

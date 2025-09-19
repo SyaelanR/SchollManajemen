@@ -110,9 +110,12 @@
             <!-- Page Content -->
             <main class="p-4 md:p-8 flex-1">
                 @if (session('success'))
-                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md" role="alert">
-                        <p class="font-bold">Berhasil!</p>
-                        <p>{{ session('success') }}</p>
+                    <div id="success-alert" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md flex justify-between items-center" role="alert">
+                        <div>
+                            <p class="font-bold">Berhasil!</p>
+                            <p>{{ session('success') }}</p>
+                        </div>
+                        <button onclick="document.getElementById('success-alert').style.display='none'">&times;</button>
                     </div>
                 @endif
 
@@ -147,37 +150,43 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         @foreach ($kelasList as $kelas)
                         <!-- Class Card -->
-                        <form action="{{route('lihatKelas')}}" method="POST">
-                                <a href="{{route('lihatKelas')}}" onclick="event.preventDefault(); this.closest('form').submit();">
-                            @csrf
-                                <div class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300">
-                                    <div class="flex items-center mb-4">
-                                        <div class="bg-blue-100 text-blue-600 p-4 rounded-full flex items-center justify-center">
-                                            <i class="fa-solid fa-school text-2xl"></i>
-                                        </div>
-                                    </div>
-                                    <h3 class="text-xl font-semibold text-gray-800">{{$kelas->nama_kelas}}</h3>
-                                    <div class="flex items-center text-gray-600 mt-4">
-                                        <i class="fa-solid fa-magnifying-glass text-sm mr-2"></i>
-                                        <span class="text-sm">{{$kelas->jurusan}}</span>
-                                    </div>
-                                    <div class="flex items-center text-gray-600 mt-2">
-                                        <i class="fa-solid fa-user-tie text-sm mr-2"></i>
-                                        <span class="text-sm">{{$kelas->wali_kelas}}</span>
+                        <div class="bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 group">
+                             <!-- Delete Button -->
+                            <button type="button" class="delete-btn absolute top-4 right-4 text-gray-400 hover:text-red-600 transition z-10 opacity-0 group-hover:opacity-100" data-id="{{$kelas->id_kelas}}" data-name="{{$kelas->nama_kelas}}">
+                                <i class="fa-solid fa-trash-alt"></i>
+                            </button>
+                            
+                            <!-- Form for Viewing Class -->
+                            <form id="view-class-form-{{$kelas->id_kelas}}" action="{{route('lihatKelas')}}" method="POST" class="hidden">
+                                 @csrf
+                                 <input type="hidden" name="id_kelas" value="{{$kelas->id_kelas}}">
+                            </form>
+                            
+                            <!-- Clickable Area -->
+                            <a href="#" onclick="event.preventDefault(); document.getElementById('view-class-form-{{$kelas->id_kelas}}').submit();" class="block">
+                                <div class="flex items-center mb-4">
+                                    <div class="bg-blue-100 text-blue-600 p-4 rounded-full flex items-center justify-center">
+                                        <i class="fa-solid fa-school text-2xl"></i>
                                     </div>
                                 </div>
-                                <select name="id_kelas" id="" class="hidden">
-                                    <option value="{{$kelas->id_kelas}}"></option>
-                                </select>
-                            </a> 
-                        </form>
+                                <h3 class="text-xl font-semibold text-gray-800">{{$kelas->nama_kelas}}</h3>
+                                <div class="flex items-center text-gray-600 mt-4">
+                                    <i class="fa-solid fa-magnifying-glass text-sm mr-2"></i>
+                                    <span class="text-sm">{{$kelas->jurusan}}</span>
+                                </div>
+                                <div class="flex items-center text-gray-600 mt-2">
+                                    <i class="fa-solid fa-user-tie text-sm mr-2"></i>
+                                    <span class="text-sm">{{$kelas->wali_kelas}}</span>
+                                </div>
+                            </a>
+                        </div>
                         @endforeach
                     </div>
                     @else
                     <div class="text-center py-12">
-                        <i class="fa-solid fa-exclamation-circle text-5xl text-gray-400 mb-4"></i>
+                        <i class="fa-solid fa-box-open text-5xl text-gray-400 mb-4"></i>
                         <p class="text-gray-600 font-semibold text-lg">Belum ada data kelas.</p>
-                        <p class="text-gray-500 mt-2">Silakan tambahkan kelas baru</p>
+                        <p class="text-gray-500 mt-2">Silakan tambahkan kelas baru untuk memulai</p>
                     </div>
                     @endif
                 </div>
@@ -199,12 +208,12 @@
                     <input type="text" id="class-name" name="nama_kelas" placeholder="Contoh: 10 IPA 1" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
                 </div>
                 <div class="mb-4">
-                    <label for="class-name" class="block text-gray-700 font-medium mb-2">Wali Kelas</label>
-                    <input type="text" id="class-name" name="wali_kelas" placeholder="Contoh: Budi" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <label for="wali-kelas" class="block text-gray-700 font-medium mb-2">Wali Kelas</label>
+                    <input type="text" id="wali-kelas" name="wali_kelas" placeholder="Contoh: Budi Setiawan, S.Pd." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
                 </div>
                 <div class="mb-4">
-                    <label for="class-name" class="block text-gray-700 font-medium mb-2">Jurusan</label>
-                    <input type="text" id="class-name" name="jurusan" placeholder="Contoh: Teknik Informatika" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <label for="jurusan" class="block text-gray-700 font-medium mb-2">Jurusan</label>
+                    <input type="text" id="jurusan" name="jurusan" placeholder="Contoh: Teknik Informatika" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
                 </div>
                 <div class="mb-6">
                     <label for="class-year" class="block text-gray-700 font-medium mb-2">Angkatan</label>
@@ -213,7 +222,7 @@
                         @forelse ($angkatans as $angkatan)
                             <option value="{{$angkatan->id_angkatan}}">{{$angkatan->angkatan}}</option>
                         @empty
-                            <option value="" disabled selected>Belum ada</option>
+                            <option value="" disabled>Belum ada angkatan</option>
                         @endforelse
                     </select>
                 </div>
@@ -224,50 +233,114 @@
             </form>
         </div>
     </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden opacity-0">
+        <div class="modal-content bg-white rounded-xl shadow-2xl p-6 md:p-8 w-11/12 md:max-w-md transform transition-transform duration-300 scale-95">
+            <div class="text-center">
+                <i class="fa-solid fa-triangle-exclamation text-5xl text-red-500 mb-4"></i>
+                <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">Konfirmasi Hapus</h3>
+                <p class="text-gray-600 mb-6">Apakah Anda yakin ingin menghapus kelas <strong id="delete-class-name" class="font-bold"></strong>?</p>
+            </div>
+            <!-- NOTE: The action URL will be set dynamically by JavaScript -->
+            <form id="delete-form" action="" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button type="button" id="cancel-delete-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300">Batal</button>
+                    <button type="submit" class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition duration-300">Ya, Hapus</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script>
-        // --- Sidebar Toggle Functionality ---
-        const menuButton = document.getElementById('menu-button');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Sidebar Toggle Functionality ---
+            const menuButton = document.getElementById('menu-button');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
 
-        const toggleSidebar = () => {
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
-        };
+            const toggleSidebar = () => {
+                sidebar.classList.toggle('-translate-x-full');
+                overlay.classList.toggle('hidden');
+            };
 
-        menuButton.addEventListener('click', toggleSidebar);
-        overlay.addEventListener('click', toggleSidebar);
+            if (menuButton) menuButton.addEventListener('click', toggleSidebar);
+            if (overlay) overlay.addEventListener('click', toggleSidebar);
 
-        // --- Modal Functionality ---
-        const classModal = document.getElementById('class-modal');
-        const modalContent = classModal.querySelector('.modal-content');
-        const addClassBtn = document.getElementById('add-class-btn');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-        const cancelBtn = document.getElementById('cancel-btn');
+            // --- Add/Edit Modal Functionality ---
+            const classModal = document.getElementById('class-modal');
+            const addClassBtn = document.getElementById('add-class-btn');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const cancelBtn = document.getElementById('cancel-btn');
 
-        const openModal = () => {
-            classModal.classList.remove('hidden');
-            setTimeout(() => {
-                classModal.classList.remove('opacity-0');
-                modalContent.classList.remove('scale-95');
-            }, 10);
-        };
+            const openModal = (modalEl) => {
+                if (!modalEl) return;
+                const modalContent = modalEl.querySelector('.modal-content');
+                modalEl.classList.remove('hidden');
+                setTimeout(() => {
+                    modalEl.classList.remove('opacity-0');
+                    if (modalContent) modalContent.classList.remove('scale-95');
+                }, 10);
+            };
 
-        const closeModal = () => {
-            classModal.classList.add('opacity-0');
-            modalContent.classList.add('scale-95');
-            setTimeout(() => {
-                classModal.classList.add('hidden');
-            }, 300);
-        };
+            const closeModal = (modalEl) => {
+                if (!modalEl) return;
+                const modalContent = modalEl.querySelector('.modal-content');
+                modalEl.classList.add('opacity-0');
+                if (modalContent) modalContent.classList.add('scale-95');
+                setTimeout(() => {
+                    modalEl.classList.add('hidden');
+                }, 300);
+            };
 
-        addClassBtn.addEventListener('click', openModal);
-        closeModalBtn.addEventListener('click', closeModal);
-        cancelBtn.addEventListener('click', closeModal);
-        classModal.addEventListener('click', (event) => {
-            if (event.target === classModal) {
-                closeModal();
+            if (addClassBtn) addClassBtn.addEventListener('click', () => openModal(classModal));
+            if (closeModalBtn) closeModalBtn.addEventListener('click', () => closeModal(classModal));
+            if (cancelBtn) cancelBtn.addEventListener('click', () => closeModal(classModal));
+            if (classModal) classModal.addEventListener('click', (event) => {
+                if (event.target === classModal) closeModal(classModal);
+            });
+
+            // --- Delete Modal Functionality ---
+            const deleteModal = document.getElementById('delete-modal');
+            const deleteForm = document.getElementById('delete-form');
+            const deleteClassName = document.getElementById('delete-class-name');
+            const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+            const deleteBtns = document.querySelectorAll('.delete-btn');
+
+            deleteBtns.forEach(btn => {
+                btn.addEventListener('click', (event) => {
+                    // Stop the click from triggering the card's link
+                    event.stopPropagation(); 
+                    
+                    const classId = btn.dataset.id;
+                    const className = btn.dataset.name;
+                    
+                    // Set the class name in the confirmation message
+                    if(deleteClassName) deleteClassName.textContent = className;
+                    
+                    // Dynamically set the form action URL. 
+                    // Assumes your delete route is something like '/kelas/{id}'
+                    if(deleteForm) deleteForm.action = `{{ url('kelas') }}/${classId}`;
+                    
+                    openModal(deleteModal);
+                });
+            });
+
+            if (cancelDeleteBtn) cancelDeleteBtn.addEventListener('click', () => closeModal(deleteModal));
+            if (deleteModal) deleteModal.addEventListener('click', (event) => {
+                if (event.target === deleteModal) closeModal(deleteModal);
+            });
+            
+            // --- Auto-hide success alert ---
+            const successAlert = document.getElementById('success-alert');
+            if(successAlert) {
+                setTimeout(() => {
+                    successAlert.style.transition = 'opacity 0.5s ease';
+                    successAlert.style.opacity = '0';
+                    setTimeout(() => successAlert.style.display = 'none', 500);
+                }, 5000); // Hide after 5 seconds
             }
         });
     </script>

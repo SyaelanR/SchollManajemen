@@ -24,9 +24,14 @@ Route::middleware('auth')->group(function () {
         // Grup rute ini sekarang hanya bisa diakses oleh pengguna dengan role 'admin'.
     Route::middleware('role:admin')->group(function () {
         Route::prefix('manajemen-siswa')->group(function () {
-            Route::get('/', [AdminController::class, 'manajSiswa'])->name('manajemenSiswa');
-            Route::get('/tambah-siswa', [AdminController::class, 'tambahSiswa'])->name('tambahSiswa');
-            Route::post('/tambah-siswa', [AdminController::class, 'storeSiswa'])->name('storeSiswa');
+            Route::get('/', [AdminController::class, 'manajSiswa'])->name('admin.manajemenSiswa');
+            Route::get('/tambah', [AdminController::class, 'tambahSiswa'])->name('admin.tambahSiswa');
+            Route::post('/', [AdminController::class, 'storeSiswa'])->name('admin.storeSiswa');
+            // Route untuk Edit Siswa
+            Route::get('/{siswa}/edit', [AdminController::class, 'editSiswa'])->name('admin.editSiswa');
+            Route::put('/{siswa}', [AdminController::class, 'updateSiswa'])->name('admin.updateSiswa');
+            // Route untuk Hapus Siswa
+            Route::delete('/{siswa}', [AdminController::class, 'hapusSiswa'])->name('admin.hapusSiswa');
         });
         
         Route::prefix('manajemen-guru')->group(function () {
@@ -40,9 +45,6 @@ Route::middleware('auth')->group(function () {
 
             Route::put('/manajemen-guru/{id}', [AdminController::class, 'updateGuru'])->name('updateGuru');
         });
-
-
-
 
         Route::prefix('manajemen-angkatan')->group(function () {
             Route::get('/', [AdminController::class, 'manajAngkatan'])->name('manajemenAngkatan');
