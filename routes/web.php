@@ -33,7 +33,16 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [AdminController::class, 'manajGuru'])->name('manajemenGuru');
             Route::get('/tambah-guru', [AdminController::class, 'tambahGuru'])->name('tambahGuru');
             Route::post('/tambah-guru', [AdminController::class, 'storeGuru'])->name('storeGuru');
+
+            Route::delete('/{id}', [AdminController::class, 'hapusGuru'])->name('hapusGuru');
+
+            Route::get('/edit_guru/{id}', [AdminController::class, 'editGuru'])->name('editGuru');
+
+            Route::put('/manajemen-guru/{id}', [AdminController::class, 'updateGuru'])->name('updateGuru');
         });
+
+
+
 
         Route::prefix('manajemen-angkatan')->group(function () {
             Route::get('/', [AdminController::class, 'manajAngkatan'])->name('manajemenAngkatan');

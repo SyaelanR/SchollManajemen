@@ -11,6 +11,7 @@ use App\Models\DaftarTagihan;
 use App\Models\Jadwal;
 use App\Models\Mapel;
 use App\Models\Tingkat;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -48,21 +49,36 @@ class AdminController extends Controller
 
 
     
+    /**
+     * Tampilkan daftar guru & staf.
+     */
     public function manajGuru(Request $request)
     {
         $id_sekolah = $request->cookie('id_sekolah');
-        // Menggunakan whereIn untuk mengambil pengguna dengan role 'guru' atau 'staf'
+
         $teachers = User::whereIn('role', ['guru', 'staf'])
-                        ->where('id_sekolah', $id_sekolah)->latest()->paginate(10);
+            ->where('id_sekolah', $id_sekolah)
+            ->latest()
+            ->paginate(10);
+
         return view('admin.manajemen_guru', ['teachers' => $teachers]);
     }
 
-
-
-
+    /**
+     * Form tambah guru / staf.
+     */
     public function tambahGuru()
     {
         return view('admin.tambah_guru');
+    }
+
+    public function editGuru($id)
+    {
+        // Menggunakan model User, bukan Teacher, sesuai dengan cara data diambil di manajGuru.
+        // firstOrFail() akan melempar error 404 jika user tidak ditemukan.
+        $teacher = User::where('id', $id)
+                       ->whereIn('role', ['guru', 'staf'])->firstOrFail();
+        return view('guru.edit_guru', compact('teacher'));
     }
 
 
@@ -126,21 +142,26 @@ class AdminController extends Controller
 
 
 
+    /**
+     * Simpan data guru / staf baru (bisa banyak sekaligus).
+     */
     public function storeGuru(Request $request)
     {
         $id_sekolah = $request->cookie('id_sekolah');
+
         $validator = Validator::make($request->all(), [
-            'teacher'          => 'required|array|min:1',
-            'teacher.*.nik'    => 'required|string|distinct|unique:users,nisn_nik',
-            'teacher.*.username' => 'required|string|distinct|unique:users,username',
-            'teacher.*.nama'     => 'required|string|max:255',
-            'teacher.*.password' => 'required|string|min:6',
-            'teacher.*.alamat' => 'nullable|string|max:255',
+            'teacher'             => 'required|array|min:1',
+            'teacher.*.nik'       => 'required|string|distinct|unique:users,nisn_nik',
+            'teacher.*.username'  => 'required|string|distinct|unique:users,username',
+            'teacher.*.nama'      => 'required|string|max:255',
+            'teacher.*.password'  => 'required|string|min:6',
+            'teacher.*.alamat'    => 'nullable|string|max:255',
             'teacher.*.tempat_lahir' => 'nullable|string|max:100',
             'teacher.*.tanggal_lahir' => 'nullable|date',
-            'teacher.*.usia' => 'nullable|integer',
-            'teacher.*.nomor_telp' => 'nullable|string|max:15',
-            'teacher.*.jabatan' => 'required|string|in:guru,staf', // 'jabatan' dari form akan menjadi 'role'
+            'teacher.*.usia'         => 'nullable|integer',
+            'teacher.*.nomor_telp'   => 'nullable|string|max:15',
+            // kolom jabatan akan disimpan sebagai "role"
+            'teacher.*.jabatan'      => 'required|string|in:guru,staf',
         ]);
 
         if ($validator->fails()) {
@@ -148,28 +169,98 @@ class AdminController extends Controller
         }
 
         foreach ($request->input('teacher', []) as $teacherData) {
-            // Pastikan semua data yang diperlukan ada sebelum membuat user
-            if (isset($teacherData['nama'], $teacherData['nik'], $teacherData['password'], $teacherData['username'])) {
+            // Pastikan field inti tersedia
+            if (
+                isset(
+                    $teacherData['nama'],
+                    $teacherData['nik'],
+                    $teacherData['password'],
+                    $teacherData['username']
+                )
+            ) {
                 User::create([
                     'name'          => $teacherData['nama'],
-                    'email'         => $teacherData['username'] . '@sekolah.sch.id', // Membuat email unik
-                    'password'      => $teacherData['password'], // Eloquent akan mengenkripsi ini secara otomatis
+                    'email'         => $teacherData['username'].'@sekolah.sch.id',
+                    'password'      => bcrypt($teacherData['password']), // pastikan terenkripsi
                     'nisn_nik'      => $teacherData['nik'],
                     'username'      => $teacherData['username'],
-                    'role'          => $teacherData['jabatan'], // Menggunakan 'jabatan' dari form sebagai 'role'
+                    'role'          => $teacherData['jabatan'],
                     'id_sekolah'    => $id_sekolah,
-                    'alamat'        => $teacherData['alamat'],
-                    'tempat_lahir'  => $teacherData['tempat_lahir'],
-                    'tanggal_lahir' => $teacherData['tanggal_lahir'],
-                    'usia'          => $teacherData['usia'],
-                    'no_telp'       => $teacherData['nomor_telp'],
+                    'alamat'        => $teacherData['alamat'] ?? null,
+                    'tempat_lahir'  => $teacherData['tempat_lahir'] ?? null,
+                    'tanggal_lahir' => $teacherData['tanggal_lahir'] ?? null,
+                    'usia'          => $teacherData['usia'] ?? null,
+                    'no_telp'       => $teacherData['nomor_telp'] ?? null,
                 ]);
+                
             }
         }
 
         return response()->json(['message' => 'Data semua staf/guru berhasil disimpan!'], 200);
     }
 
+    /**
+     * Perbarui data guru / staf.
+     */
+    public function updateGuru(Request $request, $id)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $validator = Validator::make($request->all(), [
+            // ignore $id agar validasi unik tidak bentrok dengan record yang sama
+            'nik'      => 'required|string|unique:users,nisn_nik,' . $id,
+            'name'     => 'required|string|max:255',
+            'alamat'   => 'nullable|string|max:255',
+            'no_telp'  => 'nullable|string|max:15',
+            'username' => 'required|string|unique:users,username,' . $id,
+            'jabatan'  => 'required|string|in:guru,staf',
+            'password' => 'nullable|string|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $guru = User::where('id', $id)
+            ->where('id_sekolah', $id_sekolah)
+            ->firstOrFail();
+
+        $updateData = [
+            'name'          => $request->name,
+            'nisn_nik'      => $request->nik,
+            'username'      => $request->username,
+            'role'          => $request->jabatan,
+            'alamat'        => $request->alamat,
+            'no_telp'       => $request->no_telp,
+            'tempat_lahir'  => $request->tempat_lahir,
+            'tanggal_lahir' => $request->tanggal_lahir,
+        ];
+
+        if ($request->filled('password')) {
+            $updateData['password'] = bcrypt($request->password);
+        }
+
+        $guru->update($updateData);
+
+        return redirect()->route('manajemenGuru')->with('success', 'Data guru berhasil diperbarui!');
+    }
+
+    /**
+     * Hapus data guru / staf.
+     */
+    public function hapusGuru(Request $request, $id)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $guru = User::where('id', $id)
+            ->where('id_sekolah', $id_sekolah)
+            ->whereIn('role', ['guru', 'staf'])
+            ->firstOrFail();
+
+        $guru->delete();
+
+        return redirect()->route('manajemenGuru')->with('success', 'Data guru/staf berhasil dihapus!');
+    }
 
 
 
