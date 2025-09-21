@@ -95,12 +95,24 @@ Route::middleware('auth')->group(function () {
         Route::get('/lihat-jadwal-guru', [GuruController::class, 'lihatjadwalG'])->name('lihatjadwalG');
 
         Route::prefix('manajemen-nilai')->group(function () {
-        Route::get('/', [GuruController::class, 'manajNilaiKelas'])->name('manajemenNilai');
-        Route::get('/input-nilai{id_kelas}&{id_mapel}&{id_daftar_nilai}', [GuruController::class, 'inputNilai'])->name('inputNilai');
-        Route::get('/manajemen-nilai-daftar{id_kelas}&{id_mapel}', [GuruController::class, 'manajNilaiDaftar'])->name('manajemenNilaiDaftar');
-        Route::post('/manajemen-nilai-daftar{id_kelas}&{id_mapel}', [GuruController::class, 'storeDaftarNilai'])->name('storeDaftarNilai');
-        Route::post('/input-nilai', [GuruController::class, 'storeNilaiSiswa'])->name('storeNilai');
+            Route::get('/', [GuruController::class, 'manajNilaiKelas'])->name('manajemenNilai');
+            Route::get('/input-nilai{id_kelas}&{id_mapel}&{id_daftar_nilai}', [GuruController::class, 'inputNilai'])->name('inputNilai');
+            Route::get('/manajemen-nilai-daftar{id_kelas}&{id_mapel}', [GuruController::class, 'manajNilaiDaftar'])->name('manajemenNilaiDaftar');
+            Route::post('/manajemen-nilai-daftar{id_kelas}&{id_mapel}', [GuruController::class, 'storeDaftarNilai'])->name('storeDaftarNilai');
+            Route::post('/input-nilai', [GuruController::class, 'storeNilaiSiswa'])->name('storeNilai');
+
         });
+
+
+        Route::prefix('manajemen-absensi')->group(function () {
+            Route::get('/', [GuruController::class, 'manajAbsensi'])->name('manajAbsensi');
+            Route::get('/manajemen-absensi-daftar{id_kelas}&{id_mapel}', [GuruController::class, 'manajAbsensiDaftar'])->name('manajAbsensiDaftar');
+            Route::post('/manajemen-absensi-daftar{id_kelas}&{id_mapel}', [GuruController::class, 'storeAbsensiDaftar'])->name('storeAbsensiDaftar');
+            Route::get('/input-absensi{id_kelas}&{id_mapel}&{id_daftar_absensi}', [GuruController::class, 'inputAbsensi'])->name('inputAbsensi');
+
+        });
+            
+
         
     });
 

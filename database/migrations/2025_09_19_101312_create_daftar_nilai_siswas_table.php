@@ -18,8 +18,8 @@ return new class extends Migration
             $table->unsignedBigInteger('id_sekolah')->nullable();
             $table->unsignedBigInteger('id_kelas')->nullable();
             $table->unsignedBigInteger('id_mapel')->nullable();
-            $table->integer('tingkat')->nullable();
-            $table->enum('semester', ['Ganjil', 'Genap'])->nullable();
+            $table->unsignedBigInteger('tingkat')->nullable();
+            $table->enum('semester', ['ganjil', 'genap'])->nullable();
             $table->integer('nilai')->default(0);
             $table->timestamps();
 

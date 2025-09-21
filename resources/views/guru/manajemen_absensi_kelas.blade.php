@@ -106,7 +106,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {{-- Ganti dengan loop @forelse dari Laravel --}}
                     @forelse ($daftarkelasYangDiampu ?? [] as $kelas)
-                        <a href="{{ route('manajemenNilaiDaftar', [$kelas->id_kelas, $kelas->mapel->id_mapel]) }}" class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 cursor-pointer">
+                        <a href="{{ route('manajAbsensiDaftar', [$kelas->id_kelas, $kelas->mapel->id_mapel]) }}" class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 cursor-pointer">
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="text-xl font-bold text-gray-800">Kelas {{ $kelas->kelas->nama_kelas }}</h3>
                                 <div class="bg-indigo-100 text-indigo-600 p-3 rounded-full">

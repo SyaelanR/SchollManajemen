@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Nilai - Sistem Manajemen Sekolah</title>
+    <title>Daftar Absensi - Sistem Manajemen Sekolah</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -59,7 +59,7 @@
             <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
                 <i class="fa-solid fa-bars text-2xl"></i>
             </button>
-            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Daftar Nilai</h1>
+            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Daftar Absensi</h1>
         </header>
 
         <main class="p-6 md:p-8 flex-1">
@@ -72,9 +72,9 @@
             
             <div class="bg-white p-6 rounded-xl shadow-md">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800">Daftar Nilai: {{$infoKelas->kelas->nama_kelas}} - {{$infoMapel->nama_mapel}}</h2>
+                    <h2 class="text-2xl font-bold text-gray-800">Daftar Absensi: {{$infoKelas->kelas->nama_kelas ?? 'N/A'}} - {{$infoMapel->nama_mapel ?? 'N/A'}}</h2>
                     <button id="add-task-btn" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-indigo-700 transition duration-300">
-                        <i class="fa-solid fa-plus mr-2"></i> Tambah Nilai
+                        <i class="fa-solid fa-plus mr-2"></i> Tambah Absensi
                     </button>
                 </div>
 
@@ -83,30 +83,22 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="p-3 font-semibold text-gray-600">Keterangan</th>
-                                <th class="p-3 font-semibold text-gray-600">Tipe Nilai</th>
                                 <th class="p-3 font-semibold text-gray-600">Tanggal</th>
-                                <th class="p-3 font-semibold text-gray-600">Sifat</th>
+                                <th class="p-3 font-semibold text-gray-600">Kategori</th>
                                 <th class="p-3 font-semibold text-gray-600 text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y">
-                        @forelse (($daftarNilai ?? []) as $nilai)
+                        @forelse (($daftarAbsensi ?? []) as $absensi)
                             <tr class="hover:bg-gray-50">
-                                <td class="p-3 font-medium text-gray-800">{{$nilai->keterangan}}</td>
-                                <td class="p-3">
-                                    <span class="bg-blue-100 text-blue-700 font-medium py-1 px-3 rounded-full text-xs capitalize">{{$nilai->tipe_nilai}}</span>
+                                <td class="p-3 font-medium text-gray-800">{{$absensi->keterangan}}</td>
+                                <td class="p-3 text-gray-600">{{$absensi->tanggal}}</td>
+                                <td class="p-3 text-gray-600">{{$absensi->kategori}}</td>
+                                {{-- <td class="p-3 text-gray-600">{{$absensi->id_daftar_absensi}}</td> --}}
+                                <td class="p-3 text-center">
+                                    <a href="{{ route('inputAbsensi', [$absensi->id_kelas, $absensi->id_mapel, $absensi->id_daftar_absensi])}}" class="text-indigo-600 hover:text-indigo-800 font-semibold">Masuk</a>
+                                    {{-- <a href="#" class="text-indigo-600 hover:text-indigo-800 font-semibold">Masuk</a> --}}
                                 </td>
-                                <td class="p-3 text-gray-600">{{$nilai->tanggal}}</td>
-                                <td class="p-3 text-gray-600">{{$nilai->sifat}}</td>
-                                @if ($nilai->sifat == 'online')
-                                    <td class="p-3 text-center">
-                                        <a href="#" class="text-indigo-600 hover:text-indigo-800 font-semibold">Masuk</a>
-                                    </td>
-                                @elseif ($nilai->sifat == 'offline')
-                                    <td class="p-3 text-center">
-                                        <a href="{{route('inputNilai',[$nilai->id_kelas, $nilai->id_mapel, $nilai->id_daftar_nilai])}}" class="text-indigo-600 hover:text-indigo-800 font-semibold">Masuk</a>
-                                    </td>
-                                @endif
                             </tr>
                         @empty
                             <tr>
@@ -128,24 +120,23 @@
 
 <div id="task-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-gray-900 bg-opacity-50">
     <div class="bg-white rounded-xl shadow-lg w-11/12 md:w-1/2 p-6 relative">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">Tambah Nilai Baru</h2>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Tambah Absensi Baru</h2>
         <button id="close-task-modal-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 transition duration-300">
             <i class="fa-solid fa-times text-2xl"></i>
         </button>
-        <form action="{{route('storeDaftarNilai',[$infoKelas->kelas->id_kelas, $infoMapel->id_mapel])}}", method="POST">
+        <form action="{{route('storeAbsensiDaftar',[$infoKelas->kelas->id_kelas ?? 0, $infoMapel->id_mapel ?? 0])}}", method="POST">
             @csrf
             <div class="mb-4">
-                <label for="task-name" class="block text-gray-700 font-semibold mb-2">Keterangan Nilai</label>
-                <input type="text" id="task-name" name="keterangan_nilai" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Masukkan Keterangan Nilai" required>
+                <label for="task-name" class="block text-gray-700 font-semibold mb-2">Keterangan Absensi</label>
+                <input type="text" id="task-name" name="keterangan_absen" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Masukkan Keterangan Nilai" required>
             </div>
             <div class="mb-4">
-                <label for="task-type-select" class="block text-gray-700 font-semibold mb-2">Tipe Nilai</label>
-                <select id="task-type-select" name="tipe_nilai" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                    <option value="Tugas">Tugas</option>
-                    <option value="PR">PR</option>
-                    <option value="UAS">UAS</option>
-                    <option value="UTS">UTS</option>
-                    <option value="Hafalan">Hafalan</option>
+                <label for="task-type-select" class="block text-gray-700 font-semibold mb-2">Kategori Absensi</label>
+                <select id="task-type-select" name="kategori_absen" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                    <option value="KBM">KBM</option>
+                    <option value="Setoran">Setoran</option>
+                    <option value="Halaqah">Halaqah</option>
+                    <option value="Daurah">Daurah</option>
                 </select>
             </div>
             <div class="mb-4">

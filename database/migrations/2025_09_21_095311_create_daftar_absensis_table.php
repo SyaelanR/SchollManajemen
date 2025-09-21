@@ -11,22 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('daftar_nilais', function (Blueprint $table) {
-            $table->id('id_daftar_nilai');
-            $table->unsignedBigInteger('id_mapel')->nullable();
-            $table->string('tipe_nilai')->nullable();
-            $table->string('keterangan')->nullable();
-            $table->date('tanggal')->nullable();
+        Schema::create('daftar_absensis', function (Blueprint $table) {
+            $table->id('id_daftar_absensi');
             $table->unsignedBigInteger('id_sekolah')->nullable();
             $table->unsignedBigInteger('id_kelas')->nullable();
+            $table->unsignedBigInteger('id_mapel')->nullable();
             $table->unsignedBigInteger('tingkat')->nullable();
             $table->enum('semester', ['ganjil', 'genap'])->nullable();
-            $table->enum('sifat', ['online', 'offline'])->default('offline');
+            $table->date('tanggal')->nullable();
+            $table->string('keterangan')->nullable();
+            $table->string('kategori')->nullable();
             $table->timestamps();
 
-            $table->foreign('id_mapel')->references('id_mapel')->on('mapels')->onDelete('set null');
             $table->foreign('id_sekolah')->references('id_sekolah')->on('cliens')->onDelete('set null');
             $table->foreign('id_kelas')->references('id_kelas')->on('kelas')->onDelete('set null');
+            $table->foreign('id_mapel')->references('id_mapel')->on('mapels')->onDelete('set null');
         });
     }
 
@@ -35,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('daftar_nilais');
+        Schema::dropIfExists('daftar_absensis');
     }
 };
