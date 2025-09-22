@@ -127,7 +127,7 @@ class AdminController extends Controller
 
         $siswa->update($updateData);
 
-        return redirect()->route('admin.manajemenSiswa')->with('success', 'Data siswa berhasil diperbarui!');
+        return redirect()->route('manajemenSiswa')->with('success', 'Data siswa berhasil diperbarui!');
     }
 
     /**
@@ -144,7 +144,7 @@ class AdminController extends Controller
         }
 
         $siswa->delete();
-        return redirect()->route('admin.manajemenSiswa')->with('success', 'Data siswa berhasil dihapus!');
+        return redirect()->route('manajemenSiswa')->with('success', 'Data siswa berhasil dihapus!');
     }
 
     // --- MANAJEMEN GURU & STAF ---

@@ -55,7 +55,7 @@
                     <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
                     <span>Manajemen Siswa</span>
                 </a>
-                <a href="{{ route('admin.guru.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
                     <span>Manajemen Guru</span>
                 </a>
@@ -222,7 +222,7 @@
                             <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">
                                 Update Siswa
                             </button>
-                            <a href="{{ route('admin.siswa.index') }}" class="inline-block align-baseline font-bold text-sm text-gray-600 hover:text-gray-800">
+                            <a href="{{ route('manajemenSiswa') }}" class="inline-block align-baseline font-bold text-sm text-gray-600 hover:text-gray-800">
                                 Batal
                             </a>
                         </div>

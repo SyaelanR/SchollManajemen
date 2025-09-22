@@ -141,7 +141,7 @@
                                 <input type="text" placeholder="Cari siswa..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                 <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                             </div>
-                            <button onclick="window.location.href = '{{ route('admin.tambahSiswa') }}';" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap">
+                            <button onclick="window.location.href = '{{ route('tambahSiswa') }}';" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap">
                                 <i class="fa-solid fa-plus mr-2"></i>
                                 Tambah Siswa
                             </button>
@@ -174,7 +174,7 @@
                                     <td class="p-3 text-center">
                                         <div class="flex justify-center space-x-3">
                                             <a href="{{ route('admin.editSiswa', $student->id) }}" class="text-blue-600 hover:text-blue-800" title="Edit"><i class="fa-solid fa-pencil"></i></a>
-                                            <form action="#" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus siswa ini?');">
+                                            <form action="{{ route('admin.hapusSiswa', $student->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus siswa ini?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-600 hover:text-red-800" title="Hapus"><i class="fa-solid fa-trash"></i></button>
