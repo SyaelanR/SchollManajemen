@@ -65,11 +65,11 @@
                     <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="manajemen_angkatan.html" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="{{ route('admin.angkatan.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-layer-group w-6 h-6 mr-3"></i>
                     <span>Manajemen Angkatan</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="{{ route('admin.siswa.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
                     <span>Manajemen Siswa</span>
                 </a>
@@ -79,10 +79,15 @@
                 </a>
             </nav>
             <div class="absolute bottom-0 w-full p-6">
-                <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg">
-                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
-                    <span>Logout</span>
-                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <a href="{{ route('logout') }}"
+                       onclick="event.preventDefault(); this.closest('form').submit();"
+                       class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
+                        <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
+                        <span>Logout</span>
+                    </a>
+                </form>
             </div>
         </aside>
 
@@ -134,7 +139,7 @@
                                 <input type="text" placeholder="Cari guru..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                 <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                             </div>
-                            <button onclick="window.location.href = '{{ route('tambahGuru')}}';" id="add-guru-btn" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap">
+                            <button onclick="window.location.href = '{{ route('admin.guru.create')}}';" id="add-guru-btn" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap">
                                 <i class="fa-solid fa-plus mr-2"></i>
                                 Tambah Guru
                             </button>
@@ -174,11 +179,11 @@
                                 <td class="p-3 text-gray-700 capitalize">{{ $teacher->role }}</td>
                                 <td class="p-3 text-center">
                                     <div class="flex justify-center space-x-3">
-                                        <a href="{{ route('editGuru', $teacher->id) }}" class="text-blue-600 hover:text-blue-800" title="Edit">
+                                        <a href="{{ route('admin.guru.edit', $teacher->id) }}" class="text-blue-600 hover:text-blue-800" title="Edit">
                                             <i class="fa-solid fa-pencil"></i>
                                         </a>
                                         {{-- Form hapus sekarang mengarah ke rute yang benar --}}
-                                        <form action="{{ route('hapusGuru', $teacher->id) }}" method="POST" class="inline-block delete-form">
+                                        <form action="{{ route('admin.guru.destroy', $teacher->id) }}" method="POST" class="inline-block delete-form">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-red-600 hover:text-red-800" title="Hapus">

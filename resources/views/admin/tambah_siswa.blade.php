@@ -63,11 +63,11 @@
                     <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="{{ route('admin.manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
+                <a href="{{ route('admin.siswa.index') }}" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
                     <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
                     <span>Manajemen Siswa</span>
                 </a>
-                <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="{{ route('admin.guru.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
                     <span>Manajemen Guru</span>
                 </a>
@@ -116,7 +116,7 @@
                         <p class="text-gray-500 mt-1">Isi data siswa pada baris yang tersedia. Klik "Tambah Baris" untuk menambahkan lebih banyak siswa.</p>
                     </div>
 
-                    <form id="add-student-form" method="POST" action="{{ route('admin.storeSiswa') }}">
+                    <form id="add-student-form" method="POST" action="{{ route('admin.siswa.store') }}">
                         @csrf
                         <div class="force-scroll-x">
                             <table class="w-full text-left">
@@ -142,7 +142,7 @@
                                 Tambah Baris
                             </button>
                             <div class="flex w-full md:w-auto gap-4">
-                               <a href="{{ route('admin.manajemenSiswa') }}" class="w-full md:w-auto bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300 text-center flex items-center justify-center">
+                               <a href="{{ route('admin.siswa.index') }}" class="w-full md:w-auto bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300 text-center flex items-center justify-center">
                                     Batal
                                 </a>
                                 <button type="submit" class="w-full md:w-auto bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">
@@ -239,7 +239,7 @@
                 if (response.ok) {
                     alert(result.message);
                     // PERBAIKAN: Menggunakan nama route yang benar
-                    window.location.href = "{{ route('admin.manajemenSiswa') }}";
+                    window.location.href = "{{ route('admin.siswa.index') }}";
                 } else if (response.status === 422) {
                     displayErrors(result.errors);
                     alert('Terdapat kesalahan pada data yang Anda masukkan. Silakan periksa kembali.');

@@ -59,6 +59,10 @@ Route::middleware('auth')->group(function () {
             Route::post('/lihat-kelas', [AdminController::class, 'lihatKelas'])->name('lihatKelas');
             Route::get('/lihat-kelas', [AdminController::class, 'lihatKelasD'])->name('lihatKelasD');
             Route::post('/lihat-kelas/tambah-siswa-ke-kelas', [AdminController::class, 'tambahSiswaKeKelas'])->name('tambahSiswaKeKelas');
+
+            Route::get('edit-kelas{id}', [AdminController::class, 'editKelas'])->name('editKelas');
+            Route::put('edit-kelas{id}', [AdminController::class, 'updateKelas'])->name('updateKelas');
+            Route::delete('edit-kelas{id}', [AdminController::class, 'destroyKelas'])->name('destroyKelas');
         });
 
         Route::prefix('manajemen-keuangan')->group(function () {

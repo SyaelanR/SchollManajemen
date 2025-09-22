@@ -933,4 +933,70 @@ class AdminController extends Controller
         $tingkat->delete();
         return redirect()->route('manajemenTingkat')->with('success', 'Tingkat berhasil dihapus!');
     }
+
+
+       public function editKelas(Request $request, $id_kelas) // Should be edit() for KelasController
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        // Temukan kelas spesifik dari database berdasarkan ID dan id_sekolah
+        $kelas = Kelas::where('id_kelas', $id_kelas)
+                      ->where('id_sekolah', $id_sekolah)
+                      ->firstOrFail();
+
+        // Ambil data angkatan yang tersedia untuk sekolah ini saja
+        $angkatans = Angkatan::where('id_sekolah', $id_sekolah)->latest()->get();
+
+        // Kembalikan view edit, berikan data kelas yang spesifik dan angkatan yang relevan
+        return view('admin.edit-kelas', compact('kelas', 'angkatans'));
+    }
+
+    /**
+     * Memperbarui data kelas yang ada di database.
+     */
+    public function updateKelas(Request $request, $id_kelas) // Should be update() for KelasController
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        // Aturan validasi
+        $request->validate([
+            'nama_kelas' => [
+                'required',
+                'string',
+                'max:255',
+                // Pastikan nama kelas unik untuk angkatan dan sekolah yang sama, kecuali untuk ID kelas ini sendiri
+                'unique:kelas,nama_kelas,' . $id_kelas . ',id_kelas,id_angkatan,' . $request->id_angkatan . ',id_sekolah,' . $id_sekolah,
+            ],
+            'wali_kelas' => 'required|string|max:255',
+            'id_angkatan' => 'required|exists:angkatans,id_angkatan', // 'exists' memeriksa apakah id_angkatan ada di tabel angkatans
+            'jurusan' => 'nullable|string|max:20',
+        ]);
+
+        // Cari kelas berdasarkan ID dan id_sekolah untuk keamanan
+        $kelas = Kelas::where('id_kelas', $id_kelas)
+                      ->where('id_sekolah', $id_sekolah)
+                      ->firstOrFail();
+
+        $kelas->update([
+            'nama_kelas' => $request->nama_kelas,
+            'wali_kelas' => $request->wali_kelas,
+            'id_angkatan' => $request->id_angkatan,
+            'jurusan' => $request->jurusan,
+        ]);
+
+        // Arahkan kembali ke daftar kelas utama dengan pesan sukses
+        return redirect()->route('manajemenKelas')->with('success', 'Data kelas berhasil diperbarui!');
+    }
+    
+    /**
+     * Menghapus data kelas dari database.
+     */
+    public function destroyKelas(Request $request, $id_kelas) // Should be destroy() for KelasController
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $kelas = Kelas::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->firstOrFail();
+        $kelas->delete();
+
+        return redirect()->route('manajemenKelas')->with('success', 'Data kelas berhasil dihapus!'); // PERBAIKAN: Menggunakan nama route yang benar
+    }
+    
 }
