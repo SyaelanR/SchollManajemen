@@ -28,10 +28,10 @@ Route::middleware('auth')->group(function () {
             Route::get('/tambah', [AdminController::class, 'tambahSiswa'])->name('tambahSiswa');
             Route::post('/tambah', [AdminController::class, 'storeSiswa'])->name('storeSiswa');
             // Route untuk Edit Siswa
-            Route::get('/{siswa}/edit', [AdminController::class, 'editSiswa'])->name('admin.editSiswa');
-            Route::put('/{siswa}', [AdminController::class, 'updateSiswa'])->name('admin.updateSiswa');
+            Route::get('/{siswa}/edit', [AdminController::class, 'editSiswa'])->name('editSiswa');
+            Route::put('/{siswa}', [AdminController::class, 'updateSiswa'])->name('updateSiswa');
             // Route untuk Hapus Siswa
-            Route::delete('/{siswa}', [AdminController::class, 'hapusSiswa'])->name('admin.hapusSiswa');
+            Route::delete('/{siswa}', [AdminController::class, 'hapusSiswa'])->name('hapusSiswa');
         });
         
         Route::prefix('manajemen-guru')->group(function () {

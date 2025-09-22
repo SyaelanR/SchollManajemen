@@ -173,8 +173,8 @@
                                     </td>
                                     <td class="p-3 text-center">
                                         <div class="flex justify-center space-x-3">
-                                            <a href="{{ route('admin.editSiswa', $student->id) }}" class="text-blue-600 hover:text-blue-800" title="Edit"><i class="fa-solid fa-pencil"></i></a>
-                                            <form action="{{ route('admin.hapusSiswa', $student->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus siswa ini?');">
+                                            <a href="{{ route('editSiswa', $student->id) }}" class="text-blue-600 hover:text-blue-800" title="Edit"><i class="fa-solid fa-pencil"></i></a>
+                                            <form action="{{ route('hapusSiswa', $student->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus siswa ini?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-600 hover:text-red-800" title="Hapus"><i class="fa-solid fa-trash"></i></button>

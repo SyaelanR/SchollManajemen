@@ -114,7 +114,7 @@
                 <div class="bg-white p-6 rounded-xl shadow-md max-w-2xl mx-auto">
                     <h2 class="text-2xl font-bold text-gray-800 mb-6">Form Edit Siswa</h2>
                     
-                    <form action="{{ route('admin.updateSiswa', $siswa->id) }}" method="POST">
+                    <form action="{{ route('updateSiswa', $siswa->id) }}" method="POST">
                         @csrf
                         @method('PUT') {{-- Gunakan method PUT untuk update data --}}
 
