@@ -378,6 +378,26 @@ class GuruController extends Controller
                     ->with('siswa')->get();
 
         // return view('guru.input_absensi', ['daftarSiswa' => $daftarSiswa, 'infoKelas' => $infoKelas, 'infoMapel' => $infoMapel, 'infoDaftarAbsensi' => $infoDaftarAbsensi]);
-        return view('guru.input_absensi', ['daftarSiswa' => $daftarSiswa, 'infoKelas' => $infoKelas, 'infoMapel' => $infoMapel, 'infoDaftarAbsensi' => $infoDaftarAbsensi, 'infoAngkatan' => $infoAngkatan]);
+        return view('guru.input_absensi', ['daftarSiswa' => $daftarSiswa, 'infoKelas' => $infoKelas]);
+    }
+
+    public function storeAbsensiSiswa (Request $request)
+    {
+        // 1. Validasi input dari form
+        $request->validate([
+            // 'status' harus ada dan berupa array
+            'status' => 'present|array',
+            // Setiap item di dalam array 'status' harus diisi dan nilainya harus salah satu dari: Hadir, Sakit, Izin, Alpha
+        ], [
+            'status.*.in' => 'Status yang dipilih tidak valid.'
+        ]);
+
+        // 2. Lakukan perulangan untuk setiap status yang dikirim
+        foreach ($request->status as $id_daftar_absensi_siswa => $status_kehadiran) {
+            DaftarAbsensiSiswa::where('id_daftar_absensi_siswa', $id_daftar_absensi_siswa)->update(['status' => $status_kehadiran ?? null]);
+        }
+
+        // 3. Kembali ke halaman sebelumnya dengan pesan sukses
+        return back()->with('success', 'Absensi siswa berhasil disimpan!');
     }
 }

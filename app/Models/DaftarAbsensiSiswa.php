@@ -8,7 +8,7 @@ class DaftarAbsensiSiswa extends Model
 {
     
     protected $table = 'daftar_absensi_siswas';
-    protected $primaryKey = 'id_daftar_absensi_siswa'; 
+    protected $primaryKey = 'id_daftar_absensi_siswa';
     protected $fillable = [
         'id_siswa',
         'id_daftar_absensi',

@@ -20,6 +20,7 @@
         ::-webkit-scrollbar-thumb:hover { background: #555; }
         .sidebar { transition: transform 0.3s ease-in-out; }
     </style>
+    @livewireStyles
 </head>
 <body class="bg-gray-100 min-h-screen flex">
 
@@ -94,7 +95,7 @@
             <!-- Siswa Belum Dinilai -->
             <div class="bg-white p-6 rounded-2xl shadow-xl mb-8">
                 <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center"><i class="fa-solid fa-pencil-alt text-yellow-500 mr-3"></i>Siswa Belum Dinilai</h2>
-                <form action="{{ route('storeNilai') }}" method="POST" id="form-belum-dinilai">
+                <form action="{{ route('storeNilaiSiswa') }}" method="POST" id="form-belum-dinilai">
                     @csrf
                     <table class="w-full table-auto border-collapse">
                         <thead class="bg-gray-50">
@@ -141,8 +142,8 @@
                         <tr>
                             <th class="border px-4 py-2 text-left">Nama Siswa</th>
                             <th class="border px-4 py-2">NISN</th>
-                            <th class="border px-4 py-2">Nilai</th>
-                            <th class="border px-4 py-2">Aksi</th>
+                            <th class="border px-4 py-2 text-center">Nilai</th>
+                            <th class="border px-4 py-2 text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -151,15 +152,15 @@
                         <tr class="text-center hover:bg-gray-50">
                             <td class="border px-4 py-2 text-left">{{$nilai->siswa->name}}</td>
                             <td class="border px-4 py-2">{{$nilai->siswa->nisn_nik}}</td>
-                            <td class="border px-4 py-2 font-semibold">{{$nilai->nilai}}</td>
+                            <td class="border px-4 py-2">{{$nilai->nilai}}</td>
                             <td class="border px-4 py-2">
-                                <button class="text-blue-600 hover:text-blue-800" title="Edit Nilai"><i class="fa-solid fa-edit"></i></button>
+                                <button class="text-blue-600 hover:text-blue-800" title="Edit"><i class="fa-solid fa-pencil"></i></button>
                             </td>
                         </tr>
                         @endif
                         @empty
                         <tr class="text-center">
-                            <td colspan="3" class="border px-4 py-2 text-center">
+                            <td colspan="4" class="border px-4 py-2 text-center">
                                 <div class="text-center py-12">
                                     <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
                                     <p class="text-gray-600 font-semibold text-lg">Belum ada siswa yang belum dinilai.</p>
@@ -189,5 +190,6 @@
         menuButton.addEventListener('click', toggleSidebar);
         overlay.addEventListener('click', toggleSidebar);
     </script>
+    @livewireScripts
 </body>
 </html>

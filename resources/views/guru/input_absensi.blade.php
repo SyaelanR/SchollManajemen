@@ -118,74 +118,77 @@
             <main class="p-6 md:p-8 flex-1">
                 <div class="bg-white p-6 rounded-xl shadow-md mb-8">
                     <!-- Action Bar -->
-                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                        <div>
-                            <h2 class="text-2xl font-bold text-gray-800">Absensi Kelas: <span class="text-indigo-600">{{$infoKelas->kelas->nama_kelas ?? 'N/A'}} - Matematika</span></h2>
-                            <p class="text-gray-500 mt-2"><i class="fa-solid fa-calendar-day mr-2"></i>Tanggal: 10 September 2025</p>
+                    <form action="{{ route('storeAbsensiSiswa')}}" method="POST">
+                        @csrf
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-800">Absensi Kelas: <span class="text-indigo-600">{{$infoKelas->kelas->nama_kelas ?? 'N/A'}} - Matematika</span></h2>
+                                <p class="text-gray-500 mt-2"><i class="fa-solid fa-calendar-day mr-2"></i>Tanggal: 10 September 2025</p>
+                            </div>
+                            <a href="#" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300 flex items-center whitespace-nowrap">
+                                <i class="fa-solid fa-arrow-left mr-2"></i>
+                                Kembali
+                            </a>
                         </div>
-                        <a href="#" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300 flex items-center whitespace-nowrap">
-                            <i class="fa-solid fa-arrow-left mr-2"></i>
-                            Kembali
-                        </a>
-                    </div>
-                    
-                    <div class="flex justify-end mb-4">
-                        <button id="hadir-semua-btn" class="bg-green-100 text-green-700 font-semibold py-2 px-4 rounded-lg hover:bg-green-200 transition duration-300 flex items-center text-sm">
-                            <i class="fa-solid fa-users-viewfinder mr-2"></i>
-                            Hadir Semua
-                        </button>
-                    </div>
+                        
+                        <div class="flex justify-end mb-4">
+                            <button type="button" id="hadir-semua-btn" class="bg-green-100 text-green-700 font-semibold py-2 px-4 rounded-lg hover:bg-green-200 transition duration-300 flex items-center text-sm">
+                                <i class="fa-solid fa-users-viewfinder mr-2"></i>
+                                Hadir Semua
+                            </button>
+                        </div>
 
-                    <!-- Students Table -->
-                    <div class="overflow-x-auto">
-                        <table class="w-full min-w-[700px] text-left">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="p-3 font-semibold text-gray-600">NISN</th>
-                                    <th class="p-3 font-semibold text-gray-600">Nama Siswa</th>
-                                    <th class="p-3 font-semibold text-gray-600">Jenis Kelamin</th>
-                                    <th class="p-3 font-semibold text-gray-600 w-48">Status Kehadiran</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y">
-                                <!-- Sample Row 1 -->
-                                @forelse ($daftarSiswa ?? [] as $siswa)
-                                @if ($siswa->status == null)                              
-                                <tr class="hover:bg-gray-50">
-                                    <td class="p-3 text-gray-700">{{$siswa->siswa->nisn_nik}}</td>
-                                    <td class="p-3 text-gray-800 font-medium">{{$siswa->siswa->name}}</td>
-                                    <td class="p-3 text-gray-700">{{$siswa->siswa->jenis_kelamin}}</td>
-                                    <td class="p-3">
-                                        <select class="select-status status-hadir w-full p-2 border rounded-lg font-semibold">
-                                            <option value=""></option>
-                                            <option value="hadir" class="text-green-800 font-medium">Hadir</option>
-                                            <option value="izin" class="text-yellow-800 font-medium">Izin</option>
-                                            <option value="sakit" class="text-sky-800 font-medium">Sakit</option>
-                                            <option value="alfa" class="text-red-800 font-medium">Alfa</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                                @endif
-                                @empty
+                        <!-- Students Table -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full min-w-[700px] text-left">
+                                <thead class="bg-gray-50">
                                     <tr>
-                                        <td colspan="4" class="p-3 text-center text-gray-500">
-                                            <div class="text-center py-12">
-                                                <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
-                                                <p class="text-gray-600 font-semibold text-lg">Tidak ada daftar siswa.</p>
-                                            </div>
+                                        <th class="p-3 font-semibold text-gray-600">NISN</th>
+                                        <th class="p-3 font-semibold text-gray-600">Nama Siswa</th>
+                                        <th class="p-3 font-semibold text-gray-600">Jenis Kelamin</th>
+                                        <th class="p-3 font-semibold text-gray-600 w-48">Status Kehadiran</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y">
+                                    <!-- Sample Row 1 -->
+                                    @forelse ($daftarSiswa ?? [] as $siswa)
+                                    @if ($siswa->status == null)                              
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="p-3 text-gray-700">{{$siswa->siswa->nisn_nik}}</td>
+                                        <td class="p-3 text-gray-800 font-medium">{{$siswa->siswa->name}}</td>
+                                        <td class="p-3 text-gray-700">{{$siswa->siswa->jenis_kelamin}}</td>
+                                        <td class="p-3">
+                                            <select name='status[{{$siswa->id_daftar_absensi_siswa}}]' id='status_{{$siswa->id_daftar_absensi_siswa}}' class="select-status status-hadir w-full p-2 border rounded-lg font-semibold">
+                                                <option value=""></option>
+                                                <option value="Hadir" class="text-green-800 font-medium">Hadir</option>
+                                                <option value="Izin" class="text-yellow-800 font-medium">Izin</option>
+                                                <option value="Sakit" class="text-sky-800 font-medium">Sakit</option>
+                                                <option value="Alpha" class="text-red-800 font-medium">Alpha</option>
+                                            </select>
                                         </td>
                                     </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                     <!-- Action Buttons -->
-                     <div class="flex justify-end items-center mt-6 border-t pt-6">
-                        <button class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center">
-                            <i class="fa-solid fa-save mr-2"></i>
-                            Simpan Absensi
-                        </button>
-                    </div>
+                                    @endif
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="p-3 text-center text-gray-500">
+                                                <div class="text-center py-12">
+                                                    <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
+                                                    <p class="text-gray-600 font-semibold text-lg">Tidak ada daftar siswa.</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Action Buttons -->
+                        <div class="flex justify-end items-center mt-6 border-t pt-6">
+                            <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center">
+                                <i class="fa-solid fa-save mr-2"></i>
+                                Simpan Absensi
+                            </button>
+                        </div>
+                    </form>
                 </div>
 
                 <!-- Already Absen Table -->
@@ -209,7 +212,7 @@
                                 <tr class="hover:bg-gray-50">
                                     <td class="p-3 text-gray-700">{{$siswa->siswa->nisn_nik}}</td>
                                     <td class="p-3 text-gray-800 font-medium">{{$siswa->siswa->name}}</td>
-                                    <td class="p-3 text-gray-700">Laki-laki</td>
+                                    <td class="p-3 text-gray-700">{{$siswa->siswa->jenis_kelamin}}</td>
                                     <td class="p-3">
                                         @if ($siswa->status == 'Hadir')
                                         <span class="bg-green-100 text-green-800 font-medium py-1 px-3 rounded-full text-xs">Hadir</span>
@@ -266,9 +269,9 @@
         
         const statusColors = {
             hadir: 'status-hadir',
-            izin: 'status-izin',
-            sakit: 'status-sakit',
-            alfa: 'status-alfa'
+            Izin: 'status-izin',
+            Sakit: 'status-sakit',
+            Alpha: 'status-alfa'
         };
 
         function updateSelectColor(selectElement) {
@@ -278,7 +281,11 @@
             });
             // Add the correct class based on the selected value
             const selectedStatus = selectElement.value;
-            selectElement.classList.add(statusColors[selectedStatus]);
+            if (selectedStatus === 'Hadir') {
+                selectElement.classList.add(statusColors.hadir);
+            } else {
+                selectElement.classList.add(statusColors[selectedStatus]);
+            }
         }
 
         statusSelects.forEach(select => {
@@ -291,7 +298,7 @@
         
         hadirSemuaBtn.addEventListener('click', () => {
             statusSelects.forEach(select => {
-                select.value = 'hadir';
+                select.value = 'Hadir';
                 updateSelectColor(select);
             });
         });
