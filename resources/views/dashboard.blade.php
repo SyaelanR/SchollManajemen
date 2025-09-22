@@ -58,7 +58,7 @@
 
 
                 @can('view-admin')
-                <a href="{{ route('admin.manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-user-graduate mr-3"></i>
                     <span>Manajemen Siswa</span>
                 </a>

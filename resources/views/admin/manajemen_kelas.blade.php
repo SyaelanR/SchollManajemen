@@ -162,22 +162,28 @@
                             </button>
 
                             <!-- Clickable Area -->
-                            <a href="{{ route('lihatKelas', ['id_kelas' => $kelas->id_kelas]) }}" class="block">
-                                <div class="flex items-center mb-4">
-                                    <div class="bg-blue-100 text-blue-600 p-4 rounded-full flex items-center justify-center">
-                                        <i class="fa-solid fa-school text-2xl"></i>
+                            <form action="{{route('lihatKelas')}}" method="POST">
+                                <a href="{{route('lihatKelas')}}" onclick="event.preventDefault(); this.closest('form').submit();">
+                            @csrf
+                                    <div class="flex items-center mb-4">
+                                        <div class="bg-blue-100 text-blue-600 p-4 rounded-full flex items-center justify-center">
+                                            <i class="fa-solid fa-school text-2xl"></i>
+                                        </div>
                                     </div>
-                                </div>
-                                <h3 class="text-xl font-semibold text-gray-800">{{$kelas->nama_kelas}}</h3>
-                                <div class="flex items-center text-gray-600 mt-4">
-                                    <i class="fa-solid fa-magnifying-glass text-sm mr-2"></i>
-                                    <span class="text-sm">{{$kelas->jurusan}}</span>
-                                </div>
-                                <div class="flex items-center text-gray-600 mt-2">
-                                    <i class="fa-solid fa-user-tie text-sm mr-2"></i>
-                                    <span class="text-sm">{{$kelas->wali_kelas}}</span>
-                                </div>
-                            </a>
+                                    <h3 class="text-xl font-semibold text-gray-800">{{$kelas->nama_kelas}}</h3>
+                                    <div class="flex items-center text-gray-600 mt-4">
+                                        <i class="fa-solid fa-magnifying-glass text-sm mr-2"></i>
+                                        <span class="text-sm">{{$kelas->jurusan}}</span>
+                                    </div>
+                                    <div class="flex items-center text-gray-600 mt-2">
+                                        <i class="fa-solid fa-user-tie text-sm mr-2"></i>
+                                        <span class="text-sm">{{$kelas->wali_kelas}}</span>
+                                    </div>
+                                <select name="id_kelas" id="" class="hidden">
+                                    <option value="{{$kelas->id_kelas}}"></option>
+                                </select>
+                            </a> 
+                        </form>
                         </div>
                         @endforeach
                     </div>
