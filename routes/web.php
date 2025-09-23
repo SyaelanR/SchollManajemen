@@ -107,7 +107,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/tambah-klien', [AdminDevController::class, 'storeKlien'])->name('storeKlien');
     });
 
-        Route::middleware('role:guru')->group(function () {
+
+
+        //Grup rute ini sekarang hanya bisa diakses oleh pengguna dengan role 'guru'.
+    Route::middleware('role:guru')->group(function () {
         Route::get('/lihat-jadwal-guru', [GuruController::class, 'lihatjadwalG'])->name('lihatjadwalG');
 
         Route::prefix('manajemen-nilai')->group(function () {
@@ -127,6 +130,12 @@ Route::middleware('auth')->group(function () {
             Route::get('/input-absensi{id_kelas}&{id_mapel}&{id_daftar_absensi}', [GuruController::class, 'inputAbsensi'])->name('inputAbsensi');
             Route::post('/input-absensi', [GuruController::class, 'storeAbsensiSiswa'])->name('storeAbsensiSiswa');
 
+        });
+
+
+        Route::prefix('manajemen-tugas')->group(function () {
+            Route::get('/', [GuruController::class, 'manajTugasKelas'])->name('manajMateri');
+            Route::get('/input-tugas{id_kelas}&{id_mapel},', [GuruController::class, 'inputTugas'])->name('inputTugas');
         });
             
         

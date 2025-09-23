@@ -400,4 +400,47 @@ class GuruController extends Controller
         // 3. Kembali ke halaman sebelumnya dengan pesan sukses
         return back()->with('success', 'Absensi siswa berhasil disimpan!');
     }
+
+    public function manajTugasKelas (Request $request)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+
+    $daftarkelasYangDiampu = Jadwal::with('kelas.angkatan', 'mapel')
+        ->whereHas('mapel', function ($query) use ($id_user) {
+            $query->where('id_guru', $id_user);
+        })
+        ->whereHas('kelas.angkatan', function ($query) use ($id_sekolah) {
+            $query->where('id_sekolah', $id_sekolah);
+        })
+        ->whereHas('kelas.angkatan', function ($query) {
+            $query->whereColumn('angkatans.semester', 'jadwals.semester');
+        })
+        ->whereHas('kelas.angkatan', function ($query) {
+            $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+        })
+        ->whereHas('kelas.angkatan', function ($query) {
+            // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+            $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+        })
+        ->select('id_kelas', 'id_mapel') // hanya ambil kombinasi unik kelas+mapel
+        ->distinct()
+        // ->with('kelas.angkatan', 'mapel') // tetap load relasi
+        ->get();
+
+    // Iterasi untuk menghitung jumlah siswa untuk setiap kelas yang diampu
+    foreach ($daftarkelasYangDiampu as $jadwal) {
+        // Muat relasi yang dibutuhkan jika belum ada
+        $jadwal->loadMissing('kelas.angkatan', 'mapel');
+        // Hitung dan tambahkan properti jumlah_siswa ke setiap item jadwal
+        $jadwal->jumlah_siswa = User::where('id_kelas', $jadwal->id_kelas)->count();
+    }
+
+        return view('guru.manajemen_tugas_kelas', ['daftarkelasYangDiampu' => $daftarkelasYangDiampu]);
+    }
+
+    public function inputTugas (Request $request, $id_kelas, $id_mapel)
+    {
+        return view('guru.input_tugas');
+    }
 }
