@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Jadwal;
 
 class JadwalController extends Controller
 {
@@ -22,5 +23,37 @@ class JadwalController extends Controller
         }
 
         return view('jadwal', ['jadwals' => $jadwals, 'kelas' => $kelas]);
+    }
+
+    /**
+     * Menghapus semua jadwal yang terkait dengan ID kelas tertentu.
+     *
+     * @param int $id_kelas ID dari kelas yang jadwalnya akan dihapus.
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroyByClass(Request $request, $id_kelas)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        // Menghapus semua entri jadwal yang cocok dengan id_kelas dan id_sekolah
+        Jadwal::where('id_kelas', $id_kelas)
+            ->where('id_sekolah', $id_sekolah)
+            ->delete();
+
+        return redirect()->back()->with('success', 'Semua jadwal untuk kelas ini berhasil dihapus.');
+    }
+
+    /**
+     * Menghapus satu jadwal spesifik berdasarkan ID jadwal.
+     *
+     * @param int $id_jadwal ID dari jadwal yang akan dihapus.
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroySingle($id_jadwal)
+    {
+        $jadwal = Jadwal::findOrFail($id_jadwal);
+        $jadwal->delete();
+
+        return redirect()->back()->with('success', 'Jadwal berhasil dihapus.');
     }
 }

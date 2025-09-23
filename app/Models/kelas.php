@@ -13,7 +13,7 @@ class Kelas extends Model
         'id_sekolah',
         'jurusan',
         'wali_kelas',
-];  
+    ];  
 
     protected $primaryKey = 'id_kelas';
     protected $table = 'kelas';

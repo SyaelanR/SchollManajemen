@@ -12,6 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- SweetAlert2 for notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Custom styles */
         body {
@@ -38,6 +40,9 @@
          /* Modal transition */
         .modal {
             transition: opacity 0.3s ease-in-out;
+        }
+        .modal-content {
+             transition: transform 0.3s ease-in-out;
         }
     </style>
 </head>
@@ -100,6 +105,17 @@
 
             <!-- Page Content -->
             <main class="p-6 md:p-8 flex-1">
+                {{-- Container untuk notifikasi dari session, akan dihandle oleh JS --}}
+                @if ($errors->any())
+                    <div id="validation-errors" data-errors='@json($errors->all())' class="hidden"></div>
+                @endif
+                @if (session('success'))
+                    <div id="session-success" data-message="{{ session('success') }}" class="hidden"></div>
+                @endif
+                @if (session('error'))
+                    <div id="session-error" data-message="{{ session('error') }}" class="hidden"></div>
+                @endif
+
                 <div class="bg-white p-6 rounded-xl shadow-md">
                     <!-- Action Bar -->
                     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
@@ -123,13 +139,14 @@
                                     <th class="p-3 font-semibold text-gray-600 text-center">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y">
-                                 @forelse ($mapels as $mapel)
+                            <tbody class="divide-y" id="mapel-table-body">
+                                {{-- Loop Asli dari Laravel --}}
+                                @forelse ($mapels as $mapel)
                                 <tr class="hover:bg-gray-50">
                                     <td class="p-3 text-gray-800 font-medium">{{$mapel->nama_mapel}}</td>
                                     <td class="p-3 text-gray-700">{{$mapel->kategori}}</td>
                                     <td class="p-3 text-gray-700">{{$mapel->sks}}</td>
-                                    <td class="p-3 text-gray-700">{{$mapel->nama_guru}}</td>
+                                    <td class="p-3 text-gray-700">{{$mapel->guru->name ?? 'Belum Diatur'}}</td>
                                     <td class="p-3">
                                         @if ($mapel->status === 'nonaktif')
                                         <span class="bg-red-100 text-red-700 font-medium py-1 px-3 rounded-full text-xs">Nonaktif</span>
@@ -139,8 +156,21 @@
                                     </td>
                                     <td class="p-3 text-center">
                                         <div class="flex justify-center space-x-3">
-                                            <button class="text-blue-600 hover:text-blue-800" title="Edit"><i class="fa-solid fa-pencil"></i></button>
-                                            <button class="text-red-600 hover:text-red-800" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+                                            <button class="edit-btn text-blue-600 hover:text-blue-800" title="Edit"
+                                                data-id="{{ $mapel->id_mapel }}"
+                                                data-nama_mapel="{{ $mapel->nama_mapel }}"
+                                                data-kode_mapel="{{ $mapel->kode_mapel }}"
+                                                data-kategori="{{ $mapel->kategori }}"
+                                                data-sks="{{ $mapel->sks }}"
+                                                data-guru_id="{{ $mapel->guru_id }}"
+                                                data-status="{{ $mapel->status }}">
+                                                <i class="fa-solid fa-pencil"></i>
+                                            </button> 
+                                            <form action="{{ route('destroyMapel', $mapel->id_mapel) }}" method="POST" class="inline-block delete-form">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-600 hover:text-red-800" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>
@@ -162,15 +192,17 @@
         </div>
     </div>
 
-    <!-- Add Subject Modal -->
+    <!-- Add/Edit Subject Modal -->
     <div id="mapel-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden opacity-0">
-        <div class="bg-white rounded-xl shadow-2xl p-8 w-11/12 md:w-1/2 lg:w-1/3 transform transition-transform duration-300 scale-95">
+        <div class="modal-content bg-white rounded-xl shadow-2xl p-8 w-11/12 md:w-1/2 lg:w-1/3 transform transition-transform duration-300 scale-95">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-semibold text-gray-800">Tambah Mata Pelajaran</h3>
+                <h3 id="modal-title" class="text-2xl font-semibold text-gray-800">Tambah Mata Pelajaran</h3>
                 <button id="close-modal-btn" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
             </div>
-            <form actin="{{ route('storeMapel') }}" method="POST">
+            <form id="mapel-form" action="{{ route('storeMapel') }}" method="POST">
                 @csrf
+                <input type="hidden" id="form-method" name="_method" value="POST">
+
                 <div class="mb-4">
                     <label for="nama-mapel" class="block text-gray-700 font-medium mb-2">Nama Mapel</label>
                     <input name="nama_mapel" type="text" id="nama-mapel" placeholder="Contoh: Kimia" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
@@ -185,7 +217,7 @@
                         <select name="kategori" id="kategori-mapel" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white" required>
                             <option value="Umum">Umum</option>
                             <option value="IT">IT</option>
-                            <option value="Tahfisz">Tahfidz</option>
+                            <option value="Tahfidz">Tahfidz</option>
                             <option value="Eskul">Eskul</option>
                         </select>
                     </div>
@@ -196,11 +228,19 @@
                 </div>
                 <div class="mb-4">
                     <label for="guru-pengampu" class="block text-gray-700 font-medium mb-2">Guru Pengampu</label>
-                    <select name="guru_pengampu" id="guru-pengampu" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white" required>
+                    <select name="guru_id" id="guru-pengampu" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white" required>
                         <option value="" disabled selected>Pilih Guru</option>
+                        {{-- Loop Guru dari Laravel --}}
                         @foreach ($teachers as $teacher)
                             <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
                         @endforeach
+                    </select>
+                </div>
+                <div class="mb-6">
+                    <label for="status-mapel" class="block text-gray-700 font-medium mb-2">Status</label>
+                    <select name="status" id="status-mapel" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white" required>
+                        <option value="aktif">Aktif</option>
+                        <option value="nonaktif">Nonaktif</option>
                     </select>
                 </div>
                 <div class="flex justify-end gap-4">
@@ -210,55 +250,205 @@
             </form>
         </div>
     </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden opacity-0">
+        <div class="modal-content bg-white rounded-xl shadow-2xl p-8 w-11/12 md:w-1/2 lg:w-1/3 transform transition-transform duration-300 scale-95 text-center">
+            <i class="fa-solid fa-triangle-exclamation text-5xl text-red-500 mb-4"></i>
+            <h3 class="text-2xl font-semibold text-gray-800 mb-2">Anda Yakin?</h3>
+            <p class="text-gray-600 mb-6">
+                Anda akan menghapus mata pelajaran <strong id="delete-mapel-name" class="font-bold"></strong>. Tindakan ini tidak dapat dibatalkan.
+            </p>
+            <form id="delete-form" action="" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="flex justify-center gap-4">
+                    <button type="button" id="cancel-delete-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition duration-300">Batal</button>
+                    <button type="submit" class="bg-red-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-red-700 transition duration-300">Hapus</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 
     <script>
-        // --- Sidebar Toggle Functionality ---
-        const menuButton = document.getElementById('menu-button');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Sidebar Toggle Functionality ---
+            const menuButton = document.getElementById('menu-button');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
 
-        const toggleSidebar = () => {
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
-        };
+            const toggleSidebar = () => {
+                sidebar.classList.toggle('-translate-x-full');
+                overlay.classList.toggle('hidden');
+            };
 
-        menuButton.addEventListener('click', toggleSidebar);
-        overlay.addEventListener('click', toggleSidebar);
+            menuButton.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', toggleSidebar);
 
-        // --- Modal Functionality ---
-        const mapelModal = document.getElementById('mapel-modal');
-        const modalContent = mapelModal.querySelector('div');
-        const addMapelBtn = document.getElementById('add-mapel-btn');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-        const cancelBtn = document.getElementById('cancel-btn');
-
-        const openModal = () => {
-            mapelModal.classList.remove('hidden');
-            setTimeout(() => {
-                mapelModal.classList.remove('opacity-0');
-                modalContent.classList.remove('scale-95');
-            }, 10);
-        };
-
-        const closeModal = () => {
-            mapelModal.classList.add('opacity-0');
-            modalContent.classList.add('scale-95');
-            setTimeout(() => {
-                mapelModal.classList.add('hidden');
-            }, 300);
-        };
-
-        addMapelBtn.addEventListener('click', openModal);
-        closeModalBtn.addEventListener('click', closeModal);
-        cancelBtn.addEventListener('click', closeModal);
-        mapelModal.addEventListener('click', (event) => {
-            if (event.target === mapelModal) {
-                closeModal();
+            // --- SweetAlert2 Notifications ---
+            const successMessage = document.getElementById('session-success');
+            if (successMessage) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: successMessage.dataset.message,
+                    timer: 2500,
+                    showConfirmButton: false
+                });
             }
-        });
 
+            const errorMessage = document.getElementById('session-error');
+            if (errorMessage) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: errorMessage.dataset.message,
+                });
+            }
+
+            const validationErrors = document.getElementById('validation-errors');
+            if (validationErrors) {
+                const errors = JSON.parse(validationErrors.dataset.errors);
+                let errorText = '';
+                errors.forEach(error => {
+                    errorText += `<p class="text-left">${error}</p>`;
+                });
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops... Ada kesalahan!',
+                    html: `<div class="mt-2">${errorText}</div>`,
+                });
+            }
+
+
+            // --- Add/Edit Modal Functionality ---
+            const mapelModal = document.getElementById('mapel-modal');
+            const modalContent = mapelModal.querySelector('.modal-content');
+            const addMapelBtn = document.getElementById('add-mapel-btn');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const cancelBtn = document.getElementById('cancel-btn');
+            
+            const modalTitle = document.getElementById('modal-title');
+            const mapelForm = document.getElementById('mapel-form');
+            const formMethodInput = document.getElementById('form-method');
+
+            // --- Delete Modal Functionality ---
+            const deleteModal = document.getElementById('delete-modal');
+            const deleteModalContent = deleteModal.querySelector('.modal-content');
+            const deleteForm = document.getElementById('delete-form');
+            const deleteMapelName = document.getElementById('delete-mapel-name');
+            const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+            
+            const tableBody = document.getElementById('mapel-table-body');
+
+            // Function to open a generic modal
+            const openModal = (modal, content) => {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    content.classList.remove('scale-95');
+                }, 10);
+            };
+
+            // Function to close a generic modal
+            const closeModal = (modal, content) => {
+                modal.classList.add('opacity-0');
+                content.classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            };
+            
+            // Open modal for ADDING a new subject
+            addMapelBtn.addEventListener('click', () => {
+                mapelForm.reset(); // Clear previous data
+                modalTitle.textContent = 'Tambah Mata Pelajaran';
+                mapelForm.action = "{{ route('storeMapel') }}";
+                formMethodInput.value = 'POST';
+                openModal(mapelModal, modalContent);
+            });
+            
+            // Handle clicks inside the table for EDIT and DELETE buttons
+            tableBody.addEventListener('click', function(event) {
+                const editBtn = event.target.closest('.edit-btn');
+
+                // If EDIT button is clicked
+                if (editBtn) {
+                    const data = editBtn.dataset;
+                    
+                    // Populate the form with data from the button
+                    document.getElementById('nama-mapel').value = data.nama_mapel;
+                    document.getElementById('kode-mapel').value = data.kode_mapel;
+                    document.getElementById('kategori-mapel').value = data.kategori;
+                    document.getElementById('sks-mapel').value = data.sks;
+                    document.getElementById('guru-pengampu').value = data.guru_id;
+                    document.getElementById('status-mapel').value = data.status;
+
+                    // Set modal title and form action for editing
+                    modalTitle.textContent = 'Edit Mata Pelajaran';
+                    let updateUrl = "{{ route('updateMapel', ':id') }}";
+                    mapelForm.action = updateUrl.replace(':id', data.id);
+
+                    formMethodInput.value = 'PUT';
+                    
+                    openModal(mapelModal, modalContent);
+                }
+
+                // If DELETE button is clicked
+                if (deleteBtn) {
+                    event.preventDefault(); // Prevent form submission if it's inside a form
+                    const data = deleteBtn.dataset;
+                    
+                    deleteMapelName.textContent = data.nama_mapel;
+                    let deleteUrl = "{{ route('destroyMapel', ':id') }}";
+                    deleteForm.action = deleteUrl.replace(':id', data.id);
+                    
+                    openModal(deleteModal, deleteModalContent);
+                }
+            });
+
+            // --- Functionality for DELETE Confirmation ---
+            document.querySelectorAll('.delete-form').forEach(form => {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault(); // Mencegah form submit secara langsung
+                    Swal.fire({
+                        title: 'Apakah Anda yakin?',
+                        text: "Data mata pelajaran yang dihapus tidak dapat dikembalikan!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6b7280',
+                        confirmButtonText: 'Ya, hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            this.submit(); // Lanjutkan submit form jika dikonfirmasi
+                        }
+                    });
+                });
+            });
+
+
+            // Close Add/Edit Modal listeners
+            closeModalBtn.addEventListener('click', () => closeModal(mapelModal, modalContent));
+            cancelBtn.addEventListener('click', () => closeModal(mapelModal, modalContent));
+            mapelModal.addEventListener('click', (event) => {
+                if (event.target === mapelModal) {
+                    closeModal(mapelModal, modalContent);
+                }
+            });
+
+            // Close Delete Modal listeners
+            cancelDeleteBtn.addEventListener('click', () => closeModal(deleteModal, deleteModalContent));
+            deleteModal.addEventListener('click', (event) => {
+                 if (event.target === deleteModal) {
+                    closeModal(deleteModal, deleteModalContent);
+                }
+            });
+
+        });
     </script>
 
 </body>
 </html>
-

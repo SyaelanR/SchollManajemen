@@ -119,6 +119,16 @@
 
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
+            {{-- Notifikasi Sukses --}}
+            @if (session('success'))
+                <div id="success-alert" class="fixed top-24 right-5 bg-green-500 text-white py-3 px-5 rounded-xl text-sm shadow-lg transition-transform transform translate-x-full" role="alert">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-check-circle mr-2"></i>
+                        <span>{{ session('success') }}</span>
+                    </div>
+                </div>
+            @endif
+
             <!-- Class Card Section -->
             <div class="bg-white rounded-xl shadow-md p-6">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 md:gap-0">
@@ -129,37 +139,32 @@
                     <input type="text" id="class-search-input" placeholder="Cari nama kelas..."
                            class="w-full md:flex-1 p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
                 </div>
-
                 <div id="class-grid"
-                     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    <!-- Elemen-elemen ini akan di-loop menggunakan Blade. Contoh di bawah menunjukkan struktur yang akan diulang. -->
+                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     @foreach ($kelasList as $kelas)
                         <!-- Class Card -->
-                                <a href="{{route('tambahJadwal', ['id_kelas' => $kelas->id_kelas])}}">
-                                {{-- <a href="{{route('tambahJadwal')}}"> --}}
-                                <div class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300">
-                                    <div class="flex items-center mb-4">
-                                        <div class="bg-blue-100 text-blue-600 p-4 rounded-full flex items-center justify-center">
+                        <div class="relative">
+                            <a href="{{ route('tambahJadwal', ['id_kelas' => $kelas->id_kelas]) }}">
+                                <div class="block bg-gray-50 rounded-xl shadow-md p-6 hover:shadow-lg transition duration-300">
+                                    <div class="flex items-center mb-4">                                            <div class="bg-blue-100 text-blue-600 p-4 rounded-full flex items-center justify-center">
                                             <i class="fa-solid fa-school text-2xl"></i>
                                         </div>
                                     </div>
-                                    <h3 class="text-xl font-semibold text-gray-800">{{$kelas->nama_kelas}}</h3>
+                                    <h3 class="text-xl font-semibold text-gray-800">{{ $kelas->nama_kelas }}</h3>
                                     <div class="flex items-center text-gray-600 mt-4">
                                         <i class="fa-solid fa-magnifying-glass text-sm mr-2"></i>
-                                        <span class="text-sm">{{$kelas->jurusan}}</span>
+                                        <span class="text-sm">{{ $kelas->jurusan }}</span>
                                     </div>
                                     <div class="flex items-center text-gray-600 mt-2">
                                         <i class="fa-solid fa-user-tie text-sm mr-2"></i>
-                                        <span class="text-sm">{{$kelas->wali_kelas}}</span>
+                                        <span class="text-sm">{{ $kelas->wali_kelas }}</span>
                                     </div>
                                 </div>
-                                <select name="id_kelas" id="" class="hidden">
-                                    <option value="{{$kelas->id_kelas}}"></option>
-                                </select>
-                            </a> 
-                        </form>
+                            </a>
+                        </div>
                     @endforeach
                 </div>
+
             </div>
         </main>
     </div>
@@ -185,6 +190,23 @@
 
     menuButton.addEventListener('click', toggleSidebar);
     overlay.addEventListener('click', toggleSidebar);
+
+    // --- Notifikasi Sukses ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const successAlert = document.getElementById('success-alert');
+        if (successAlert) {
+            // Tampilkan notifikasi
+            setTimeout(() => {
+                successAlert.classList.remove('translate-x-full');
+            }, 100);
+
+            // Sembunyikan notifikasi setelah 3 detik
+            setTimeout(() => {
+                successAlert.classList.add('translate-x-full');
+            }, 3100); // 3000ms (3 detik) + 100ms untuk animasi masuk
+        }
+    });
+
 </script>
 
 </body>

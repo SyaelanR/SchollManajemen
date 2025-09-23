@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AdminDevController;
 use App\Http\Controllers\GuruController;
+use App\Http\Controllers\JadwalController;
 use Illuminate\Auth\Events\Login;
 
 // Rute Autentikasi Kustom
@@ -63,6 +64,7 @@ Route::middleware('auth')->group(function () {
             Route::get('edit-kelas{id}', [AdminController::class, 'editKelas'])->name('editKelas');
             Route::put('edit-kelas{id}', [AdminController::class, 'updateKelas'])->name('updateKelas');
             Route::delete('edit-kelas{id}', [AdminController::class, 'destroyKelas'])->name('destroyKelas');
+            Route::delete('/{id_kelas}', [AdminController::class, 'destroyKelas'])->name('destroyKelas');
         });
 
         Route::prefix('manajemen-keuangan')->group(function () {
@@ -78,12 +80,19 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [AdminController::class, 'manajMapel'])->name('manajemenMapel');
             // Route::get('/tambah-mapel', [AdminController::class, 'tambahMapel'])->name('tambahMapel');
             Route::post('/', [AdminController::class, 'storeMapel'])->name('storeMapel');
+            Route::put('/{id}', [AdminController::class, 'updateMapel'])->name('updateMapel');
+            Route::delete('/{id}', [AdminController::class, 'destroyMapel'])->name('destroyMapel');
         });
 
         Route::prefix('manajemen-jadwal')->group(function () {
             Route::get('/', [AdminController::class, 'manajJadwal'])->name('manajemenJadwal');
             Route::get('/tambah-jadwal{id_kelas}', [AdminController::class, 'tambahJadwal'])->name('tambahJadwal');
             Route::post('/tambah-jadwal{id_kelas}', [AdminController::class, 'storeJadwal'])->name('storeJadwal');
+            // Rute untuk menghapus SEMUA jadwal berdasarkan ID KELAS
+            Route::delete('/jadwal/kelas/{id_kelas}', [JadwalController::class, 'destroyByClass'])->name('jadwal.destroy.by_class');
+            // Rute untuk menghapus SATU jadwal spesifik berdasarkan ID JADWAL
+            Route::delete('/jadwal/{id_jadwal}', [JadwalController::class, 'destroySingle'])->name('jadwal.destroy.single');
+            
         });
 
         Route::prefix('manajemen-tingkat')->group(function () {
