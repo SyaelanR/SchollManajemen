@@ -194,5 +194,3 @@ Route::prefix('absensi')->group(function () {
 Route::get('/pelanggaran', [pelanggaranController::class, 'index'])->name('pelanggaran.index');
 Route::post('/pelanggaran', [pelanggaranController::class, 'store'])->name('pelanggaran.store');
 Route::get('/daftarPelanggar', [pelanggaranController::class, 'daftarPelanggar'])->name('pelanggaran.daftar');
-
-Route::get('/input-nilai', [AdminController::class, 'inputnilai'])->name('inputnilai');

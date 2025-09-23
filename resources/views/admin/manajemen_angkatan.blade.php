@@ -167,7 +167,8 @@
                                                     data-angkatan="{{ $item->angkatan }}"
                                                     data-id-tingkat="{{ $item->id_tingkat }}"
                                                     data-tanggal-mulai="{{ $item->tanggal_mulai }}"
-                                                    data-tanggal-selesai="{{ $item->tanggal_selesai }}">
+                                                    data-tanggal-selesai="{{ $item->tanggal_selesai }}"
+                                                    data-semester="{{ $item->semester }}">
                                                     <i class="fa-solid fa-pencil"></i>
                                                 </button>
                                                 {{-- Form untuk Hapus --}}
@@ -279,6 +280,14 @@
                     <label for="edit_tanggal_selesai" class="block text-gray-700 font-medium mb-2">Tanggal Selesai</label>
                     <input type="date" id="edit_tanggal_selesai" name="tanggal_selesai" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
                 </div>
+                <div class="mb-4">
+                    <label for="edit_semester" class="block text-gray-700 font-medium mb-2">Semester</label>
+                    <select id="edit_semester" name="semester" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white" required>
+                        <option value="" disabled>Pilih Semester</option>
+                        <option value="ganjil">Ganjil</option>
+                        <option value="genap">Genap</option>
+                    </select>
+                </div>
                 
                 <div class="flex justify-end gap-4">
                     <button type="button" id="edit-cancel-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300">Batal</button>
@@ -360,12 +369,14 @@
                     const idTingkat = button.dataset.idTingkat;
                     const tanggalMulai = button.dataset.tanggalMulai;
                     const tanggalSelesai = button.dataset.tanggalSelesai;
+                    const semester = button.dataset.semester;
 
                     // Populate form
                     editAngkatanForm.querySelector('#edit_angkatan').value = angkatan;
                     editAngkatanForm.querySelector('#edit_tingkat').value = idTingkat;
                     editAngkatanForm.querySelector('#edit_tanggal_mulai').value = tanggalMulai;
                     editAngkatanForm.querySelector('#edit_tanggal_selesai').value = tanggalSelesai;
+                    editAngkatanForm.querySelector('#edit_semester').value = semester;
 
                     // Set action
                     editAngkatanForm.action = `${updateUrlBase}/${id}`;
