@@ -74,7 +74,7 @@
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold text-gray-800">Daftar Tugas: {{$infoKelas->kelas->nama_kelas ?? 'N/A'}} - {{$infoMapel->nama_mapel ?? 'N/A'}}</h2>
                     <button id="add-task-btn" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-indigo-700 transition duration-300">
-                        <i class="fa-solid fa-plus mr-2"></i> Tambah Nilai
+                        <i class="fa-solid fa-plus mr-2"></i> Tambah Tugas
                     </button>
                 </div>
 
@@ -83,30 +83,31 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="p-3 font-semibold text-gray-600">Keterangan</th>
-                                <th class="p-3 font-semibold text-gray-600">Tipe Nilai</th>
                                 <th class="p-3 font-semibold text-gray-600">Tanggal</th>
-                                <th class="p-3 font-semibold text-gray-600">Sifat</th>
+                                <th class="p-3 font-semibold text-gray-600">File</th>
                                 <th class="p-3 font-semibold text-gray-600 text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y">
-                        @forelse (($daftarNilai ?? []) as $nilai)
+                        @forelse (($daftarTugas ?? []) as $nilai)
                             <tr class="hover:bg-gray-50">
                                 <td class="p-3 font-medium text-gray-800">{{$nilai->keterangan}}</td>
-                                <td class="p-3">
-                                    <span class="bg-blue-100 text-blue-700 font-medium py-1 px-3 rounded-full text-xs capitalize">{{$nilai->tipe_nilai}}</span>
-                                </td>
                                 <td class="p-3 text-gray-600">{{$nilai->tanggal}}</td>
-                                <td class="p-3 text-gray-600">{{$nilai->sifat}}</td>
-                                @if ($nilai->sifat == 'online')
-                                    <td class="p-3 text-center">
-                                        <a href="#" class="text-indigo-600 hover:text-indigo-800 font-semibold">Masuk</a>
-                                    </td>
-                                @elseif ($nilai->sifat == 'offline')
-                                    <td class="p-3 text-center">
-                                        <a href="{{route('inputNilai',[$nilai->id_kelas, $nilai->id_mapel, $nilai->id_daftar_nilai])}}" class="text-indigo-600 hover:text-indigo-800 font-semibold">Masuk</a>
-                                    </td>
-                                @endif
+                                <td class="p-3 text-gray-600">{{$nilai->nama_file}}</td>
+                                <td class="p-3 text-center">
+                                    <div class="flex items-center justify-center space-x-2">
+                                        <a href="#" class="text-blue-500 hover:text-blue-700" title="Edit">
+                                            <i class="fa-solid fa-edit"></i>
+                                        </a>
+                                        <form action="#" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-500 hover:text-red-700" title="Hapus">
+                                                <i class="fa-solid fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
                             </tr>
                         @empty
                             <tr>
@@ -128,25 +129,19 @@
 
 <div id="task-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-gray-900 bg-opacity-50">
     <div class="bg-white rounded-xl shadow-lg w-11/12 md:w-1/2 p-6 relative">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">Tambah Nilai Baru</h2>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Tambah Tugas Baru</h2>
         <button id="close-task-modal-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 transition duration-300">
             <i class="fa-solid fa-times text-2xl"></i>
         </button>
-        <form action="{{route('storeDaftarNilai',[$infoKelas->kelas->id_kelas ?? 0, $infoMapel->id_mapel ?? 0])}}", method="POST">
+        <form action="{{route('storeTugas',[$infoKelas->kelas->id_kelas ?? 0, $infoMapel->id_mapel ?? 0])}}" method="POST" enctype="multipart/form-data" >
             @csrf
             <div class="mb-4">
-                <label for="task-name" class="block text-gray-700 font-semibold mb-2">Keterangan Nilai</label>
-                <input type="text" id="task-name" name="keterangan_nilai" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Masukkan Keterangan Nilai" required>
+                <label for="task-name" class="block text-gray-700 font-semibold mb-2">Keterangan Tugas</label>
+                <input type="text" id="task-name" name="keterangan_tugas" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Masukkan Keterangan Tugas" required>
             </div>
             <div class="mb-4">
-                <label for="task-type-select" class="block text-gray-700 font-semibold mb-2">Tipe Nilai</label>
-                <select id="task-type-select" name="tipe_nilai" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                    <option value="Tugas">Tugas</option>
-                    <option value="PR">PR</option>
-                    <option value="UAS">UAS</option>
-                    <option value="UTS">UTS</option>
-                    <option value="Hafalan">Hafalan</option>
-                </select>
+                <label for="task-type-select" class="block text-gray-700 font-semibold mb-2">File</label>
+                <input type="file" id="task-file" name="file" class="w-full px-4 py-2" >
             </div>
             <div class="mb-4">
                 <label for="task-due-date" class="block text-gray-700 font-semibold mb-2">Tanggal</label>

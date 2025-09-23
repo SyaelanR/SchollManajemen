@@ -11,6 +11,8 @@ use App\Models\Jadwal;
 use App\Models\Kelas;
 use App\Models\User;
 use App\Models\Mapel;
+use App\Models\DaftarTugas;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
 class GuruController extends Controller
@@ -441,6 +443,114 @@ class GuruController extends Controller
 
     public function inputTugas (Request $request, $id_kelas, $id_mapel)
     {
-        return view('guru.input_tugas');
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+
+        $infoKelas = Jadwal::with('kelas')
+                    ->where('id_kelas', $id_kelas)
+                    ->where('id_mapel', $id_mapel)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->firstOrFail();
+        $infoMapel = Mapel::where('id_mapel', $id_mapel)
+                    ->where('id_guru', $id_user)
+                    ->firstOrFail();
+
+        $infoAngkatan = Angkatan::where('id_angkatan', $infoKelas->kelas->id_angkatan)->first();
+
+        // dd($infoKelas->semester);
+
+        if($infoKelas->semester != $infoAngkatan->semester || $infoKelas->tingkat != $infoAngkatan->id_tingkat){
+            abort(404);
+        }
+
+        $daftarTugas = DaftarTugas::with('mapel')
+                    ->where('id_kelas', $id_kelas)
+                    ->where('id_mapel', $id_mapel)
+                    ->where('id_sekolah', $id_sekolah)->get();
+
+    
+           foreach ($daftarTugas as $tugas) {
+                $tugas->nama_file = $tugas->nama_file 
+                ? Str::after($tugas->nama_file, '_') 
+                : null;
+        }
+
+        return view('guru.input_tugas', ['daftarTugas' => $daftarTugas, 'infoKelas' => $infoKelas, 'infoMapel' => $infoMapel]);
+    }
+
+
+
+    public function storeTugas (Request $request, $id_kelas, $id_mapel)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $request->validate([
+            'keterangan_tugas' => 'required|string|max:255',
+            'tanggal'=> 'required|date',
+            'file' => 'required|file|mimes:pdf|max:5048'
+        ],[
+            'keterangan_tugas.required' => 'Keterangan tidak boleh kosong.',
+            'keterangan_tugas.max' => 'Keterangan maksimal 255',
+            'tanggal.required' => 'Tanggal tidak boleh kosong.',
+            'file.required' => 'File tidak boleh kosong.',
+        ]);
+
+        $file = $request->file('file');
+        $namaFile = time() . '_' . $file->getClientOriginalName();
+
+        $file->storeAs('tugas', $namaFile);
+
+        $infoKelas = Kelas::with('angkatan')->where('id_kelas', $id_kelas)->first();
+        $tingkat = $infoKelas->angkatan->id_tingkat;
+        $semester = $infoKelas->angkatan->semester;
+
+
+        $DaftarTugas = DaftarTugas::create([
+            'id_sekolah' => $id_sekolah,
+            'id_kelas' => $id_kelas,
+            'id_mapel' => $id_mapel,
+            'keterangan' => $request->keterangan_tugas,
+            'tanggal' => $request->tanggal,
+            'tingkat' => $tingkat,
+            'semester' => $semester,
+            'nama_file' => $namaFile,
+        ]);
+
+
+        $DaftarNilai = DaftarNilai::create([
+                'id_daftar_tugas' => $DaftarTugas->id_daftar_tugas,
+                'id_sekolah' => $id_sekolah,
+                'id_kelas' => $id_kelas,
+                'id_mapel' => $id_mapel,
+                'keterangan' => $request->keterangan_tugas,
+                'tipe_nilai' => 'Tugas',
+                'tanggal' => $request->tanggal,
+                'tingkat' => $tingkat,
+                'semester' => $semester,
+                'sifat' => 'online'
+            ]);
+
+
+        $targetSiswa = User::where('id_kelas', $id_kelas)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->where('role', 'siswa')
+                    ->get();
+
+        foreach ($targetSiswa as $siswa) {
+            DaftarNilaiSiswa::create([
+                'id_sekolah' => $id_sekolah,
+                'id_kelas' => $id_kelas,
+                'id_mapel' => $id_mapel,
+                'id_siswa' => $siswa->id,
+                'id_daftar_nilai' => $DaftarNilai->id_daftar_nilai,
+                'tingkat' => $tingkat,
+                'semester' => $semester,
+            ]);
+        }
+
+        
+        return back()->with('success', 'Tugas berhasil disimpan!');
+
+
     }
 }

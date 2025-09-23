@@ -18,10 +18,16 @@ class DaftarNilai extends Model
         'semester',
         'id_kelas',
         'sifat',
+        'id_daftar_tugas',
     ];
 
     public function mapel()
     {
         return $this->belongsTo(Mapel::class, 'id_mapel');
+    }
+
+    public function tugas()
+    {
+        return $this->belongsTo(DaftarTugas::class, 'id_daftar_tugas');
     }
 }

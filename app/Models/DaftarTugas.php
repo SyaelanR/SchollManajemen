@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DaftarTugas extends Model
 {
-    protected static $table = 'daftar_tugas';
-    protected static $primary = 'id_daftar_tugas';
+    protected $table = 'daftar_tugas';
+    protected $primaryKey = 'id_daftar_tugas';
 
     protected $fillable = [
         'id_sekolah', 
