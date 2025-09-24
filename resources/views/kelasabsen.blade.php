@@ -66,51 +66,6 @@
                 <i class="fa-solid fa-triangle-exclamation mr-3"></i>
                 <span>Pelanggaran Siswa</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-money-bill-wave mr-3"></i>
-                <span>Keuangan</span>
-            </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-layer-group mr-3"></i>
-                <span>Raport</span>
-            </a>
-            @endcan
-
-            @can('view-guru')
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                <i class="fa-solid fa-pen mr-3"></i>
-                <span>Input Nilai</span>
-            </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                <i class="fa-solid fa-list-check mr-3"></i>
-                <span>Input Absensi</span>
-            </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                <i class="fa-solid fa-puzzle-piece mr-3"></i>
-                <span>Ekstrakulikuler</span>
-            </a>
-            <a href="{{ route('pelanggaran.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                <i class="fa-solid fa-triangle-exclamation mr-3"></i>
-                <span>Pelanggaran Siswa</span>
-            </a>
-            @endcan
-
-            @can('view-siswa')
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                <i class="fa-solid fa-pen mr-3"></i>
-                <span>Lihat Nilai</span>
-            </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                <i class="fa-solid fa-list-check mr-3"></i>
-                <span>Lihat Absensi</span>
-            </a>
-            @endcan
-
-            @can('view-adminDev')
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                <i class="fa-solid fa-users w-6 h-6 mr-3"></i>
-                <span>Manajemen Klien</span>
-            </a>
             @endcan
         </nav>
         <div class="absolute bottom-0 w-full p-6">
@@ -165,7 +120,8 @@
                 <div id="class-grid"
                      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     
-                    <a href="{{ route('kelas10a') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
+                    <!-- Semua kelas diarahkan ke input absensi -->
+                    <a href="{{ route('absensi.input', '10a') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
                         <div class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
                         </div>
@@ -176,7 +132,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('kelas10b') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
+                    <a href="{{ route('absensi.input', '10b') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
                         <div class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
                         </div>
@@ -187,7 +143,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('kelas11a') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
+                    <a href="{{ route('absensi.input', '11a') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
                         <div class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
                         </div>
@@ -198,7 +154,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('kelas11b') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
+                    <a href="{{ route('absensi.input', '11b') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
                         <div class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
                         </div>
@@ -209,7 +165,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('kelas12a') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
+                    <a href="{{ route('absensi.input', '12a') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
                         <div class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
                         </div>
@@ -220,7 +176,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('kelas12b') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
+                    <a href="{{ route('absensi.input', '12b') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
                         <div class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
                         </div>
@@ -230,6 +186,7 @@
                             <span class="text-sm">35 Siswa</span>
                         </div>
                     </a>
+
                 </div>
             </div>
         </main>

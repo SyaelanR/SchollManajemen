@@ -67,15 +67,15 @@
                 </a>
             </div>
             <nav class="mt-6">
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
                     <span>Manajemen Siswa</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
+                <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
                     <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
                     <span>Manajemen Guru</span>
                 </a>
@@ -97,10 +97,15 @@
                 </a>
             </nav>
             <div class="absolute bottom-0 w-full p-6">
-                <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
-                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
-                    <span>Logout</span>
-                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <a href="{{ route('logout') }}"
+                       onclick="event.preventDefault(); this.closest('form').submit();"
+                       class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
+                        <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
+                        <span>Logout</span>
+                    </a>
+                </form>
             </div>
         </aside>
 
@@ -170,7 +175,7 @@
                                 Tambah Baris
                             </button>
                             <div class="flex w-full md:w-auto gap-4">
-                               <a href="#" class="w-full md:w-auto bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300 text-center flex items-center justify-center">
+                               <a href="{{ route('manajemenGuru') }}" class="w-full md:w-auto bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300 text-center flex items-center justify-center">
                                     Batal
                                 </a>
                                 <button type="submit" class="w-full md:w-auto bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">
@@ -325,7 +330,7 @@
                     const message = errors[key][0];
 
                     // Cari input berdasarkan atribut 'name'
-                    const input = document.querySelector(`[name="teacher[${rowKey}][${fieldName}]"]`);
+                    const input = document.querySelector([name="teacher[${rowKey}][${fieldName}]"]);
                     
                     if (input) {
                         input.classList.add('border-red-500');

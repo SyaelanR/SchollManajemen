@@ -330,9 +330,9 @@
 
                     let input;
                     if (fieldName === 'gender') {
-                        input = document.querySelector(`select[name="students[${rowKey}][${fieldName}]"]`);
+                        input = document.querySelector(select[name="students[${rowKey}][${fieldName}]"]);
                     } else {
-                        input = document.querySelector(`input[name="students[${rowKey}][${fieldName}]"]`);
+                        input = document.querySelector(input[name="students[${rowKey}][${fieldName}]"]);
                     }
                     
                     if (input) {

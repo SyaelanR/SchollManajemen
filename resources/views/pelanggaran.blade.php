@@ -78,7 +78,7 @@
                 <nav>
                     <ul class="space-y-2">
                         <li>
-                            <a href="#" class="flex items-center p-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition duration-300">
+                            <a href="{{ route('dashboard') }}" class="flex items-center p-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition duration-300">
                                 <i class="fa-solid fa-home mr-3"></i> Dashboard
                             </a>
                         </li>
@@ -93,7 +93,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="flex items-center p-3 text-white bg-blue-600 rounded-lg font-medium transition duration-300">
+                            <a href="{{ route('pelanggaran.index') }}" class="flex items-center p-3 text-white bg-blue-600 rounded-lg font-medium transition duration-300">
                                 <i class="fa-solid fa-exclamation-triangle mr-3"></i> Pelanggaran
                             </a>
                         </li>

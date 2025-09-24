@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\RiwayatKeuangan;
-use App\Models\User;
+use App\Models\User; // Menggunakan model User untuk Siswa dan Guru
 use App\Models\Angkatan;
 use App\Models\Kelas;
 use App\Models\PmabayaranSiswa;
@@ -11,6 +11,7 @@ use App\Models\DaftarTagihan;
 use App\Models\Jadwal;
 use App\Models\Mapel;
 use App\Models\Tingkat;
+use App\Models\Teacher; // Jika ini model terpisah untuk guru, mungkin tidak diperlukan jika semua dihandle User
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +19,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
@@ -539,6 +541,7 @@ class AdminController extends Controller
 
     }
 
+
     public function manajJadwal(){
         $id_sekolah = request()->cookie('id_sekolah');
 
@@ -614,7 +617,7 @@ class AdminController extends Controller
             'tingkat' => $angkatan->first()->id_tingkat ?? null,
             'ruangan' => $request->ruangan,
         ]);
-        return redirect()->route('storeJadwal', ['id_kelas' => $id_kelas])->with('success', 'Jadwal berhasil ditambahkan!');
+        return redirect()->route('tambahJadwal', ['id_kelas' => $id_kelas])->with('success', 'Jadwal berhasil ditambahkan!');
     }
 
     public function manajTingkat()
@@ -642,4 +645,354 @@ class AdminController extends Controller
         return redirect()->route('manajemenTingkat')->with('success', 'Tingkat berhasil ditambahkan!');
     }
 
+
+
+    /**
+     * Memperbarui data kelas yang ada di database.
+     */
+    
+    
+    /**
+     * Menghapus data kelas dari database.
+     */
+
+
+    ##############################YOGA##############################
+    ##############################YOGA##############################
+    ##############################YOGA##############################
+    ##############################YOGA##############################
+    ##############################YOGA##############################
+    ##############################YOGA##############################
+    ##############################YOGA##############################
+    ##############################YOGA##############################
+    ##############################YOGA##############################
+    ##############################YOGA##############################
+    ##############################YOGA##############################
+    ##############################YOGA##############################
+
+        public function destroyAngkatan(Request $request, $id)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $angkatan = Angkatan::where('id_angkatan', $id)
+                            ->where('id_sekolah', $id_sekolah)
+                            ->firstOrFail();
+
+        $angkatan->delete();
+
+        return redirect()->route('manajemenAngkatan')->with('success', 'Angkatan berhasil dihapus!');
+    }
+
+
+        public function hapusGuru(Request $request, $id)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $guru = User::where('id', $id)
+            ->where('id_sekolah', $id_sekolah)
+            ->whereIn('role', ['guru', 'staf'])
+            ->firstOrFail();
+
+        $guru->delete();
+
+        return redirect()->route('manajemenGuru')->with('success', 'Data guru/staf berhasil dihapus!');
+    }
+
+
+        public function hapusSiswa(Request $request, User $siswa)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        // Pastikan siswa yang akan dihapus adalah role 'siswa' dan milik sekolah yang sama
+        if ($siswa->role !== 'siswa' || $siswa->id_sekolah != $id_sekolah) {
+            abort(403, 'Akses ditolak atau siswa tidak ditemukan.');
+        }
+
+        $siswa->delete();
+        return redirect()->route('manajemenSiswa')->with('success', 'Data siswa berhasil dihapus!');
+    }
+
+
+        public function destroyKelas(Request $request, $id_kelas) // Should be destroy() for KelasController
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $kelas = Kelas::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->firstOrFail();
+        $kelas->delete();
+
+        return redirect()->route('manajemenKelas')->with('success', 'Data kelas berhasil dihapus!'); // PERBAIKAN: Menggunakan nama route yang benar
+    }
+
+        public function editGuru($id)
+    {
+        $id_sekolah = request()->cookie('id_sekolah');
+        $teacher = User::where('id', $id)
+                        ->where('id_sekolah', $id_sekolah) // Tambahkan filter id_sekolah
+                        ->whereIn('role', ['guru', 'staf'])->firstOrFail();
+        return view('guru.edit_guru', compact('teacher')); // Sesuaikan path view
+    }
+
+        public function editSiswa(Request $request, User $siswa) // Menggunakan Route Model Binding untuk User (sebagai siswa)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        // Pastikan siswa yang akan diedit adalah role 'siswa' dan milik sekolah yang sama
+        if ($siswa->role !== 'siswa' || $siswa->id_sekolah != $id_sekolah) {
+            abort(403, 'Akses ditolak atau siswa tidak ditemukan.'); // Atau redirect dengan pesan error
+        }
+
+        $kelases = Kelas::where('id_sekolah', $id_sekolah)->get(); // Ambil semua data kelas untuk dropdown
+        return view('admin.edit-siswa', compact('siswa', 'kelases')); // Sesuaikan path view Anda
+    }
+
+           public function editKelas(Request $request, $id_kelas) // Should be edit() for KelasController
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        // Temukan kelas spesifik dari database berdasarkan ID dan id_sekolah
+        $kelas = Kelas::where('id_kelas', $id_kelas)
+                      ->where('id_sekolah', $id_sekolah)
+                      ->firstOrFail();
+
+        // Ambil data angkatan yang tersedia untuk sekolah ini saja
+        $angkatans = Angkatan::where('id_sekolah', $id_sekolah)->latest()->get();
+
+        // Kembalikan view edit, berikan data kelas yang spesifik dan angkatan yang relevan
+        return view('admin.edit-kelas', compact('kelas', 'angkatans'));
+    }
+
+    public function updateGuru(Request $request, $id)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $validator = Validator::make($request->all(), [
+            'nik' => 'required|string|unique:users,nisn_nik,' . $id,
+            'name' => 'required|string|max:255',
+            'alamat' => 'nullable|string|max:255',
+            'no_telp' => 'nullable|string|max:15',
+            'username' => 'required|string|unique:users,username,' . $id,
+            'jabatan' => 'required|string|in:guru,staf',
+            'password' => 'nullable|string|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $guru = User::where('id', $id)
+            ->where('id_sekolah', $id_sekolah)
+            ->firstOrFail();
+
+        $updateData = [
+            'name' => $request->name,
+            'nisn_nik' => $request->nik, // Sesuaikan dengan nama kolom yang benar
+            'username' => $request->username,
+            'role' => $request->jabatan,
+            'alamat' => $request->alamat,
+            'no_telp' => $request->no_telp,
+            'tempat_lahir' => $request->tempat_lahir,
+            'tanggal_lahir' => $request->tanggal_lahir,
+            // 'usia' tidak ada di form update, jika perlu ditambahkan
+        ];
+
+        // Hanya update password jika diisi
+        if ($request->filled('password')) {
+            $updateData['password'] = bcrypt($request->password);
+        }
+        
+        // Hanya update email jika username berubah (karena email dibuat dari username)
+        if ($request->username !== $guru->username) {
+             $updateData['email'] = $request->username . '@sekolah.sch.id';
+        }
+
+        $guru->update($updateData);
+
+        return redirect()->route('manajemenGuru')->with('success', 'Data guru berhasil diperbarui!');
+    }
+
+    public function updateAngkatan(Request $request, $id)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $request->validate([
+            'angkatan' => 'required|string|max:255|unique:angkatans,angkatan,' . $id . ',id_angkatan,id_sekolah,' . $id_sekolah, // Tambahkan id_sekolah ke unique rule
+            'id_tingkat' => 'required|integer|exists:tingkats,id_tingkat',
+            'tanggal_mulai' => 'required|date',
+            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
+            'semester' => 'required|in:ganjil,genap', // Tambahkan validasi untuk semester
+        ], [
+            'angkatan.required' => 'Tahun ajaran tidak boleh kosong.',
+            'angkatan.unique' => 'Tahun ajaran ini sudah ada.',
+            'id_tingkat.required' => 'Tingkat tidak boleh kosong.',
+            'tanggal_selesai.after_or_equal' => 'Tanggal selesai harus setelah atau sama dengan tanggal mulai.',
+            'semester.required' => 'Semester tidak boleh kosong.',
+            'semester.in' => 'Semester tidak valid.',
+        ]);
+
+        $angkatan = Angkatan::where('id_angkatan', $id)
+                            ->where('id_sekolah', $id_sekolah)
+                            ->firstOrFail();
+
+        $angkatan->update([
+            'angkatan' => $request->angkatan,
+            'id_tingkat' => $request->id_tingkat,
+            'tingkat' => Tingkat::where('id_tingkat', $request->id_tingkat)->value('tingkat'),
+            'tanggal_mulai' => $request->tanggal_mulai,
+            'tanggal_selesai' => $request->tanggal_selesai,
+            'semester' => $request->semester, // Tambahkan ini
+        ]);
+
+        return redirect()->route('manajemenAngkatan')->with('success', 'Angkatan berhasil diperbarui!');
+    }
+
+    public function updateSiswa(Request $request, User $siswa) // Menggunakan Route Model Binding untuk User (sebagai siswa)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        // Pastikan siswa yang akan diupdate adalah role 'siswa' dan milik sekolah yang sama
+        if ($siswa->role !== 'siswa' || $siswa->id_sekolah != $id_sekolah) {
+            abort(403, 'Akses ditolak atau siswa tidak ditemukan.'); // Atau redirect dengan pesan error
+        }
+
+        $request->validate([
+            'nisn_nik' => 'required|string|max:255|unique:users,nisn_nik,' . $siswa->id, // unique kecuali untuk siswa ini
+            'name' => 'required|string|max:255',
+            'id_kelas' => 'nullable|exists:kelas,id_kelas', // Sesuaikan dengan nama kolom ID di tabel kelas Anda
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'tanggal_lahir' => 'nullable|date',
+            'alamat' => 'nullable|string',
+            'username' => 'required|string|max:255|unique:users,username,' . $siswa->id,
+            'password' => 'nullable|string|min:6', // Password bisa kosong jika tidak ingin diubah
+            'tempat_lahir' => 'nullable|string|max:100', // Tambahkan validasi lain jika diperlukan
+            'no_telp' => 'nullable|string|max:20', // Tambahkan validasi lain jika diperlukan
+        ]);
+
+        $updateData = [
+            'nisn_nik' => $request->nisn_nik,
+            'name' => $request->name,
+            'username' => $request->username,
+            'id_kelas' => $request->id_kelas,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'tempat_lahir' => $request->tempat_lahir,
+            'tanggal_lahir' => $request->tanggal_lahir,
+            'alamat' => $request->alamat,
+            'no_telp' => $request->no_telp,
+        ];
+
+        // Hanya update password jika diisi
+        if ($request->filled('password')) {
+            $updateData['password'] = Hash::make($request->password);
+        }
+
+        // Hanya update email jika username berubah (karena email dibuat dari username)
+        if ($request->username !== $siswa->username) {
+             $updateData['email'] = $request->username . '@sekolah.sch.id';
+        }
+
+
+        $siswa->update($updateData);
+
+        return redirect()->route('manajemenSiswa')->with('success', 'Data siswa berhasil diperbarui!');
+    }
+
+    public function updateKelas(Request $request, $id_kelas) // Should be update() for KelasController
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        // Aturan validasi
+        $request->validate([
+            'nama_kelas' => [
+                'required',
+                'string',
+                'max:255',
+                // Pastikan nama kelas unik untuk angkatan dan sekolah yang sama, kecuali untuk ID kelas ini sendiri
+                'unique:kelas,nama_kelas,' . $id_kelas . ',id_kelas,id_angkatan,' . $request->id_angkatan . ',id_sekolah,' . $id_sekolah,
+            ],
+            'wali_kelas' => 'required|string|max:255',
+            'id_angkatan' => 'required|exists:angkatans,id_angkatan', // 'exists' memeriksa apakah id_angkatan ada di tabel angkatans
+            'jurusan' => 'nullable|string|max:20',
+        ]);
+
+        // Cari kelas berdasarkan ID dan id_sekolah untuk keamanan
+        $kelas = Kelas::where('id_kelas', $id_kelas)
+                      ->where('id_sekolah', $id_sekolah)
+                      ->firstOrFail();
+
+        $kelas->update([
+            'nama_kelas' => $request->nama_kelas,
+            'wali_kelas' => $request->wali_kelas,
+            'id_angkatan' => $request->id_angkatan,
+            'jurusan' => $request->jurusan,
+        ]);
+
+        // Arahkan kembali ke daftar kelas utama dengan pesan sukses
+        return redirect()->route('manajemenKelas')->with('success', 'Data kelas berhasil diperbarui!');
+    }
+
+
+    public function updateMapel(Request $request, $id)
+    {
+        $id_sekolah = request()->cookie('id_sekolah');
+
+        $request->validate([
+            'kode_mapel' => 'required|string|max:20|unique:mapels,kode_mapel,' . $id . ',id_mapel,id_sekolah,' . $id_sekolah,
+            'nama_mapel' => 'required|string|max:255',
+            'kategori' => 'required|string|max:100',
+            'sks' => 'required|integer|min:1',
+            'guru_id' => 'nullable|exists:users,id',
+            'status' => 'required|in:aktif,nonaktif',
+        ], [
+            'kode_mapel.required' => 'Kode mata pelajaran tidak boleh kosong.',
+            'kode_mapel.unique' => 'Kode mata pelajaran ini sudah ada.',
+            'nama_mapel.required' => 'Nama mata pelajaran tidak boleh kosong.',
+            'kategori.required' => 'Kategori mata pelajaran tidak boleh kosong.',
+            'sks.required' => 'SKS tidak boleh kosong.',
+            'sks.integer' => 'SKS harus berupa angka.',
+            'sks.min' => 'SKS harus minimal 1.',
+            'guru_id.exists' => 'Guru pengampu tidak valid.',
+            'status.required' => 'Status tidak boleh kosong.',
+        ]);
+
+        // Cari mapel yang akan diupdate
+        $mapel = Mapel::where('id_mapel', $id)
+                      ->where('id_sekolah', $id_sekolah)
+                      ->firstOrFail();
+
+        // Ambil nama guru jika ada
+        $namaGuru = User::where('id', $request->guru_id)->where('id_sekolah', $id_sekolah)->value('name');
+
+        // Update data mapel
+        $mapel->update([
+            'kode_mapel' => $request->kode_mapel,
+            'nama_mapel' => $request->nama_mapel,
+            'kategori' => $request->kategori,
+            'sks' => $request->sks,
+            'id_guru' => $request->guru_id,
+            'nama_guru' => $namaGuru,
+            'status' => $request->status,
+        ]);
+
+        return redirect()->route('manajemenMapel')->with('success', 'Mata pelajaran berhasil diperbarui!');
+    }
+
+    public function destroyMapel(Request $request, $id)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $mapel = Mapel::where('id_mapel', $id)
+                      ->where('id_sekolah', $id_sekolah)
+                      ->firstOrFail();
+
+        $mapel->delete();
+
+        return redirect()->route('manajemenMapel')->with('success', 'Mata pelajaran berhasil dihapus!');
+    }
+
+    public function destroySingle($id_jadwal)
+    {
+        $jadwal = Jadwal::findOrFail($id_jadwal);
+        $jadwal->delete();
+
+        return redirect()->back()->with('success', 'Jadwal berhasil dihapus.');
+    }
+
+    
 }

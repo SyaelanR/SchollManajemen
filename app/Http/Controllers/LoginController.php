@@ -91,9 +91,9 @@ class LoginController extends Controller
         $user = User::where('username', $credentials['username'])->first();
  
         // Langkah 2, 3, & 4: Mengambil, mendekripsi, dan membandingkan password.
-        // - `$user->password` secara otomatis mengambil dan mendekripsi password dari database
-        //   karena ada `'password' => 'encrypted'` pada Model User.
-        // - Kemudian dibandingkan dengan password dari input form (`$credentials['password']`).
+        // - $user->password secara otomatis mengambil dan mendekripsi password dari database
+        //   karena ada 'password' => 'encrypted' pada Model User.
+        // - Kemudian dibandingkan dengan password dari input form ($credentials['password']).
         if ($user && $credentials['password'] === $user->password) {
             // Langkah 5 (Sukses): Jika password sama, login dan redirect ke dashboard.
             // (Bagian ini menangani session dan redirect, sesuai standar Laravel)

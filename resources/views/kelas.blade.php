@@ -55,7 +55,7 @@
                 <span>Manajemen Guru</span>
             </a>
             <a href="{{ route('admin.kelas.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-solid fa-door-closed mr-3"></i>
+                <i class="fa-solid fa-door-closed mr-3"></i>
                 <span>Manajemen Kelas</span>
             </a>
             <a href="{{ route('jadwal') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
@@ -77,7 +77,7 @@
             @endcan
 
             @can('view-guru')
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+            <a href="{{ route('inputnilai.kelas') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
                 <i class="fa-solid fa-pen mr-3"></i>
                 <span>Input Nilai</span>
             </a>
@@ -136,7 +136,7 @@
             <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
                 <i class="fa-solid fa-bars text-2xl"></i>
             </button>
-            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Jadwal Perkelas</h1>
+            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Input Nilai Perkelas</h1>
             <div class="flex items-center space-x-4">
                 <button class="text-gray-500 hover:text-gray-700">
                     <i class="fa-solid fa-bell"></i>
@@ -164,8 +164,8 @@
 
                 <div id="class-grid"
                      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    
-                    <a href="{{ route('kelas10a') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
+
+                    <a href="{{ route('inputnilai.tugas', ['kelas' => '10A']) }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
                         <div class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
                         </div>
@@ -176,7 +176,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('kelas10b') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
+                    <a href="{{ route('inputnilai.tugas', ['kelas' => '10B']) }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
                         <div class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
                         </div>
@@ -187,7 +187,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('kelas11a') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
+                    <a href="{{ route('inputnilai.tugas', ['kelas' => '11A']) }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
                         <div class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
                         </div>
@@ -198,7 +198,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('kelas11b') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
+                    <a href="{{ route('inputnilai.tugas', ['kelas' => '11B']) }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
                         <div class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
                         </div>
@@ -209,7 +209,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('kelas12a') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
+                    <a href="{{ route('inputnilai.tugas', ['kelas' => '12A']) }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
                         <div class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
                         </div>
@@ -220,7 +220,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('kelas12b') }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
+                    <a href="{{ route('inputnilai.tugas', ['kelas' => '12B']) }}" class="block bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 cursor-pointer">
                         <div class="flex items-center mb-4">
                             <i class="fa-solid fa-chalkboard text-3xl text-indigo-500"></i>
                         </div>

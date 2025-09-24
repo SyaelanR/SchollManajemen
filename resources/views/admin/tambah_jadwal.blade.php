@@ -126,6 +126,16 @@
 
             <!-- Page Content -->
             <main class="p-6 md:p-8 flex-1">
+                {{-- Notifikasi Sukses --}}
+                @if (session('success'))
+                    <div id="success-alert" class="fixed top-24 right-5 bg-green-500 text-white py-3 px-5 rounded-xl text-sm shadow-lg transition-transform transform translate-x-full" role="alert">
+                        <div class="flex items-center">
+                            <i class="fa-solid fa-check-circle mr-2"></i>
+                            <span>{{ session('success') }}</span>
+                        </div>
+                    </div>
+                @endif
+
                 <!-- Main Title Block -->
                 <div
                     class="bg-indigo-600 rounded-xl shadow-lg p-8 mb-8 text-white flex flex-col md:flex-row items-center justify-between">
@@ -189,7 +199,7 @@
                                             class="text-indigo-600 hover:text-indigo-900 mx-1">
                                             <i class="fa-solid fa-edit"></i>
                                         </button>
-                                        <button onclick="window.showDeleteModal()"
+                                        <button onclick="showDeleteModal('{{ $jadwal->id_jadwal }}')"
                                             class="text-red-600 hover:text-red-900 mx-1">
                                             <i class="fa-solid fa-trash-alt"></i>
                                         </button>
@@ -296,7 +306,10 @@
                     <button id="cancel-delete-modal"
                         class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Batal</button>
                     <!-- Tombol hapus ini akan terhubung ke form hapus di Laravel -->
-                    <form action="#" method="POST">
+                    {{-- URL action akan diatur oleh JavaScript --}}
+                    <form id="delete-form" action="" method="POST">
+                        @csrf
+                        @method('DELETE')
                         <button type="submit"
                             class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Ya, Hapus</button>
                     </form>
@@ -313,6 +326,7 @@
 
         const scheduleModal = document.getElementById('schedule-modal');
         const deleteModal = document.getElementById('delete-modal');
+        const deleteForm = document.getElementById('delete-form');
 
         const addScheduleButton = document.getElementById('add-schedule-button');
         const closeScheduleModal = document.getElementById('close-schedule-modal');
@@ -362,9 +376,29 @@
             showModal(scheduleModal);
         };
 
-        window.showDeleteModal = () => {
+        // Mengubah fungsi showDeleteModal untuk menerima ID
+        window.showDeleteModal = (jadwalId) => {
+            // Membuat URL yang benar menggunakan nama rute 'jadwal.destroy'
+            let url = "{{ route('jadwal.destroy.single', ':id') }}";
+            deleteForm.action = url.replace(':id', jadwalId); // Mengganti placeholder :id dengan ID jadwal
             showModal(deleteModal);
         };
+
+        // --- Notifikasi Sukses ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const successAlert = document.getElementById('success-alert');
+            if (successAlert) {
+                // Tampilkan notifikasi
+                setTimeout(() => {
+                    successAlert.classList.remove('translate-x-full');
+                }, 100);
+
+                // Sembunyikan notifikasi setelah 3 detik
+                setTimeout(() => {
+                    successAlert.classList.add('translate-x-full');
+                }, 3100); // 3000ms (3 detik) + 100ms untuk animasi masuk
+            }
+        });
     </script>
 
 </body>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Kelas;
 
 class KelasController extends Controller
 {
@@ -17,6 +18,11 @@ class KelasController extends Controller
     {
         return view('jadwal');
     }
+    public function showClassSchedule($kelas)
+{
+    return view('jadwal', compact('kelas'));
+}
+
 
     // --- View khusus tiap kelas ---
     public function kelas10A()
@@ -56,4 +62,5 @@ class KelasController extends Controller
         // Contoh: /kelas/10A akan cari file resources/views/kelas/10A.blade.php
         return view("jadwal.$jadwal");
     }
+    
 }

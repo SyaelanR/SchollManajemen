@@ -53,11 +53,11 @@
                     <i class="fa-solid fa-tachometer-alt mr-3"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="#" id="link-nilai" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <a href="#" id="link-nilai" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
                     <i class="fa-solid fa-pen mr-3"></i>
                     <span>Input Nilai</span>
                 </a>
-                <a href="#" id="link-absensi" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200 ">
+                <a href="#" id="link-absensi" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
                     <i class="fa-solid fa-list-check mr-3"></i>
                     <span>Input Absensi</span>
                 </a>
@@ -113,7 +113,7 @@
                     <div class="bg-white rounded-2xl shadow-lg p-8 mb-6 text-gray-800 flex flex-col md:flex-row items-center justify-between">
                         <div>
                             <h2 class="text-3xl font-bold mb-2">Selamat Datang, Guru</h2>
-                            <p id="class-selection-desc" class="text-gray-600">Silakan pilih kelas untuk menginput absensi.</p>
+                            <p id="class-selection-desc" class="text-gray-600">Silakan pilih kelas untuk menginput nilai.</p>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="class-cards">
@@ -227,8 +227,8 @@
         const linkNilai = document.getElementById('link-nilai');
         const linkAbsensi = document.getElementById('link-absensi');
 
-        // Mengubah mode awal menjadi 'absensi'
-        let currentMode = 'absensi';
+        // Mengubah mode awal menjadi 'nilai'
+        let currentMode = 'nilai';
 
         // Fungsi untuk membuat kartu kelas secara dinamis
         function generateClassCards() {
@@ -333,7 +333,7 @@
         });
 
         // Inisialisasi tampilan awal
-        showClassSelection('absensi');
+        showClassSelection('nilai');
         generateClassCards();
     </script>
 </body>

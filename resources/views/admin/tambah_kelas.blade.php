@@ -130,10 +130,10 @@
                 <div class="bg-white rounded-xl shadow-md p-6">
                     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                         <h2 class="text-xl sm:text-2xl font-semibold text-gray-800">Daftar Kelas Tersedia</h2>
-                        <button id="add-class-btn" class="w-full md:w-auto bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center justify-center whitespace-nowrap">
+                        <a href="{{ route('createKelas') }}" class="w-full md:w-auto bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center justify-center whitespace-nowrap">
                             <i class="fa-solid fa-plus mr-2"></i>
                             Tambah Kelas
-                        </button>
+                        </a>
                     </div>
                     <div class="flex flex-col md:flex-row items-center gap-4 mb-6">
                         <input type="text" placeholder="Cari nama kelas..." class="w-full md:flex-1 p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
@@ -150,7 +150,6 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         @foreach ($kelasList as $kelas)
                         <!-- Class Card -->
-                        <!-- Class Card -->
                         <div class="bg-gray-50 rounded-xl shadow-md p-6 relative hover:shadow-lg transition duration-300 group">
                              <!-- Edit Link -->
                              <a href="{{ route('editKelas', $kelas->id_kelas) }}" class="absolute top-4 right-12 text-gray-400 hover:text-blue-600 transition z-10 opacity-0 group-hover:opacity-100">
@@ -162,28 +161,22 @@
                             </button>
 
                             <!-- Clickable Area -->
-                            <form action="{{route('lihatKelas')}}" method="POST">
-                                <a href="{{route('lihatKelas')}}" onclick="event.preventDefault(); this.closest('form').submit();">
-                            @csrf
-                                    <div class="flex items-center mb-4">
-                                        <div class="bg-blue-100 text-blue-600 p-4 rounded-full flex items-center justify-center">
-                                            <i class="fa-solid fa-school text-2xl"></i>
-                                        </div>
+                            <a href="{{ route('lihatKelas', ['id_kelas' => $kelas->id_kelas]) }}" class="block">
+                                <div class="flex items-center mb-4">
+                                    <div class="bg-blue-100 text-blue-600 p-4 rounded-full flex items-center justify-center">
+                                        <i class="fa-solid fa-school text-2xl"></i>
                                     </div>
-                                    <h3 class="text-xl font-semibold text-gray-800">{{$kelas->nama_kelas}}</h3>
-                                    <div class="flex items-center text-gray-600 mt-4">
-                                        <i class="fa-solid fa-magnifying-glass text-sm mr-2"></i>
-                                        <span class="text-sm">{{$kelas->jurusan}}</span>
-                                    </div>
-                                    <div class="flex items-center text-gray-600 mt-2">
-                                        <i class="fa-solid fa-user-tie text-sm mr-2"></i>
-                                        <span class="text-sm">{{$kelas->wali_kelas}}</span>
-                                    </div>
-                                <select name="id_kelas" id="" class="hidden">
-                                    <option value="{{$kelas->id_kelas}}"></option>
-                                </select>
-                            </a> 
-                        </form>
+                                </div>
+                                <h3 class="text-xl font-semibold text-gray-800">{{$kelas->nama_kelas}}</h3>
+                                <div class="flex items-center text-gray-600 mt-4">
+                                    <i class="fa-solid fa-magnifying-glass text-sm mr-2"></i>
+                                    <span class="text-sm">{{$kelas->jurusan}}</span>
+                                </div>
+                                <div class="flex items-center text-gray-600 mt-2">
+                                    <i class="fa-solid fa-user-tie text-sm mr-2"></i>
+                                    <span class="text-sm">{{$kelas->wali_kelas}}</span>
+                                </div>
+                            </a>
                         </div>
                         @endforeach
                     </div>
@@ -198,46 +191,6 @@
             </main>
         </div>
     </div>
-
-    <!-- Add/Edit Class Modal -->
-    <div id="class-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden opacity-0">
-        <div class="modal-content bg-white rounded-xl shadow-2xl p-6 md:p-8 w-11/12 md:w-2/3 lg:w-1/2 transform transition-transform duration-300 scale-95">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl sm:text-2xl font-semibold text-gray-800">Tambah Kelas Baru</h3>
-                <button id="close-modal-btn" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
-            </div>
-            <form id="class-form" action="{{route('storeKelas')}}" method="POST">
-                @csrf
-                <div class="mb-4">
-                    <label for="class-name" class="block text-gray-700 font-medium mb-2">Nama Kelas</label>
-                    <input type="text" id="class-name" name="nama_kelas" placeholder="Contoh: 10 IPA 1" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
-                </div>
-                <div class="mb-4">
-                    <label for="wali-kelas" class="block text-gray-700 font-medium mb-2">Wali Kelas</label>
-                    <input type="text" id="wali-kelas" name="wali_kelas" placeholder="Contoh: Budi Setiawan, S.Pd." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
-                </div>
-                <div class="mb-4">
-                    <label for="jurusan" class="block text-gray-700 font-medium mb-2">Jurusan</label>
-                    <input type="text" id="jurusan" name="jurusan" placeholder="Contoh: Teknik Informatika" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
-                </div>
-                <div class="mb-6">
-                    <label for="class-year" class="block text-gray-700 font-medium mb-2">Angkatan</label>
-                    <select name="id_angkatan" id="class-year" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white" required>
-                        <option value="" disabled selected>Pilih Angkatan</option>
-                        @forelse ($angkatans as $angkatan)
-                            <option value="{{$angkatan->id_angkatan}}">{{$angkatan->angkatan}}</option>
-                        @empty
-                            <option value="" disabled>Belum ada angkatan</option>
-                        @endforelse
-                    </select>
-                </div>
-                <div class="flex flex-col sm:flex-row justify-end gap-4">
-                    <button type="button" id="cancel-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300">Batal</button>
-                    <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">Simpan</button>
-                </div>
-            </form>
-        </div>
-    </div>
     
     <!-- Delete Confirmation Modal -->
     <div id="delete-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden opacity-0">
@@ -248,7 +201,7 @@
                 <p class="text-gray-600 mb-6">Apakah Anda yakin ingin menghapus kelas <strong id="delete-class-name" class="font-bold"></strong>?</p>
             </div>
             <!-- NOTE: The action URL will be set dynamically by JavaScript -->
-            <form id="delete-form" action="" method="POST">
+            <form id="delete-form" method="POST">
                 @csrf
                 @method('DELETE')
                 <div class="flex flex-col sm:flex-row justify-center gap-4">
@@ -274,12 +227,7 @@
             if (menuButton) menuButton.addEventListener('click', toggleSidebar);
             if (overlay) overlay.addEventListener('click', toggleSidebar);
 
-            // --- Add/Edit Modal Functionality ---
-            const classModal = document.getElementById('class-modal');
-            const addClassBtn = document.getElementById('add-class-btn');
-            const closeModalBtn = document.getElementById('close-modal-btn');
-            const cancelBtn = document.getElementById('cancel-btn');
-
+            // --- Generic Modal Open/Close Functionality ---
             const openModal = (modalEl) => {
                 if (!modalEl) return;
                 const modalContent = modalEl.querySelector('.modal-content');
@@ -300,35 +248,21 @@
                 }, 300);
             };
 
-            if (addClassBtn) addClassBtn.addEventListener('click', () => openModal(classModal));
-            if (closeModalBtn) closeModalBtn.addEventListener('click', () => closeModal(classModal));
-            if (cancelBtn) cancelBtn.addEventListener('click', () => closeModal(classModal));
-            if (classModal) classModal.addEventListener('click', (event) => {
-                if (event.target === classModal) closeModal(classModal);
-            });
-
             // --- Delete Modal Functionality ---
             const deleteModal = document.getElementById('delete-modal');
             const deleteForm = document.getElementById('delete-form');
             const deleteClassName = document.getElementById('delete-class-name');
             const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
-            const deleteBtns = document.querySelectorAll('.delete-btn');
-
-            deleteBtns.forEach(btn => {
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.addEventListener('click', (event) => {
-                    // Stop the click from triggering the card's link
-                    event.stopPropagation(); 
+                    event.stopPropagation(); // Stop click from triggering card's link
                     
                     const classId = btn.dataset.id;
                     const className = btn.dataset.name;
                     
-                    // Set the class name in the confirmation message
                     if(deleteClassName) deleteClassName.textContent = className;
-                    
-                    // Dynamically set the form action URL. 
-                    // Menggunakan nama rute untuk membuat URL yang benar.
-                    let url = "{{ route('destroyKelas', ':id') }}";
-                    if(deleteForm) deleteForm.action = url.replace(':id', classId);
+                    if(deleteForm) deleteForm.action = `{{ url('manajemen-kelas') }}/${classId}`;
                     
                     openModal(deleteModal);
                 });
@@ -352,3 +286,4 @@
     </script>
 </body>
 </html>
+

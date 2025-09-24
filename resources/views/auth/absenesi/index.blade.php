@@ -48,7 +48,7 @@
                 <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
                 <span>Manajemen Guru</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium">
+            <a href="{{ route('kelas.index') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium">
                 <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
                 <span>Jadwal Pelajaran</span>
             </a>

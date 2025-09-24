@@ -119,6 +119,19 @@
 
             <!-- Page Content -->
             <main class="p-6 md:p-8 flex-1">
+                {{-- Notifikasi Sukses --}}
+                @if(session('success'))
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md shadow-sm" role="alert">
+                    <div class="flex">
+                        <div class="py-1"><i class="fa-solid fa-check-circle mr-3"></i></div>
+                        <div>
+                            <p class="font-bold">Berhasil!</p>
+                            <p>{{ session('success') }}</p>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
                 <div class="bg-white p-6 rounded-xl shadow-md">
                     <!-- Action Bar -->
                     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
@@ -160,8 +173,8 @@
                                     </td>
                                     <td class="p-3 text-center">
                                         <div class="flex justify-center space-x-3">
-                                            <a href="#" class="text-blue-600 hover:text-blue-800" title="Edit"><i class="fa-solid fa-pencil"></i></a>
-                                            <form action="#" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus siswa ini?');">
+                                            <a href="{{ route('editSiswa', $student->id) }}" class="text-blue-600 hover:text-blue-800" title="Edit"><i class="fa-solid fa-pencil"></i></a>
+                                            <form action="{{ route('hapusSiswa', $student->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus siswa ini?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-600 hover:text-red-800" title="Hapus"><i class="fa-solid fa-trash"></i></button>
