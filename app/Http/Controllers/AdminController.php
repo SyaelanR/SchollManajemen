@@ -295,10 +295,11 @@ class AdminController extends Controller
         ]);
 
         $id_kelas = $request->input('id_kelas');
+        $id_kelass = Kelas::where('id_kelas', $id_kelas)->where('id_sekolah', $request->cookie('id_sekolah'))->firstOrFail();
         $siswa_ids = $request->input('siswa_ids');
 
         // 2. Update id_kelas untuk semua siswa yang dipilih
-        User::whereIn('id', $siswa_ids)->update(['id_kelas' => $id_kelas]);
+        User::whereIn('id', $siswa_ids)->update(['id_kelas' => $id_kelass->id_kelas, 'id_angkatan' => $id_kelass->id_angkatan]);
 
         // 3. Redirect kembali ke halaman sebelumnya dengan pesan sukses
         // return back()->with('success', 'Siswa berhasil ditambahkan ke kelas!');
@@ -495,7 +496,9 @@ class AdminController extends Controller
         $id_sekolah = request()->cookie('id_sekolah');
         // Menggunakan Eloquent untuk mengambil data agar casting (dekripsi) otomatis diterapkan.
         // 'with('guru')' akan melakukan eager loading relasi 'guru'.
-        $mapels = Mapel::where('id_sekolah', $id_sekolah)->latest()->get();
+        $mapels = Mapel::with('guru')
+            ->where('id_sekolah', $id_sekolah)
+            ->where('id_sekolah', $id_sekolah)->latest()->get();
 
         $teachers = User::where('role', 'guru')->where('id_sekolah', $id_sekolah)->get();
         
@@ -524,7 +527,6 @@ class AdminController extends Controller
             'guru_pengampu.exists' => 'Guru pengampu tidak valid.',
         ]);
 
-        $namaGuru = User::where('id', $request->guru_pengampu)->where('id_sekolah', $id_sekolah)->value('name') ?? null;
 
         Mapel::create([
             'id_sekolah' => $id_sekolah,
@@ -532,8 +534,7 @@ class AdminController extends Controller
             'nama_mapel' => $request->nama_mapel,
             'kategori' => $request->kategori,
             'sks' => $request->sks,
-            'id_guru' => $request->guru_pengampu,
-            'nama_guru' => $namaGuru
+            'id_guru' => $request->guru_id,
         ]);
 
         return redirect()->route('manajemenMapel')->with('success', 'Mata pelajaran berhasil ditambahkan!');    
@@ -551,8 +552,8 @@ class AdminController extends Controller
     public function tambahJadwal(Request $request ,int $id_kelas){
         $id_sekolah = $request->cookie('id_sekolah');
 
-        // Menggunakan `firstOrFail` untuk menangani kasus jika kelas tidak ditemukan
-        // dan `with('angkatan')` untuk eager loading, mengurangi jumlah query.
+        // Menggunakan firstOrFail untuk menangani kasus jika kelas tidak ditemukan
+        // dan with('angkatan') untuk eager loading, mengurangi jumlah query.
         $kelas = Kelas::with('angkatan')
                       ->where('id_kelas', $id_kelas)
                       ->where('id_sekolah', $id_sekolah)
@@ -563,7 +564,8 @@ class AdminController extends Controller
         $tingkatAktif = $kelas->angkatan->id_tingkat ?? null;
 
         // Mengambil semua mapel yang tersedia untuk sekolah ini untuk form tambah jadwal.
-        $mapels = Mapel::where('id_sekolah', $id_sekolah)->get();
+        $mapels = Mapel::with('guru')
+                    ->where('id_sekolah', $id_sekolah)->get();
 
         // Mengambil data jadwal yang sudah ada untuk kelas ini.
         // Menggunakan nested eager loading 'mapel.guru' untuk mendapatkan nama mapel dan nama guru.

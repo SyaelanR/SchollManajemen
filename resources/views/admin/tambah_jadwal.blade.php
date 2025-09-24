@@ -192,7 +192,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $jadwal->hari }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $jadwal->mapel->nama_mapel ?? 'Mapel Dihapus' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $jadwal->mapel->nama_guru ?? 'Guru Belum Diatur' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $jadwal->mapel->guru->name ?? 'Guru Belum Diatur' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $jadwal->ruangan ?? '-' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <button onclick="window.showEditModal()"
@@ -271,7 +271,7 @@
                         required>
                         <option disabled value="">Pilih Mata Pelajaran</option>
                         @forelse ($mapels ?? [] as $mapel)
-                            <option value="{{ $mapel->id_mapel }}">{{ $mapel->nama_mapel }} ({{$mapel->nama_guru}})</option>
+                            <option value="{{ $mapel->id_mapel }}">{{ $mapel->nama_mapel }} ({{$mapel->guru->name}})</option>
                         @empty
                             <option value="" disabled>Tidak ada mata pelajaran tersedia</option>
                         @endforelse

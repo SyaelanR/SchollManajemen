@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AdminDevController;
 use App\Http\Controllers\GuruController;
+use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\JadwalController;
 use Illuminate\Auth\Events\Login;
 
@@ -151,6 +152,15 @@ Route::middleware('auth')->group(function () {
         });
             
         
+    });
+
+
+    Route::middleware('role:siswa')->group(function () {
+
+        Route::prefix('tugas-mapel')->group(function () {
+            Route::get('', [SiswaController::class, 'lihatTugasMapel'])->name('lihatTugasMapel');
+            Route::get('/tugas-daftar{id_mapel}', [SiswaController::class, 'lihatTugasDaftar'])->name('lihatTugasDaftar');
+        });
     });
 
 });

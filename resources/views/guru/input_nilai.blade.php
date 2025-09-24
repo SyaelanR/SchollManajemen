@@ -20,7 +20,6 @@
         ::-webkit-scrollbar-thumb:hover { background: #555; }
         .sidebar { transition: transform 0.3s ease-in-out; }
     </style>
-    @livewireStyles
 </head>
 <body class="bg-gray-100 min-h-screen flex">
 
