@@ -91,7 +91,7 @@ Route::middleware('auth')->group(function () {
             // Rute untuk menghapus SEMUA jadwal berdasarkan ID KELAS
             Route::delete('/jadwal/kelas/{id_kelas}', [JadwalController::class, 'destroyByClass'])->name('jadwal.destroy.by_class');
             // Rute untuk menghapus SATU jadwal spesifik berdasarkan ID JADWAL
-            Route::delete('/jadwal/{id_jadwal}', [JadwalController::class, 'destroySingle'])->name('jadwal.destroy.single');
+            Route::delete('/jadwal/{id_jadwal}', [AdminController::class, 'destroySingle'])->name('jadwal.destroy.single');
             
         });
 

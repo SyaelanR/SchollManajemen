@@ -49,11 +49,5 @@ class JadwalController extends Controller
      * @param int $id_jadwal ID dari jadwal yang akan dihapus.
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroySingle($id_jadwal)
-    {
-        $jadwal = Jadwal::findOrFail($id_jadwal);
-        $jadwal->delete();
-
-        return redirect()->back()->with('success', 'Jadwal berhasil dihapus.');
-    }
+    
 }

@@ -985,5 +985,13 @@ class AdminController extends Controller
         return redirect()->route('manajemenMapel')->with('success', 'Mata pelajaran berhasil dihapus!');
     }
 
+    public function destroySingle($id_jadwal)
+    {
+        $jadwal = Jadwal::findOrFail($id_jadwal);
+        $jadwal->delete();
+
+        return redirect()->back()->with('success', 'Jadwal berhasil dihapus.');
+    }
+
     
 }
