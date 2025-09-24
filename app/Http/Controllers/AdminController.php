@@ -540,63 +540,6 @@ class AdminController extends Controller
 
     }
 
-    public function updateMapel(Request $request, $id)
-    {
-        $id_sekolah = request()->cookie('id_sekolah');
-
-        $request->validate([
-            'kode_mapel' => 'required|string|max:20|unique:mapels,kode_mapel,' . $id . ',id_mapel,id_sekolah,' . $id_sekolah,
-            'nama_mapel' => 'required|string|max:255',
-            'kategori' => 'required|string|max:100',
-            'sks' => 'required|integer|min:1',
-            'guru_id' => 'nullable|exists:users,id',
-            'status' => 'required|in:aktif,nonaktif',
-        ], [
-            'kode_mapel.required' => 'Kode mata pelajaran tidak boleh kosong.',
-            'kode_mapel.unique' => 'Kode mata pelajaran ini sudah ada.',
-            'nama_mapel.required' => 'Nama mata pelajaran tidak boleh kosong.',
-            'kategori.required' => 'Kategori mata pelajaran tidak boleh kosong.',
-            'sks.required' => 'SKS tidak boleh kosong.',
-            'sks.integer' => 'SKS harus berupa angka.',
-            'sks.min' => 'SKS harus minimal 1.',
-            'guru_id.exists' => 'Guru pengampu tidak valid.',
-            'status.required' => 'Status tidak boleh kosong.',
-        ]);
-
-        // Cari mapel yang akan diupdate
-        $mapel = Mapel::where('id_mapel', $id)
-                      ->where('id_sekolah', $id_sekolah)
-                      ->firstOrFail();
-
-        // Ambil nama guru jika ada
-        $namaGuru = User::where('id', $request->guru_id)->where('id_sekolah', $id_sekolah)->value('name');
-
-        // Update data mapel
-        $mapel->update([
-            'kode_mapel' => $request->kode_mapel,
-            'nama_mapel' => $request->nama_mapel,
-            'kategori' => $request->kategori,
-            'sks' => $request->sks,
-            'id_guru' => $request->guru_id,
-            'nama_guru' => $namaGuru,
-            'status' => $request->status,
-        ]);
-
-        return redirect()->route('manajemenMapel')->with('success', 'Mata pelajaran berhasil diperbarui!');
-    }
-
-    public function destroyMapel(Request $request, $id)
-    {
-        $id_sekolah = $request->cookie('id_sekolah');
-
-        $mapel = Mapel::where('id_mapel', $id)
-                      ->where('id_sekolah', $id_sekolah)
-                      ->firstOrFail();
-
-        $mapel->delete();
-
-        return redirect()->route('manajemenMapel')->with('success', 'Mata pelajaran berhasil dihapus!');
-    }
 
     public function manajJadwal(){
         $id_sekolah = request()->cookie('id_sekolah');
@@ -981,6 +924,65 @@ class AdminController extends Controller
 
         // Arahkan kembali ke daftar kelas utama dengan pesan sukses
         return redirect()->route('manajemenKelas')->with('success', 'Data kelas berhasil diperbarui!');
+    }
+
+
+    public function updateMapel(Request $request, $id)
+    {
+        $id_sekolah = request()->cookie('id_sekolah');
+
+        $request->validate([
+            'kode_mapel' => 'required|string|max:20|unique:mapels,kode_mapel,' . $id . ',id_mapel,id_sekolah,' . $id_sekolah,
+            'nama_mapel' => 'required|string|max:255',
+            'kategori' => 'required|string|max:100',
+            'sks' => 'required|integer|min:1',
+            'guru_id' => 'nullable|exists:users,id',
+            'status' => 'required|in:aktif,nonaktif',
+        ], [
+            'kode_mapel.required' => 'Kode mata pelajaran tidak boleh kosong.',
+            'kode_mapel.unique' => 'Kode mata pelajaran ini sudah ada.',
+            'nama_mapel.required' => 'Nama mata pelajaran tidak boleh kosong.',
+            'kategori.required' => 'Kategori mata pelajaran tidak boleh kosong.',
+            'sks.required' => 'SKS tidak boleh kosong.',
+            'sks.integer' => 'SKS harus berupa angka.',
+            'sks.min' => 'SKS harus minimal 1.',
+            'guru_id.exists' => 'Guru pengampu tidak valid.',
+            'status.required' => 'Status tidak boleh kosong.',
+        ]);
+
+        // Cari mapel yang akan diupdate
+        $mapel = Mapel::where('id_mapel', $id)
+                      ->where('id_sekolah', $id_sekolah)
+                      ->firstOrFail();
+
+        // Ambil nama guru jika ada
+        $namaGuru = User::where('id', $request->guru_id)->where('id_sekolah', $id_sekolah)->value('name');
+
+        // Update data mapel
+        $mapel->update([
+            'kode_mapel' => $request->kode_mapel,
+            'nama_mapel' => $request->nama_mapel,
+            'kategori' => $request->kategori,
+            'sks' => $request->sks,
+            'id_guru' => $request->guru_id,
+            'nama_guru' => $namaGuru,
+            'status' => $request->status,
+        ]);
+
+        return redirect()->route('manajemenMapel')->with('success', 'Mata pelajaran berhasil diperbarui!');
+    }
+
+    public function destroyMapel(Request $request, $id)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $mapel = Mapel::where('id_mapel', $id)
+                      ->where('id_sekolah', $id_sekolah)
+                      ->firstOrFail();
+
+        $mapel->delete();
+
+        return redirect()->route('manajemenMapel')->with('success', 'Mata pelajaran berhasil dihapus!');
     }
 
     
