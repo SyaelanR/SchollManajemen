@@ -495,7 +495,9 @@ class AdminController extends Controller
         $id_sekolah = request()->cookie('id_sekolah');
         // Menggunakan Eloquent untuk mengambil data agar casting (dekripsi) otomatis diterapkan.
         // 'with('guru')' akan melakukan eager loading relasi 'guru'.
-        $mapels = Mapel::where('id_sekolah', $id_sekolah)->latest()->get();
+        $mapels = Mapel::with('guru')
+            ->where('id_sekolah', $id_sekolah)
+            ->where('id_sekolah', $id_sekolah)->latest()->get();
 
         $teachers = User::where('role', 'guru')->where('id_sekolah', $id_sekolah)->get();
         
@@ -524,7 +526,6 @@ class AdminController extends Controller
             'guru_pengampu.exists' => 'Guru pengampu tidak valid.',
         ]);
 
-        $namaGuru = User::where('id', $request->guru_pengampu)->where('id_sekolah', $id_sekolah)->value('name') ?? null;
 
         Mapel::create([
             'id_sekolah' => $id_sekolah,
@@ -532,8 +533,7 @@ class AdminController extends Controller
             'nama_mapel' => $request->nama_mapel,
             'kategori' => $request->kategori,
             'sks' => $request->sks,
-            'id_guru' => $request->guru_pengampu,
-            'nama_guru' => $namaGuru
+            'id_guru' => $request->guru_id,
         ]);
 
         return redirect()->route('manajemenMapel')->with('success', 'Mata pelajaran berhasil ditambahkan!');    
@@ -563,11 +563,12 @@ class AdminController extends Controller
         $tingkatAktif = $kelas->angkatan->id_tingkat ?? null;
 
         // Mengambil semua mapel yang tersedia untuk sekolah ini untuk form tambah jadwal.
-        $mapels = Mapel::where('id_sekolah', $id_sekolah)->get();
+        $mapels = Mapel::with('guru')
+                    ->where('id_sekolah', $id_sekolah)->get();
 
         // Mengambil data jadwal yang sudah ada untuk kelas ini.
         // Menggunakan nested eager loading 'mapel.guru' untuk mendapatkan nama mapel dan nama guru.
-        $jadwals = Jadwal::with('mapel') // Memuat relasi mapel, dan relasi guru di dalam mapel
+        $jadwals = Jadwal::with('mapel.guru') // Memuat relasi mapel, dan relasi guru di dalam mapel
                         ->where('id_kelas', $id_kelas)
                         ->where('id_sekolah', $id_sekolah)
                         ->where('semester', $semesterAktif) // Hanya jadwal untuk semester aktif

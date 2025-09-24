@@ -129,6 +129,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/manajemen-nilai-daftar{id_kelas}&{id_mapel}', [GuruController::class, 'manajNilaiDaftar'])->name('manajemenNilaiDaftar');
             Route::post('/manajemen-nilai-daftar{id_kelas}&{id_mapel}', [GuruController::class, 'storeDaftarNilai'])->name('storeDaftarNilai');
             Route::post('/input-nilai', [GuruController::class, 'storeNilaiSiswa'])->name('storeNilaiSiswa');
+            Route::put('/update-nilai/{id_daftar_nilai_siswa}', [GuruController::class, 'updateNilaiSiswa'])->name('updateNilaiSiswa');
 
         });
 
@@ -139,6 +140,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/manajemen-absensi-daftar{id_kelas}&{id_mapel}', [GuruController::class, 'storeAbsensiDaftar'])->name('storeAbsensiDaftar');
             Route::get('/input-absensi{id_kelas}&{id_mapel}&{id_daftar_absensi}', [GuruController::class, 'inputAbsensi'])->name('inputAbsensi');
             Route::post('/input-absensi', [GuruController::class, 'storeAbsensiSiswa'])->name('storeAbsensiSiswa');
+            Route::put('/update-absensi/{id_daftar_absensi_siswa}', [GuruController::class, 'updateAbsensiSiswa'])->name('updateAbsensiSiswa');
 
         });
 

@@ -18,9 +18,9 @@
         .sidebar { transition: transform 0.3s ease-in-out; }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 min-h-screen flex">
 
-<div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
     <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
         <div class="p-6">
             <a href="#" class="flex items-center space-x-3">
@@ -43,38 +43,55 @@
             </a>
         </nav>
         <div class="absolute bottom-0 w-full p-6">
-            <form action="/logout" method="POST">
+            <form action="{{ route('logout') }}" method="POST">
                 @csrf
-                <button type="submit" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg">
+                <button type="submit" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full text-left">
                     <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i><span>Logout</span>
                 </button>
             </form>
         </div>
     </aside>
 
+    <!-- Overlay for mobile -->
     <div id="overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden lg:hidden"></div>
 
+    <!-- Main Content -->
     <div class="flex-1 flex flex-col overflow-y-auto">
+        <!-- Header -->
         <header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-30">
             <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
                 <i class="fa-solid fa-bars text-2xl"></i>
             </button>
             <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Daftar Nilai</h1>
+             <div class="flex items-center space-x-4">
+                 <button class="text-gray-500 hover:text-gray-700">
+                    <i class="fa-solid fa-bell"></i>
+                </button>
+                <div class="relative">
+                    <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=A" alt="User avatar">
+                    <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
+                </div>
+            </div>
         </header>
 
         <main class="p-6 md:p-8 flex-1">
-            <div class="flex items-center mb-4">
-                <a href="javascript:void(0)" onclick="history.back()" class="inline-flex items-center text-gray-600 hover:text-indigo-600 transition duration-300">
+            <!-- UPDATED Header -->
+            <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg flex flex-wrap justify-between items-center text-white gap-4">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold">Daftar Nilai: {{$infoKelas->kelas->nama_kelas}} - {{$infoMapel->nama_mapel}}</h1>
+                    <p class="text-indigo-200 mt-2">Pilih tugas untuk diisi nilainya atau buat tugas baru.</p>
+                </div>
+                <a href="{{ route('manajemenNilai') }}" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
                     <i class="fa-solid fa-arrow-left mr-2"></i>
-                    <span class="font-semibold">Kembali</span>
+                    <span>Kembali</span>
                 </a>
-            </div>
+            </header>
             
             <div class="bg-white p-6 rounded-xl shadow-md">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800">Daftar Nilai: {{$infoKelas->kelas->nama_kelas}} - {{$infoMapel->nama_mapel}}</h2>
-                    <button id="add-task-btn" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-indigo-700 transition duration-300">
-                        <i class="fa-solid fa-plus mr-2"></i> Tambah Nilai
+                <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+                    <h2 class="text-2xl font-bold text-gray-800">Sesi Penilaian</h2>
+                    <button id="add-task-btn" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 flex items-center">
+                        <i class="fa-solid fa-plus mr-2"></i> Tambah Sesi
                     </button>
                 </div>
 
@@ -82,11 +99,11 @@
                     <table class="w-full min-w-[600px] text-left">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="p-3 font-semibold text-gray-600">Keterangan</th>
-                                <th class="p-3 font-semibold text-gray-600">Tipe Nilai</th>
-                                <th class="p-3 font-semibold text-gray-600">Tanggal</th>
-                                <th class="p-3 font-semibold text-gray-600">Sifat</th>
-                                <th class="p-3 font-semibold text-gray-600 text-center">Aksi</th>
+                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Keterangan</th>
+                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Tipe Nilai</th>
+                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Tanggal</th>
+                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Sifat</th>
+                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y">
@@ -94,23 +111,29 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="p-3 font-medium text-gray-800">{{$nilai->keterangan}}</td>
                                 <td class="p-3">
-                                    <span class="bg-blue-100 text-blue-700 font-medium py-1 px-3 rounded-full text-xs capitalize">{{$nilai->tipe_nilai}}</span>
+                                    @if($nilai->tipe_nilai == 'Tugas')
+                                        <span class="bg-blue-100 text-blue-800 font-medium py-1 px-3 rounded-full text-xs capitalize">{{$nilai->tipe_nilai}}</span>
+                                    @elseif($nilai->tipe_nilai == 'PR')
+                                        <span class="bg-cyan-100 text-cyan-800 font-medium py-1 px-3 rounded-full text-xs capitalize">{{$nilai->tipe_nilai}}</span>
+                                    @elseif($nilai->tipe_nilai == 'UAS')
+                                        <span class="bg-red-100 text-red-800 font-medium py-1 px-3 rounded-full text-xs capitalize">{{$nilai->tipe_nilai}}</span>
+                                     @elseif($nilai->tipe_nilai == 'UTS')
+                                        <span class="bg-yellow-100 text-yellow-800 font-medium py-1 px-3 rounded-full text-xs capitalize">{{$nilai->tipe_nilai}}</span>
+                                    @elseif($nilai->tipe_nilai == 'Hafalan')
+                                        <span class="bg-green-100 text-green-800 font-medium py-1 px-3 rounded-full text-xs capitalize">{{$nilai->tipe_nilai}}</span>
+                                    @else
+                                        <span class="bg-gray-100 text-gray-800 font-medium py-1 px-3 rounded-full text-xs capitalize">{{$nilai->tipe_nilai}}</span>
+                                    @endif
                                 </td>
-                                <td class="p-3 text-gray-600">{{$nilai->tanggal}}</td>
-                                <td class="p-3 text-gray-600">{{$nilai->sifat}}</td>
-                                @if ($nilai->sifat == 'online')
-                                    <td class="p-3 text-center">
-                                        <a href="#" class="text-indigo-600 hover:text-indigo-800 font-semibold">Masuk</a>
-                                    </td>
-                                @elseif ($nilai->sifat == 'offline')
-                                    <td class="p-3 text-center">
-                                        <a href="{{route('inputNilai',[$nilai->id_kelas, $nilai->id_mapel, $nilai->id_daftar_nilai])}}" class="text-indigo-600 hover:text-indigo-800 font-semibold">Masuk</a>
-                                    </td>
-                                @endif
+                                <td class="p-3 text-gray-600">{{ \Carbon\Carbon::parse($nilai->tanggal)->format('d F Y') }}</td>
+                                <td class="p-3 text-gray-600 capitalize">{{$nilai->sifat}}</td>
+                                <td class="p-3 text-center">
+                                     <a href="{{route('inputNilai',[$nilai->id_kelas, $nilai->id_mapel, $nilai->id_daftar_nilai])}}" class="bg-indigo-100 text-indigo-700 font-semibold py-2 px-4 rounded-lg hover:bg-indigo-200 transition duration-300">Masuk</a>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="p-3 text-center text-gray-500">
+                                <td colspan="5" class="p-3 text-center text-gray-500">
                                     <div class="text-center py-12">
                                         <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
                                         <p class="text-gray-600 font-semibold text-lg">Belum ada daftar nilai.</p>
@@ -126,60 +149,83 @@
     </div>
 </div>
 
-<div id="task-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-gray-900 bg-opacity-50">
-    <div class="bg-white rounded-xl shadow-lg w-11/12 md:w-1/2 p-6 relative">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">Tambah Nilai Baru</h2>
-        <button id="close-task-modal-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 transition duration-300">
-            <i class="fa-solid fa-times text-2xl"></i>
-        </button>
-        <form action="{{route('storeDaftarNilai',[$infoKelas->kelas->id_kelas, $infoMapel->id_mapel])}}", method="POST">
+<!-- Modal Tambah Nilai -->
+<div id="task-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-gray-900 bg-opacity-50 p-4">
+    <div id="modal-content" class="bg-white rounded-xl shadow-lg w-full max-w-lg">
+        <div class="flex justify-between items-center p-6 border-b">
+            <h2 class="text-2xl font-bold text-gray-800">Tambah Sesi Penilaian</h2>
+            <button id="close-task-modal-btn" class="text-gray-400 hover:text-gray-600 transition duration-300">
+                <i class="fa-solid fa-times text-2xl"></i>
+            </button>
+        </div>
+        <form id="task-form" action="{{route('storeDaftarNilai',[$infoKelas->kelas->id_kelas, $infoMapel->id_mapel])}}" method="POST">
             @csrf
-            <div class="mb-4">
-                <label for="task-name" class="block text-gray-700 font-semibold mb-2">Keterangan Nilai</label>
-                <input type="text" id="task-name" name="keterangan_nilai" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Masukkan Keterangan Nilai" required>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label for="keterangan_nilai" class="block text-gray-700 font-semibold mb-2">Keterangan Nilai</label>
+                    <input type="text" id="keterangan_nilai" name="keterangan_nilai" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Contoh: Tugas Harian 1" required>
+                </div>
+                <div>
+                    <label for="tipe_nilai" class="block text-gray-700 font-semibold mb-2">Tipe Nilai</label>
+                    <select id="tipe_nilai" name="tipe_nilai" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                        <option value="Tugas">Tugas</option>
+                        <option value="PR">PR</option>
+                        <option value="UAS">UAS</option>
+                        <option value="UTS">UTS</option>
+                        <option value="Hafalan">Hafalan</option>
+                    </select>
+                </div>
+                 <div>
+                    <label for="sifat" class="block text-gray-700 font-semibold mb-2">Sifat</label>
+                    <select id="sifat" name="sifat" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                        <option value="offline">Offline</option>
+                        <option value="online">Online</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="tanggal" class="block text-gray-700 font-semibold mb-2">Tanggal</label>
+                    <input type="date" id="tanggal" name="tanggal" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                </div>
             </div>
-            <div class="mb-4">
-                <label for="task-type-select" class="block text-gray-700 font-semibold mb-2">Tipe Nilai</label>
-                <select id="task-type-select" name="tipe_nilai" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                    <option value="Tugas">Tugas</option>
-                    <option value="PR">PR</option>
-                    <option value="UAS">UAS</option>
-                    <option value="UTS">UTS</option>
-                    <option value="Hafalan">Hafalan</option>
-                </select>
-            </div>
-            <div class="mb-4">
-                <label for="task-due-date" class="block text-gray-700 font-semibold mb-2">Tanggal</label>
-                <input type="date" id="task-due-date" name="tanggal" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-            </div>
-            <div class="flex justify-end">
-                <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition duration-300">Simpan Nilai</button>
+            <div class="flex justify-end p-6 bg-gray-50 rounded-b-xl">
+                <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition duration-300">Simpan Sesi</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-const menuButton = document.getElementById('menu-button');
-const sidebar = document.getElementById('sidebar');
-const overlay = document.getElementById('overlay');
-const addTaskBtn = document.getElementById('add-task-btn');
-const taskModal = document.getElementById('task-modal');
-const closeTaskModalBtn = document.getElementById('close-task-modal-btn');
-const taskForm = document.getElementById('task-form');
+document.addEventListener('DOMContentLoaded', function() {
+    // --- Sidebar Toggle ---
+    const menuButton = document.getElementById('menu-button');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    if (menuButton) {
+        const toggleSidebar = () => {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        };
+        menuButton.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
+    }
 
-// Toggle sidebar
-const toggleSidebar = () => { sidebar.classList.toggle('-translate-x-full'); overlay.classList.toggle('hidden'); };
-menuButton.addEventListener('click', toggleSidebar);
-overlay.addEventListener('click', toggleSidebar);
+    // --- Modal Logic ---
+    const addTaskBtn = document.getElementById('add-task-btn');
+    const taskModal = document.getElementById('task-modal');
+    const closeTaskModalBtn = document.getElementById('close-task-modal-btn');
 
-// Modal tambah tugas
-addTaskBtn.addEventListener('click',()=>{taskModal.classList.remove('hidden');});
-closeTaskModalBtn.addEventListener('click',()=>{taskModal.classList.add('hidden');});
-taskForm.addEventListener('submit',(e)=>{
-    e.preventDefault();
-    taskModal.classList.add('hidden');
-    taskForm.reset();
+    if (addTaskBtn && taskModal && closeTaskModalBtn) {
+        const openModal = () => taskModal.classList.remove('hidden');
+        const closeModal = () => taskModal.classList.add('hidden');
+
+        addTaskBtn.addEventListener('click', openModal);
+        closeTaskModalBtn.addEventListener('click', closeModal);
+        taskModal.addEventListener('click', (e) => {
+            if (e.target === taskModal) {
+                closeModal();
+            }
+        });
+    }
 });
 </script>
 </body>
