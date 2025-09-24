@@ -64,7 +64,9 @@ Route::middleware('auth')->group(function () {
             Route::get('edit-kelas{id}', [AdminController::class, 'editKelas'])->name('editKelas');
             Route::put('edit-kelas{id}', [AdminController::class, 'updateKelas'])->name('updateKelas');
             Route::delete('edit-kelas{id}', [AdminController::class, 'destroyKelas'])->name('destroyKelas');
+
             Route::delete('/{id_kelas}', [AdminController::class, 'destroyKelas'])->name('destroyKelas');
+
         });
 
         Route::prefix('manajemen-keuangan')->group(function () {
@@ -116,7 +118,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/tambah-klien', [AdminDevController::class, 'storeKlien'])->name('storeKlien');
     });
 
-        Route::middleware('role:guru')->group(function () {
+
+        //Grup rute ini sekarang hanya bisa diakses oleh pengguna dengan role 'guru'.
+    Route::middleware('role:guru')->group(function () {
         Route::get('/lihat-jadwal-guru', [GuruController::class, 'lihatjadwalG'])->name('lihatjadwalG');
 
         Route::prefix('manajemen-nilai')->group(function () {
@@ -135,6 +139,14 @@ Route::middleware('auth')->group(function () {
             Route::post('/manajemen-absensi-daftar{id_kelas}&{id_mapel}', [GuruController::class, 'storeAbsensiDaftar'])->name('storeAbsensiDaftar');
             Route::get('/input-absensi{id_kelas}&{id_mapel}&{id_daftar_absensi}', [GuruController::class, 'inputAbsensi'])->name('inputAbsensi');
             Route::post('/input-absensi', [GuruController::class, 'storeAbsensiSiswa'])->name('storeAbsensiSiswa');
+
+        });
+
+
+        Route::prefix('manajemen-tugas')->group(function () {
+            Route::get('/', [GuruController::class, 'manajTugasKelas'])->name('manajMateri');
+            Route::get('/input-tugas{id_kelas}&{id_mapel}', [GuruController::class, 'inputTugas'])->name('inputTugas');
+            Route::post('/input-tugas{id_kelas}&{id_mapel}', [GuruController::class, 'storeTugas'])->name('storeTugas');
 
         });
             
@@ -203,3 +215,5 @@ Route::prefix('absensi')->group(function () {
 Route::get('/pelanggaran', [pelanggaranController::class, 'index'])->name('pelanggaran.index');
 Route::post('/pelanggaran', [pelanggaranController::class, 'store'])->name('pelanggaran.store');
 Route::get('/daftarPelanggar', [pelanggaranController::class, 'daftarPelanggar'])->name('pelanggaran.daftar');
+
+Route::get('/input-nilai', [AdminController::class, 'inputnilai'])->name('inputnilai');
