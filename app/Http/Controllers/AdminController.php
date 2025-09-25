@@ -261,26 +261,20 @@ class AdminController extends Controller
 
 
 
-
-    public function lihatKelas(Request $request)
+    // PERBAIKAN: Menerima $id_kelas langsung dari parameter route
+    public function lihatKelas(Request $request, $id_kelas)
     {
         $id_sekolah = $request->cookie('id_sekolah');
-        $id_kelas = $request->input('id_kelas');
-        // dd($id_kelas);
+        
         $infoKelas = Kelas::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->with('angkatan')->first();
         $daftarSiswa = User::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->get();
         $daftarSiswaBelumPunyaKelas = User::where('id_kelas', null)->where('id_sekolah', $id_sekolah)->where('role', 'siswa')->get();
         $jumlahSiswa = $daftarSiswa->count();
-        // $angkatan = Angkatan::where('id', $kelas->id_angkatan)->first();
+        
         return view('admin.lihat_kelas', ['id_kelas' => $id_kelas,'infoKelas' => $infoKelas, 'daftarSiswa' => $daftarSiswa, 'daftarSiswaBelumPunyaKelas' => $daftarSiswaBelumPunyaKelas, 'jumlahSiswa' => $jumlahSiswa]);
     }
 
     
-
-    public function lihatKelasD()
-    {
-        return view('admin.lihat_kelas');
-    }
 
     public function tambahSiswaKeKelas(Request $request)
     {
@@ -994,5 +988,30 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Jadwal berhasil dihapus.');
     }
 
+    public function keluarkanSiswaDariKelas(Request $request, $id_siswa, $id_kelas)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        // 1. Cari siswa berdasarkan id, id_sekolah, dan role
+        $siswa = User::where('id', $id_siswa)
+                     ->where('id_sekolah', $id_sekolah)
+                     ->where('role', 'siswa')
+                     ->firstOrFail(); // Akan gagal jika siswa tidak ditemukan
+
+        // 2. Verifikasi apakah siswa benar-benar ada di kelas yang dimaksud
+        if ($siswa->id_kelas != $id_kelas) {
+            // Jika tidak, kembalikan dengan pesan error
+            return back()->with('error', 'Siswa tidak ditemukan di kelas ini.');
+        }
+
+        // 3. Set id_kelas menjadi null untuk mengeluarkan siswa dari kelas
+        $siswa->id_kelas = null;
+        $siswa->id_angkatan = null;
+        $siswa->save();
+
+        // 4. Redirect kembali ke halaman sebelumnya dengan pesan sukses
+        return redirect()->route('manajemenKelas')->with('success', 'Siswa berhasil dikeluarkan!');
+
+    }
     
 }

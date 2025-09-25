@@ -57,13 +57,14 @@ Route::middleware('auth')->group(function () {
         Route::prefix('manajemen-kelas')->group(function () {
             Route::get('/', [AdminController::class, 'manajKelas'])->name('manajemenKelas');
             Route::post('/', [AdminController::class, 'storeKelas'])->name('storeKelas');
-            Route::post('/lihat-kelas', [AdminController::class, 'lihatKelas'])->name('lihatKelas');
-            Route::get('/lihat-kelas', [AdminController::class, 'lihatKelasD'])->name('lihatKelasD');
+            // PERBAIKAN: Mengubah route untuk menerima ID kelas dari URL dengan method GET
+            Route::get('/lihat-kelas/{id_kelas}', [AdminController::class, 'lihatKelas'])->name('lihatKelas');
             Route::post('/lihat-kelas/tambah-siswa-ke-kelas', [AdminController::class, 'tambahSiswaKeKelas'])->name('tambahSiswaKeKelas');
 
             Route::get('edit-kelas{id}', [AdminController::class, 'editKelas'])->name('editKelas');
             Route::put('edit-kelas{id}', [AdminController::class, 'updateKelas'])->name('updateKelas');
             Route::delete('edit-kelas{id}', [AdminController::class, 'destroyKelas'])->name('destroyKelas');
+            Route::delete('/kelas/keluarkan-siswa/{id_siswa}/{id_kelas}', [AdminController::class, 'keluarkanSiswaDariKelas'])->name('keluarkanSiswaDariKelas');
 
             Route::delete('/{id_kelas}', [AdminController::class, 'destroyKelas'])->name('destroyKelas');
 
@@ -141,7 +142,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/input-absensi{id_kelas}&{id_mapel}&{id_daftar_absensi}', [GuruController::class, 'inputAbsensi'])->name('inputAbsensi');
             Route::post('/input-absensi', [GuruController::class, 'storeAbsensiSiswa'])->name('storeAbsensiSiswa');
             Route::put('/update-absensi/{id_daftar_absensi_siswa}', [GuruController::class, 'updateAbsensiSiswa'])->name('updateAbsensiSiswa');
-
         });
 
 
