@@ -101,6 +101,8 @@ Route::middleware('auth')->group(function () {
         Route::prefix('manajemen-tingkat')->group(function () {
             Route::get('/', [AdminController::class, 'manajTingkat'])->name('manajemenTingkat');
             Route::post('/', [AdminController::class, 'storeTingkat'])->name('storeTingkat');
+            Route::put('/{id_tingkat}', [AdminController::class, 'updateTingkat'])->name('updateTingkat');
+            Route::delete('/{id_tingkat}', [AdminController::class, 'destroyTingkat'])->name('destroyTingkat');
         });
 
     });

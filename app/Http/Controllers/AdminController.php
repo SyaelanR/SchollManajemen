@@ -616,7 +616,9 @@ class AdminController extends Controller
 
     public function manajTingkat()
     {
-        return view('admin.manajemen_tingkat');
+        $id_sekolah = request()->cookie('id_sekolah');
+        $tingkats = Tingkat::where('id_sekolah', $id_sekolah)->orderBy('tingkat', 'asc')->get();
+        return view('admin.manajemen_tingkat', compact('tingkats'));
     }
 
     public function storeTingkat(Request $request)
@@ -627,16 +629,76 @@ class AdminController extends Controller
         if (!$id_sekolah) {
             return redirect()->back()->with('error', 'Gagal menambahkan tingkat. Sesi sekolah tidak ditemukan.');
         }
-        
-        $jumlahTingkat = Tingkat::where('id_sekolah', $id_sekolah)->count() ?? 0;
+
+        // PERBAIKAN: Validasi input dari form
+        $request->validate([
+            'tingkat' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('tingkats', 'tingkat')->where('id_sekolah', $id_sekolah)
+            ],
+        ], [
+            'tingkat.required' => 'Nama tingkat tidak boleh kosong.',
+            'tingkat.unique' => 'Nama tingkat ini sudah ada.',
+        ]);
 
         // Simpan tingkat baru ke database
         Tingkat::create([
             'id_sekolah' => $id_sekolah,
-            'tingkat' => $jumlahTingkat + 1,
+            'tingkat' => $request->tingkat, // PERBAIKAN: Gunakan input dari request
         ]);
 
         return redirect()->route('manajemenTingkat')->with('success', 'Tingkat berhasil ditambahkan!');
+    }
+
+    public function updateTingkat(Request $request, $id_tingkat)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $request->validate([
+            'tingkat' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('tingkats', 'tingkat')
+                    ->where('id_sekolah', $id_sekolah)
+                    ->ignore($id_tingkat, 'id_tingkat')
+            ],
+        ], [
+            'tingkat.required' => 'Nama tingkat tidak boleh kosong.',
+            'tingkat.unique' => 'Nama tingkat ini sudah ada.',
+        ]);
+
+        $tingkat = Tingkat::where('id_tingkat', $id_tingkat)
+                         ->where('id_sekolah', $id_sekolah)
+                         ->firstOrFail();
+
+        $tingkat->update([
+            'tingkat' => $request->tingkat,
+        ]);
+
+        return redirect()->route('manajemenTingkat')->with('success', 'Tingkat berhasil diperbarui!');
+    }
+
+    public function destroyTingkat(Request $request, $id_tingkat)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        
+        // 1. Cari tingkat tertinggi yang ada di database untuk sekolah ini.
+        // Parameter $id_tingkat dari URL akan diabaikan.
+        // Menggunakan orderByRaw untuk memastikan pengurutan numerik yang benar pada kolom string.
+        $tingkatTertinggi = Tingkat::where('id_sekolah', $id_sekolah)
+                                   ->orderByRaw('CAST(tingkat AS UNSIGNED) DESC, tingkat DESC')
+                                   ->first();
+        
+        // 2. Jika tingkat tertinggi ditemukan, hapus. Jika tidak, kembali dengan pesan error.
+        if ($tingkatTertinggi) {
+            $tingkatTertinggi->delete();
+            return redirect()->route('manajemenTingkat')->with('success', 'Tingkat tertinggi berhasil dihapus!');
+        }
+        
+        return redirect()->route('manajemenTingkat')->withErrors(['error' => 'Tidak ada tingkat yang bisa dihapus.']);
     }
 
 
