@@ -150,7 +150,7 @@
                             </div>
                         </div>
                     </div>
-                     <a href="#" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
+                     <a href="{{ route('manajemenKelas') }}" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
                         <i class="fa-solid fa-arrow-left mr-2"></i>
                         <span>Kembali</span>
                     </a>
@@ -356,4 +356,3 @@
 
 </body>
 </html>
-
