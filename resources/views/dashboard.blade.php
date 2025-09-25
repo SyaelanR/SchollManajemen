@@ -164,8 +164,8 @@
                 <!-- Welcome Banner -->
                 <div class="bg-indigo-600 rounded-xl shadow-lg p-8 mb-8 text-white flex flex-col md:flex-row items-center justify-between">
                     <div>
-                        <h2 class="text-2xl font-bold">{{$username}}</h2>
-                        <p class="mt-1">{{$time}}</p>
+                        <h2 class="text-2xl font-bold">{{$username ?? null}}</h2>
+                        <p class="mt-1">{{$time ?? null}}</p>
                     </div>
                     {{-- <a href="#" class="mt-4 md:mt-0 bg-white text-indigo-600 font-semibold py-2 px-5 rounded-lg hover:bg-indigo-100 transition duration-300">
                         Lihat Laporan

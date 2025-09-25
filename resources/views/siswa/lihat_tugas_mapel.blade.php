@@ -116,7 +116,6 @@
                                     <div class="bg-blue-100 text-blue-600 p-3 rounded-full">
                                         <i class="fa-solid fa-book-open text-xl"></i>
                                     </div>
-                                    <span class="text-xs font-semibold bg-blue-100 text-blue-700 px-3 py-1 rounded-full">Wajib</span>
                                 </div>
                                 <h3 class="text-xl font-bold text-gray-800 mb-2">{{$mapel->mapel->nama_mapel}}</h3>
                                 <p class="text-gray-600 text-sm flex items-center"><i class="fa-solid fa-chalkboard-user w-4 mr-2 text-gray-400"></i>{{$mapel->mapel->guru->name}}</p>
@@ -127,7 +126,10 @@
                         </div>
                     </a>
                     @empty
-                    <h1>KOSONG!!!!</h1>
+                    <div class="col-span-full text-center py-10">
+                        <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600 font-semibold text-lg">Belum ada Mapel tersedia.</p>
+                    </div>
                     @endforelse
                 </div>
             </main>

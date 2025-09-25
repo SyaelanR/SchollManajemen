@@ -744,8 +744,9 @@ class AdminController extends Controller
         $kelases = Kelas::where('id_sekolah', $id_sekolah)->get(); // Ambil semua data kelas untuk dropdown
         return view('admin.edit-siswa', compact('siswa', 'kelases')); // Sesuaikan path view Anda
     }
+    
 
-           public function editKelas(Request $request, $id_kelas) // Should be edit() for KelasController
+    public function editKelas(Request $request, $id_kelas) // Should be edit() for KelasController
     {
         $id_sekolah = $request->cookie('id_sekolah');
         // Temukan kelas spesifik dari database berdasarkan ID dan id_sekolah

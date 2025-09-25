@@ -14,6 +14,8 @@ use App\Models\Mapel;
 use App\Models\DaftarTugas;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Redis;
 
 class GuruController extends Controller
 {
@@ -98,6 +100,94 @@ class GuruController extends Controller
                     ->with('siswa')->get();
 
         return view('guru.input_nilai', compact('daftarSiswa', 'infoKelas', 'infoMapel', 'infoDaftarNilai'));
+    }
+
+    public function inputNilaiOnline(Request $request, $id_kelas, $id_mapel, $id_daftar_nilai)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+        
+        $infoKelas = Jadwal::with('kelas')
+                    ->where('id_kelas', $id_kelas)
+                    ->where('id_mapel', $id_mapel)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->firstOrFail();
+        $infoMapel = Mapel::where('id_mapel', $id_mapel)
+                    ->where('id_guru', $id_user)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->firstOrFail();
+        $infoDaftarNilai = DaftarNilai::where('id_daftar_nilai', $id_daftar_nilai)
+                    ->where('id_mapel', $id_mapel)
+                    ->where('id_kelas', $id_kelas)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->firstOrFail();
+
+
+        $infoAngkatan = Angkatan::where('id_angkatan', $infoKelas->kelas->id_angkatan)->first();
+
+        if(!$infoAngkatan || $infoKelas->semester != $infoAngkatan->semester || $infoKelas->tingkat != $infoAngkatan->id_tingkat || $infoDaftarNilai->semester != $infoAngkatan->semester || $infoDaftarNilai->tingkat != $infoAngkatan->id_tingkat){
+            abort(404);
+        }
+        
+        $daftarSiswa = DaftarNilaiSiswa::where('id_kelas', $id_kelas)
+                    ->where('semester', $infoAngkatan->semester)
+                    ->where('tingkat', $infoAngkatan->id_tingkat)
+                    ->where('id_mapel', $id_mapel)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->where('id_daftar_nilai', $id_daftar_nilai)
+                    ->with('siswa')->get();
+        
+        return view('guru.input_nilai_online', compact('daftarSiswa', 'infoKelas', 'infoMapel', 'infoDaftarNilai'));
+    }
+
+    public function lihatTugasSiswa (Request $request, $namaFile)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $idUser = $request->cookie('id_user');
+        
+        //ambil id mapel dari namaFile
+        $infoDaftarTugasSiswa = DaftarNilaiSiswa::where('nama_fileTugas', $namaFile)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->firstOrFail();
+
+        //cek apakah guru mengajar mapel ini
+        // $infoMapel = Mapel::where('id_mapel', $infoDaftarTugasSiswa->id_mapel)
+        //             ->where('id_guru', $idUser)
+        //             ->where('id_sekolah', $id_sekolah)
+        //             ->firstOrFail();
+
+        //cek apakah guru mengajar kelas&mapel ini + ambil kelas & angkatan
+        $infoJKA = Jadwal::where('id_kelas', $infoDaftarTugasSiswa->id_kelas)
+                    ->where('id_mapel', $infoDaftarTugasSiswa->id_mapel)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->with('kelas.angkatan')
+                    ->with('mapel')
+                    ->whereHas('mapel', function ($query) use ($idUser) {
+                        $query->where('id_guru', $idUser);
+                    })
+                    ->firstOrFail();
+
+        //cek semester & angkatan aktif
+        $infoDaftarTugasSiswa = DaftarNilaiSiswa::where('nama_fileTugas', $namaFile)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->where('tingkat', $infoJKA->kelas->angkatan->id_tingkat)
+                    ->where('semester', $infoJKA->kelas->angkatan->semester)
+                    ->firstOrFail();
+
+
+        // $infoAngkatan = Angkatan::where('id_angkatan', )->first();
+
+
+        if (Storage::disk('local')->exists("tugasSiswa/$namaFile")) {
+            $path = Storage::disk('local')->path("tugasSiswa/$namaFile");
+            $headers = ['Content-Type' => 'application/pdf'];
+
+            // Mengembalikan file sebagai respons inline
+            return response()->file($path, $headers);
+        }
+
+        abort(404, 'File not found');
+
     }
 
     public function storeNilaiSiswa(Request $request)

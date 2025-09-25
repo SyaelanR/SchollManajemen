@@ -100,7 +100,7 @@
                                 <td class="p-3 text-gray-600">{{$nilai->sifat}}</td>
                                 @if ($nilai->sifat == 'online')
                                     <td class="p-3 text-center">
-                                        <a href="#" class="text-indigo-600 hover:text-indigo-800 font-semibold">Masuk</a>
+                                        <a href="{{route('inputNilaiOnline',[$nilai->id_kelas, $nilai->id_mapel, $nilai->id_daftar_nilai])}}" class="text-indigo-600 hover:text-indigo-800 font-semibold">Masuk_on</a>
                                     </td>
                                 @elseif ($nilai->sifat == 'offline')
                                     <td class="p-3 text-center">

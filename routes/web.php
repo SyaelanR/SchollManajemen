@@ -61,10 +61,10 @@ Route::middleware('auth')->group(function () {
             Route::post('/lihat-kelas', [AdminController::class, 'lihatKelas'])->name('lihatKelas');
             Route::get('/lihat-kelas', [AdminController::class, 'lihatKelasD'])->name('lihatKelasD');
             Route::post('/lihat-kelas/tambah-siswa-ke-kelas', [AdminController::class, 'tambahSiswaKeKelas'])->name('tambahSiswaKeKelas');
-
-            Route::get('edit-kelas{id}', [AdminController::class, 'editKelas'])->name('editKelas');
-            Route::put('edit-kelas{id}', [AdminController::class, 'updateKelas'])->name('updateKelas');
-            Route::delete('edit-kelas{id}', [AdminController::class, 'destroyKelas'])->name('destroyKelas');
+ 
+            Route::get('/edit-kelas/{id}', [AdminController::class, 'editKelas'])->name('editKelas');
+            Route::put('/edit-kelas/{id}', [AdminController::class, 'updateKelas'])->name('updateKelas');
+            Route::delete('/edit-kelas/{id}', [AdminController::class, 'destroyKelas'])->name('destroyKelas');
 
             Route::delete('/{id_kelas}', [AdminController::class, 'destroyKelas'])->name('destroyKelas');
 
@@ -89,8 +89,8 @@ Route::middleware('auth')->group(function () {
 
         Route::prefix('manajemen-jadwal')->group(function () {
             Route::get('/', [AdminController::class, 'manajJadwal'])->name('manajemenJadwal');
-            Route::get('/tambah-jadwal{id_kelas}', [AdminController::class, 'tambahJadwal'])->name('tambahJadwal');
-            Route::post('/tambah-jadwal{id_kelas}', [AdminController::class, 'storeJadwal'])->name('storeJadwal');
+            Route::get('/tambah-jadwal/{id_kelas}', [AdminController::class, 'tambahJadwal'])->name('tambahJadwal');
+            Route::post('/tambah-jadwal/{id_kelas}', [AdminController::class, 'storeJadwal'])->name('storeJadwal');
             // Rute untuk menghapus SEMUA jadwal berdasarkan ID KELAS
             Route::delete('/jadwal/kelas/{id_kelas}', [JadwalController::class, 'destroyByClass'])->name('jadwal.destroy.by_class');
             // Rute untuk menghapus SATU jadwal spesifik berdasarkan ID JADWAL
@@ -109,8 +109,8 @@ Route::middleware('auth')->group(function () {
 
         // Grup rute ini sekarang hanya bisa diakses oleh pengguna dengan role 'adminDev'.
     Route::middleware('role:adminDev')->group(function () {
-        Route::get('/tambah-admin-klien{id_sekolah}', [AdminDevController::class, 'tambahAdminKlien'])->name('tambahAdminKlien');
-        Route::post('/tambah-admin-klien{id_sekolah}', [AdminDevController::class, 'storeAdmin'])->name('storeAdmin');
+        Route::get('/tambah-admin-klien/{id_sekolah}', [AdminDevController::class, 'tambahAdminKlien'])->name('tambahAdminKlien');
+        Route::post('/tambah-admin-klien/{id_sekolah}', [AdminDevController::class, 'storeAdmin'])->name('storeAdmin');
 
         Route::get('/info-klien', [AdminDevController::class, 'infoKlienD'])->name('infoKlienD');
         Route::post('/info-klien', [AdminDevController::class, 'infoKlien'])->name('infoKlien');
@@ -126,19 +126,22 @@ Route::middleware('auth')->group(function () {
 
         Route::prefix('manajemen-nilai')->group(function () {
             Route::get('/', [GuruController::class, 'manajNilaiKelas'])->name('manajemenNilai');
-            Route::get('/input-nilai{id_kelas}&{id_mapel}&{id_daftar_nilai}', [GuruController::class, 'inputNilai'])->name('inputNilai');
-            Route::get('/manajemen-nilai-daftar{id_kelas}&{id_mapel}', [GuruController::class, 'manajNilaiDaftar'])->name('manajemenNilaiDaftar');
-            Route::post('/manajemen-nilai-daftar{id_kelas}&{id_mapel}', [GuruController::class, 'storeDaftarNilai'])->name('storeDaftarNilai');
+            Route::get('/input-nilai/{id_kelas}/{id_mapel}/{id_daftar_nilai}', [GuruController::class, 'inputNilai'])->name('inputNilai');
+            Route::get('/manajemen-nilai-daftar/{id_kelas}/{id_mapel}', [GuruController::class, 'manajNilaiDaftar'])->name('manajemenNilaiDaftar');
+            Route::post('/manajemen-nilai-daftar/{id_kelas}/{id_mapel}', [GuruController::class, 'storeDaftarNilai'])->name('storeDaftarNilai');
             Route::post('/input-nilai', [GuruController::class, 'storeNilaiSiswa'])->name('storeNilaiSiswa');
+
+            Route::get('/input-nilai-online/{id_kelas}/{id_mapel}/{id_daftar_nilai}', [GuruController::class, 'inputNilaiOnline'])->name('inputNilaiOnline');
+            Route::get('/lihatTugasSiswa/{namaFile}', [GuruController::class, 'lihatTugasSiswa'])->name('lihatTugasSiswa');
 
         });
 
 
         Route::prefix('manajemen-absensi')->group(function () {
             Route::get('/', [GuruController::class, 'manajAbsensi'])->name('manajAbsensi');
-            Route::get('/manajemen-absensi-daftar{id_kelas}&{id_mapel}', [GuruController::class, 'manajAbsensiDaftar'])->name('manajAbsensiDaftar');
-            Route::post('/manajemen-absensi-daftar{id_kelas}&{id_mapel}', [GuruController::class, 'storeAbsensiDaftar'])->name('storeAbsensiDaftar');
-            Route::get('/input-absensi{id_kelas}&{id_mapel}&{id_daftar_absensi}', [GuruController::class, 'inputAbsensi'])->name('inputAbsensi');
+            Route::get('/manajemen-absensi-daftar/{id_kelas}/{id_mapel}', [GuruController::class, 'manajAbsensiDaftar'])->name('manajAbsensiDaftar');
+            Route::post('/manajemen-absensi-daftar/{id_kelas}/{id_mapel}', [GuruController::class, 'storeAbsensiDaftar'])->name('storeAbsensiDaftar');
+            Route::get('/input-absensi/{id_kelas}/{id_mapel}/{id_daftar_absensi}', [GuruController::class, 'inputAbsensi'])->name('inputAbsensi');
             Route::post('/input-absensi', [GuruController::class, 'storeAbsensiSiswa'])->name('storeAbsensiSiswa');
 
         });
@@ -146,8 +149,8 @@ Route::middleware('auth')->group(function () {
 
         Route::prefix('manajemen-tugas')->group(function () {
             Route::get('/', [GuruController::class, 'manajTugasKelas'])->name('manajMateri');
-            Route::get('/input-tugas{id_kelas}&{id_mapel}', [GuruController::class, 'inputTugas'])->name('inputTugas');
-            Route::post('/input-tugas{id_kelas}&{id_mapel}', [GuruController::class, 'storeTugas'])->name('storeTugas');
+            Route::get('/input-tugas/{id_kelas}/{id_mapel}', [GuruController::class, 'inputTugas'])->name('inputTugas');
+            Route::post('/input-tugas/{id_kelas}/{id_mapel}', [GuruController::class, 'storeTugas'])->name('storeTugas');
 
         });
             
@@ -159,7 +162,12 @@ Route::middleware('auth')->group(function () {
 
         Route::prefix('tugas-mapel')->group(function () {
             Route::get('', [SiswaController::class, 'lihatTugasMapel'])->name('lihatTugasMapel');
-            Route::get('/tugas-daftar{id_mapel}', [SiswaController::class, 'lihatTugasDaftar'])->name('lihatTugasDaftar');
+            Route::get('/tugas-daftar/{id_mapel}', [SiswaController::class, 'lihatTugasDaftar'])->name('lihatTugasDaftar');
+            Route::get('/lihat-soal/{namaFile}', [SiswaController::class, 'lihatSoal'])->name('lihatSoal');
+            Route::post('/unggah-tugas', [SiswaController::class, 'unggahTugas'])->name('unggahTugas');
+        });
+
+        Route::prefix('pelanggaran')->group(function () {
         });
     });
 

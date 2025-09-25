@@ -141,7 +141,7 @@
             </div>
             <div class="mb-4">
                 <label for="task-type-select" class="block text-gray-700 font-semibold mb-2">File</label>
-                <input type="file" id="task-file" name="file" class="w-full px-4 py-2" >
+                <input type="file" id="task-file" name="file" class="w-full px-4 py-2" accept="application/pdf">
             </div>
             <div class="mb-4">
                 <label for="task-due-date" class="block text-gray-700 font-semibold mb-2">Tanggal</label>
