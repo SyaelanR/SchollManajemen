@@ -153,6 +153,13 @@ Route::middleware('auth')->group(function () {
             Route::post('/input-tugas/{id_kelas}/{id_mapel}', [GuruController::class, 'storeTugas'])->name('storeTugas');
 
         });
+
+        Route::prefix('manajemen-materi')->group(function () {
+            Route::get('/', [GuruController::class, 'manajMateriKelas'])->name('manajMateri');
+            Route::get('/input-materi/{id_kelas}/{id_mapel}', [GuruController::class, 'inputMateri'])->name('inputMateri');
+            Route::post('/input-materi/{id_kelas}/{id_mapel}', [GuruController::class, 'storeMateri'])->name('storeMateri');
+        });
+
             
         
     });

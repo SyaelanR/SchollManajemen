@@ -170,7 +170,7 @@
                                 </div>
                                 <div class="border-t pt-4 flex items-center justify-between gap-4">
                                     <button class="w-full bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600 transition-all duration-300 flex items-center justify-center">
-                                        <i class="fa-solid fa-award mr-2"></i> Lihat Nilai & Feedback
+                                        <i class="fa-solid fa-award mr-2"></i>
                                     </button>
                                 </div>
                             </div>

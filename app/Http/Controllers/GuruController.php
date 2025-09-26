@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Angkatan;
 use App\Models\DaftarAbsensi;
 use App\Models\DaftarAbsensiSiswa;
+use App\Models\DaftarMateri;
 use App\Models\DaftarNilai;
 use App\Models\DaftarNilaiSiswa;
 use App\Models\Jadwal;
@@ -16,6 +17,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redis;
+use Carbon\Carbon;
 
 class GuruController extends Controller
 {
@@ -643,4 +645,124 @@ class GuruController extends Controller
 
 
     }
+
+    public function manajMateriKelas (Request $request)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+
+    $daftarkelasYangDiampu = Jadwal::with('kelas.angkatan', 'mapel')
+        ->whereHas('mapel', function ($query) use ($id_user) {
+            $query->where('id_guru', $id_user);
+        })
+        ->whereHas('kelas.angkatan', function ($query) use ($id_sekolah) {
+            $query->where('id_sekolah', $id_sekolah);
+        })
+        ->whereHas('kelas.angkatan', function ($query) {
+            $query->whereColumn('angkatans.semester', 'jadwals.semester');
+        })
+        ->whereHas('kelas.angkatan', function ($query) {
+            $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+        })
+        ->whereHas('kelas.angkatan', function ($query) {
+            // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+            $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+        })
+        ->select('id_kelas', 'id_mapel') // hanya ambil kombinasi unik kelas+mapel
+        ->distinct()
+        // ->with('kelas.angkatan', 'mapel') // tetap load relasi
+        ->get();
+
+    // Iterasi untuk menghitung jumlah siswa untuk setiap kelas yang diampu
+    foreach ($daftarkelasYangDiampu as $jadwal) {
+        // Muat relasi yang dibutuhkan jika belum ada
+        $jadwal->loadMissing('kelas.angkatan', 'mapel');
+        // Hitung dan tambahkan properti jumlah_siswa ke setiap item jadwal
+        $jadwal->jumlah_siswa = User::where('id_kelas', $jadwal->id_kelas)->count();
+    }
+
+        return view('guru.manajemen_materi_kelas', ['daftarkelasYangDiampu' => $daftarkelasYangDiampu]);
+
+    }
+
+    public function inputMateri (Request $request, $id_kelas, $id_mapel)
+    {
+
+        $idSekolah = $request->cookie('id_sekolah');
+        $idUser = $request->cookie('id_user');
+
+        //cek apakah guru mengajar kelas&mapel ini + ambil kelas & angkatan
+        $infoJKA = Jadwal::where('id_kelas', $id_kelas)
+                    ->where('id_mapel', $id_mapel)
+                    ->where('id_sekolah', $idSekolah)
+                    ->with('kelas.angkatan')
+                    ->with('mapel')
+                    ->whereHas('mapel', function ($query) use ($idUser) {
+                        $query->where('id_guru', $idUser);
+                    })
+                    ->firstOrFail();
+
+
+        $daftarMateri = DaftarMateri::where('id_kelas', $id_kelas)
+                    ->where('id_mapel', $id_mapel)
+                    ->where('id_sekolah', $idSekolah)
+                    ->where('tingkat', $infoJKA->kelas->angkatan->id_tingkat)
+                    ->where('semester', $infoJKA->kelas->angkatan->semester)
+                    ->get();
+
+
+        return view('guru.input_materi', ['daftarMateri' => $daftarMateri, 'infoJKA' => $infoJKA]);
+    }
+
+    public function storeMateri (Request $request, $id_kelas, $id_mapel)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $idUser = $request->cookie('id_user');
+
+        $request->validate([
+            'file' => 'required|file|mimes:pdf|max:5048',
+            'judul_materi' => 'required|string|max:255',
+            'deskripsi_materi' => 'required|string|max:255'
+        ],[
+            'file.required' => 'File tidak boleh kosong.',
+            'judul_materi.required' => 'Judul tidak boleh kosong.',
+            'judul_materi.max' => 'Judul maksimal 255 karakter.',
+            'deskripsi_materi.required' => 'Deskripsi tidak boleh kosong.',
+            'deskripsi_materi.max' => 'Deskripsi maksimal 255 karakter.',
+        ]);
+
+        $infoJKA = Jadwal::where('id_kelas', $id_kelas)
+                    ->where('id_mapel', $id_mapel)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->with('kelas.angkatan')
+                    ->with('mapel')
+                    ->whereHas('mapel', function ($query) use ($idUser) {
+                        $query->where('id_guru', $idUser);
+                    })
+                    ->firstOrFail();
+                    
+        $file = $request->file('file');
+        $namaFile = time() . '_' . $file->getClientOriginalName();
+
+        DaftarMateri::create([
+            'id_mapel' => $id_mapel,
+            'id_kelas' => $id_kelas,
+            'id_sekolah' => $id_sekolah,
+            'keterangan' => $request->keterangan_materi,
+            'tanggal' => Carbon::now()->format('Y-m-d'),
+            'tingkat' => $infoJKA->kelas->angkatan->id_tingkat,
+            'semester' => $infoJKA->kelas->angkatan->semester,
+            'judul_materi' => $request->judul_materi,
+            'deskripsi_materi' => $request->deskripsi_materi,
+            'nama_file' => $namaFile
+        ]);
+
+
+        $file->storeAs('materi', $namaFile);
+
+        return redirect()->route('inputMateri', ['id_kelas' => $id_kelas, 'id_mapel' => $id_mapel])->with('success', 'Materi berhasil disimpan!');
+
+
+    }
+ 
 }
