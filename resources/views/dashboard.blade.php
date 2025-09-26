@@ -85,11 +85,11 @@
                 @endcan
 
                 @can('view-guru')
-                <a href="{{ route('inputNilaiSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-pen mr-3"></i>
                     <span>Input Nilai</span>
                 </a>
-                <a href="{{ route('inputAbsensiSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-list-check mr-3"></i>
                     <span>Input Absensi</span>
                 </a>
@@ -108,7 +108,7 @@
                     <i class="fa-solid fa-pen mr-3"></i>
                     <span>Lihat Nilai</span>
                 </a>
-                <a href="{{ route('lihatAbsensiSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-list-check mr-3"></i>
                     <span>Lihat Absensi</span>
                 </a>
@@ -289,11 +289,11 @@
                                <i class="fa-solid fa-calendar-alt text-xl text-indigo-600 mr-4"></i>
                                <span class="font-medium text-gray-700">Lihat Semua Jadwal</span>
                            </a>
-                           <a href="{{ route('inputNilaiSiswa') }}" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-300">
+                           <a href="#" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-300">
                                <i class="fa-solid fa-pen-to-square text-xl text-green-600 mr-4"></i>
                                <span class="font-medium text-gray-700">Input Nilai Siswa</span>
                            </a>
-                           <a href="{{ route('inputAbsensiSiswa') }}" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-300">
+                           <a href="#" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-300">
                                <i class="fa-solid fa-calendar-check text-xl text-yellow-600 mr-4"></i>
                                <span class="font-medium text-gray-700">Input Absensi Kelas</span>
                            </a>

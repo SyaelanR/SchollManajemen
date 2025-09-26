@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- SweetAlert2 for notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -75,6 +77,14 @@
         </header>
 
         <main class="p-6 md:p-8 flex-1">
+            <!-- Session Messages Handling -->
+            @if(session('success'))
+                <div id="session-success" data-message="{{ session('success') }}" class="hidden"></div>
+            @endif
+            @if ($errors->any())
+                <div id="validation-errors" data-errors='@json($errors->all())' class="hidden"></div>
+            @endif
+
             <!-- UPDATED Header -->
             <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg flex flex-wrap justify-between items-center text-white gap-4">
                 <div>
@@ -208,6 +218,35 @@ document.addEventListener('DOMContentLoaded', function() {
         menuButton.addEventListener('click', toggleSidebar);
         overlay.addEventListener('click', toggleSidebar);
     }
+
+    // --- SweetAlert2 Notifications ---
+    const successMessage = document.getElementById('session-success');
+    if (successMessage) {
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: successMessage.dataset.message,
+            timer: 2500,
+            showConfirmButton: false
+        });
+    }
+
+    const validationErrors = document.getElementById('validation-errors');
+    if (validationErrors) {
+        const errors = JSON.parse(validationErrors.dataset.errors);
+        let errorText = '<ul class="list-disc list-inside text-left">';
+        errors.forEach(error => {
+            errorText += `<li>${error}</li>`;
+        });
+        errorText += '</ul>';
+        
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal Validasi',
+            html: errorText,
+        });
+    }
+
 
     // --- Modal Logic ---
     const addTaskBtn = document.getElementById('add-task-btn');

@@ -13,6 +13,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- SweetAlert2 for notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Custom styles */
         body {
@@ -126,14 +128,9 @@
 
             <!-- Page Content -->
             <main class="p-6 md:p-8 flex-1">
-                {{-- Notifikasi Sukses --}}
+                <!-- Session Messages Handling -->
                 @if (session('success'))
-                    <div id="success-alert" class="fixed top-24 right-5 bg-green-500 text-white py-3 px-5 rounded-xl text-sm shadow-lg transition-transform transform translate-x-full" role="alert">
-                        <div class="flex items-center">
-                            <i class="fa-solid fa-check-circle mr-2"></i>
-                            <span>{{ session('success') }}</span>
-                        </div>
-                    </div>
+                    <div id="session-success" data-message="{{ session('success') }}" class="hidden"></div>
                 @endif
 
                 <!-- Main Title Block -->
@@ -143,11 +140,11 @@
                         <h2 class="text-3xl font-bold mb-2">Jadwal Pelajaran Kelas {{$kelas->nama_kelas}}</h2>
                         <p class="text-indigo-200">Lihat dan kelola jadwal pelajaran untuk setiap kelas.</p>
                     </div>
-                    <button onclick="window.history.back()"
+                    <a href="{{ route('manajemenJadwal') }}"
                         class="flex items-center justify-center space-x-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition duration-200 mt-4 md:mt-0">
                         <i class="fa-solid fa-arrow-left text-xl"></i>
                         <span>Kembali</span>
-                    </button>
+                    </a>
                 </div>
 
                 <!-- Schedule Table Container -->
@@ -409,19 +406,17 @@
             showModal(deleteModal);
         };
 
-        // --- Notifikasi Sukses ---
+        // --- SweetAlert2 Notifications ---
         document.addEventListener('DOMContentLoaded', function() {
-            const successAlert = document.getElementById('success-alert');
-            if (successAlert) {
-                // Tampilkan notifikasi
-                setTimeout(() => {
-                    successAlert.classList.remove('translate-x-full');
-                }, 100);
-
-                // Sembunyikan notifikasi setelah 3 detik
-                setTimeout(() => {
-                    successAlert.classList.add('translate-x-full');
-                }, 3100); // 3000ms (3 detik) + 100ms untuk animasi masuk
+            const successMessage = document.getElementById('session-success');
+            if (successMessage) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: successMessage.dataset.message,
+                    timer: 2500,
+                    showConfirmButton: false
+                });
             }
         });
     </script>
