@@ -61,17 +61,17 @@
                 </a>
             </div>
             <nav class="mt-6">
-                <a href="#"
+                <a href="{{ route('dashboard')}}"
                     class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-tachometer-alt mr-3"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="#"
+                <a href="{{ route('manajemenSiswa') }}"
                     class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-user-graduate mr-3"></i>
                     <span>Manajemen Siswa</span>
                 </a>
-                <a href="#"
+                <a href="{{ route('manajemenGuru') }}"
                     class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-chalkboard-user mr-3"></i>
                     <span>Manajemen Guru</span>
@@ -195,7 +195,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $jadwal->mapel->guru->name ?? 'Guru Belum Diatur' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $jadwal->ruangan ?? '-' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <button onclick="window.showEditModal()"
+                                        <button onclick="showEditModal({{ json_encode($jadwal) }})"
                                             class="text-indigo-600 hover:text-indigo-900 mx-1">
                                             <i class="fa-solid fa-edit"></i>
                                         </button>
@@ -237,6 +237,8 @@
 
             <!-- Modal Body (Form) -->
             <form id="schedule-form" action="{{ route('storeJadwal', ['id_kelas' => $kelas->id_kelas]) }}" method="POST">
+                {{-- Input untuk method PUT (untuk edit) akan ditambahkan oleh JS --}}
+                <input type="hidden" name="_method" id="form-method" value="POST">
                 @csrf
                 <div class="mb-4">
                     <label for="hari" class="block text-sm font-medium text-gray-700">Hari</label>
@@ -253,14 +255,14 @@
                     </select>
                 </div>
                 <div class="mb-4">
-                    <label for="jamM" class="block text-sm font-medium text-gray-700">Jam Mulai</label>
-                    <input type="time" id="jamM" name="jam_mulai"
+                    <label for="jam_mulai" class="block text-sm font-medium text-gray-700">Jam Mulai</label>
+                    <input type="time" id="jam_mulai" name="jam_mulai"
                         class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                         placeholder="Contoh: 08:00-10:00" required>
                 </div>
                 <div class="mb-4">
-                    <label for="jamS" class="block text-sm font-medium text-gray-700">Jam Selesai</label>
-                    <input type="time" id="jamS" name="jam_selesai"
+                    <label for="jam_selesai" class="block text-sm font-medium text-gray-700">Jam Selesai</label>
+                    <input type="time" id="jam_selesai" name="jam_selesai"
                         class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                         placeholder="Contoh: 08:00-10:00" required>
                 </div>
@@ -269,7 +271,7 @@
                     <select id="mapel" name="id_mapel"
                         class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                         required>
-                        <option disabled value="">Pilih Mata Pelajaran</option>
+                        <option value="">Pilih Mata Pelajaran</option>
                         @forelse ($mapels ?? [] as $mapel)
                             <option value="{{ $mapel->id_mapel }}">{{ $mapel->nama_mapel }} ({{$mapel->guru->name}})</option>
                         @empty
@@ -327,6 +329,7 @@
         const scheduleModal = document.getElementById('schedule-modal');
         const deleteModal = document.getElementById('delete-modal');
         const deleteForm = document.getElementById('delete-form');
+        const scheduleForm = document.getElementById('schedule-form');
 
         const addScheduleButton = document.getElementById('add-schedule-button');
         const closeScheduleModal = document.getElementById('close-schedule-modal');
@@ -360,7 +363,15 @@
         overlay.addEventListener('click', toggleSidebar);
 
         addScheduleButton.addEventListener('click', () => {
+            // Reset form untuk mode "Tambah"
+            scheduleForm.reset();
+            scheduleForm.action = "{{ route('storeJadwal', ['id_kelas' => $kelas->id_kelas]) }}";
+            document.getElementById('form-method').value = 'POST';
             document.getElementById('modal-title').textContent = 'Tambah Jadwal Baru';
+            // Pastikan tidak ada method spoofing dari edit sebelumnya
+            if (scheduleForm.querySelector('input[name="_method"][value="PUT"]')) {
+                scheduleForm.querySelector('input[name="_method"][value="PUT"]').remove();
+            }
             showModal(scheduleModal);
         });
 
@@ -371,14 +382,28 @@
 
         // Global functions for buttons in the table
         // These are called from the onclick attribute in the HTML
-        window.showEditModal = () => {
+        window.showEditModal = (jadwal) => {
+            // Mengisi form dengan data jadwal yang ada
+            scheduleForm.reset(); // Reset dulu untuk membersihkan
             document.getElementById('modal-title').textContent = 'Edit Jadwal';
+            document.getElementById('hari').value = jadwal.hari;
+            document.getElementById('jam_mulai').value = jadwal.jam_mulai.substring(0, 5); // Format HH:MM
+            document.getElementById('jam_selesai').value = jadwal.jam_selesai.substring(0, 5); // Format HH:MM
+            document.getElementById('mapel').value = jadwal.id_mapel;
+            document.getElementById('ruangan').value = jadwal.ruangan;
+
+            // Mengubah action form ke route update
+            let updateUrl = "{{ route('updateJadwal', ':id') }}";
+            scheduleForm.action = updateUrl.replace(':id', jadwal.id_jadwal);
+            
+            // Menambahkan method spoofing untuk PUT
+            document.getElementById('form-method').value = 'PUT';
+
             showModal(scheduleModal);
         };
 
         // Mengubah fungsi showDeleteModal untuk menerima ID
         window.showDeleteModal = (jadwalId) => {
-            // Membuat URL yang benar menggunakan nama rute 'jadwal.destroy'
             let url = "{{ route('jadwal.destroy.single', ':id') }}";
             deleteForm.action = url.replace(':id', jadwalId); // Mengganti placeholder :id dengan ID jadwal
             showModal(deleteModal);

@@ -614,6 +614,41 @@ class AdminController extends Controller
         return redirect()->route('tambahJadwal', ['id_kelas' => $id_kelas])->with('success', 'Jadwal berhasil ditambahkan!');
     }
 
+    public function updateJadwal(Request $request, int $id_jadwal)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $request->validate([
+            'hari' => 'required|string|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
+            'jam_mulai' => 'required|date_format:H:i',
+            'jam_selesai' => 'required|date_format:H:i',
+            'id_mapel' => 'required|exists:mapels,id_mapel',
+            'ruangan' => 'required|string|nullable|string|max:100',
+        ], [
+            'hari.required' => 'Hari tidak boleh kosong.',
+            'jam_mulai.required' => 'Jam mulai tidak boleh kosong.',
+            'jam_selesai.required' => 'Jam selesai tidak boleh kosong.',
+            'id_mapel.required' => 'Mata pelajaran tidak boleh kosong.',
+            'ruangan.required' => 'Ruangan tidak boleh kosong.',
+        ]);
+
+        // Cari jadwal yang akan diupdate
+        $jadwal = Jadwal::where('id_jadwal', $id_jadwal)
+                      ->where('id_sekolah', $id_sekolah)
+                      ->firstOrFail();
+
+        // Update data jadwal
+        $jadwal->update([
+            'hari' => $request->hari,
+            'jam_mulai' => $request->jam_mulai,
+            'jam_selesai' => $request->jam_selesai,
+            'id_mapel' => $request->id_mapel,
+            'ruangan' => $request->ruangan,
+        ]);
+
+        // Redirect kembali dengan pesan sukses
+        return redirect()->route('tambahJadwal', ['id_kelas' => $jadwal->id_kelas])->with('success', 'Jadwal berhasil diperbarui!');
+    }
+
     public function manajTingkat()
     {
         $id_sekolah = request()->cookie('id_sekolah');

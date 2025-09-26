@@ -91,6 +91,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [AdminController::class, 'manajJadwal'])->name('manajemenJadwal');
             Route::get('/tambah-jadwal{id_kelas}', [AdminController::class, 'tambahJadwal'])->name('tambahJadwal');
             Route::post('/tambah-jadwal{id_kelas}', [AdminController::class, 'storeJadwal'])->name('storeJadwal');
+            Route::put('/update-jadwal/{id_jadwal}', [AdminController::class, 'updateJadwal'])->name('updateJadwal');
             // Rute untuk menghapus SEMUA jadwal berdasarkan ID KELAS
             Route::delete('/jadwal/kelas/{id_kelas}', [JadwalController::class, 'destroyByClass'])->name('jadwal.destroy.by_class');
             // Rute untuk menghapus SATU jadwal spesifik berdasarkan ID JADWAL

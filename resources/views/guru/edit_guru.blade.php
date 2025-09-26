@@ -50,28 +50,33 @@
                 </a>
             </div>
             <nav class="mt-6">
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="{{ route('manajemenAngkatan') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-layer-group w-6 h-6 mr-3"></i>
                     <span>Manajemen Angkatan</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
                     <span>Manajemen Siswa</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
+                <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
                     <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
                     <span>Manajemen Guru</span>
                 </a>
             </nav>
             <div class="absolute bottom-0 w-full p-6">
-                <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg">
-                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
-                    <span>Logout</span>
-                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <a href="{{ route('logout') }}"
+                       onclick="event.preventDefault(); this.closest('form').submit();"
+                       class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
+                        <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
+                        <span>Logout</span>
+                    </a>
+                </form>
             </div>
         </aside>
 
