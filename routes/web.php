@@ -171,6 +171,17 @@ Route::middleware('auth')->group(function () {
             Route::get('/lihat-materi/{namaFile}', [GuruController::class, 'lihatMateri'])->name('lihatMateri');
         });
 
+
+        Route::prefix('manajemen-pengumuman')->group(function () {
+            Route::get('/', [GuruController::class, 'manajPengumumanKelas'])->name('manajPengumuman');
+            Route::get('/manajemen-pengumuman-daftar/{id_kelas}/{id_mapel}', [GuruController::class, 'manajPengumumanDaftar'])->name('manajPengumumanDaftar');
+            Route::post('/manajemen-pengumuman-daftar/{id_kelas}/{id_mapel}', [GuruController::class, 'storePengumuman'])->name('storePengumumanDaftar');
+
+
+        });
+
+
+
             
         
     });
