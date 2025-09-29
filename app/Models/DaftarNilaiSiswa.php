@@ -18,6 +18,7 @@ class DaftarNilaiSiswa extends Model
         'tingkat',
         'semester',
         'nilai',
+        'nama_fileTugas',
     ];
     
     public function siswa()

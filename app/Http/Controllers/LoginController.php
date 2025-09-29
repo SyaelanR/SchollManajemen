@@ -114,6 +114,7 @@ class LoginController extends Controller
             $response->withCookie(cookie('angkatan', $user->id_angkatan, $cookieLifetime)); // Menggunakan id_angkatan sesuai migrasi
             $response->withCookie(cookie('id_sekolah', $user->id_sekolah, $cookieLifetime));
             $response->withCookie(cookie('id_user', $user->id, $cookieLifetime));
+            $response->withCookie(cookie('id_angkatan', $user->id_angkatan, $cookieLifetime));
             
 
 

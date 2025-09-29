@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_mapel')->nullable();
             $table->unsignedBigInteger('tingkat');
             $table->enum('semester', ['ganjil', 'genap']);
-            $table->date('tanggal');
+            $table->timestamp('deadline');
             $table->string('keterangan');
             $table->string('nama_file'); // + time(). menghasilkan namafile yang selalu unik
             $table->timestamps();  

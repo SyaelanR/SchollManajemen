@@ -84,18 +84,22 @@
                             <tr>
                                 <th class="p-3 font-semibold text-gray-600">Keterangan</th>
                                 <th class="p-3 font-semibold text-gray-600">Tanggal</th>
-                                <th class="p-3 font-semibold text-gray-600">File</th>
+                                <th class="p-3 font-semibold text-gray-600">Deadline</th>
+                                <th class="p-3 font-semibold text-gray-600 text-center">File</th>
                                 <th class="p-3 font-semibold text-gray-600 text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y">
-                        @forelse (($daftarTugas ?? []) as $nilai)
+                        @forelse (($daftarTugas ?? []) as $tugas)
                             <tr class="hover:bg-gray-50">
-                                <td class="p-3 font-medium text-gray-800">{{$nilai->keterangan}}</td>
-                                <td class="p-3 text-gray-600">{{$nilai->tanggal}}</td>
-                                <td class="p-3 text-gray-600">{{$nilai->nama_file}}</td>
+                                <td class="p-3 font-medium text-gray-800">{{$tugas->keterangan}}</td>
+                                <td class="p-3 text-gray-600">{{ \Carbon\Carbon::parse($tugas->created_at)->format('d M Y') }}</td>
+                                <td class="p-3 text-gray-600">{{ \Carbon\Carbon::parse($tugas->deadline)->format('d M Y H:i') }}</td>
                                 <td class="p-3 text-center">
-                                    <div class="flex items-center justify-center space-x-2">
+                                    <a href="{{ route('lihatSoalSiswa', [$tugas->nama_file])}}" class="text-indigo-600 hover:underline">Lihat File</a>
+                                </td>
+                                <td class="p-3 text-center">
+                                    <div class="flex items-center justify-center space-x-4">
                                         <a href="#" class="text-blue-500 hover:text-blue-700" title="Edit">
                                             <i class="fa-solid fa-edit"></i>
                                         </a>
@@ -114,7 +118,7 @@
                                 <td colspan="4" class="p-3 text-center text-gray-500">
                                     <div class="text-center py-12">
                                         <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
-                                        <p class="text-gray-600 font-semibold text-lg">Belum ada daftar nilai.</p>
+                                        <p class="text-gray-600 font-semibold text-lg">Belum ada daftar tugas.</p>
                                     </div>
                                 </td>
                             </tr>
@@ -141,14 +145,21 @@
             </div>
             <div class="mb-4">
                 <label for="task-type-select" class="block text-gray-700 font-semibold mb-2">File</label>
-                <input type="file" id="task-file" name="file" class="w-full px-4 py-2" >
+                <input type="file" id="task-file" name="file" class="w-full px-4 py-2" accept="application/pdf">
             </div>
             <div class="mb-4">
-                <label for="task-due-date" class="block text-gray-700 font-semibold mb-2">Tanggal</label>
-                <input type="date" id="task-due-date" name="tanggal" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                <label for="task-due-date" class="block text-gray-700 font-semibold mb-2">Deadline</label>
+                <input 
+                    type="datetime-local" 
+                    id="task-due-date" 
+                    name="deadline" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" 
+                    required
+                >
             </div>
+
             <div class="flex justify-end">
-                <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition duration-300">Simpan Nilai</button>
+                <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition duration-300">Simpan Tugas</button>
             </div>
         </form>
     </div>
@@ -171,11 +182,12 @@ overlay.addEventListener('click', toggleSidebar);
 // Modal tambah tugas
 addTaskBtn.addEventListener('click',()=>{taskModal.classList.remove('hidden');});
 closeTaskModalBtn.addEventListener('click',()=>{taskModal.classList.add('hidden');});
-taskForm.addEventListener('submit',(e)=>{
-    e.preventDefault();
-    taskModal.classList.add('hidden');
-    taskForm.reset();
-});
+// Hapus event listener submit form agar form bisa submit ke server
+// taskForm.addEventListener('submit',(e)=>{
+//     e.preventDefault();
+//     taskModal.classList.add('hidden');
+//     taskForm.reset();
+// });
 </script>
 </body>
 </html>
