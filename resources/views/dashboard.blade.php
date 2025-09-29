@@ -182,8 +182,6 @@
                     </div>
                     <div class="bg-teal-100 text-teal-600 p-4 rounded-full">
                         <i class="fa-solid fa-chalkboard-user text-2xl"></i>
-                        <h2 class="text-2xl font-bold">{{$username ?? null}}</h2>
-                        <p class="mt-1">{{$time ?? null}}</p>
                     </div>
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow-md flex items-center justify-between">
@@ -231,32 +229,67 @@
             @endcan
 
             @can('view-guru')
-            {{-- GURU --}}
-            <div class="grid grid-cols-1 gap-8">
-                <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Jadwal Mengajar Hari Ini</h3>
-                    <div class="space-y-4">
-                        @forelse ($jadwalHariIni as $jadwal)
-                        <div class="flex items-center bg-gray-50 p-4 rounded-lg">
-                            <div class="w-20 text-center mr-4">
-                                <p class="font-bold text-green-600 text-lg">{{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }}</p>
-                                <p class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i') }}</p>
-                            </div>
-                            <div class="border-l-4 border-green-500 pl-4 flex-1">
-                                <p class="font-semibold text-gray-800">{{$jadwal->mapel->nama_mapel}}</p>
-                                <p class="text-sm text-gray-600"><i class="fa-solid fa-users mr-2"></i>{{$jadwal->kelas->nama_kelas}}&nbsp;&nbsp;&nbsp;<i class="fa-solid fa-house mr-1"></i> {{$jadwal->ruangan}}</p>
-                            </div>
+                {{-- GURU --}}
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow-md flex items-center space-x-4">
+                        <div class="bg-blue-100 p-3 rounded-full">
+                            <i class="fa-solid fa-calendar-day text-2xl text-blue-600"></i>
                         </div>
-                         @empty
-                        <div class="text-center text-gray-500 py-10">
-                            <i class="fa-solid fa-calendar-xmark text-4xl mb-4"></i>
-                            <p class="text-lg">Tidak ada jadwal mengajar hari ini.</p>
+                        <div>
+                            <p class="text-gray-500">Jadwal Hari Ini</p>
+                            <p class="text-2xl font-bold text-gray-800">{{$jumlahSesi}} Sesi</p>
                         </div>
-                        @endforelse
                     </div>
                 </div>
-            </div>
-            @endcan
+
+                <!-- Main Grid Layout -->
+                <div class="grid grid-cols-1 gap-8">
+                    <!-- Left Column: Schedule -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Jadwal Mengajar Hari Ini</h3>
+                        <div class="space-y-4">
+                            <!-- Schedule Item -->
+                            @forelse ($jadwalHariIni as $jadwal)
+                            <div class="flex items-center bg-gray-50 p-4 rounded-lg">
+                                <div class="w-20 text-center mr-4">
+                                    <p class="font-bold text-green-600 text-lg">{{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }}</p>
+                                    <p class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i') }}</p>
+                                </div>
+                                <div class="border-l-4 border-green-500 pl-4 flex-1">
+                                    <p class="font-semibold text-gray-800">{{$jadwal->mapel->nama_mapel}}</p>
+                                    <p class="text-sm text-gray-600"><i class="fa-solid fa-users mr-2"></i>{{$jadwal->kelas->nama_kelas}}&nbsp;&nbsp;&nbsp;<i class="fa-solid fa-house mr-1"></i> {{$jadwal->ruangan}}</p>
+                                </div>
+                            </div>
+                             @empty
+                            <div class="text-center text-gray-500 py-10">
+                                <i class="fa-solid fa-calendar-xmark text-4xl mb-4"></i>
+                                <p class="text-lg">Tidak ada jadwal mengajar hari ini.</p>
+                            </div>
+                            @endforelse
+                        </div>
+                    </div>
+
+                    <!-- Shortcuts -->
+                     <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Pintasan</h3>
+                        <div class="space-y-3">
+                           <a href="{{ route('lihatjadwalG') }}" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-300">
+                               <i class="fa-solid fa-calendar-alt text-xl text-indigo-600 mr-4"></i>
+                               <span class="font-medium text-gray-700">Lihat Semua Jadwal</span>
+                           </a>
+                           <a href="#" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-300">
+                               <i class="fa-solid fa-pen-to-square text-xl text-green-600 mr-4"></i>
+                               <span class="font-medium text-gray-700">Input Nilai Siswa</span>
+                           </a>
+                           <a href="#" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-300">
+                               <i class="fa-solid fa-calendar-check text-xl text-yellow-600 mr-4"></i>
+                               <span class="font-medium text-gray-700">Input Absensi Kelas</span>
+                           </a>
+                        </div>
+                    </div>
+                </div>
+                @endcan
 
             @can('view-siswa')
             {{-- SISWA --}}

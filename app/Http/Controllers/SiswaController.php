@@ -60,6 +60,9 @@ class SiswaController extends Controller
                         ->where('semester', $infoAngkatan->semester)
                         ->where('id_mapel', $idMapel)
                         ->with(['daftarNilai.tugas.mapel'])
+                        ->whereHas('daftarNilai', function ($query) {
+                            $query->where('sifat', 'online');
+                        })
                         ->get();
 
         return view('siswa.lihat_daftar_tugas', ['daftarTugas' => $daftarTugas, 'infoJadwal' => $infoJadwal]);

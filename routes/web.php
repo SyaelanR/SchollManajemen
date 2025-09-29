@@ -157,7 +157,7 @@ Route::middleware('auth')->group(function () {
 
 
         Route::prefix('manajemen-tugas')->group(function () {
-            Route::get('/', [GuruController::class, 'manajTugasKelas'])->name('manajMateri');
+            Route::get('/', [GuruController::class, 'manajTugasKelas'])->name('manajTugas');
             Route::get('/input-tugas/{id_kelas}/{id_mapel}', [GuruController::class, 'inputTugas'])->name('inputTugas');
             Route::post('/input-tugas/{id_kelas}/{id_mapel}', [GuruController::class, 'storeTugas'])->name('storeTugas');
 
