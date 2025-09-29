@@ -182,6 +182,8 @@
                     </div>
                     <div class="bg-teal-100 text-teal-600 p-4 rounded-full">
                         <i class="fa-solid fa-chalkboard-user text-2xl"></i>
+                        <h2 class="text-2xl font-bold">{{$username ?? null}}</h2>
+                        <p class="mt-1">{{$time ?? null}}</p>
                     </div>
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow-md flex items-center justify-between">

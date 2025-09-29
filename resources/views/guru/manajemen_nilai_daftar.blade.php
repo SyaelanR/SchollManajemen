@@ -140,6 +140,17 @@
                                 <td class="p-3 text-center">
                                      <a href="{{route('inputNilai',[$nilai->id_kelas, $nilai->id_mapel, $nilai->id_daftar_nilai])}}" class="bg-indigo-100 text-indigo-700 font-semibold py-2 px-4 rounded-lg hover:bg-indigo-200 transition duration-300">Masuk</a>
                                 </td>
+                                <td class="p-3 text-gray-600">{{$nilai->tanggal}}</td>
+                                <td class="p-3 text-gray-600">{{$nilai->sifat}}</td>
+                                @if ($nilai->sifat == 'online')
+                                    <td class="p-3 text-center">
+                                        <a href="{{route('inputNilaiOnline',[$nilai->id_kelas, $nilai->id_mapel, $nilai->id_daftar_nilai])}}" class="text-indigo-600 hover:text-indigo-800 font-semibold">Masuk</a>
+                                    </td>
+                                @elseif ($nilai->sifat == 'offline')
+                                    <td class="p-3 text-center">
+                                        <a href="{{route('inputNilai',[$nilai->id_kelas, $nilai->id_mapel, $nilai->id_daftar_nilai])}}" class="text-indigo-600 hover:text-indigo-800 font-semibold">Masuk</a>
+                                    </td>
+                                @endif
                             </tr>
                         @empty
                             <tr>

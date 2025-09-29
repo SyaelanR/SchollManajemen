@@ -13,12 +13,12 @@ use App\Models\Mapel;
 use App\Models\Tingkat;
 use App\Models\Teacher; // Jika ini model terpisah untuk guru, mungkin tidak diperlukan jika semua dihandle User
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
@@ -289,10 +289,11 @@ class AdminController extends Controller
         ]);
 
         $id_kelas = $request->input('id_kelas');
+        $id_kelass = Kelas::where('id_kelas', $id_kelas)->where('id_sekolah', $request->cookie('id_sekolah'))->firstOrFail();
         $siswa_ids = $request->input('siswa_ids');
 
         // 2. Update id_kelas untuk semua siswa yang dipilih
-        User::whereIn('id', $siswa_ids)->update(['id_kelas' => $id_kelas]);
+        User::whereIn('id', $siswa_ids)->update(['id_kelas' => $id_kelass->id_kelas, 'id_angkatan' => $id_kelass->id_angkatan]);
 
         // 3. Redirect kembali ke halaman sebelumnya dengan pesan sukses
         // return back()->with('success', 'Siswa berhasil ditambahkan ke kelas!');
@@ -545,8 +546,8 @@ class AdminController extends Controller
     public function tambahJadwal(Request $request ,int $id_kelas){
         $id_sekolah = $request->cookie('id_sekolah');
 
-        // Menggunakan `firstOrFail` untuk menangani kasus jika kelas tidak ditemukan
-        // dan `with('angkatan')` untuk eager loading, mengurangi jumlah query.
+        // Menggunakan firstOrFail untuk menangani kasus jika kelas tidak ditemukan
+        // dan with('angkatan') untuk eager loading, mengurangi jumlah query.
         $kelas = Kelas::with('angkatan')
                       ->where('id_kelas', $id_kelas)
                       ->where('id_sekolah', $id_sekolah)
@@ -834,8 +835,9 @@ class AdminController extends Controller
         $kelases = Kelas::where('id_sekolah', $id_sekolah)->get(); // Ambil semua data kelas untuk dropdown
         return view('admin.edit-siswa', compact('siswa', 'kelases')); // Sesuaikan path view Anda
     }
+    
 
-           public function editKelas(Request $request, $id_kelas) // Should be edit() for KelasController
+    public function editKelas(Request $request, $id_kelas) // Should be edit() for KelasController
     {
         $id_sekolah = $request->cookie('id_sekolah');
         // Temukan kelas spesifik dari database berdasarkan ID dan id_sekolah
@@ -966,6 +968,7 @@ class AdminController extends Controller
             'tanggal_lahir' => $request->tanggal_lahir,
             'alamat' => $request->alamat,
             'no_telp' => $request->no_telp,
+            'id_angkatan' => Kelas::where('id_kelas', $request->id_kelas)->value('id_angkatan'),
         ];
 
         // Hanya update password jika diisi
