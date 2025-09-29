@@ -12,6 +12,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 for notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 8px; }
@@ -81,14 +83,9 @@
 
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
-            <!-- ADDED: Success Notification (from session) -->
+            <!-- Session Messages Handling -->
             @if(session('success'))
-            <div id="session-success-notification" class="fixed top-24 right-8 bg-green-500 text-white py-3 px-6 rounded-lg shadow-xl z-[100] transition-opacity duration-500 ease-in-out">
-                 <div class="flex items-center">
-                    <i class="fa-solid fa-check-circle mr-3"></i>
-                    <p class="font-semibold">{{ session('success') }}</p>
-                </div>
-            </div>
+                <div id="session-success" data-message="{{ session('success') }}" class="hidden"></div>
             @endif
 
             <!-- UPDATED HEADER -->
@@ -315,18 +312,18 @@
                 });
             }
 
-            // --- ADDED: Session Notification Autohide Logic ---
-            const sessionNotification = document.getElementById('session-success-notification');
-            if (sessionNotification) {
-                setTimeout(() => {
-                    sessionNotification.style.opacity = '0';
-                    setTimeout(() => {
-                        sessionNotification.remove();
-                    }, 600); // Remove element after fade-out
-                }, 3500); // Notification is visible for 3.5 seconds
+            // --- SweetAlert2 Notifications ---
+            const successMessage = document.getElementById('session-success');
+            if (successMessage) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: successMessage.dataset.message,
+                    timer: 2500,
+                    showConfirmButton: false
+                });
             }
         });
     </script>
-    @livewireScripts
 </body>
 </html>
