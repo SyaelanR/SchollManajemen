@@ -134,12 +134,6 @@
                                     @else
                                         <span class="bg-gray-100 text-gray-800 font-medium py-1 px-3 rounded-full text-xs capitalize">{{$nilai->tipe_nilai}}</span>
                                     @endif
-                                </td>
-                                <td class="p-3 text-gray-600">{{ \Carbon\Carbon::parse($nilai->tanggal)->format('d F Y') }}</td>
-                                <td class="p-3 text-gray-600 capitalize">{{$nilai->sifat}}</td>
-                                <td class="p-3 text-center">
-                                     <a href="{{route('inputNilai',[$nilai->id_kelas, $nilai->id_mapel, $nilai->id_daftar_nilai])}}" class="bg-indigo-100 text-indigo-700 font-semibold py-2 px-4 rounded-lg hover:bg-indigo-200 transition duration-300">Masuk</a>
-                                </td>
                                 <td class="p-3 text-gray-600">{{$nilai->tanggal}}</td>
                                 <td class="p-3 text-gray-600">{{$nilai->sifat}}</td>
                                 @if ($nilai->sifat == 'online')
@@ -196,13 +190,7 @@
                         <option value="Hafalan">Hafalan</option>
                     </select>
                 </div>
-                 <div>
-                    <label for="sifat" class="block text-gray-700 font-semibold mb-2">Sifat</label>
-                    <select id="sifat" name="sifat" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                        <option value="offline">Offline</option>
-                        <option value="online">Online</option>
-                    </select>
-                </div>
+                
                 <div>
                     <label for="tanggal" class="block text-gray-700 font-semibold mb-2">Tanggal</label>
                     <input type="date" id="tanggal" name="tanggal" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
@@ -247,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const errors = JSON.parse(validationErrors.dataset.errors);
         let errorText = '<ul class="list-disc list-inside text-left">';
         errors.forEach(error => {
-            errorText += `<li>${error}</li>`;
+            errorText += <li>${error}</li>;
         });
         errorText += '</ul>';
         
@@ -279,4 +267,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 </body>
-</html>
+</html> 

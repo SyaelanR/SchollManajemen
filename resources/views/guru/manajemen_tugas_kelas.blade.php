@@ -58,7 +58,7 @@
             </a>
             <a href="#" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
                 <i class="fa-solid fa-list-check mr-3"></i>
-                <span>Input Absensi</span>
+                <span>Input Tugas</span>
             </a>
         </nav>
         <div class="absolute bottom-0 w-full p-6">
@@ -81,7 +81,7 @@
             <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
                 <i class="fa-solid fa-bars text-2xl"></i>
             </button>
-            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Pilih Kelas Absensi</h1>
+            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Pilih Kelas</h1>
             <div class="flex items-center space-x-4">
                  <button class="text-gray-500 hover:text-gray-700">
                     <i class="fa-solid fa-bell"></i>
@@ -98,12 +98,12 @@
              <!-- Welcome Header -->
             <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
                 <h2 class="text-3xl font-bold mb-2">Selamat Datang, Guru</h2>
-                <p class="text-indigo-200">Silakan pilih kelas untuk melanjutkan proses input absensi.</p>
+                <p class="text-indigo-200">Silakan pilih kelas untuk melanjutkan proses input Tugas.</p>
             </header>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 @forelse ($daftarkelasYangDiampu ?? [] as $kelas)
-                    <a href="{{ route('manajAbsensiDaftar', [$kelas->id_kelas, $kelas->mapel->id_mapel]) }}" class="block bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transform transition-all duration-300 cursor-pointer">
+                    <a href="{{ route('inputTugas', [$kelas->id_kelas, $kelas->mapel->id_mapel]) }}" class="block bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transform transition-all duration-300 cursor-pointer">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-xl font-bold text-gray-800">Kelas {{ $kelas->kelas->nama_kelas }}</h3>
                             <div class="bg-indigo-100 text-indigo-600 p-3 rounded-full">

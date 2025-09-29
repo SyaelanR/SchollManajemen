@@ -160,6 +160,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [GuruController::class, 'manajTugasKelas'])->name('manajMateri');
             Route::get('/input-tugas/{id_kelas}/{id_mapel}', [GuruController::class, 'inputTugas'])->name('inputTugas');
             Route::post('/input-tugas/{id_kelas}/{id_mapel}', [GuruController::class, 'storeTugas'])->name('storeTugas');
+            Route::put('/update/{id}', [GuruController::class, 'updateTugas'])->name('updateTugas');
+            Route::delete('/delete/{id}', [GuruController::class, 'destroyTugas'])->name('destroyTugas');
 
         });
 
