@@ -49,22 +49,22 @@
             <div class="border-b border-gray-200"></div>
         </div>
         <nav class="mt-6">
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 hover:font-semibold rounded-lg mx-3 transition-colors duration-200">
+            <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 hover:font-semibold rounded-lg mx-3 transition-colors duration-200">
                 <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i> <span>Dashboard</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 hover:font-semibold rounded-lg mx-3 transition-colors duration-200">
+            <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 hover:font-semibold rounded-lg mx-3 transition-colors duration-200">
                 <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i> <span>Manajemen Siswa</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 hover:font-semibold rounded-lg mx-3 transition-colors duration-200">
+            <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 hover:font-semibold rounded-lg mx-3 transition-colors duration-200">
                 <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i> <span>Manajemen Guru</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 hover:font-semibold rounded-lg mx-3 transition-colors duration-200">
+            <a href="{{ route('manajemenJadwal') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 hover:font-semibold rounded-lg mx-3 transition-colors duration-200">
                 <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i> <span>Jadwal Pelajaran</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 hover:font-semibold rounded-lg mx-3 transition-colors duration-200">
+            <a href="{{ route('mataPelajaran') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 hover:font-semibold rounded-lg mx-3 transition-colors duration-200">
                 <i class="fa-solid fa-book w-6 h-6 mr-3"></i> <span>Mata Pelajaran</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-indigo-600 bg-indigo-100 font-semibold rounded-lg mx-3 transition-colors duration-200">
+            <a href="{{ route('absensiSiswa') }}" class="flex items-center px-6 py-3 text-indigo-600 bg-indigo-100 font-semibold rounded-lg mx-3 transition-colors duration-200">
                 <i class="fa-solid fa-user-check w-6 h-6 mr-3"></i> <span>Absensi Siswa</span>
             </a>
             <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 hover:font-semibold rounded-lg mx-3 transition-colors duration-200">

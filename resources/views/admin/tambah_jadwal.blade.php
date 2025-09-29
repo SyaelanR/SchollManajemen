@@ -13,6 +13,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- SweetAlert2 for notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Custom styles */
         body {
@@ -61,17 +63,17 @@
                 </a>
             </div>
             <nav class="mt-6">
-                <a href="#"
+                <a href="{{ route('dashboard')}}"
                     class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-tachometer-alt mr-3"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="#"
+                <a href="{{ route('manajemenSiswa') }}"
                     class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-user-graduate mr-3"></i>
                     <span>Manajemen Siswa</span>
                 </a>
-                <a href="#"
+                <a href="{{ route('manajemenGuru') }}"
                     class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-chalkboard-user mr-3"></i>
                     <span>Manajemen Guru</span>
@@ -126,14 +128,9 @@
 
             <!-- Page Content -->
             <main class="p-6 md:p-8 flex-1">
-                {{-- Notifikasi Sukses --}}
+                <!-- Session Messages Handling -->
                 @if (session('success'))
-                    <div id="success-alert" class="fixed top-24 right-5 bg-green-500 text-white py-3 px-5 rounded-xl text-sm shadow-lg transition-transform transform translate-x-full" role="alert">
-                        <div class="flex items-center">
-                            <i class="fa-solid fa-check-circle mr-2"></i>
-                            <span>{{ session('success') }}</span>
-                        </div>
-                    </div>
+                    <div id="session-success" data-message="{{ session('success') }}" class="hidden"></div>
                 @endif
 
                 <!-- Main Title Block -->
@@ -143,11 +140,11 @@
                         <h2 class="text-3xl font-bold mb-2">Jadwal Pelajaran Kelas {{$kelas->nama_kelas}}</h2>
                         <p class="text-indigo-200">Lihat dan kelola jadwal pelajaran untuk setiap kelas.</p>
                     </div>
-                    <button onclick="window.history.back()"
+                    <a href="{{ route('manajemenJadwal') }}"
                         class="flex items-center justify-center space-x-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition duration-200 mt-4 md:mt-0">
                         <i class="fa-solid fa-arrow-left text-xl"></i>
                         <span>Kembali</span>
-                    </button>
+                    </a>
                 </div>
 
                 <!-- Schedule Table Container -->
@@ -195,7 +192,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $jadwal->mapel->guru->name ?? 'Guru Belum Diatur' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $jadwal->ruangan ?? '-' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <button onclick="window.showEditModal()"
+                                        <button onclick="showEditModal({{ json_encode($jadwal) }})"
                                             class="text-indigo-600 hover:text-indigo-900 mx-1">
                                             <i class="fa-solid fa-edit"></i>
                                         </button>
@@ -237,6 +234,8 @@
 
             <!-- Modal Body (Form) -->
             <form id="schedule-form" action="{{ route('storeJadwal', ['id_kelas' => $kelas->id_kelas]) }}" method="POST">
+                {{-- Input untuk method PUT (untuk edit) akan ditambahkan oleh JS --}}
+                <input type="hidden" name="_method" id="form-method" value="POST">
                 @csrf
                 <div class="mb-4">
                     <label for="hari" class="block text-sm font-medium text-gray-700">Hari</label>
@@ -253,14 +252,14 @@
                     </select>
                 </div>
                 <div class="mb-4">
-                    <label for="jamM" class="block text-sm font-medium text-gray-700">Jam Mulai</label>
-                    <input type="time" id="jamM" name="jam_mulai"
+                    <label for="jam_mulai" class="block text-sm font-medium text-gray-700">Jam Mulai</label>
+                    <input type="time" id="jam_mulai" name="jam_mulai"
                         class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                         placeholder="Contoh: 08:00-10:00" required>
                 </div>
                 <div class="mb-4">
-                    <label for="jamS" class="block text-sm font-medium text-gray-700">Jam Selesai</label>
-                    <input type="time" id="jamS" name="jam_selesai"
+                    <label for="jam_selesai" class="block text-sm font-medium text-gray-700">Jam Selesai</label>
+                    <input type="time" id="jam_selesai" name="jam_selesai"
                         class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                         placeholder="Contoh: 08:00-10:00" required>
                 </div>
@@ -269,7 +268,7 @@
                     <select id="mapel" name="id_mapel"
                         class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                         required>
-                        <option disabled value="">Pilih Mata Pelajaran</option>
+                        <option value="">Pilih Mata Pelajaran</option>
                         @forelse ($mapels ?? [] as $mapel)
                             <option value="{{ $mapel->id_mapel }}">{{ $mapel->nama_mapel }} ({{$mapel->guru->name}})</option>
                         @empty
@@ -327,6 +326,7 @@
         const scheduleModal = document.getElementById('schedule-modal');
         const deleteModal = document.getElementById('delete-modal');
         const deleteForm = document.getElementById('delete-form');
+        const scheduleForm = document.getElementById('schedule-form');
 
         const addScheduleButton = document.getElementById('add-schedule-button');
         const closeScheduleModal = document.getElementById('close-schedule-modal');
@@ -360,7 +360,15 @@
         overlay.addEventListener('click', toggleSidebar);
 
         addScheduleButton.addEventListener('click', () => {
+            // Reset form untuk mode "Tambah"
+            scheduleForm.reset();
+            scheduleForm.action = "{{ route('storeJadwal', ['id_kelas' => $kelas->id_kelas]) }}";
+            document.getElementById('form-method').value = 'POST';
             document.getElementById('modal-title').textContent = 'Tambah Jadwal Baru';
+            // Pastikan tidak ada method spoofing dari edit sebelumnya
+            if (scheduleForm.querySelector('input[name="_method"][value="PUT"]')) {
+                scheduleForm.querySelector('input[name="_method"][value="PUT"]').remove();
+            }
             showModal(scheduleModal);
         });
 
@@ -371,32 +379,44 @@
 
         // Global functions for buttons in the table
         // These are called from the onclick attribute in the HTML
-        window.showEditModal = () => {
+        window.showEditModal = (jadwal) => {
+            // Mengisi form dengan data jadwal yang ada
+            scheduleForm.reset(); // Reset dulu untuk membersihkan
             document.getElementById('modal-title').textContent = 'Edit Jadwal';
+            document.getElementById('hari').value = jadwal.hari;
+            document.getElementById('jam_mulai').value = jadwal.jam_mulai.substring(0, 5); // Format HH:MM
+            document.getElementById('jam_selesai').value = jadwal.jam_selesai.substring(0, 5); // Format HH:MM
+            document.getElementById('mapel').value = jadwal.id_mapel;
+            document.getElementById('ruangan').value = jadwal.ruangan;
+
+            // Mengubah action form ke route update
+            let updateUrl = "{{ route('updateJadwal', ':id') }}";
+            scheduleForm.action = updateUrl.replace(':id', jadwal.id_jadwal);
+            
+            // Menambahkan method spoofing untuk PUT
+            document.getElementById('form-method').value = 'PUT';
+
             showModal(scheduleModal);
         };
 
         // Mengubah fungsi showDeleteModal untuk menerima ID
         window.showDeleteModal = (jadwalId) => {
-            // Membuat URL yang benar menggunakan nama rute 'jadwal.destroy'
             let url = "{{ route('jadwal.destroy.single', ':id') }}";
             deleteForm.action = url.replace(':id', jadwalId); // Mengganti placeholder :id dengan ID jadwal
             showModal(deleteModal);
         };
 
-        // --- Notifikasi Sukses ---
+        // --- SweetAlert2 Notifications ---
         document.addEventListener('DOMContentLoaded', function() {
-            const successAlert = document.getElementById('success-alert');
-            if (successAlert) {
-                // Tampilkan notifikasi
-                setTimeout(() => {
-                    successAlert.classList.remove('translate-x-full');
-                }, 100);
-
-                // Sembunyikan notifikasi setelah 3 detik
-                setTimeout(() => {
-                    successAlert.classList.add('translate-x-full');
-                }, 3100); // 3000ms (3 detik) + 100ms untuk animasi masuk
+            const successMessage = document.getElementById('session-success');
+            if (successMessage) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: successMessage.dataset.message,
+                    timer: 2500,
+                    showConfirmButton: false
+                });
             }
         });
     </script>

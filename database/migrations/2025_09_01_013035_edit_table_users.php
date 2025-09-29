@@ -52,15 +52,30 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['id_kelas']); // Pastikan foreign key dihapus dulu
+            // Drop foreign keys first by their column names for reliability
+            $table->dropForeign(['id_sekolah']);
+            $table->dropForeign(['id_angkatan']);
+            $table->dropForeign(['id_kelas']);
+
+            // Drop all columns that were added in the up() method
             $table->dropColumn([
                 'nisn_nik',
-                'mapel',
+                'alamat',
                 'role',
                 'id_kelas',
-                'angkatan',
+                'id_angkatan',
                 'jenis_kelamin',
-                'username'
+                'username',
+                'id_sekolah',
+                'no_telp',
+                'tempat_lahir',
+                'tanggal_lahir',
+                'usia',
+                'tanggal_masuk',
+                'tanggal_lulus',
+                'nama_orang_tua',
+                'gaji_orang_tua',
+                'jumlah_sodara',
             ]);
         });
     }

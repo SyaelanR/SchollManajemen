@@ -216,6 +216,34 @@ class GuruController extends Controller
         return back()->with('success', 'Nilai siswa berhasil disimpan!');
     }
 
+    /**
+     * Update nilai siswa yang sudah ada.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id_daftar_nilai_siswa
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function updateNilaiSiswa(Request $request, $id_daftar_nilai_siswa)
+    {
+        // 1. Validasi input
+        $validated = $request->validate([
+            'nilai' => 'required|numeric|min:0|max:100',
+        ]);
+
+        // 2. Cari data nilai siswa berdasarkan ID
+        $nilaiSiswa = DaftarNilaiSiswa::find($id_daftar_nilai_siswa);
+
+        // 3. Jika data tidak ditemukan, kembali dengan pesan error
+        if (!$nilaiSiswa) {
+            return redirect()->back()->with('error', 'Data nilai siswa tidak ditemukan.');
+        }
+
+        // 4. Update nilai dan simpan
+        $nilaiSiswa->update($validated);
+
+        // 5. Redirect kembali dengan pesan sukses
+        return redirect()->back()->with('success', 'Nilai siswa berhasil diperbarui!');
+    }
 
 
     public function manajNilaiDaftar(Request $request, $id_kelas, $id_mapel) 
@@ -472,7 +500,7 @@ class GuruController extends Controller
                     ->with('siswa')->get();
 
         // return view('guru.input_absensi', ['daftarSiswa' => $daftarSiswa, 'infoKelas' => $infoKelas, 'infoMapel' => $infoMapel, 'infoDaftarAbsensi' => $infoDaftarAbsensi]);
-        return view('guru.input_absensi', ['daftarSiswa' => $daftarSiswa, 'infoKelas' => $infoKelas]);
+        return view('guru.input_absensi', ['daftarSiswa' => $daftarSiswa, 'infoKelas' => $infoKelas, 'infoMapel' => $infoMapel]);
     }
 
     public function storeAbsensiSiswa (Request $request)
@@ -493,6 +521,35 @@ class GuruController extends Controller
 
         // 3. Kembali ke halaman sebelumnya dengan pesan sukses
         return back()->with('success', 'Absensi siswa berhasil disimpan!');
+    }
+
+    /**
+     * Update status absensi siswa yang sudah ada.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id_daftar_absensi_siswa
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function updateAbsensiSiswa(Request $request, $id_daftar_absensi_siswa)
+    {
+        // 1. Validasi input
+        $validated = $request->validate([
+            'status' => 'required|string|in:Hadir,Izin,Sakit,Alpha',
+        ]);
+
+        // 2. Cari data absensi siswa berdasarkan ID
+        $absensiSiswa = DaftarAbsensiSiswa::find($id_daftar_absensi_siswa);
+
+        // 3. Jika data tidak ditemukan, kembali dengan pesan error
+        if (!$absensiSiswa) {
+            return redirect()->back()->with('error', 'Data absensi siswa tidak ditemukan.');
+        }
+
+        // 4. Update status dan simpan
+        $absensiSiswa->update($validated);
+
+        // 5. Redirect kembali dengan pesan sukses
+        return redirect()->back()->with('success', 'Status absensi berhasil diperbarui!');
     }
 
     public function manajTugasKelas (Request $request)

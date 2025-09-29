@@ -18,7 +18,6 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
@@ -261,26 +260,20 @@ class AdminController extends Controller
 
 
 
-
-    public function lihatKelas(Request $request)
+    // PERBAIKAN: Menerima $id_kelas langsung dari parameter route
+    public function lihatKelas(Request $request, $id_kelas)
     {
         $id_sekolah = $request->cookie('id_sekolah');
-        $id_kelas = $request->input('id_kelas');
-        // dd($id_kelas);
+        
         $infoKelas = Kelas::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->with('angkatan')->first();
         $daftarSiswa = User::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->get();
         $daftarSiswaBelumPunyaKelas = User::where('id_kelas', null)->where('id_sekolah', $id_sekolah)->where('role', 'siswa')->get();
         $jumlahSiswa = $daftarSiswa->count();
-        // $angkatan = Angkatan::where('id', $kelas->id_angkatan)->first();
+        
         return view('admin.lihat_kelas', ['id_kelas' => $id_kelas,'infoKelas' => $infoKelas, 'daftarSiswa' => $daftarSiswa, 'daftarSiswaBelumPunyaKelas' => $daftarSiswaBelumPunyaKelas, 'jumlahSiswa' => $jumlahSiswa]);
     }
 
     
-
-    public function lihatKelasD()
-    {
-        return view('admin.lihat_kelas');
-    }
 
     public function tambahSiswaKeKelas(Request $request)
     {
@@ -569,7 +562,7 @@ class AdminController extends Controller
 
         // Mengambil data jadwal yang sudah ada untuk kelas ini.
         // Menggunakan nested eager loading 'mapel.guru' untuk mendapatkan nama mapel dan nama guru.
-        $jadwals = Jadwal::with('mapel') // Memuat relasi mapel, dan relasi guru di dalam mapel
+        $jadwals = Jadwal::with('mapel.guru') // Memuat relasi mapel, dan relasi guru di dalam mapel
                         ->where('id_kelas', $id_kelas)
                         ->where('id_sekolah', $id_sekolah)
                         ->where('semester', $semesterAktif) // Hanya jadwal untuk semester aktif
@@ -621,9 +614,46 @@ class AdminController extends Controller
         return redirect()->route('tambahJadwal', ['id_kelas' => $id_kelas])->with('success', 'Jadwal berhasil ditambahkan!');
     }
 
+    public function updateJadwal(Request $request, int $id_jadwal)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $request->validate([
+            'hari' => 'required|string|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
+            'jam_mulai' => 'required|date_format:H:i',
+            'jam_selesai' => 'required|date_format:H:i',
+            'id_mapel' => 'required|exists:mapels,id_mapel',
+            'ruangan' => 'required|string|nullable|string|max:100',
+        ], [
+            'hari.required' => 'Hari tidak boleh kosong.',
+            'jam_mulai.required' => 'Jam mulai tidak boleh kosong.',
+            'jam_selesai.required' => 'Jam selesai tidak boleh kosong.',
+            'id_mapel.required' => 'Mata pelajaran tidak boleh kosong.',
+            'ruangan.required' => 'Ruangan tidak boleh kosong.',
+        ]);
+
+        // Cari jadwal yang akan diupdate
+        $jadwal = Jadwal::where('id_jadwal', $id_jadwal)
+                      ->where('id_sekolah', $id_sekolah)
+                      ->firstOrFail();
+
+        // Update data jadwal
+        $jadwal->update([
+            'hari' => $request->hari,
+            'jam_mulai' => $request->jam_mulai,
+            'jam_selesai' => $request->jam_selesai,
+            'id_mapel' => $request->id_mapel,
+            'ruangan' => $request->ruangan,
+        ]);
+
+        // Redirect kembali dengan pesan sukses
+        return redirect()->route('tambahJadwal', ['id_kelas' => $jadwal->id_kelas])->with('success', 'Jadwal berhasil diperbarui!');
+    }
+
     public function manajTingkat()
     {
-        return view('admin.manajemen_tingkat');
+        $id_sekolah = request()->cookie('id_sekolah');
+        $tingkats = Tingkat::where('id_sekolah', $id_sekolah)->orderBy('tingkat', 'asc')->get();
+        return view('admin.manajemen_tingkat', compact('tingkats'));
     }
 
     public function storeTingkat(Request $request)
@@ -634,16 +664,76 @@ class AdminController extends Controller
         if (!$id_sekolah) {
             return redirect()->back()->with('error', 'Gagal menambahkan tingkat. Sesi sekolah tidak ditemukan.');
         }
-        
-        $jumlahTingkat = Tingkat::where('id_sekolah', $id_sekolah)->count() ?? 0;
+
+        // PERBAIKAN: Validasi input dari form
+        $request->validate([
+            'tingkat' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('tingkats', 'tingkat')->where('id_sekolah', $id_sekolah)
+            ],
+        ], [
+            'tingkat.required' => 'Nama tingkat tidak boleh kosong.',
+            'tingkat.unique' => 'Nama tingkat ini sudah ada.',
+        ]);
 
         // Simpan tingkat baru ke database
         Tingkat::create([
             'id_sekolah' => $id_sekolah,
-            'tingkat' => $jumlahTingkat + 1,
+            'tingkat' => $request->tingkat, // PERBAIKAN: Gunakan input dari request
         ]);
 
         return redirect()->route('manajemenTingkat')->with('success', 'Tingkat berhasil ditambahkan!');
+    }
+
+    public function updateTingkat(Request $request, $id_tingkat)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $request->validate([
+            'tingkat' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('tingkats', 'tingkat')
+                    ->where('id_sekolah', $id_sekolah)
+                    ->ignore($id_tingkat, 'id_tingkat')
+            ],
+        ], [
+            'tingkat.required' => 'Nama tingkat tidak boleh kosong.',
+            'tingkat.unique' => 'Nama tingkat ini sudah ada.',
+        ]);
+
+        $tingkat = Tingkat::where('id_tingkat', $id_tingkat)
+                         ->where('id_sekolah', $id_sekolah)
+                         ->firstOrFail();
+
+        $tingkat->update([
+            'tingkat' => $request->tingkat,
+        ]);
+
+        return redirect()->route('manajemenTingkat')->with('success', 'Tingkat berhasil diperbarui!');
+    }
+
+    public function destroyTingkat(Request $request, $id_tingkat)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        
+        // 1. Cari tingkat tertinggi yang ada di database untuk sekolah ini.
+        // Parameter $id_tingkat dari URL akan diabaikan.
+        // Menggunakan orderByRaw untuk memastikan pengurutan numerik yang benar pada kolom string.
+        $tingkatTertinggi = Tingkat::where('id_sekolah', $id_sekolah)
+                                   ->orderByRaw('CAST(tingkat AS UNSIGNED) DESC, tingkat DESC')
+                                   ->first();
+        
+        // 2. Jika tingkat tertinggi ditemukan, hapus. Jika tidak, kembali dengan pesan error.
+        if ($tingkatTertinggi) {
+            $tingkatTertinggi->delete();
+            return redirect()->route('manajemenTingkat')->with('success', 'Tingkat tertinggi berhasil dihapus!');
+        }
+        
+        return redirect()->route('manajemenTingkat')->withErrors(['error' => 'Tidak ada tingkat yang bisa dihapus.']);
     }
 
 
@@ -997,5 +1087,30 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Jadwal berhasil dihapus.');
     }
 
+    public function keluarkanSiswaDariKelas(Request $request, $id_siswa, $id_kelas)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        // 1. Cari siswa berdasarkan id, id_sekolah, dan role
+        $siswa = User::where('id', $id_siswa)
+                     ->where('id_sekolah', $id_sekolah)
+                     ->where('role', 'siswa')
+                     ->firstOrFail(); // Akan gagal jika siswa tidak ditemukan
+
+        // 2. Verifikasi apakah siswa benar-benar ada di kelas yang dimaksud
+        if ($siswa->id_kelas != $id_kelas) {
+            // Jika tidak, kembalikan dengan pesan error
+            return back()->with('error', 'Siswa tidak ditemukan di kelas ini.');
+        }
+
+        // 3. Set id_kelas menjadi null untuk mengeluarkan siswa dari kelas
+        $siswa->id_kelas = null;
+        $siswa->id_angkatan = null;
+        $siswa->save();
+
+        // 4. Redirect kembali ke halaman sebelumnya dengan pesan sukses
+        return redirect()->route('manajemenKelas')->with('success', 'Siswa berhasil dikeluarkan!');
+
+    }
     
 }
