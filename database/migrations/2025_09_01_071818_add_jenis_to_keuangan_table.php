@@ -11,15 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('keuangan', function (Blueprint $table) {
-    $table->id();
-    $table->date('tanggal');
-    $table->string('jenis'); // harus bisa menampung 'pemasukan', 'pengeluaran', 'tagihan'
-    $table->string('deskripsi');
-    $table->decimal('jumlah', 15, 2);
-    $table->timestamps();
-});
-
+        Schema::table('keuangan', function (Blueprint $table) {
+            if (!Schema::hasColumn('keuangan', 'jenis')) {
+                $table->string('jenis')->after('tanggal'); // hanya tambah kolom jenis
+            }
+        });
     }
 
     /**
@@ -27,6 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('keuangan');
+        Schema::table('keuangan', function (Blueprint $table) {
+            if (Schema::hasColumn('keuangan', 'jenis')) {
+                $table->dropColumn('jenis');
+            }
+        });
     }
 };

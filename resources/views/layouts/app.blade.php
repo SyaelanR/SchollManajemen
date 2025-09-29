@@ -41,19 +41,11 @@
                 <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
                 <span>Manajemen Siswa</span>
             </a>
-            <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+            <a href="{{ route('guru.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                 <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
                 <span>Manajemen Guru</span>
             </a>
-            <a href="{{ route('jadwalPelajaran') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
-                <span>Jadwal Pelajaran</span>
-            </a>
-            <a href="{{ route('mataPelajaran') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                <i class="fa-solid fa-book w-6 h-6 mr-3"></i>
-                <span>Mata Pelajaran</span>
-            </a>
-            <a href="{{ route('ekstra.index') }}" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
+            <a href="{{ route('guru.index') }}" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
                 <i class="fa-solid fa-baseball-bat-ball w-6 h-6 mr-3"></i>
                 <span>Ekstrakurikuler</span>
             </a>
@@ -61,16 +53,7 @@
                 <i class="fa-solid fa-money-bill-wave w-6 h-6 mr-3"></i>
                 <span>Keuangan</span>
             </a>
-            <a href="{{ route('pengaturan') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                <i class="fa-solid fa-cog w-6 h-6 mr-3"></i>
-                <span>Pengaturan</span>
-            </a>
         </nav>
-        <div class="absolute bottom-0 w-full p-6">
-            <a href="{{ route('logout') }}" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg">
-                <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
-                <span>Logout</span>
-            </a>
         </div>
     </aside>
 
