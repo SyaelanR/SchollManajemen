@@ -877,6 +877,7 @@ class AdminController extends Controller
             'tanggal_lahir' => $request->tanggal_lahir,
             'alamat' => $request->alamat,
             'no_telp' => $request->no_telp,
+            'id_angkatan' => Kelas::where('id_kelas', $request->id_kelas)->value('id_angkatan'),
         ];
 
         // Hanya update password jika diisi

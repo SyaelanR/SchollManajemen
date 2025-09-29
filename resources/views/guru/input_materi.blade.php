@@ -154,7 +154,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{$materi->deskripsi_materi}}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{$materi->tanggal}}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-2">
-                                        <a href="#" class="text-blue-600 hover:text-blue-900" title="Lihat"><i class="fa-solid fa-eye"></i></a>
+                                        <a href="{{ route ('lihatMateri', [$materi->nama_file])}}" class="text-blue-600 hover:text-blue-900" title="Lihat"><i class="fa-solid fa-eye"></i></a>
                                         <a href="#" class="text-yellow-600 hover:text-yellow-900" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
                                         <a href="#" class="text-red-600 hover:text-red-900" title="Hapus"><i class="fa-solid fa-trash-can"></i></a>
                                     </td>
@@ -165,7 +165,7 @@
                                         <div class="text-gray-500">
                                             <i class="fa-solid fa-folder-open text-4xl mb-3"></i>
                                             <p class="text-lg font-semibold">Belum ada materi</p>
-                                            <p class="text-sm">Silakan unggah materi pertama Anda.</p>
+                                            <p class="text-sm">Silakan unggah</p>
                                         </div>
                                     </td>
                                 </tr>

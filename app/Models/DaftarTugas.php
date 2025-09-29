@@ -16,7 +16,7 @@ class DaftarTugas extends Model
         'id_mapel',
         'tingkat', 
         'semester', 
-        'tanggal', 
+        'deadline', 
         'keterangan', 
         'nama_file'
     ];

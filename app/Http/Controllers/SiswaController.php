@@ -137,4 +137,35 @@ class SiswaController extends Controller
         return back()->with('success', 'Jawaban tugas berhasil diunggah!');
         // return view ('dashboard');
     }
+
+        public function lihatJawaban (Request $request, $namaFile)
+    {
+        $idSekolah = $request->cookie('id_sekolah');
+        $idKelas = $request->cookie('id_kelas');
+        $idAngkatan = $request->cookie('id_angkatan');
+
+        $infoAngkatan = Angkatan::where('id_sekolah', $idSekolah)
+                                ->where('id_angkatan', $idAngkatan)
+                                ->first();
+
+
+        DaftarNilaiSiswa::where('nama_fileTugas', $namaFile)
+                    ->where('id_sekolah', $idSekolah)
+                    ->where('id_kelas', $idKelas)
+                    ->where('tingkat', $infoAngkatan->id_tingkat)
+                    ->where('semester', $infoAngkatan->semester)
+                    ->firstOrFail();
+
+
+        if (Storage::disk('local')->exists("tugasSiswa/$namaFile")) {
+            $path = Storage::disk('local')->path("tugasSiswa/$namaFile");
+            $headers = ['Content-Type' => 'application/pdf'];
+
+            // Mengembalikan file sebagai respons inline
+            return response()->file($path, $headers);
+        }
+
+        abort(404, 'File not found');
+
+    }
 }

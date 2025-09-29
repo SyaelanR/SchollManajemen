@@ -133,6 +133,7 @@ Route::middleware('auth')->group(function () {
 
             Route::get('/input-nilai-online/{id_kelas}/{id_mapel}/{id_daftar_nilai}', [GuruController::class, 'inputNilaiOnline'])->name('inputNilaiOnline');
             Route::get('/lihatTugasSiswa/{namaFile}', [GuruController::class, 'lihatTugasSiswa'])->name('lihatTugasSiswa');
+            Route::get('/lihatSoalSiswa/{namaFile}', [GuruController::class, 'lihatSoalSiswa'])->name('lihatSoalSiswa');
 
         });
 
@@ -158,6 +159,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [GuruController::class, 'manajMateriKelas'])->name('manajMateri');
             Route::get('/input-materi/{id_kelas}/{id_mapel}', [GuruController::class, 'inputMateri'])->name('inputMateri');
             Route::post('/input-materi/{id_kelas}/{id_mapel}', [GuruController::class, 'storeMateri'])->name('storeMateri');
+
+            Route::get('/lihat-materi/{namaFile}', [GuruController::class, 'lihatMateri'])->name('lihatMateri');
         });
 
             
@@ -172,10 +175,11 @@ Route::middleware('auth')->group(function () {
             Route::get('/tugas-daftar/{id_mapel}', [SiswaController::class, 'lihatTugasDaftar'])->name('lihatTugasDaftar');
             Route::get('/lihat-soal/{namaFile}', [SiswaController::class, 'lihatSoal'])->name('lihatSoal');
             Route::post('/unggah-tugas', [SiswaController::class, 'unggahTugas'])->name('unggahTugas');
+
+            Route::get('/lihat-jawaban/{namaFile}', [SiswaController::class, 'lihatJawaban'])->name('lihatJawaban');
         });
 
-        Route::prefix('pelanggaran')->group(function () {
-        });
+        
     });
 
 });

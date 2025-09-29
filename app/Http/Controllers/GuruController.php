@@ -561,11 +561,11 @@ class GuruController extends Controller
                     ->where('id_sekolah', $id_sekolah)->get();
 
     
-           foreach ($daftarTugas as $tugas) {
-                $tugas->nama_file = $tugas->nama_file 
-                ? Str::after($tugas->nama_file, '_') 
-                : null;
-        }
+        //    foreach ($daftarTugas as $tugas) {
+        //         $tugas->nama_file = $tugas->nama_file 
+        //         ? Str::after($tugas->nama_file, '_') 
+        //         : null;
+        // }
 
         return view('guru.input_tugas', ['daftarTugas' => $daftarTugas, 'infoKelas' => $infoKelas, 'infoMapel' => $infoMapel]);
     }
@@ -578,12 +578,12 @@ class GuruController extends Controller
 
         $request->validate([
             'keterangan_tugas' => 'required|string|max:255',
-            'tanggal'=> 'required|date',
+            'deadline'=> 'required|date',
             'file' => 'required|file|mimes:pdf|max:5048'
         ],[
             'keterangan_tugas.required' => 'Keterangan tidak boleh kosong.',
             'keterangan_tugas.max' => 'Keterangan maksimal 255',
-            'tanggal.required' => 'Tanggal tidak boleh kosong.',
+            'deadline.required' => 'Tanggal tidak boleh kosong.',
             'file.required' => 'File tidak boleh kosong.',
         ]);
 
@@ -596,13 +596,16 @@ class GuruController extends Controller
         $tingkat = $infoKelas->angkatan->id_tingkat;
         $semester = $infoKelas->angkatan->semester;
 
+        
+        $deadline = Carbon::parse($request->deadline);
+
 
         $DaftarTugas = DaftarTugas::create([
             'id_sekolah' => $id_sekolah,
             'id_kelas' => $id_kelas,
             'id_mapel' => $id_mapel,
             'keterangan' => $request->keterangan_tugas,
-            'tanggal' => $request->tanggal,
+            'deadline' => $deadline,
             'tingkat' => $tingkat,
             'semester' => $semester,
             'nama_file' => $namaFile,
@@ -616,7 +619,7 @@ class GuruController extends Controller
                 'id_mapel' => $id_mapel,
                 'keterangan' => $request->keterangan_tugas,
                 'tipe_nilai' => 'Tugas',
-                'tanggal' => $request->tanggal,
+                'tanggal' => $deadline,
                 'tingkat' => $tingkat,
                 'semester' => $semester,
                 'sifat' => 'online'
@@ -762,6 +765,97 @@ class GuruController extends Controller
 
         return redirect()->route('inputMateri', ['id_kelas' => $id_kelas, 'id_mapel' => $id_mapel])->with('success', 'Materi berhasil disimpan!');
 
+
+    }
+
+    public function lihatMateri (Request $request, $namaFile)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $idUser = $request->cookie('id_user');
+        
+        //ambil id mapel dari namaFile
+        $infoDaftarMateri = DaftarMateri::where('nama_file', $namaFile)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->firstOrFail();
+
+
+        //cek apakah guru mengajar kelas&mapel ini + ambil kelas & angkatan
+        $infoJKA = Jadwal::where('id_kelas', $infoDaftarMateri->id_kelas)
+                    ->where('id_mapel', $infoDaftarMateri->id_mapel)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->with('kelas.angkatan')
+                    ->with('mapel')
+                    ->whereHas('mapel', function ($query) use ($idUser) {
+                        $query->where('id_guru', $idUser);
+                    })
+                    ->firstOrFail();
+
+        //cek semester & angkatan aktif
+        $infoDaftarMateri = DaftarMateri::where('nama_file', $namaFile)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->where('tingkat', $infoJKA->kelas->angkatan->id_tingkat)
+                    ->where('semester', $infoJKA->kelas->angkatan->semester)
+                    ->firstOrFail();
+
+
+        // $infoAngkatan = Angkatan::where('id_angkatan', )->first();
+
+
+        if (Storage::disk('local')->exists("materi/$namaFile")) {
+            $path = Storage::disk('local')->path("materi/$namaFile");
+            $headers = ['Content-Type' => 'application/pdf'];
+
+            // Mengembalikan file sebagai respons inline
+            return response()->file($path, $headers);
+        }
+
+        abort(404, 'File not found');
+
+    }
+
+
+    public function lihatSoalSiswa (Request $request, $namaFile)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $idUser = $request->cookie('id_user');
+        
+        //ambil id mapel dari namaFile
+        $infoDaftarMateri = DaftarTugas::where('nama_file', $namaFile)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->firstOrFail();
+
+
+        //cek apakah guru mengajar kelas&mapel ini + ambil kelas & angkatan
+        $infoJKA = Jadwal::where('id_kelas', $infoDaftarMateri->id_kelas)
+                    ->where('id_mapel', $infoDaftarMateri->id_mapel)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->with('kelas.angkatan')
+                    ->with('mapel')
+                    ->whereHas('mapel', function ($query) use ($idUser) {
+                        $query->where('id_guru', $idUser);
+                    })
+                    ->firstOrFail();
+
+        //cek semester & angkatan aktif
+        $infoDaftarMateri = DaftarTugas::where('nama_file', $namaFile)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->where('tingkat', $infoJKA->kelas->angkatan->id_tingkat)
+                    ->where('semester', $infoJKA->kelas->angkatan->semester)
+                    ->firstOrFail();
+
+
+        // $infoAngkatan = Angkatan::where('id_angkatan', )->first();
+
+
+        if (Storage::disk('local')->exists("tugas/$namaFile")) {
+            $path = Storage::disk('local')->path("tugas/$namaFile");
+            $headers = ['Content-Type' => 'application/pdf'];
+
+            // Mengembalikan file sebagai respons inline
+            return response()->file($path, $headers);
+        }
+
+        abort(404, 'File not found');
 
     }
  

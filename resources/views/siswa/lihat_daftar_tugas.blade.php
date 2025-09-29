@@ -114,12 +114,11 @@
                             <div class="bg-white rounded-xl shadow-md p-6 flex flex-col ring-2 ring-indigo-500">
                                 <div class="flex-1">
                                     <div class="flex justify-between items-start mb-3">
-                                        <div></div>
-                                        <span class="text-xs font-semibold bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">Belum Dikerjakan</span>
+                                        <h3 class="text-lg font-bold text-gray-800">{{ $tugas->daftarNilai->keterangan ?? 'Tugas Tanpa Judul' }}</h3>
+                                        <span class="text-xs font-semibold bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full flex-shrink-0">Belum Dikerjakan</span>
                                     </div>
-                                    <h3 class="text-lg font-bold text-gray-800 mb-2">{{ $tugas->daftarNilai->keterangan ?? 'Tugas Tanpa Judul' }}</h3>
                                     <p class="text-sm text-gray-600 mb-4 flex items-center">
-                                        <i class="fa-solid fa-calendar-alt w-4 mr-2 text-gray-400"></i>{{ $tugas->daftarNilai->tanggal ?? 'N/A' }}
+                                        <i class="fa-solid fa-calendar-alt w-4 mr-2 text-gray-400"></i>Deadline: <strong>{{ \Carbon\Carbon::parse($tugas->daftarNilai->tugas->deadline)->format('d M Y H:i') ?? 'N/A' }}</strong>
                                     </p>
                                 </div>
                                 <div class="border-t pt-4 flex items-center justify-between gap-4">
@@ -137,19 +136,18 @@
                             <div class="bg-white rounded-xl shadow-md p-6 flex flex-col">
                                 <div class="flex-1">
                                     <div class="flex justify-between items-start mb-3">
-                                        <div></div>
-                                        <span class="text-xs font-semibold bg-green-100 text-green-700 px-3 py-1 rounded-full">Selesai</span>
+                                        <h3 class="text-lg font-bold text-gray-800">{{ $tugas->daftarNilai->keterangan ?? 'Tugas Tanpa Judul' }}</h3>
+                                        <span class="text-xs font-semibold bg-green-100 text-green-700 px-3 py-1 rounded-full flex-shrink-0">Selesai</span>
                                     </div>
-                                    <h3 class="text-lg font-bold text-gray-800 mb-2">{{ $tugas->daftarNilai->keterangan ?? 'Tugas Tanpa Judul' }}</h3>
                                     <p class="text-sm text-gray-600 mb-4 flex items-center">
-                                        <i class="fa-solid fa-calendar-check w-4 mr-2 text-gray-400"></i>Dikumpulkan: {{ $tugas->tanggal_pengumpulan ?? $tugas->tanggal }}
+                                        <i class="fa-solid fa-calendar-alt w-4 mr-2 text-gray-400"></i>Dikerjakan: <strong>{{ \Carbon\Carbon::parse($tugas->daftarNilai->updated_at)->format('d M Y H:i') ?? 'N/A' }}</strong>
                                     </p>
                                 </div>
                                 <div class="border-t pt-4 flex items-center justify-between gap-4">
-                                    <button class="w-1/2 bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200 transition-all duration-300 flex items-center justify-center">
+                                    <button onclick="window.location.href='{{ route('lihatJawaban',   $tugas->nama_fileTugas ?? 0) }}'" class="w-1/2 bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200 transition-all duration-300 flex items-center justify-center">
                                         <i class="fa-solid fa-eye mr-2"></i> Lihat Jawaban
                                     </button>
-                                    <button class="w-1/2 bg-blue-100 text-blue-700 font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 transition-all duration-300 flex items-center justify-center">
+                                    <button data-task-id="{{ $tugas->id_daftar_nilai_siswa }}" class="upload-button w-1/2 bg-blue-100 text-blue-700 font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 transition-all duration-300 flex items-center justify-center">
                                         <i class="fa-solid fa-pencil mr-2"></i> Edit Jawaban
                                     </button>
                                 </div>
@@ -160,20 +158,42 @@
                             <div class="bg-white rounded-xl shadow-md p-6 flex flex-col">
                                 <div class="flex-1">
                                     <div class="flex justify-between items-start mb-3">
-                                        <div></div>
-                                        <span class="text-xs font-semibold bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">Dinilai</span>
+                                        <h3 class="text-lg font-bold text-gray-800">{{ $tugas->daftarNilai->keterangan ?? 'Tugas Tanpa Judul' }}</h3>
+                                         <span class="text-xs font-semibold bg-purple-100 text-purple-700 px-3 py-1 rounded-full flex-shrink-0">Dinilai</span>
                                     </div>
-                                    <h3 class="text-lg font-bold text-gray-800 mb-2">{{ $tugas->daftarNilai->keterangan ?? 'Tugas Tanpa Judul' }}</h3>
                                     <p class="text-sm text-gray-600 mb-4 flex items-center">
-                                        <i class="fa-solid fa-award w-4 mr-2 text-gray-400"></i>Nilai: {{ $tugas->nilai }} / 100
+                                        <i class="fa-solid fa-award w-4 mr-2 text-gray-400"></i>Nilai: <strong>{{ $tugas->nilai }} / 100</strong>
                                     </p>
                                 </div>
                                 <div class="border-t pt-4 flex items-center justify-between gap-4">
-                                    <button class="w-full bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600 transition-all duration-300 flex items-center justify-center">
-                                        <i class="fa-solid fa-award mr-2"></i>
+                                    <button onclick="window.location.href='{{ route('lihatJawaban',   $tugas->nama_fileTugas ?? 0) }}'" class="w-full bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200 transition-all duration-300 flex items-center justify-center">
+                                        <i class="fa-solid fa-eye mr-2"></i> Lihat Jawaban
                                     </button>
                                 </div>
                             </div>
+                        {{-- @elseif()
+                        <!-- Assignment Card 3: Terlambat -->
+                     <div class="bg-white rounded-xl shadow-md p-6 flex flex-col">
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <p class="font-semibold text-indigo-600">Bahasa Indonesia</p>
+                                    <p class="text-sm text-gray-500">Siti Nurbaya, S.Pd.</p>
+                                </div>
+                                <span class="text-xs font-semibold bg-red-100 text-red-700 px-3 py-1 rounded-full">Terlambat</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-800 mb-2">Membuat Esai tentang Sumpah Pemuda</h3>
+                             <p class="text-sm text-gray-600 mb-4 flex items-center"><i class="fa-solid fa-calendar-alt w-4 mr-2 text-gray-400"></i>Tenggat: 20 Sep 2025</p>
+                        </div>
+                        <div class="border-t pt-4 flex items-center justify-between gap-4">
+                             <button class="w-1/2 bg-blue-100 text-blue-700 font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 transition-all duration-300 flex items-center justify-center">
+                                <i class="fa-solid fa-download mr-2"></i> Unduh Soal
+                            </button>
+                            <button class="w-1/2 bg-red-600 text-white font-semibold py-2 px-4 rounded-lg flex items-center justify-center cursor-not-allowed" disabled>
+                               <i class="fa-solid fa-times-circle mr-2"></i> Tenggat Lewat
+                            </button>
+                        </div>
+                    </div> --}}
                         @endif
 
                     @empty

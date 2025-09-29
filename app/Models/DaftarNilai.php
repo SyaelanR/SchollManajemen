@@ -23,11 +23,11 @@ class DaftarNilai extends Model
 
     public function mapel()
     {
-        return $this->belongsTo(Mapel::class, 'id_mapel');
+        return $this->belongsTo(Mapel::class, 'id_mapel', 'id_mapel');
     }
 
     public function tugas()
     {
-        return $this->belongsTo(DaftarTugas::class, 'id_daftar_tugas');
+        return $this->belongsTo(DaftarTugas::class, 'id_daftar_tugas', 'id_daftar_tugas');
     }
 }
