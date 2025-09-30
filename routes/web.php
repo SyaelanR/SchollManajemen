@@ -254,3 +254,13 @@ Route::post('/pelanggaran', [pelanggaranController::class, 'store'])->name('pela
 Route::get('/daftarPelanggar', [pelanggaranController::class, 'daftarPelanggar'])->name('pelanggaran.daftar');
 
 Route::get('/input-nilai', [AdminController::class, 'inputnilai'])->name('inputnilai');
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#####################################################################################################################################################
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Halaman daftar acara
+Route::get('/acara-sekolah', [AdminController::class, 'index'])->name('admin.acara.index');
+    Route::post('/acara-sekolah', [AdminController::class, 'store'])->name('admin.acara.store');
+    Route::delete('/acara-sekolah/{id}', [AdminController::class, 'destroy'])->name('admin.acara.destroy');
