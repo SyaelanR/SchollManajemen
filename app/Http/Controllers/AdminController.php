@@ -1113,5 +1113,4 @@ class AdminController extends Controller
         return redirect()->route('manajemenKelas')->with('success', 'Siswa berhasil dikeluarkan!');
 
     }
-    
 }

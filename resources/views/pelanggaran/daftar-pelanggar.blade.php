@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Pelanggaran Siswa - EduSys</title>
+    <title>Pelanggaran Kelas {{ $kelas->nama_kelas ?? 'N/A' }} - EduSys</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SweetAlert2 for notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,6 +38,12 @@
         }
         /* Sidebar transition effect */
         .sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+        .modal {
+            transition: opacity 0.3s ease-in-out;
+        }
+        .modal-content {
             transition: transform 0.3s ease-in-out;
         }
     </style>
@@ -87,10 +95,13 @@
                 </a>
             </nav>
             <div class="absolute bottom-0 w-full p-6">
-                <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg w-full transition duration-200">
-                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
-                    <span>Logout</span>
-                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();" class="flex items-center px-4 py-3 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg w-full transition duration-200">
+                        <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
+                        <span>Logout</span>
+                    </a>
+                </form>
             </div>
         </aside>
 
@@ -119,16 +130,24 @@
 
             <!-- Page Content -->
             <main class="p-4 md:p-8 flex-1">
+                <!-- Session Messages Handling -->
+                @if(session('success'))
+                    <div id="session-success" data-message="{{ session('success') }}" class="hidden"></div>
+                @endif
+                @if ($errors->any())
+                    <div id="validation-errors" data-errors='@json($errors->all())' class="hidden"></div>
+                @endif
+
                 <div class="bg-white rounded-3xl shadow-xl p-6">
                     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                        <h2 class="text-2xl font-bold text-gray-800">Daftar Pelanggaran</h2>
+                        <h2 class="text-2xl font-bold text-gray-800">Daftar Pelanggaran - Kelas {{ $kelas->nama_kelas ?? 'N/A' }}</h2>
                         <div class="flex items-center space-x-4 flex-wrap">
                             <!-- Tombol kembali yang diperbarui -->
                             <button onclick="window.history.back()" class="bg-gray-200 text-gray-700 font-semibold py-2 px-6 rounded-full hover:bg-gray-300 transition duration-300 flex items-center">
                                 <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
                             </button>
                             <!-- Tombol "Tambah Pelanggaran" dengan gradien -->
-                            <button class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold py-2 px-6 rounded-full shadow-lg hover:from-indigo-600 hover:to-purple-700 transform hover:scale-105 transition duration-300 flex items-center">
+                            <button id="add-violation-btn" class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold py-2 px-6 rounded-full shadow-lg hover:from-indigo-600 hover:to-purple-700 transform hover:scale-105 transition duration-300 flex items-center">
                                 <i class="fa-solid fa-plus-circle mr-2"></i> Tambah Pelanggaran
                             </button>
                         </div>
@@ -152,54 +171,32 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200">
-                                <tr class="hover:bg-gray-50 transition duration-200">
-                                    <td class="py-4 px-6 whitespace-nowrap font-medium">John Doe</td>
-                                    <td class="py-4 px-6 whitespace-nowrap text-red-600 font-semibold">Tidak Mengerjakan PR</td>
-                                    <td class="py-4 px-6 whitespace-nowrap text-gray-500">2024-10-26</td>
-                                    <td class="py-4 px-6 whitespace-nowrap font-bold text-center text-red-600">10</td>
-                                    <td class="py-4 px-6 whitespace-nowrap">
-                                        <div class="flex items-center space-x-3">
-                                            <button class="text-indigo-600 hover:text-indigo-800 transform hover:scale-110 transition duration-200" title="Edit">
-                                                <i class="fa-solid fa-pen-to-square text-lg"></i>
-                                            </button>
-                                            <button class="text-red-600 hover:text-red-800 transform hover:scale-110 transition duration-200" title="Hapus">
-                                                <i class="fa-solid fa-trash-alt text-lg"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="hover:bg-gray-50 transition duration-200">
-                                    <td class="py-4 px-6 whitespace-nowrap font-medium">Jane Smith</td>
-                                    <td class="py-4 px-6 whitespace-nowrap text-red-600 font-semibold">Terlambat Datang</td>
-                                    <td class="py-4 px-6 whitespace-nowrap text-gray-500">2024-10-25</td>
-                                    <td class="py-4 px-6 whitespace-nowrap font-bold text-center text-red-600">5</td>
-                                    <td class="py-4 px-6 whitespace-nowrap">
-                                        <div class="flex items-center space-x-3">
-                                            <button class="text-indigo-600 hover:text-indigo-800 transform hover:scale-110 transition duration-200" title="Edit">
-                                                <i class="fa-solid fa-pen-to-square text-lg"></i>
-                                            </button>
-                                            <button class="text-red-600 hover:text-red-800 transform hover:scale-110 transition duration-200" title="Hapus">
-                                                <i class="fa-solid fa-trash-alt text-lg"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="hover:bg-gray-50 transition duration-200">
-                                    <td class="py-4 px-6 whitespace-nowrap font-medium">Peter Jones</td>
-                                    <td class="py-4 px-6 whitespace-nowrap text-red-600 font-semibold">Tidak Memakai Seragam Lengkap</td>
-                                    <td class="py-4 px-6 whitespace-nowrap text-gray-500">2024-10-24</td>
-                                    <td class="py-4 px-6 whitespace-nowrap font-bold text-center text-red-600">15</td>
-                                    <td class="py-4 px-6 whitespace-nowrap">
-                                        <div class="flex items-center space-x-3">
-                                            <button class="text-indigo-600 hover:text-indigo-800 transform hover:scale-110 transition duration-200" title="Edit">
-                                                <i class="fa-solid fa-pen-to-square text-lg"></i>
-                                            </button>
-                                            <button class="text-red-600 hover:text-red-800 transform hover:scale-110 transition duration-200" title="Hapus">
-                                                <i class="fa-solid fa-trash-alt text-lg"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                @forelse ($daftarSiswa ?? [] as $siswa)
+                                    {{-- Ganti dengan data pelanggaran dinamis jika sudah ada --}}
+                                    <tr class="hover:bg-gray-50 transition duration-200">
+                                        <td class="py-4 px-6 whitespace-nowrap font-medium">{{ $siswa->name }}</td>
+                                        <td class="py-4 px-6 whitespace-nowrap text-gray-500 italic">Belum ada data</td>
+                                        <td class="py-4 px-6 whitespace-nowrap text-gray-500 italic">N/A</td>
+                                        <td class="py-4 px-6 whitespace-nowrap font-bold text-center text-gray-500">0</td>
+                                        <td class="py-4 px-6 whitespace-nowrap">
+                                            <div class="flex items-center space-x-3">
+                                                <button class="text-indigo-600 hover:text-indigo-800 transform hover:scale-110 transition duration-200" title="Edit">
+                                                    <i class="fa-solid fa-pen-to-square text-lg"></i>
+                                                </button>
+                                                <button class="text-red-600 hover:text-red-800 transform hover:scale-110 transition duration-200" title="Hapus">
+                                                    <i class="fa-solid fa-trash-alt text-lg"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center py-10">
+                                            <i class="fa-solid fa-users-slash text-5xl text-gray-400 mb-4"></i>
+                                            <p class="text-gray-600 font-semibold text-lg">Tidak ada siswa di kelas ini.</p>
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>

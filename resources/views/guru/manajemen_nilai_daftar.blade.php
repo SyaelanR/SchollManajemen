@@ -113,6 +113,7 @@
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Tipe Nilai</th>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Tanggal</th>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Sifat</th>
+                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm text-center">Hapus</th>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm text-center">Aksi</th>
                             </tr>
                         </thead>
@@ -136,6 +137,15 @@
                                     @endif
                                 <td class="p-3 text-gray-600">{{$nilai->tanggal}}</td>
                                 <td class="p-3 text-gray-600">{{$nilai->sifat}}</td>
+                                <td class="p-3 text-center">
+                                    <form action="{{ route('destroyDaftarNilai', $nilai->id_daftar_nilai) }}" method="POST" class="delete-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-800 transition duration-200" title="Hapus Sesi">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
                                 @if ($nilai->sifat == 'online')
                                     <td class="p-3 text-center">
                                         <a href="{{route('inputNilaiOnline',[$nilai->id_kelas, $nilai->id_mapel, $nilai->id_daftar_nilai])}}" class="text-indigo-600 hover:text-indigo-800 font-semibold">Masuk</a>
@@ -148,7 +158,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="p-3 text-center text-gray-500">
+                                <td colspan="6" class="p-3 text-center text-gray-500">
                                     <div class="text-center py-12">
                                         <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
                                         <p class="text-gray-600 font-semibold text-lg">Belum ada daftar nilai.</p>
@@ -235,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const errors = JSON.parse(validationErrors.dataset.errors);
         let errorText = '<ul class="list-disc list-inside text-left">';
         errors.forEach(error => {
-            errorText += <li>${error}</li>;
+            errorText += `<li>${error}</li>`;
         });
         errorText += '</ul>';
         
@@ -262,6 +272,28 @@ document.addEventListener('DOMContentLoaded', function() {
             if (e.target === taskModal) {
                 closeModal();
             }
+        });
+    }
+
+    // --- Delete Confirmation ---
+    const deleteForms = document.querySelectorAll('.delete-form');
+    if (deleteForms) {
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Sesi penilaian dan semua nilai siswa di dalamnya akan dihapus secara permanen!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) { this.submit(); }
+                });
+            });
         });
     }
 });

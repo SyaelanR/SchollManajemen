@@ -310,6 +310,7 @@ class GuruController extends Controller
                 'tanggal' => $request->tanggal,
                 'tingkat' => $tingkat,
                 'semester' => $semester,
+                'sifat' => 'online', // Otomatis diatur sebagai 'online'
             ]);
 
 
@@ -332,6 +333,36 @@ class GuruController extends Controller
 
         return redirect()->route('manajemenNilaiDaftar', ['id_kelas' => $id_kelas, 'id_mapel' => $id_mapel])->with('success', 'Nilai berhasil ditambahkan!');
 
+    }
+
+    /**
+     * Menghapus sesi penilaian dan semua nilai siswa yang terkait.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id_daftar_nilai
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroyDaftarNilai(Request $request, $id_daftar_nilai)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+
+        // 1. Cari sesi penilaian yang akan dihapus, pastikan milik guru yang login
+        $daftarNilai = DaftarNilai::where('id_daftar_nilai', $id_daftar_nilai)
+            ->where('id_sekolah', $id_sekolah)
+            ->whereHas('mapel', function ($query) use ($id_user) {
+                $query->where('id_guru', $id_user);
+            })
+            ->firstOrFail();
+
+        // 2. Hapus semua nilai siswa yang terkait dengan sesi ini (Cascading Delete)
+        DaftarNilaiSiswa::where('id_daftar_nilai', $daftarNilai->id_daftar_nilai)->delete();
+
+        // 3. Hapus sesi penilaian itu sendiri
+        $daftarNilai->delete();
+
+        // 4. Redirect kembali dengan pesan sukses
+        return back()->with('success', 'Sesi penilaian berhasil dihapus!');
     }
 
     public function manajAbsensi (Request $request)
@@ -969,6 +1000,47 @@ class GuruController extends Controller
         }
 
         return back()->with('success', 'Tugas berhasil diperbarui!');
+    }
+
+    public function updateMateri(Request $request, DaftarMateri $materi)
+    {
+        $request->validate([
+            'judul_materi' => 'required|string|max:255',
+            'deskripsi_materi' => 'nullable|string|max:500',
+            'file' => 'nullable|file|mimes:pdf|max:10240', // Opsional, PDF, max 10MB
+        ], [
+            'judul_materi.required' => 'Judul materi tidak boleh kosong.',
+            'file.mimes' => 'File harus dalam format PDF.',
+            'file.max' => 'Ukuran file maksimal adalah 10MB.',
+        ]);
+
+        // Cari materi berdasarkan ID
+        $materi = DaftarMateri::findOrFail($id);
+
+        // Update judul dan deskripsi
+        $materi->judul_materi = $request->judul_materi;
+        $materi->deskripsi_materi = $request->deskripsi_materi;
+
+        // Cek jika ada file baru yang diunggah
+        if ($request->hasFile('file')) {
+            // Hapus file lama dari storage jika ada
+            if ($materi->nama_file && Storage::disk('local')->exists('materi/' . $materi->nama_file)) {
+                Storage::disk('local')->delete('materi/' . $materi->nama_file);
+            }
+
+            // Simpan file baru
+            $file = $request->file('file');
+            $namaFile = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('materi', $namaFile, 'local'); // Simpan di storage/app/materi
+
+            // Update nama file di database
+            $materi->nama_file = $namaFile;
+        }
+
+        // Simpan perubahan
+        $materi->save();
+
+        return back()->with('success', 'Materi berhasil diperbarui!');
     }
 
     public function destroyTugas($id)
