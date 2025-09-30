@@ -63,4 +63,28 @@ class User extends Authenticatable
             'nisn_nik' => 'encrypted',
         ];
     }
+
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class, 'id_kelas', 'id_kelas');
+    }
+
+    public function angkatan()
+    {
+        return $this->belongsTo(Angkatan::class, 'id_angkatan', 'id_angkatan');
+    }
+
+    public function sekolah()
+    {
+        return $this->belongsTo(Clien::class, 'id_sekolah', 'id_sekolah');
+    }
+
+    public function daftarNilaiSiswa ()
+    {
+        return $this->hasMany(DaftarNilaiSiswa::class, 'id_siswa', 'id');
+    }
+
+
+
+    
 }

@@ -38,16 +38,14 @@ class LoginController extends Controller
             $idUser = $request->cookie('id_user');
 
             $jadwalHariIni = Jadwal::where('hari', Carbon::now()->isoFormat('dddd'))
-                ->with(['kelas.angkatan', 'mapel']) // Eager load relasi yang dibutuhkan
+                ->with(['kelas.angkatan', 'mapel']) 
                 ->whereHas('mapel', function ($query) use ($idUser) {
                     $query->where('id_guru', $idUser);
                 })
                 ->whereHas('kelas.angkatan', function ($query) {
-                    // Filter Jadwal berdasarkan semester yang ada di relasi angkatan
                     $query->whereColumn('angkatans.semester', 'jadwals.semester');
                 })
                 ->whereHas('kelas.angkatan', function ($query) {
-                    // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
                     $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
                 })
                 ->get();
@@ -56,7 +54,17 @@ class LoginController extends Controller
             return view('dashboard', ['username' => $username, 'time' => $time, 'jadwalHariIni' => $jadwalHariIni, 'jumlahSesi' => $jumlahSesi]);
         
         }elseif ($role == 'siswa'){
-            return view('dashboard', ['username' => $username, 'time' => $time]);
+            $idKelas = $request->cookie('id_kelas');
+            $idSekolah = $request->cookie('id_sekolah');
+
+
+            $jadwalHariIni = Jadwal::where('hari', Carbon::now()->isoFormat('dddd'))
+                ->where('id_kelas', $idKelas)
+                ->where('id_sekolah', $idSekolah)
+                ->with('mapel.guru')
+                ->get();
+
+            return view('dashboard', ['username' => $username, 'time' => $time, 'jadwalHariIni' => $jadwalHariIni]);
         }elseif ($role == 'staf'){
             return view('dashboard', ['username' => $username, 'time' => $time]);
         }else{

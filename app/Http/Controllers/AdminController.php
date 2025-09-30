@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\RiwayatKeuangan;
 use App\Models\User; // Menggunakan model User untuk Siswa dan Guru
 use App\Models\Angkatan;
+use App\Models\DaftarKurikulum;
+use App\Models\DaftarNilaiSiswa;
 use App\Models\Kelas;
 use App\Models\PmabayaranSiswa;
 use App\Models\DaftarTagihan;
@@ -735,6 +737,102 @@ class AdminController extends Controller
         }
         
         return redirect()->route('manajemenTingkat')->withErrors(['error' => 'Tidak ada tingkat yang bisa dihapus.']);
+    }
+
+    public function manajKurikulum (Request $request) 
+    {
+        $id_sekolah = request()->cookie('id_sekolah');
+
+        $angkatans = Angkatan::where('id_sekolah', $id_sekolah)->latest()->get();
+
+        $kurikulums = DaftarKurikulum::where('id_sekolah', $id_sekolah)
+                    ->with('angkatan')
+                    ->get();
+
+        return view('admin.manajemen_kurikulum', ['kurikulums' => $kurikulums, 'angkatans' => $angkatans]);
+    }
+
+    public function storeKurikulum(Request $request)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $request->validate([
+            'angkatan' => 'required|exists:angkatans,id_angkatan', //cek apakah id_angkatan ada di tabel angkatans
+            'nama' => 'required|string|max:255',
+            'jenjang' => 'required|string|in:SMA,SMK,SD,SMP',
+            'jumlah_matpel' => 'required|integer|min:1',
+        ], [
+            'angkatan.required' => 'Angkatan tidak boleh kosong.',
+            'angkatan.exists' => 'Angkatan tidak valid.',
+            'nama.required' => 'Nama kurikulum tidak boleh kosong.',
+            'jenjang.required' => 'Jenjang kurikulum tidak boleh kosong.',
+            'jenjang.in' => 'Jenjang kurikulum tidak valid.',
+            'jumlah_matpel.required' => 'Jumlah mata pelajaran tidak boleh kosong.',
+            'jumlah_matpel.integer' => 'Jumlah mata pelajaran harus berupa angka.',
+            'jumlah_matpel.min' => 'Jumlah mata pelajaran harus minimal 1.', 
+        ]);
+
+        DaftarKurikulum::create([
+            'id_sekolah' => $id_sekolah,
+            'id_angkatan' => $request->angkatan,
+            'nama_kurikulum' => $request->nama,
+            'jenjang' => $request->jenjang,
+            'jumlah_matpel' => $request->jumlah_matpel,
+        ]);
+
+        return redirect()->route('manajemenKurikulum')->with('success', 'Kurikulum berhasil ditambahkan!');
+
+    }
+
+    public function manajRapor ()
+    {
+        $id_sekolah = request()->cookie('id_sekolah');
+
+        $kelaslist = Kelas::where('id_sekolah', $id_sekolah)->get();
+
+        foreach ($kelaslist as $kelas) {
+        // Hitung dan tambahkan properti jumlah_siswa ke setiap item jadwal
+        $kelas->jumlah_siswa = User::where('id_kelas', $kelas->id_kelas)->count();
+    }
+        
+        return view('admin.manajemen_rapor', ['kelasList' => $kelaslist]);
+    }
+
+    public function Rapors(Request $request, int $id_kelas)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+
+        // $rapors = DaftarNilaiSiswa::where('id_kelas', $id_kelas)
+        //                             ->where('id_sekolah', $id_sekolah)
+        //                             ->with(['kelas.angkatan', 'daftarNilai'])
+        //                             ->whereHas('kelas.angkatan', function ($q) {
+        //                                 $q->whereColumn('daftar_nilai_siswas.tingkat', 'angkatans.id_tingkat')
+        //                                 ->whereColumn('daftar_nilai_siswas.semester', 'angkatans.semester');
+        //                             })
+        //                             ->with('sekolah')
+        //                             ->with('siswa')
+        //                             ->with('mapel')
+        //                             ->get();
+
+    //    $raporSiswa = [];
+       
+    //    foreach($rapors as $item){
+    //         $siswaId = $item->id_siswa;
+    //         $mapelId = $item->id_mapel;
+    //         $tipeNilai = $item->daftar_nilai->tipe_nilai;
+    //    }
+
+        $rapors = User::where('id_kelas', $id_kelas)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->with('daftarNilaiSiswa.mapel')
+                    ->with('daftarNilaiSiswa.daftarNilai')
+                    ->get();
+                        
+
+
+        return view('debug', ['debug' => $rapors,]);
+        // return view('admin.rapors', ['rapors' => $rapors]);
     }
 
 

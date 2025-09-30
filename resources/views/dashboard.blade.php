@@ -293,13 +293,39 @@
 
             @can('view-siswa')
             {{-- SISWA --}}
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Jadwal Pelajaran Hari Ini</h3>
-                    <div class="space-y-4">
-                        <!-- Schedule Items for Siswa -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                <!-- Kolom Kiri: Jadwal & Keuangan -->
+                <div class="lg:col-span-2 space-y-8">
+                    <!-- Jadwal Pelajaran -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Jadwal Pelajaran Hari Ini</h3>
+                        <div class="h-[500px] overflow-y-auto pr-2">
+                            {{-- Ganti dengan @forelse ($jadwals as $jadwal) di aplikasi Laravel Anda --}}
+
+                            {{-- Tampilan jika jadwal kosong --}}
+                            @forelse ($jadwalHariIni as $jadwal)
+                            <div class="flex items-center bg-gray-50 p-4 rounded-lg">
+                                <div class="w-20 text-center mr-4">
+                                    <p class="font-bold text-green-600 text-lg">{{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }}</p>
+                                    <p class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i') }}</p>
+                                </div>
+                                <div class="border-l-4 border-green-500 pl-4 flex-1">
+                                    <p class="font-semibold text-gray-800">{{$jadwal->mapel->nama_mapel}}</p>
+                                    <p class="text-sm text-gray-600"><i class="fa-solid fa-user mr-2"></i>{{$jadwal->mapel->guru->name}}&nbsp;&nbsp;&nbsp;<i class="fa-solid fa-house mr-1"></i> {{$jadwal->ruangan}}</p>
+                                </div>
+                            </div>
+                             @empty
+                            <div class="flex items-center justify-center h-full">
+                                <div class="text-center text-gray-400">
+                                    <i class="fa-solid fa-calendar-check text-4xl mb-2"></i>
+                                    <p class="font-medium">Tidak ada jadwal pelajaran hari ini.</p>
+                                </div>
+                            </div>
+                            @endforelse
+                        </div>
                     </div>
                 </div>
+                <!-- Kolom Kanan: Kehadiran & Tagihan -->
                 <div class="space-y-8">
                     <div class="bg-white p-6 rounded-xl shadow-md">
                         <h3 class="text-xl font-bold text-gray-800 mb-4">Persentase Kehadiran</h3>
@@ -309,12 +335,24 @@
                     </div>
                      <div class="bg-white p-6 rounded-xl shadow-md">
                         <h3 class="text-xl font-bold text-gray-800 mb-4">Daftar Tagihan</h3>
-                        <div class="overflow-x-auto">
+                        <div class="h-[180px] overflow-y-auto ">
                             <table class="w-full text-sm">
                                 <tbody>
                                     <tr class="border-b">
                                         <td class="py-3 pr-2">SPP Bulan September</td>
                                         <td class="py-3 text-right"><span class="bg-red-100 text-red-700 font-medium py-1 px-3 rounded-full text-xs">Belum Lunas</span></td>
+                                    </tr>
+                                    <tr class="border-b">
+                                        <td class="py-3 pr-2">Uang Buku Paket</td>
+                                        <td class="py-3 text-right"><span class="bg-green-100 text-green-700 font-medium py-1 px-3 rounded-full text-xs">Lunas</span></td>
+                                    </tr>
+                                    <tr class="border-b">
+                                        <td class="py-3 pr-2">Uang Buku Paket</td>
+                                        <td class="py-3 text-right"><span class="bg-green-100 text-green-700 font-medium py-1 px-3 rounded-full text-xs">Lunas</span></td>
+                                    </tr>
+                                    <tr class="border-b">
+                                        <td class="py-3 pr-2">Uang Buku Paket</td>
+                                        <td class="py-3 text-right"><span class="bg-green-100 text-green-700 font-medium py-1 px-3 rounded-full text-xs">Lunas</span></td>
                                     </tr>
                                     <tr class="border-b">
                                         <td class="py-3 pr-2">Uang Buku Paket</td>
@@ -326,6 +364,67 @@
                     </div>
                 </div>
             </div>
+
+            <!-- === KARTU PENGUMUMAN DAN ACARA DIMULAI DI SINI === -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Card Pengumuman -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">Pengumuman Terbaru</h3>
+                        <a href="#" class="text-sm font-medium text-indigo-600 hover:underline">Lihat Semua</a>
+                    </div>
+                    <div class="space-y-4">
+                        <!-- Item Pengumuman 1 -->
+                        <div class="border-l-4 border-orange-400 pl-4 py-2">
+                            <h4 class="font-semibold text-gray-900">Tugas Makalah Sejarah</h4>
+                            <p class="text-sm text-gray-600 line-clamp-2">Harap kumpulkan makalah tentang Kerajaan Majapahit paling lambat tanggal 15 Oktober. Detail format penulisan...</p>
+                            <span class="text-xs text-gray-400">2 hari yang lalu</span>
+                        </div>
+                        <!-- Item Pengumuman 2 -->
+                        <div class="border-l-4 border-blue-400 pl-4 py-2">
+                            <h4 class="font-semibold text-gray-900">UTS Matematika</h4>
+                            <p class="text-sm text-gray-600 line-clamp-2">UTS Matematika akan dilaksanakan pada hari Senin, 6 Oktober 2025. Materi mencakup Bab 1 sampai Bab 3...</p>
+                            <span class="text-xs text-gray-400">3 hari yang lalu</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Acara Sekolah -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">Acara Sekolah</h3>
+                         <a href="#" class="text-sm font-medium text-indigo-600 hover:underline">Lihat Semua</a>
+                    </div>
+                    <div class="space-y-4">
+                        <!-- Item Acara 1 -->
+                        <div class="flex items-center space-x-4">
+                            <div class="w-16 h-16 bg-red-100 text-red-600 flex flex-col items-center justify-center rounded-lg font-bold">
+                                <span class="text-2xl leading-none">17</span>
+                                <span class="text-xs uppercase">OKT</span>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Lomba Cerdas Cermat</h4>
+                                <p class="text-sm text-gray-600"><i class="fa-solid fa-clock mr-1"></i> 08:00 - Selesai</p>
+                                <p class="text-sm text-gray-600"><i class="fa-solid fa-map-marker-alt mr-1"></i> Aula Sekolah</p>
+                            </div>
+                        </div>
+                         <!-- Item Acara 2 -->
+                        <div class="flex items-center space-x-4">
+                            <div class="w-16 h-16 bg-green-100 text-green-600 flex flex-col items-center justify-center rounded-lg font-bold">
+                                <span class="text-2xl leading-none">25</span>
+                                <span class="text-xs uppercase">OKT</span>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Class Meeting</h4>
+                                <p class="text-sm text-gray-600"><i class="fa-solid fa-clock mr-1"></i> 09:00 - Selesai</p>
+                                <p class="text-sm text-gray-600"><i class="fa-solid fa-map-marker-alt mr-1"></i> Lapangan Olahraga</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- === KARTU PENGUMUMAN DAN ACARA BERAKHIR DI SINI === -->
+
             @endcan
 
             @can('view-adminDev')
