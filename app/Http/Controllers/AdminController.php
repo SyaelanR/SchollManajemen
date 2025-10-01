@@ -1281,6 +1281,101 @@ class AdminController extends Controller
         // 4. Redirect kembali ke halaman sebelumnya dengan pesan sukses
         return redirect()->route('manajemenKelas')->with('success', 'Siswa berhasil dikeluarkan!');
 
+
+    }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+########################################################################################################################################
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
+public function index()
+    {
+        // --- SIMULASI DATA DARI DATABASE (DALAM APLIKASI NYATA GUNAKAN MODEL ELOQUENT) ---
+        $events = [
+            // Event 1: Mendatang
+            [
+                'id' => 1,
+                'title' => 'Lomba Debat Bahasa Inggris',
+                'description' => 'Ajang kompetisi kemampuan berbahasa Inggris untuk siswa terpilih.',
+                'date' => '15 Oktober 2025',
+                'time' => '08:00 - 12:00 WIB',
+                'location' => 'Aula Serbaguna',
+                'audience' => 'Kelas XI & XII',
+                'status' => 'Mendatang',
+                'status_color' => 'indigo', // Untuk kustomisasi warna di Blade
+                'status_tag_color' => 'bg-green-100 text-green-800',
+                'border_color' => 'border-indigo-500',
+                'icon_color' => 'text-indigo-500'
+            ],
+            // Event 2: Selesai
+            [
+                'id' => 2,
+                'title' => 'Perayaan Hari Guru Nasional',
+                'description' => 'Apel dan pentas seni untuk menghormati pahlawan tanpa tanda jasa.',
+                'date' => '25 November 2024',
+                'time' => '10:00 - 13:00 WIB',
+                'location' => 'Lapangan Utama',
+                'audience' => 'Semua Siswa & Guru',
+                'status' => 'Selesai',
+                'status_color' => 'gray',
+                'status_tag_color' => 'bg-gray-100 text-gray-600',
+                'border_color' => 'border-gray-400',
+                'icon_color' => 'text-gray-500'
+            ],
+            // Event 3: Khusus Guru
+            [
+                'id' => 3,
+                'title' => 'Workshop Kurikulum Merdeka',
+                'description' => 'Pelatihan implementasi kurikulum baru untuk staf pengajar.',
+                'date' => '05 September 2025',
+                'time' => '09:00 - 15:00 WIB',
+                'location' => 'Ruang Rapat Guru',
+                'audience' => 'Hanya Guru',
+                'status' => 'Mendatang',
+                'status_color' => 'teal',
+                'status_tag_color' => 'bg-blue-100 text-blue-800', // Khusus Guru
+                'border_color' => 'border-teal-500',
+                'icon_color' => 'text-teal-500'
+            ],
+        ];
+
+        // Melewatkan data acara ke view 'admin.acara-sekolah'
+        return View('admin.acara-sekolah', compact('events'));
+    }
+
+    /**
+     * Menyimpan acara baru yang ditambahkan melalui form modal.
+     * Corresponds to POST /admin/acara-sekolah
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function store(Request $request)
+    {
+        // 1. Validasi data input
+        $validatedData = $request->validate([
+            'judul_acara' => 'required|string|max:255',
+            'tanggal_acara' => 'required|date',
+            'waktu_acara' => 'required|date_format:H:i',
+            'lokasi' => 'required|string|max:255',
+            'peserta_target' => 'required|string|in:Semua,Siswa,Guru,Kelas XI & XII',
+            'deskripsi' => 'nullable|string|max:500',
+        ]);
+
+        // 2. Simpan ke database (Contoh menggunakan Model Event, yang harus Anda buat)
+        // \App\Models\Event::create($validatedData);
+
+        // 3. Redirect ke halaman index dengan pesan sukses
+        return redirect()->route('admin.acara-sekolah')->with('success', 'Acara baru berhasil ditambahkan!');
     }
     
+    /**
+     * Placeholder untuk menghapus acara.
+     * Corresponds to DELETE /admin/acara-sekolah/{id}
+     */
+    public function destroy($id)
+    {
+        // Temukan dan hapus event
+        // \App\Models\Event::destroy($id);
+        
+        return redirect()->route('admin.acara-sekolah')->with('success', 'Acara berhasil dihapus.');
+    }
 }
