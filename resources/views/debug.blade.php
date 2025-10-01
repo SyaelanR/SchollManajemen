@@ -9,15 +9,28 @@
 <body>
     <h1>DEBUG</h1>
     
-    <pre>{{ json_encode($debug, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+    {{-- <pre>{{ json_encode($debug, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre> --}}
 
     <br>
     <br>
-    @forelse ($rapors ?? [] as $rapor)
-    {{-- <h2>{{$rapor->siswa->name}}</h2> --}}
+    <p>spasi</p>
+    {{-- @forelse ($debug ?? [] as $item)
+    <pre>{{ json_encode($item->name, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+    <pre>{{ json_encode($item->daftarNilaiSiswa, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+        @foreach ($item->daftarNilaiSiswa as $nilai)
+        <pre>{{ json_encode($nilai->mapel->nama_mapel, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+        @endforeach
+    <h2>{{$rapor->siswa->name}}</h2>
     @empty
     <p>kosong</p>
     @endforelse
+
+    <p>spasi2</p> --}}
+
+
+    <pre>{{ json_encode($students, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+
+    {{-- <h1>{{$tess}}</h1> --}}
  
     {{-- <p>{{$daftarSiswa}}</p> --}}
 </body>

@@ -19,6 +19,11 @@
             color: #000;
         }
 
+        .page-break {
+            page-break-after: always;
+            clear: both;
+        }
+
         .container {
             width: 190mm; /* Lebar A4 dikurangi margin */
             margin: 0 auto;
@@ -146,147 +151,146 @@
         }
     </style>
 </head>
+{{-- <body onload="window.print()"> --}}
 <body>
-    <div class="container">
-        <!-- Box F-1b (Diletakkan di posisi absolute, pastikan dompdf menanganinya dengan baik) -->
-        <!-- <div class="box-f1b float-right">
-            F-1b
-        </div> -->
+    @foreach ($processedRapors as $index => $data)
+        <div class="container">
+            <div class="header">
+                <h3>FORMAT PENCAPAIAN KETUNTASAN BELAJAR</h3>
+                <h4>BERDASARKAN NILAI AKHIR (RAPOR)</h4>
+                <h4>TAHUN PELAJARAN {{ $kelasInfo->angkatan->angkatan ?? 'N/A' }}</h4>
+            </div>
 
-        <div class="header">
-            <h3>FORMAT PENCAPAIAN KETUNTASAN BELAJAR</h3>
-            <h4>BERDASARKAN NILAI AKHIR (RAPOR)</h4>
-            <h4>TAHUN PELAJARAN 2020/2021</h4>
-        </div>
-
-        <!-- Data Siswa dan Sekolah -->
-        <div class="data-siswa">
-            <table>
-                <tr>
-                    <td>SEMESTER</td>
-                    <td>:</td>
-                    <td>2 (Dua)</td>
-                </tr>
-                <tr>
-                    <td>KELAS</td>
-                    <td>:</td>
-                    <td>VI (Enam)</td>
-                </tr>
-                <tr>
-                    <td>SEKOLAH</td>
-                    <td>:</td>
-                    <td>SDN 1 SAGARA</td>
-                </tr>
-                <tr>
-                    <td>KECAMATAN</td>
-                    <td>:</td>
-                    <td>CIBALONG</td>
-                </tr>
-                <tr>
-                    <td>KABUPATEN</td>
-                    <td>:</td>
-                    <td>GARUT</td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- Tabel Nilai Utama -->
-        <table class="tabel-nilai">
-            <thead>
-                <tr>
-                    <th rowspan="2" style="width: 5%;">No. <br></th>
-                    <th rowspan="2" style="width: 25%;">Mata Pelajaran <br></th>
-                    <th colspan="4">Nilai Hasil Belajar</th>
-                    <th rowspan="2" style="width: 15%;">Keterangan <br></th>
-                </tr>
-                <tr>
-                    <th style="width: 8%;">Tugas <br></th>
-                    <th style="width: 8%;">UTS <br></th>
-                    <th style="width: 8%;">UAS <br></th>
-                    <th style="width: 8%; font-weight: bold; background-color: #e0e0e0;">Nilai Akhir <br></th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Data Mata Pelajaran (Diperbarui untuk 4 kolom nilai) -->
-                <!-- Nilai Akhir (Kolom 6) saya isi sebagai placeholder '90' -->
-                <tr><td>1</td><td class="text-left">Pendidikan Agama</td><td>76</td><td>82</td><td>100</td><td>90</td><td></td></tr>
-                <tr><td>2</td><td class="text-left">Pendidikan Kewarganegaraan</td><td>74</td><td>81</td><td>100</td><td>89</td><td></td></tr>
-                <tr><td>3</td><td class="text-left">Bahasa Indonesia</td><td>75</td><td>82</td><td>100</td><td>88</td><td></td></tr>
-                <tr><td>4</td><td class="text-left">Matematika</td><td>71</td><td>77</td><td>100</td><td>85</td><td></td></tr>
-                <tr><td>5</td><td class="text-left">Ilmu Pengetahuan Alam</td><td>74</td><td>80</td><td>100</td><td>86</td><td></td></tr>
-                <tr><td>6</td><td class="text-left">Ilmu Pengetahuan Sosial</td><td>75</td><td>81</td><td>97</td><td>84</td><td></td></tr>
-                <tr><td>7</td><td class="text-left">Seni Budaya & Keterampilan</td><td>77</td><td>82</td><td>97</td><td>87</td><td></td></tr>
-                <tr><td>8</td><td class="text-left">Pend. Jasmani, OR, dan Kesehatan</td><td>76</td><td>81</td><td>97</td><td>88</td><td></td></tr>
-                <tr style="font-weight: bold;"><td rowspan="3">9</td><td class="text-left">Muatan Lokal</td><td colspan="5"></td></tr>
-                <tr><td class="text-left" style="padding-left: 20px; font-weight: normal;">a. Bahasa Sunda</td><td>76</td><td>81</td><td>97</td><td>85</td><td></td></tr>
-                <tr><td class="text-left" style="padding-left: 20px; font-weight: normal;">b. Bahasa Inggris</td><td>75</td><td>78</td><td>97</td><td>83</td><td></td></tr>
-                
-                <!-- Baris Jumlah (Diperbarui untuk 4 kolom nilai) -->
-                <tr class="footer-row">
-                    <td colspan="2" class="text-left">Jumlah</td>
-                    <td>749</td>
-                    <td>805</td>
-                    <td>984</td>
-                    <td>953</td> <!-- Placeholder jumlah Nilai Akhir -->
-                    <td></td>
-                </tr>
-                <!-- Baris Rata-rata (Diperbarui untuk 4 kolom nilai) -->
-                <tr class="footer-row">
-                    <td colspan="2" class="text-left">Rata-rata</td>
-                    <td>75</td>
-                    <td>81</td>
-                    <td>98</td>
-                    <td>87</td> <!-- Placeholder rata-rata Nilai Akhir -->
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
-        
-        <!-- Keterangan Absensi (Struktur Baru) -->
-        <div class="keterangan-absensi clearfix">
-            <div class="kiri">
-                <p><strong>Ketidakhadiran</strong></p>
+            <!-- Data Siswa dan Sekolah -->
+            <div class="data-siswa">
                 <table>
                     <tr>
-                        <td>Izin</td>
+                        <td>NAMA SISWA</td>
                         <td>:</td>
-                        <td>0 hari</td> <!-- Placeholder -->
+                        <td><strong>{{ strtoupper($data['siswa']->name) }}</strong></td>
+                        <td style="width: 20%;">NISN</td>
+                        <td>:</td>
+                        <td>{{ $data['siswa']->nisn_nik }}</td>
                     </tr>
                     <tr>
-                        <td>Sakit</td>
+                        <td>KELAS</td>
                         <td>:</td>
-                        <td>0 hari</td> <!-- Placeholder -->
+                        <td>{{ $kelasInfo->nama_kelas }}</td>
+                        <td>SEMESTER</td>
+                        <td>:</td>
+                        <td>{{ ucfirst($kelasInfo->angkatan->semester ?? 'N/A') }}</td>
                     </tr>
                     <tr>
-                        <td>Tanpa Keterangan (Alpha)</td>
+                        <td>SEKOLAH</td>
                         <td>:</td>
-                        <td>0 hari</td> <!-- Placeholder -->
+                        <td colspan="4">{{$kelasInfo->angkatan->sekolah->nama_sekolah}}</td> {{-- Ganti dengan data sekolah dinamis jika ada --}}
                     </tr>
                 </table>
             </div>
 
-            <div class="kanan">
-                <!-- Bagian Kanan dibiarkan kosong atau bisa diisi keterangan lain jika diperlukan -->
+            <!-- Tabel Nilai Utama -->
+            <table class="tabel-nilai">
+                <thead>
+                    <tr>
+                        <th rowspan="2" style="width: 5%;">No. <br></th>
+                        <th rowspan="2" style="width: 25%;">Mata Pelajaran <br></th>
+                        <th colspan="4">Nilai Hasil Belajar</th>
+                        <th rowspan="2" style="width: 15%;">Keterangan <br></th>
+                    </tr>
+                    <tr>
+                        <th style="width: 8%;">Tugas <br></th>
+                        <th style="width: 8%;">UTS <br></th>
+                        <th style="width: 8%;">UAS <br></th>
+                        <th style="width: 8%; font-weight: bold; background-color: #e0e0e0;">Nilai Akhir <br></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        $totalTugas = 0;
+                        $totalUTS = 0;
+                        $totalUAS = 0;
+                        $totalNilaiAkhir = 0;
+                        $mapelCount = $data['rapor']->count();
+                    @endphp
+
+                    @forelse ($data['rapor'] as $item)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td class="text-left">{{ $item['mapel']->nama_mapel ?? 'N/A' }}</td>
+                            <td>{{ $item['scores']['Tugas'] ?? '-' }}</td>
+                            <td>{{ $item['scores']['UTS'] ?? '-' }}</td>
+                            <td>{{ $item['scores']['UAS'] ?? '-' }}</td>
+                            <td>{{ $item['scores']['Nilai Akhir'] ?? '-' }}</td>
+                            <td>{{ ($item['scores']['Nilai Akhir'] ?? 0) >= 75 ? 'Tuntas' : 'Belum Tuntas' }}</td>
+                        </tr>
+                        @php
+                            $totalTugas += $item['scores']['Tugas'] ?? 0;
+                            $totalUTS += $item['scores']['UTS'] ?? 0;
+                            $totalUAS += $item['scores']['UAS'] ?? 0;
+                            $totalNilaiAkhir += $item['scores']['Nilai Akhir'] ?? 0;
+                        @endphp
+                    @empty
+                        <tr>
+                            <td colspan="7">Tidak ada data nilai untuk ditampilkan.</td>
+                        </tr>
+                    @endforelse
+
+                    <!-- Baris Jumlah -->
+                    <tr class="footer-row">
+                        <td colspan="2" class="text-left">Jumlah</td>
+                        <td>{{ $totalTugas }}</td>
+                        <td>{{ $totalUTS }}</td>
+                        <td>{{ $totalUAS }}</td>
+                        <td>{{ $totalNilaiAkhir }}</td>
+                        <td></td>
+                    </tr>
+                    <!-- Baris Rata-rata -->
+                    <tr class="footer-row">
+                        <td colspan="2" class="text-left">Rata-rata</td>
+                        <td>{{ $mapelCount > 0 ? round($totalTugas / $mapelCount) : 0 }}</td>
+                        <td>{{ $mapelCount > 0 ? round($totalUTS / $mapelCount) : 0 }}</td>
+                        <td>{{ $mapelCount > 0 ? round($totalUAS / $mapelCount) : 0 }}</td>
+                        <td>{{ $mapelCount > 0 ? round($totalNilaiAkhir / $mapelCount) : 0 }}</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Keterangan Absensi -->
+            <div class="keterangan-absensi clearfix">
+                <div class="kiri">
+                    <p><strong>Ketidakhadiran</strong></p>
+                    <table>
+                        <tr><td>Izin</td><td>:</td><td>{{ $data['absensi']['Izin'] ?? 0 }} hari</td></tr>
+                        <tr><td>Sakit</td><td>:</td><td>{{ $data['absensi']['Sakit'] ?? 0 }} hari</td></tr>
+                        <tr><td>Tanpa Keterangan (Alpha)</td><td>:</td><td>{{ $data['absensi']['Alpha'] ?? 0 }} hari</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <!-- Tanda Tangan -->
+            <div class="tanda-tangan">
+                <div style="text-align: left;">
+                    <p>Mengetahui,</p>
+                    <p>Orang Tua/Wali</p>
+                    <div class="spacer"></div>
+                    <p>(................................)</p>
+                </div>
+                <div style="text-align: right;">
+                    <p>{{$kelasInfo->angkatan->sekolah->alamat}}, {{ \Carbon\Carbon::now()->isoFormat('D MMMM YYYY') }}</p>
+                    <p>Wali Kelas</p>
+                    <div class="spacer"></div>
+                    <p><strong>{{ $kelasInfo->wali_kelas ?? '(................................)' }}</strong></p>
+                </div>
             </div>
         </div>
 
-        <div class="clearfix"></div>
-
-        <!-- Tanda Tangan -->
-        <div class="tanda-tangan">
-            <div style="text-align: left;">
-                <p>Diketahui oleh</p>
-                <p>Kepala Sekolah,</p>
-                <div class="spacer"></div>
-                <p>(.........................................................)</p>
-            </div>
-            <div style="text-align: right;">
-                <p>Sagara, 25 Juni 2021</p>
-                <p>Guru Kelas</p>
-                <div class="spacer"></div>
-                <p>(.........................................................)</p>
-            </div>
-        </div>
-    </div>
+        {{-- Jangan tambahkan page-break setelah item terakhir --}}
+        @if (!$loop->last)
+            <div class="page-break"></div>
+        @endif
+    @endforeach
 </body>
 </html>

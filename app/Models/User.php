@@ -84,6 +84,11 @@ class User extends Authenticatable
         return $this->hasMany(DaftarNilaiSiswa::class, 'id_siswa', 'id');
     }
 
+    public function daftarAbsensiSiswa ()
+    {
+        return $this->hasMany(DaftarAbsensiSiswa::class, 'id_siswa', 'id');
+    }
+
 
 
     
