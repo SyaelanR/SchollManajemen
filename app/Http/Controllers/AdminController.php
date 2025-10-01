@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\RiwayatKeuangan;
 use App\Models\User; // Menggunakan model User untuk Siswa dan Guru
 use App\Models\Angkatan;
+use App\Models\DaftarAcara;
 use App\Models\DaftarKurikulum;
 use App\Models\DaftarNilaiSiswa;
 use App\Models\Kelas;
@@ -813,6 +814,10 @@ class AdminController extends Controller
                             'daftarNilaiSiswa.daftarNilai',
                             'daftarAbsensiSiswa' // Eager load relasi absensi
                         ])
+                        ->whereHas('daftarNilaiSiswa', function($query) use ($kelasInfo) {
+                            $query->where('tingkat', $kelasInfo->angkatan->id_tingkat);
+                            $query->where('semester', $kelasInfo->angkatan->semester);
+                        })
                         ->get();
     
         // Proses data untuk setiap siswa
@@ -1286,59 +1291,16 @@ class AdminController extends Controller
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ########################################################################################################################################
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
-public function index()
+public function manajAcara(Request $request)
     {
-        // --- SIMULASI DATA DARI DATABASE (DALAM APLIKASI NYATA GUNAKAN MODEL ELOQUENT) ---
-        $events = [
-            // Event 1: Mendatang
-            [
-                'id' => 1,
-                'title' => 'Lomba Debat Bahasa Inggris',
-                'description' => 'Ajang kompetisi kemampuan berbahasa Inggris untuk siswa terpilih.',
-                'date' => '15 Oktober 2025',
-                'time' => '08:00 - 12:00 WIB',
-                'location' => 'Aula Serbaguna',
-                'audience' => 'Kelas XI & XII',
-                'status' => 'Mendatang',
-                'status_color' => 'indigo', // Untuk kustomisasi warna di Blade
-                'status_tag_color' => 'bg-green-100 text-green-800',
-                'border_color' => 'border-indigo-500',
-                'icon_color' => 'text-indigo-500'
-            ],
-            // Event 2: Selesai
-            [
-                'id' => 2,
-                'title' => 'Perayaan Hari Guru Nasional',
-                'description' => 'Apel dan pentas seni untuk menghormati pahlawan tanpa tanda jasa.',
-                'date' => '25 November 2024',
-                'time' => '10:00 - 13:00 WIB',
-                'location' => 'Lapangan Utama',
-                'audience' => 'Semua Siswa & Guru',
-                'status' => 'Selesai',
-                'status_color' => 'gray',
-                'status_tag_color' => 'bg-gray-100 text-gray-600',
-                'border_color' => 'border-gray-400',
-                'icon_color' => 'text-gray-500'
-            ],
-            // Event 3: Khusus Guru
-            [
-                'id' => 3,
-                'title' => 'Workshop Kurikulum Merdeka',
-                'description' => 'Pelatihan implementasi kurikulum baru untuk staf pengajar.',
-                'date' => '05 September 2025',
-                'time' => '09:00 - 15:00 WIB',
-                'location' => 'Ruang Rapat Guru',
-                'audience' => 'Hanya Guru',
-                'status' => 'Mendatang',
-                'status_color' => 'teal',
-                'status_tag_color' => 'bg-blue-100 text-blue-800', // Khusus Guru
-                'border_color' => 'border-teal-500',
-                'icon_color' => 'text-teal-500'
-            ],
-        ];
 
-        // Melewatkan data acara ke view 'admin.acara-sekolah'
-        return View('admin.acara-sekolah', compact('events'));
+        $id_sekolah = request()->cookie('id_sekolah');
+
+        $daftarAcara = DaftarAcara::where('id_sekolah', $id_sekolah)
+                        ->where('tanggal_selesai', '>=', Carbon::now()->subWeeks(1))
+                        ->get();
+
+        return View('admin.acara-sekolah', ['daftarAcara' => $daftarAcara]);
     }
 
     /**

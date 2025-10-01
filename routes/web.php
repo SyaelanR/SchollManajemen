@@ -122,6 +122,13 @@ Route::middleware('auth')->group(function () {
 
         });
 
+        Route::prefix('manajemen-acara')->group(function () {
+            Route::get('/', [AdminController::class, 'manajAcara'])->name('manajAcara');
+            
+            Route::post('/acara-sekolah', [AdminController::class, 'store'])->name('admin.acara.store');
+            Route::delete('/acara-sekolah/{id}', [AdminController::class, 'destroy'])->name('admin.acara.destroy');
+        });
+
     });
 
         
@@ -284,6 +291,4 @@ Route::get('/input-nilai', [AdminController::class, 'inputnilai'])->name('inputn
 #####################################################################################################################################################
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Halaman daftar acara
-Route::get('/acara-sekolah', [AdminController::class, 'index'])->name('admin.acara.index');
-    Route::post('/acara-sekolah', [AdminController::class, 'store'])->name('admin.acara.store');
-    Route::delete('/acara-sekolah/{id}', [AdminController::class, 'destroy'])->name('admin.acara.destroy');
+
