@@ -72,6 +72,12 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{id_kelas}', [AdminController::class, 'destroyKelas'])->name('destroyKelas');
 
         });
+        
+        Route::prefix('manajemen-kurikulum')->group(function(){
+            Route::get('/', [AdminController::class, 'manajKurikulum'])->name('manajemenKurikulum');
+            Route::post('/', [AdminController::class, 'storeKurikulum'])->name('storeKurikulum');
+
+        });
 
         Route::prefix('manajemen-keuangan')->group(function () {
             Route::get('/', [AdminController::class, 'manajKeuangan'])->name('manajemenKeuangan');
@@ -108,6 +114,12 @@ Route::middleware('auth')->group(function () {
             Route::post('/', [AdminController::class, 'storeTingkat'])->name('storeTingkat');
             Route::put('/{id_tingkat}', [AdminController::class, 'updateTingkat'])->name('updateTingkat');
             Route::delete('/{id_tingkat}', [AdminController::class, 'destroyTingkat'])->name('destroyTingkat');
+        });
+
+        Route::prefix('manajemen-rapor')->group(function (){
+            Route::get('/', [AdminController::class, 'manajRapor'])->name('manajemenRapor');
+            Route::get('/rapor/{id_kelas}', [AdminController::class, 'Rapors'])->name('Rapors');
+
         });
 
     });
@@ -170,6 +182,17 @@ Route::middleware('auth')->group(function () {
 
             Route::get('/lihat-materi/{namaFile}', [GuruController::class, 'lihatMateri'])->name('lihatMateri');
         });
+
+
+        Route::prefix('manajemen-pengumuman')->group(function () {
+            Route::get('/', [GuruController::class, 'manajPengumumanKelas'])->name('manajPengumuman');
+            Route::get('/manajemen-pengumuman-daftar/{id_kelas}/{id_mapel}', [GuruController::class, 'manajPengumumanDaftar'])->name('manajPengumumanDaftar');
+            Route::post('/manajemen-pengumuman-daftar/{id_kelas}/{id_mapel}', [GuruController::class, 'storePengumuman'])->name('storePengumumanDaftar');
+
+
+        });
+
+
 
             
         

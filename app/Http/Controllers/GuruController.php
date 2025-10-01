@@ -8,6 +8,7 @@ use App\Models\DaftarAbsensiSiswa;
 use App\Models\DaftarMateri;
 use App\Models\DaftarNilai;
 use App\Models\DaftarNilaiSiswa;
+use App\Models\DaftarPengumuman;
 use App\Models\Jadwal;
 use App\Models\Kelas;
 use App\Models\User;
@@ -915,5 +916,124 @@ class GuruController extends Controller
         abort(404, 'File not found');
 
     }
- 
+
+
+    public function manajPengumumanKelas(Request $request)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+
+    $daftarkelasYangDiampu = Jadwal::with('kelas.angkatan', 'mapel')
+        ->whereHas('mapel', function ($query) use ($id_user) {
+            $query->where('id_guru', $id_user);
+        })
+        ->whereHas('kelas.angkatan', function ($query) use ($id_sekolah) {
+            $query->where('id_sekolah', $id_sekolah);
+        })
+        ->whereHas('kelas.angkatan', function ($query) {
+            $query->whereColumn('angkatans.semester', 'jadwals.semester');
+        })
+        ->whereHas('kelas.angkatan', function ($query) {
+            $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+        })
+        ->whereHas('kelas.angkatan', function ($query) {
+            // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+            $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+        })
+        ->select('id_kelas', 'id_mapel') // hanya ambil kombinasi unik kelas+mapel
+        ->distinct()
+        // ->with('kelas.angkatan', 'mapel') // tetap load relasi
+        ->get();
+
+    // Iterasi untuk menghitung jumlah siswa untuk setiap kelas yang diampu
+    foreach ($daftarkelasYangDiampu as $jadwal) {
+        // Muat relasi yang dibutuhkan jika belum ada
+        $jadwal->loadMissing('kelas.angkatan', 'mapel');
+        // Hitung dan tambahkan properti jumlah_siswa ke setiap item jadwal
+        $jadwal->jumlah_siswa = User::where('id_kelas', $jadwal->id_kelas)->count();
+    }
+
+
+        
+        return view('guru.manajemen_pengumuman_kelas', ['daftarkelasYangDiampu' => $daftarkelasYangDiampu]);
+    }
+
+    public function manajPengumumanDaftar (Request $request, $id_kelas, $id_mapel) 
+    {
+
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+
+            // cek apakah guru mengajar kelas&mapel ini + ambil kelas & angkatan, & cek semester & angkatan aktif
+        $infoJKA = Jadwal::where('id_kelas', $id_kelas)
+                    ->where('id_mapel', $id_mapel)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->with('kelas.angkatan')
+                    ->with('mapel')
+                    ->whereHas('mapel', function ($query) use ($id_user) {
+                        $query->where('id_guru', $id_user);
+                    })
+                    ->firstOrFail();
+
+        // dd($infoKelas->semester);
+
+        if($infoJKA->kelas->angkatan->id_tingkat != $infoJKA->tingkat || $infoJKA->kelas->angkatan->semester != $infoJKA->semester){
+            abort(404);
+        }
+        
+
+        $DaftarPengumuman = DaftarPengumuman::where('id_kelas', $id_kelas)
+            ->where('id_mapel', $id_mapel)
+            ->where('id_sekolah', $id_sekolah)
+            ->where('created_at', '>=', Carbon::now()->subWeeks(1))
+            ->get();
+
+        return view('guru.manajemen_pengumuman_daftar', ['infoJKA' => $infoJKA, 'daftarPengumuman' => $DaftarPengumuman]);
+
+    }
+
+    public function storePengumuman (Request $request, $id_kelas, $id_mapel)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+
+        $request->validate([
+            'judul' => 'required|string|max:255',
+            'isi' => 'required|string|max:255'
+        ],[
+            'judul.required' => 'Judul tidak boleh kosong.',
+            'judul.max' => 'Judul maksimal 255 karakter.',
+            'isi.required' => 'Isi tidak boleh kosong.',
+            'isi.max' => 'Isi maksimal 255 karakter.',
+        ]);
+
+
+        $infoJKA = Jadwal::where('id_kelas', $id_kelas)
+                    ->where('id_mapel', $id_mapel)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->with('kelas.angkatan')
+                    ->with('mapel')
+                    ->whereHas('mapel', function ($query) use ($id_user) {
+                        $query->where('id_guru', $id_user);
+                    })
+                    ->firstOrFail();
+
+        // dd($infoKelas->semester);
+
+        if($infoJKA->kelas->angkatan->id_tingkat != $infoJKA->tingkat || $infoJKA->kelas->angkatan->semester != $infoJKA->semester){
+            abort(404);
+        }
+
+        DaftarPengumuman::create([
+            'id_sekolah' => $id_sekolah,
+            'id_kelas' => $id_kelas,
+            'id_mapel' => $id_mapel,
+            'judul' => $request->judul,
+            'isi' => $request->isi,
+        ]);
+        
+        return redirect()->route('manajPengumumanDaftar', ['id_kelas' => $id_kelas, 'id_mapel' => $id_mapel])->with('success', 'Pengumuman berhasil ditambahkan!');
+
+    }
+
 }

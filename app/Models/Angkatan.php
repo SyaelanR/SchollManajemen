@@ -18,4 +18,9 @@ class Angkatan extends Model
         'id_tingkat',
         'tingkat',
 ];
+
+public function sekolah()
+    {
+        return $this->belongsTo(Clien::class, 'id_sekolah', 'id_sekolah');
+    }
 }

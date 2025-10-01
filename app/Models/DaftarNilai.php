@@ -30,4 +30,9 @@ class DaftarNilai extends Model
     {
         return $this->belongsTo(DaftarTugas::class, 'id_daftar_tugas', 'id_daftar_tugas');
     }
+
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class, 'id_kelas', 'id_kelas');
+    }
 }
