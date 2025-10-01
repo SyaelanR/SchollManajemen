@@ -21,13 +21,23 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'nisn_nip',
-        'mapel',
+        'nisn_nik',
+        'alamat',
         'role',
         'id_kelas',
-        'angkatan',
+        'id_angkatan',
         'jenis_kelamin',
         'username',
+        'id_sekolah',
+        'no_telp',
+        'tempat_lahir',
+        'tanggal_lahir',
+        'usia',
+        'tanggal_masuk',
+        'tanggal_lulus',
+        'nama_orang_tua',
+        'gaji_orang_tua',
+        'jumlah_sodara',
     ];
 
     /**
@@ -50,7 +60,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'encrypted',
-            'nisn_nip' => 'encrypted',
+            'nisn_nik' => 'encrypted',
         ];
     }
 }

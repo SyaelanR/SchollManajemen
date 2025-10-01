@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mata Pelajaran Saya - Sistem Manajemen Sekolah</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Custom styles */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
+            <div class="p-6">
+                <a href="#" class="flex items-center space-x-3">
+                    <i class="fa-solid fa-school text-3xl text-indigo-600"></i>
+                    <span class="text-2xl font-bold text-gray-800">EduSys</span>
+                </a>
+            </div>
+            <nav class="mt-6">
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                    <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                    <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
+                    <span>Jadwal Pelajaran</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                    <i class="fa-solid fa-star w-6 h-6 mr-3"></i>
+                    <span>Nilai Saya</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
+                    <i class="fa-solid fa-book w-6 h-6 mr-3"></i>
+                    <span>Mata Pelajaran</span>
+                </a>
+            </nav>
+            <div class="absolute bottom-0 w-full p-6">
+                 <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg">
+                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Overlay for mobile -->
+        <div id="overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden lg:hidden"></div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-y-auto">
+            <!-- Header -->
+            <header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-30">
+                <!-- Mobile Menu Button -->
+                <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
+                    <i class="fa-solid fa-bars text-2xl"></i>
+                </button>
+                <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Mata Pelajaran Saya</h1>
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-500 hover:text-gray-700">
+                        <i class="fa-solid fa-bell"></i>
+                    </button>
+                    <div class="relative">
+                        <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=S" alt="User avatar">
+                        <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main class="p-6 md:p-8 flex-1">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">Daftar Mata Pelajaran</h2>
+                    <p class="text-gray-500 mt-1">Berikut adalah semua mata pelajaran yang Anda ambil semester ini.</p>
+                </div>
+
+                <!-- Subjects Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    
+                    <!-- Subject Card 1: Matematika Wajib -->
+                    @forelse ($daftarMapel ?? [] as $mapel)
+                    <a href="{{ route('lihatTugasDaftar', $mapel->mapel->id_mapel)}}">
+                        <div class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="bg-blue-100 text-blue-600 p-3 rounded-full">
+                                        <i class="fa-solid fa-book-open text-xl"></i>
+                                    </div>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">{{$mapel->mapel->nama_mapel}}</h3>
+                                <p class="text-gray-600 text-sm flex items-center"><i class="fa-solid fa-chalkboard-user w-4 mr-2 text-gray-400"></i>{{$mapel->mapel->guru->name}}</p>
+                            </div>
+                            <div class="border-t mt-4 pt-4">
+                                <p class="text-sm font-semibold text-gray-700">SKS: <span class="font-bold text-blue-600">{{$mapel->mapel->sks}}</span></p>
+                            </div>
+                        </div>
+                    </a>
+                    @empty
+                    <div class="col-span-full text-center py-10">
+                        <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600 font-semibold text-lg">Belum ada Mapel tersedia.</p>
+                    </div>
+                    @endforelse
+                </div>
+            </main>
+        </div>
+    </div>
+                    
+    <script>
+        // --- Sidebar Toggle Functionality ---
+        const menuButton = document.getElementById('menu-button');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        const toggleSidebar = () => {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        };
+
+        menuButton.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
+    </script>
+
+</body>
+</html>

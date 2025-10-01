@@ -67,11 +67,11 @@
                     <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
                     <span>Manajemen Siswa</span>
                 </a>
-                <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
+                <a href="#" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
                     <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
                     <span>Manajemen Guru</span>
                 </a>
@@ -133,12 +133,12 @@
                 <div class="bg-white p-6 rounded-xl shadow-md">
                     <!-- Form Header -->
                     <div class="mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800">Form Tambah Admin Massal</h2>
+                        <h2 class="text-2xl font-bold text-gray-800">Form Tambah Admin Massal {{$info_sekolah->nama_sekolah}}</h2>
                         <p class="text-gray-500 mt-1">Isi data Admin pada baris yang tersedia. Klik "Tambah Baris" untuk menambahkan lebih banyak Admin.</p>
                     </div>
 
                     <!-- admin Form Table -->
-                    <form id="add-admin-form" method="POST" action="{{ route('storeAdmin') }}">
+                    <form id="add-admin-form" method="POST" action="{{ route('storeAdmin', ['id_sekolah' => $info_sekolah->id_sekolah]) }}">
                         @csrf
                         <div class="overflow-x-auto">
                             <table class="w-full min-w-[800px] text-left">
@@ -164,7 +164,7 @@
                                 Tambah Baris
                             </button>
                             <div class="flex w-full md:w-auto gap-4">
-                               <a href="{{ route('manajemenKlien') }}" class="w-full md:w-auto bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300 text-center flex items-center justify-center">
+                               <a href="{{ route('dashboard') }}" class="w-full md:w-auto bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300 text-center flex items-center justify-center">
                                     Batal
                                 </a>
                                 <button type="submit" class="w-full md:w-auto bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">
@@ -272,7 +272,7 @@
                 if (response.ok) {
                     // Handle success
                     alert(result.message);
-                    window.location.href = "{{ route('manajemenKlien') }}"; // Redirect on success
+                    window.location.href = "{{ route('dashboard') }}"; // Redirect on success
                 } else if (response.status === 422) {
                     // Handle validation errors
                     displayErrors(result.errors);
@@ -299,7 +299,7 @@
                     const message = errors[key][0];
 
                     // Cari input berdasarkan atribut 'name'
-                    const input = document.querySelector(`input[name="admin[${rowKey}][${fieldName}]"]`);
+                    const input = document.querySelector(input[name="admin[${rowKey}][${fieldName}]"]);
                     
                     if (input) {
                         input.classList.add('border-red-500');

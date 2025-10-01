@@ -51,7 +51,7 @@
         }
         /* New style to always show horizontal scrollbar */
         .force-scroll-x {
-            overflow-x: scroll;
+            overflow-x: auto; /* Menggunakan auto agar scrollbar muncul hanya jika dibutuhkan */
         }
     </style>
 </head>
@@ -91,12 +91,10 @@
                     <i class="fa-solid fa-money-bill-wave w-6 h-6 mr-3"></i>
                     <span>Keuangan</span>
                 </a>
-                @can('view-settings')
-                    <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                        <i class="fa-solid fa-cog w-6 h-6 mr-3"></i>
-                        <span>Pengaturan</span>
-                    </a>
-                @endcan
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                    <i class="fa-solid fa-cog w-6 h-6 mr-3"></i>
+                    <span>Pengaturan</span>
+                </a>
             </nav>
             <div class="absolute bottom-0 w-full p-6">
                 <form method="POST" action="{{ route('logout') }}">
@@ -128,7 +126,7 @@
                         <i class="fa-solid fa-bell"></i>
                     </button>
                     <div class="relative">
-                        <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=A" alt="User avatar" onerror="this.onerror=null;this.src='https://placehold.co/100x100/cccccc/ffffff?text=A';">
+                        <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=A" alt="User avatar">
                         <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
                     </div>
                 </div>
@@ -145,17 +143,20 @@
 
                     <!-- teacher Form Table -->
                     <form id="add-teacher-form" method="POST" action="{{ route('storeGuru') }}">
-                        @csrf
-                        <!-- MODIFIED: Changed overflow-x-auto to our custom class force-scroll-x -->
+                        <!-- MODIFIED: Changed overflow-x: auto for better responsiveness -->
                         <div class="force-scroll-x">
-                            <!-- MODIFIED: Removed min-w-[800px] to let columns define the width -->
                             <table class="w-full text-left">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <!-- MODIFIED: Removed w-* classes and added style with min-width for better control -->
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">NIP</th>
+                                        <!-- MODIFIED: Added min-width for better column control -->
+                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">NIK</th>
                                         <th class="p-3 font-semibold text-gray-600" style="min-width: 250px;">Nama Guru</th>
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Mapel</th>
+                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Alamat</th>
+                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Tempat lahir</th>
+                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Tanggal lahir</th>
+                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Usia</th>
+                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Nomor Telp</th>
+                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Jabatan</th>
                                         <th class="p-3 font-semibold text-gray-600" style="min-width: 180px;">Username</th>
                                         <th class="p-3 font-semibold text-gray-600" style="min-width: 180px;">Password</th>
                                         <th class="p-3 font-semibold text-gray-600 text-center" style="min-width: 80px;">Aksi</th>
@@ -215,13 +216,31 @@
             row.className = 'hover:bg-gray-50';
             row.innerHTML = `
                 <td class="p-2">
-                    <input type="text" name="teacher[${rowCount}][nip]" placeholder="Contoh: 19850315..." class="table-input" />
+                    <input type="text" name="teacher[${rowCount}][nik]" placeholder="Contoh: 19850315..." class="table-input" />
                 </td>
                 <td class="p-2">
                     <input type="text" name="teacher[${rowCount}][nama]" placeholder="Nama Lengkap Guru" class="table-input" />
                 </td>
                 <td class="p-2">
-                    <input type="text" name="teacher[${rowCount}][mapel]" placeholder="mata pelajaran yang diampu" class="table-input" />
+                    <input type="text" name="teacher[${rowCount}][alamat]" placeholder="Alamat" class="table-input" />
+                </td>
+                <td class="p-2">
+                    <input type="text" name="teacher[${rowCount}][tempat_lahir]" placeholder="Tempat lahir" class="table-input" />
+                </td>
+                <td class="p-2">
+                    <input type="date" name="teacher[${rowCount}][tanggal_lahir]" class="table-input" />
+                </td>
+                <td class="p-2">
+                    <input type="number" name="teacher[${rowCount}][usia]" placeholder="Usia" class="table-input" />
+                </td>
+                <td class="p-2">
+                    <input type="tel" name="teacher[${rowCount}][nomor_telp]" placeholder="Nomor Telp" class="table-input" />
+                </td>
+                <td class="p-2">
+                    <select name="teacher[${rowCount}][jabatan]" class="table-input">
+                        <option value="guru">Guru</option>
+                        <option value="staf">Staf</option>
+                    </select>
                 </td>
                 <td class="p-2">
                     <input type="text" name="teacher[${rowCount}][username]" placeholder="Username unik" class="table-input" />
@@ -274,7 +293,7 @@
                 const response = await fetch(this.action, {
                     method: 'POST',
                     headers: {
-                        'X-CSRF-TOKEN': formData.get('_token'),
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}', // Pastikan CSRF token ada
                         'Accept': 'application/json',
                     },
                     body: formData
@@ -285,7 +304,7 @@
                 if (response.ok) {
                     // Handle success
                     alert(result.message);
-                    window.location.href = "{{ route('manajemenGuru') }}"; // Redirect on success
+                    window.location.href = "{{ route('manajemenGuru') }}"; // Redirect ke manajemen guru
                 } else if (response.status === 422) {
                     // Handle validation errors
                     displayErrors(result.errors);
@@ -297,41 +316,33 @@
 
             } catch (error) {
                 console.error('Error:', error);
-                alert('Gagal mengirim data. Pastikan tidak ada NISN yang duplikat dan semua kolom terisi.');
+                alert('Gagal mengirim data. Pastikan tidak ada NIK/Username yang duplikat dan semua kolom terisi.');
             }
         });
 
         function displayErrors(errors) {
             for (const key in errors) {
-                // key will be in the format "teacher.1.nisn"
+                // key akan berbentuk seperti "teacher.1.nik"
                 const parts = key.split('.');
                 if (parts[0] === 'teacher' && parts.length === 3) {
-                    // FIX: Laravel validation returns a 0-based index, but our rowCount is 1-based.
-                    // We adjust the index here by adding 1 to find the correct input element.
-                    const rowKey = parseInt(parts[1]) + 1;
+                    const rowKey = parts[1];
                     const fieldName = parts[2];
                     const message = errors[key][0];
 
-                    // Find the input by its 'name' attribute, which is now 1-based.
-                    let input;
-                    if (fieldName === 'gender') {
-                        input = document.querySelector(`select[name="teacher[${rowKey}][${fieldName}]"]`);
-                    } else {
-                        input = document.querySelector(`input[name="teacher[${rowKey}][${fieldName}]"]`);
-                    }
+                    // Cari input berdasarkan atribut 'name'
+                    const input = document.querySelector([name="teacher[${rowKey}][${fieldName}]"]);
                     
                     if (input) {
                         input.classList.add('border-red-500');
                         const errorElement = document.createElement('p');
                         errorElement.className = 'text-red-600 text-xs mt-1 error-message';
                         errorElement.textContent = message;
-                        // Insert the error message after the input
+                        // Sisipkan pesan error setelah input
                         input.parentNode.appendChild(errorElement);
                     }
                 }
             }
         }
     </script>
-
 </body>
 </html>
