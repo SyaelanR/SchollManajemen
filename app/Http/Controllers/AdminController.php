@@ -1330,3 +1330,4 @@ public function manajAcara(Request $request)
         return redirect()->route('admin.acara-sekolah')->with('success', 'Acara berhasil dihapus.');
     }
 }
+
