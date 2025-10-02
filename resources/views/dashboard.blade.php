@@ -51,70 +51,86 @@
         </div>
         <nav class="mt-6">
             <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
-                <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
+                <i class="fa-solid fa-tachometer-alt mr-3"></i>
                 <span>Dashboard</span>
             </a>
 
             @can('view-admin')
             <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
+                <i class="fa-solid fa-user-graduate mr-3"></i>
                 <span>Manajemen Siswa</span>
             </a>
             <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
+                <i class="fa-solid fa-chalkboard-user mr-3"></i>
                 <span>Manajemen Guru</span>
             </a>
+            <a href="{{ route('manajemenMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book mr-3"></i>
+                <span>Manajemen Mapel</span>
+            </a>
             <a href="{{ route('manajemenKelas') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-door-closed w-6 h-6 mr-3"></i>
+                <i class="fa-solid fa-door-closed mr-3"></i>
                 <span>Manajemen Kelas</span>
             </a>
-            <a href="{{ route('manajemenMapel')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
-                <span>Jadwal Pelajaran</span>
+            <a href="{{ route('manajemenJadwal')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-alt mr-3"></i>
+                <span>Manajemen Jadwal</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-money-bill-wave w-6 h-6 mr-3"></i>
-                <span>Keuangan</span>
+            <a href="{{ route('manajemenJadwal')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-check mr-3"></i>
+                <span>Acara</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-layer-group w-6 h-6 mr-3"></i>
-                <span>Raport</span>
+            <a href="{{ route('manajemenAngkatan') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-bookmark mr-3"></i>
+                <span>Angkatan</span>
+            </a>
+            <a href="{{ route('manajemenRapor') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open mr-3"></i>
+                <span>Rapor</span>
+            </a>
+            <a href="{{ route('manajemenKurikulum') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open-reader mr-3"></i>
+                <span>Kurikulum</span>
+            </a>
+            <a href="{{ route('manajemenTingkat') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-layer-group mr-3"></i>
+                <span>Tingkat</span>
             </a>
             @endcan
 
             @can('view-guru')
             <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-pen w-6 h-6 mr-3"></i>
+                <i class="fa-solid fa-pen mr-3"></i>
                 <span>Input Nilai</span>
             </a>
             <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-list-check w-6 h-6 mr-3"></i>
+                <i class="fa-solid fa-list-check mr-3"></i>
                 <span>Input Absensi</span>
             </a>
             <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-puzzle-piece w-6 h-6 mr-3"></i>
+                <i class="fa-solid fa-puzzle-piece mr-3"></i>
                 <span>Ekstrakulikuler</span>
             </a>
             <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-circle-exclamation w-6 h-6 mr-3"></i>
+                <i class="fa-solid fa-circle-exclamation mr-3"></i>
                 <span>Pelanggaran Siswa</span>
             </a>
             @endcan
 
             @can('view-siswa')
             <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-pen w-6 h-6 mr-3"></i>
+                <i class="fa-solid fa-pen mr-3"></i>
                 <span>Lihat Nilai</span>
             </a>
             <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-list-check w-6 h-6 mr-3"></i>
+                <i class="fa-solid fa-list-check mr-3"></i>
                 <span>Lihat Absensi</span>
             </a>
             @endcan
 
             @can('view-adminDev')
             <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-users w-6 h-6 mr-3"></i>
+                <i class="fa-solid fa-users mr-3"></i>
                 <span>Manajemen Klien</span>
             </a>
             @endcan
@@ -125,7 +141,7 @@
                 <a href="{{ route('logout') }}"
                    onclick="event.preventDefault(); this.closest('form').submit();"
                    class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
-                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
+                    <i class="fa-solid fa-sign-out-alt mr-3"></i>
                     <span>Logout</span>
                 </a>
             </form>
@@ -223,7 +239,6 @@
                     <ul class="space-y-3">
                         <li><a href="{{ route('manajemenSiswa')}}" class="flex items-center p-3 bg-indigo-50 hover:bg-indigo-100 rounded-lg text-indigo-700 font-medium transition duration-300"><i class="fa-solid fa-plus-circle mr-3"></i> Tambah Siswa Baru</a></li>
                         <li><a href="#" class="flex items-center p-3 bg-teal-50 hover:bg-teal-100 rounded-lg text-teal-700 font-medium transition duration-300"><i class="fa-solid fa-file-invoice mr-3"></i> Buat Tagihan SPP</a></li>
-                        <li><a href="#" class="flex items-center p-3 bg-orange-50 hover:bg-orange-100 rounded-lg text-orange-700 font-medium transition duration-300"><i class="fa-solid fa-bullhorn mr-3"></i> Kirim Pengumuman</a></li>
                         <li><a href="#" class="flex items-center p-3 bg-pink-50 hover:bg-pink-100 rounded-lg text-pink-700 font-medium transition duration-300"><i class="fa-solid fa-calendar-plus mr-3"></i> Tambah Acara Sekolah</a></li>
                     </ul>
                 </div>

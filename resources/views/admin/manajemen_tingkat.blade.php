@@ -162,16 +162,19 @@
             <h3 id="modal-title" class="text-2xl font-semibold text-gray-800">Tambah Tingkat</h3>
             <button id="close-modal-btn" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
         </div>
+        <div class="text-center mt-4">
+                <i class="fa-solid fa-layer-group text-4xl text-indigo-500 mb-4"></i>
+            <p class="text-gray-600 mb-6">
+                Anda akan menambahkan tingkat ajaran baru secara berurutan. 
+                Tindakan ini akan membuat tingkat baru setelah tingkat tertinggi yang ada saat ini. Lanjutkan?
+            </p>
+        </div>
         <form id="tingkat-form" action="{{ route('storeTingkat') }}" method="POST">
             @csrf
             <input type="hidden" id="form-method" name="_method" value="POST">
-            <div class="p-6">
-                <label for="tingkat-input" class="block text-gray-700 font-medium mb-2">Nama Tingkat</label>
-                <input type="text" id="tingkat-input" name="tingkat" placeholder="Contoh: 1-12" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
-            </div>
-            <div class="flex justify-end gap-4 p-6 bg-gray-50 rounded-b-xl">
-                <button type="button" id="cancel-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300">Batal</button>
-                <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">Simpan</button>
+            <div class="flex justify-end gap-4">
+                    <button type="button" id="cancel-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300">Batal</button>
+                    <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">Ya, Tambahkan</button>
             </div>
         </form>
     </div>
