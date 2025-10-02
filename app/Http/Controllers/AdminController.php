@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\RiwayatKeuangan;
 use App\Models\User; // Menggunakan model User untuk Siswa dan Guru
 use App\Models\Angkatan;
-use App\Models\DaftarAcara;
 use App\Models\DaftarKurikulum;
 use App\Models\DaftarNilaiSiswa;
 use App\Models\Kelas;
@@ -668,13 +667,24 @@ class AdminController extends Controller
         if (!$id_sekolah) {
             return redirect()->back()->with('error', 'Gagal menambahkan tingkat. Sesi sekolah tidak ditemukan.');
         }
-        
-        $jumlahTingkat = Tingkat::where('id_sekolah', $id_sekolah)->count() ?? 0;
+
+        // PERBAIKAN: Validasi input dari form
+        $request->validate([
+            'tingkat' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('tingkats', 'tingkat')->where('id_sekolah', $id_sekolah)
+            ],
+        ], [
+            'tingkat.required' => 'Nama tingkat tidak boleh kosong.',
+            'tingkat.unique' => 'Nama tingkat ini sudah ada.',
+        ]);
 
         // Simpan tingkat baru ke database
         Tingkat::create([
             'id_sekolah' => $id_sekolah,
-            'tingkat' => $jumlahTingkat + 1,
+            'tingkat' => $request->tingkat, // PERBAIKAN: Gunakan input dari request
         ]);
 
         return redirect()->route('manajemenTingkat')->with('success', 'Tingkat berhasil ditambahkan!');
@@ -746,32 +756,76 @@ class AdminController extends Controller
     {
         $id_sekolah = $request->cookie('id_sekolah');
 
+        // PERBAIKAN: Validasi disesuaikan dengan nama input dari form
         $request->validate([
-            'angkatan' => 'required|exists:angkatans,id_angkatan', //cek apakah id_angkatan ada di tabel angkatans
+            'id_angkatan' => 'required|exists:angkatans,id_angkatan,id_sekolah,' . $id_sekolah,
             'nama' => 'required|string|max:255',
             'jenjang' => 'required|string|in:SMA,SMK,SD,SMP',
             'jumlah_matpel' => 'required|integer|min:1',
+            'status' => 'required|in:aktif,nonaktif',
         ], [
-            'angkatan.required' => 'Angkatan tidak boleh kosong.',
-            'angkatan.exists' => 'Angkatan tidak valid.',
+            'id_angkatan.required' => 'Angkatan tidak boleh kosong.',
+            'id_angkatan.exists' => 'Angkatan tidak valid.',
             'nama.required' => 'Nama kurikulum tidak boleh kosong.',
             'jenjang.required' => 'Jenjang kurikulum tidak boleh kosong.',
             'jenjang.in' => 'Jenjang kurikulum tidak valid.',
             'jumlah_matpel.required' => 'Jumlah mata pelajaran tidak boleh kosong.',
             'jumlah_matpel.integer' => 'Jumlah mata pelajaran harus berupa angka.',
             'jumlah_matpel.min' => 'Jumlah mata pelajaran harus minimal 1.', 
+            'status.required' => 'Status tidak boleh kosong.',
         ]);
 
         DaftarKurikulum::create([
             'id_sekolah' => $id_sekolah,
-            'id_angkatan' => $request->angkatan,
+            'id_angkatan' => $request->id_angkatan, // PERBAIKAN: Menggunakan id_angkatan
             'nama_kurikulum' => $request->nama,
             'jenjang' => $request->jenjang,
             'jumlah_matpel' => $request->jumlah_matpel,
+            'status' => $request->status, // PERBAIKAN: Menambahkan status
         ]);
 
         return redirect()->route('manajemenKurikulum')->with('success', 'Kurikulum berhasil ditambahkan!');
 
+    }
+
+    public function updateKurikulum(Request $request, $id)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $request->validate([
+            'id_angkatan' => 'required|exists:angkatans,id_angkatan,id_sekolah,' . $id_sekolah,
+            'nama' => 'required|string|max:255',
+            'jenjang' => 'required|string|in:SMA,SMK,SD,SMP',
+            'jumlah_matpel' => 'required|integer|min:1',
+            'status' => 'required|in:aktif,non-aktif',
+        ]);
+
+        $kurikulum = DaftarKurikulum::where('id_kurikulum', $id)
+                                    ->where('id_sekolah', $id_sekolah)
+                                    ->firstOrFail();
+
+        $kurikulum->update([
+            'id_angkatan' => $request->id_angkatan,
+            'nama_kurikulum' => $request->nama,
+            'jenjang' => $request->jenjang,
+            'jumlah_matpel' => $request->jumlah_matpel,
+            'status' => $request->status,
+        ]);
+
+        return redirect()->route('manajemenKurikulum')->with('success', 'Kurikulum berhasil diperbarui!');
+    }
+
+    public function destroyKurikulum(Request $request, $id)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $kurikulum = DaftarKurikulum::where('id_kurikulum', $id)
+                                    ->where('id_sekolah', $id_sekolah)
+                                    ->firstOrFail();
+
+        $kurikulum->delete();
+
+        return redirect()->route('manajemenKurikulum')->with('success', 'Kurikulum berhasil dihapus!');
     }
 
     public function manajRapor ()
@@ -803,10 +857,6 @@ class AdminController extends Controller
                             'daftarNilaiSiswa.daftarNilai',
                             'daftarAbsensiSiswa' // Eager load relasi absensi
                         ])
-                        ->whereHas('daftarNilaiSiswa', function($query) use ($kelasInfo) {
-                            $query->where('tingkat', $kelasInfo->angkatan->id_tingkat);
-                            $query->where('semester', $kelasInfo->angkatan->semester);
-                        })
                         ->get();
     
         // Proses data untuk setiap siswa
@@ -1280,16 +1330,59 @@ class AdminController extends Controller
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ########################################################################################################################################
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
-public function manajAcara(Request $request)
+public function index()
     {
+        // --- SIMULASI DATA DARI DATABASE (DALAM APLIKASI NYATA GUNAKAN MODEL ELOQUENT) ---
+        $events = [
+            // Event 1: Mendatang
+            [
+                'id' => 1,
+                'title' => 'Lomba Debat Bahasa Inggris',
+                'description' => 'Ajang kompetisi kemampuan berbahasa Inggris untuk siswa terpilih.',
+                'date' => '15 Oktober 2025',
+                'time' => '08:00 - 12:00 WIB',
+                'location' => 'Aula Serbaguna',
+                'audience' => 'Kelas XI & XII',
+                'status' => 'Mendatang',
+                'status_color' => 'indigo', // Untuk kustomisasi warna di Blade
+                'status_tag_color' => 'bg-green-100 text-green-800',
+                'border_color' => 'border-indigo-500',
+                'icon_color' => 'text-indigo-500'
+            ],
+            // Event 2: Selesai
+            [
+                'id' => 2,
+                'title' => 'Perayaan Hari Guru Nasional',
+                'description' => 'Apel dan pentas seni untuk menghormati pahlawan tanpa tanda jasa.',
+                'date' => '25 November 2024',
+                'time' => '10:00 - 13:00 WIB',
+                'location' => 'Lapangan Utama',
+                'audience' => 'Semua Siswa & Guru',
+                'status' => 'Selesai',
+                'status_color' => 'gray',
+                'status_tag_color' => 'bg-gray-100 text-gray-600',
+                'border_color' => 'border-gray-400',
+                'icon_color' => 'text-gray-500'
+            ],
+            // Event 3: Khusus Guru
+            [
+                'id' => 3,
+                'title' => 'Workshop Kurikulum Merdeka',
+                'description' => 'Pelatihan implementasi kurikulum baru untuk staf pengajar.',
+                'date' => '05 September 2025',
+                'time' => '09:00 - 15:00 WIB',
+                'location' => 'Ruang Rapat Guru',
+                'audience' => 'Hanya Guru',
+                'status' => 'Mendatang',
+                'status_color' => 'teal',
+                'status_tag_color' => 'bg-blue-100 text-blue-800', // Khusus Guru
+                'border_color' => 'border-teal-500',
+                'icon_color' => 'text-teal-500'
+            ],
+        ];
 
-        $id_sekolah = request()->cookie('id_sekolah');
-
-        $daftarAcara = DaftarAcara::where('id_sekolah', $id_sekolah)
-                        ->where('tanggal_selesai', '>=', Carbon::now()->subWeeks(1))
-                        ->get();
-
-        return View('admin.acara-sekolah', ['daftarAcara' => $daftarAcara]);
+        // Melewatkan data acara ke view 'admin.acara-sekolah'
+        return View('admin.acara-sekolah', compact('events'));
     }
 
     /**
@@ -1330,4 +1423,3 @@ public function manajAcara(Request $request)
         return redirect()->route('admin.acara-sekolah')->with('success', 'Acara berhasil dihapus.');
     }
 }
-

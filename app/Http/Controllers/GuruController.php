@@ -19,9 +19,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
-use Maatwebsite\Excel\Facades\Excel; // <-- Import Facade Excel
-use App\Exports\LaporanNilaiExport;
-
 
 class GuruController extends Controller
 {
@@ -874,109 +871,6 @@ class GuruController extends Controller
 
     }
 
-    public function updateMateri(Request $request, $id_materi)
-    {
-        $id_sekolah = $request->cookie('id_sekolah');
-        $id_user = $request->cookie('id_user');
-
-        $request->validate([
-            'judul_materi' => 'required|string|max:255',
-            'deskripsi_materi' => 'required|string|max:255',
-            'file' => 'nullable|file|mimes:pdf|max:5048' // File is optional on update
-        ], [
-            'judul_materi.required' => 'Judul tidak boleh kosong.',
-            'judul_materi.max' => 'Judul maksimal 255 karakter.',
-            'deskripsi_materi.required' => 'Deskripsi tidak boleh kosong.',
-            'deskripsi_materi.max' => 'Deskripsi maksimal 255 karakter.',
-            'file.mimes' => 'File harus berformat PDF.',
-            'file.max' => 'Ukuran file maksimal 5MB.',
-        ]);
-
-        try {
-            // 1. Find the material by its ID and school ID
-            $materi = DaftarMateri::where('id_daftar_materi', $id_materi)
-                ->where('id_sekolah', $id_sekolah)
-                ->firstOrFail();
-
-            // 2. Authorize: Check if the current teacher teaches this subject in this class
-            Jadwal::where('id_kelas', $materi->id_kelas)
-                ->where('id_mapel', $materi->id_mapel)
-                ->where('id_sekolah', $id_sekolah)
-                ->whereHas('mapel', function ($query) use ($id_user) {
-                    $query->where('id_guru', $id_user);
-                })
-                ->firstOrFail();
-
-            $updateData = [
-                'judul_materi' => $request->judul_materi,
-                'deskripsi_materi' => $request->deskripsi_materi,
-            ];
-
-            // 3. Handle file update if a new file is uploaded
-            if ($request->hasFile('file')) {
-                // Delete the old file
-                if ($materi->nama_file && Storage::disk('local')->exists('materi/' . $materi->nama_file)) {
-                    Storage::disk('local')->delete('materi/' . $materi->nama_file);
-                }
-
-                // Store the new file
-                $file = $request->file('file');
-                $namaFile = time() . '_' . $file->getClientOriginalName();
-                $file->storeAs('materi', $namaFile);
-                $updateData['nama_file'] = $namaFile;
-            }
-
-            // 4. Update the record
-            $materi->update($updateData);
-
-            // 5. Redirect back with a success message
-            return redirect()->route('inputMateri', ['id_kelas' => $materi->id_kelas, 'id_mapel' => $materi->id_mapel])
-                ->with('success', 'Materi berhasil diperbarui!');
-
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            // This will trigger a 404 Not Found response if the material or authorization fails
-            abort(404, 'Materi tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.');
-        }
-    }
-
-    public function destroyMateri(Request $request, $id_materi)
-    {
-        $id_sekolah = $request->cookie('id_sekolah');
-        $id_user = $request->cookie('id_user');
-
-        try {
-            // 1. Find the material by its ID and school ID
-            $materi = DaftarMateri::where('id_daftar_materi', $id_materi)
-                ->where('id_sekolah', $id_sekolah)
-                ->firstOrFail();
-
-            // 2. Authorize: Check if the current teacher teaches this subject in this class
-            Jadwal::where('id_kelas', $materi->id_kelas)
-                ->where('id_mapel', $materi->id_mapel)
-                ->where('id_sekolah', $id_sekolah)
-                ->whereHas('mapel', function ($query) use ($id_user) {
-                    $query->where('id_guru', $id_user);
-                })
-                ->firstOrFail();
-
-            // 3. Delete the associated file from storage
-            if ($materi->nama_file && Storage::disk('local')->exists('materi/' . $materi->nama_file)) {
-                Storage::disk('local')->delete('materi/' . $materi->nama_file);
-            }
-
-            // 4. Delete the record from the database
-            $materi->delete();
-
-            // 5. Redirect back with a success message
-            return redirect()->route('inputMateri', ['id_kelas' => $materi->id_kelas, 'id_mapel' => $materi->id_mapel])
-                ->with('success', 'Materi berhasil dihapus!');
-
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            // This will trigger a 404 Not Found response if the material or authorization fails
-            abort(404, 'Materi tidak ditemukan atau Anda tidak memiliki izin untuk menghapusnya.');
-        }
-    }
-
 
     public function lihatSoalSiswa (Request $request, $namaFile)
     {
@@ -1141,7 +1035,6 @@ class GuruController extends Controller
         return redirect()->route('manajPengumumanDaftar', ['id_kelas' => $id_kelas, 'id_mapel' => $id_mapel])->with('success', 'Pengumuman berhasil ditambahkan!');
 
     }
-  
     //////////////////////////////////////////////////////////////////
     public function updatePengumuman(Request $request, $id_pengumuman)
     {
@@ -1245,16 +1138,6 @@ class GuruController extends Controller
             Log::error("Error saat delete pengumuman ID {$id_pengumuman}: " . $e->getMessage());
             return back()->with('error', 'Terjadi kesalahan saat menghapus pengumuman: ' . $e->getMessage());
         }
-
-
-    public function exportNilai()
-    {
-        // Tentukan nama file yang akan di-download
-        $namaFile = 'laporan_nilai_siswa_' . date('Y-m-d') . '.xlsx';
-
-        // Panggil facade Excel untuk men-download file
-        return Excel::download(new LaporanNilaiExport, $namaFile);
-
     }
 
 }

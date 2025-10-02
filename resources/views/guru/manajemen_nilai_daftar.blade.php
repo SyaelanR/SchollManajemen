@@ -100,9 +100,14 @@
             <div class="bg-white p-6 rounded-xl shadow-md">
                 <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
                     <h2 class="text-2xl font-bold text-gray-800">Sesi Penilaian</h2>
-                    <button id="add-task-btn" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 flex items-center">
-                        <i class="fa-solid fa-plus mr-2"></i> Tambah Sesi
-                    </button>
+                    <div class="flex items-center gap-4">
+                        <a href="{{ route('exportNilai', ['id_kelas' => $infoKelas->kelas->id_kelas, 'id_mapel' => $infoMapel->id_mapel]) }}" class="bg-green-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-green-700 transition duration-300 flex items-center">
+                            <i class="fa-solid fa-file-excel mr-2"></i> Export ke Excel
+                        </a>
+                        <button id="add-task-btn" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 flex items-center">
+                            <i class="fa-solid fa-plus mr-2"></i> Tambah Sesi
+                        </button>
+                    </div>
                 </div>
 
                 <div class="overflow-x-auto">
