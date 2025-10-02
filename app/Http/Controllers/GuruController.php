@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel; // <-- Import Facade Excel
 use App\Exports\LaporanNilaiExport;
 
@@ -1245,7 +1246,7 @@ class GuruController extends Controller
             Log::error("Error saat delete pengumuman ID {$id_pengumuman}: " . $e->getMessage());
             return back()->with('error', 'Terjadi kesalahan saat menghapus pengumuman: ' . $e->getMessage());
         }
-
+    }
 
     public function exportNilai()
     {
