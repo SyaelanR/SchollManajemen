@@ -199,7 +199,7 @@ Route::middleware('auth')->group(function () {
 
         });
 
-
+        Route::get('/export-nilai', [GuruController::class, 'exportNilai'])->name('exportNilai');
 
             
         

@@ -668,24 +668,13 @@ class AdminController extends Controller
         if (!$id_sekolah) {
             return redirect()->back()->with('error', 'Gagal menambahkan tingkat. Sesi sekolah tidak ditemukan.');
         }
-
-        // PERBAIKAN: Validasi input dari form
-        $request->validate([
-            'tingkat' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('tingkats', 'tingkat')->where('id_sekolah', $id_sekolah)
-            ],
-        ], [
-            'tingkat.required' => 'Nama tingkat tidak boleh kosong.',
-            'tingkat.unique' => 'Nama tingkat ini sudah ada.',
-        ]);
+        
+        $jumlahTingkat = Tingkat::where('id_sekolah', $id_sekolah)->count() ?? 0;
 
         // Simpan tingkat baru ke database
         Tingkat::create([
             'id_sekolah' => $id_sekolah,
-            'tingkat' => $request->tingkat, // PERBAIKAN: Gunakan input dari request
+            'tingkat' => $jumlahTingkat + 1,
         ]);
 
         return redirect()->route('manajemenTingkat')->with('success', 'Tingkat berhasil ditambahkan!');
