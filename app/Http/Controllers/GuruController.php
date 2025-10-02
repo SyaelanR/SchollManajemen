@@ -17,7 +17,11 @@ use App\Models\DaftarTugas;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel; // <-- Import Facade Excel
@@ -1099,7 +1103,7 @@ class GuruController extends Controller
 
     }
 
-    public function storePengumuman (Request $request, $id_kelas, $id_mapel)
+    public function storePengumumanDaftar (Request $request, $id_kelas, $id_mapel)
     {
         $id_sekolah = $request->cookie('id_sekolah');
         $id_user = $request->cookie('id_user');
@@ -1142,6 +1146,108 @@ class GuruController extends Controller
         return redirect()->route('manajPengumumanDaftar', ['id_kelas' => $id_kelas, 'id_mapel' => $id_mapel])->with('success', 'Pengumuman berhasil ditambahkan!');
 
     }
+
+    //////////////////////////////////////////////////////////////////
+    public function updatePengumuman(Request $request, $id_pengumuman)
+{
+    $id_sekolah = $request->cookie('id_sekolah');
+    $id_user    = $request->cookie('id_user');
+
+    $request->validate([
+        'judul' => 'required|string|max:255',
+        'isi'   => 'required|string|max:1000',
+    ], [
+        'judul.required' => 'Judul tidak boleh kosong.',
+        'judul.max'      => 'Judul maksimal 255 karakter.',
+        'isi.required'   => 'Isi tidak boleh kosong.',
+        'isi.max'        => 'Isi maksimal 1000 karakter.',
+    ]);
+
+    try {
+        // Cari pengumuman
+        $pengumuman = DaftarPengumuman::where('id_pengumuman', $id_pengumuman)
+            ->where('id_sekolah', $id_sekolah)
+            ->firstOrFail();
+
+        $id_kelas = $pengumuman->id_kelas;
+        $id_mapel = $pengumuman->id_mapel;
+
+        // Pastikan guru punya izin
+        Jadwal::where('id_kelas', $id_kelas)
+            ->where('id_mapel', $id_mapel)
+            ->where('id_sekolah', $id_sekolah)
+            ->whereHas('mapel', function ($query) use ($id_user) {
+                $query->where('id_guru', $id_user);
+            })
+            ->firstOrFail();
+
+        // 🔑 Update manual pakai query builder, tidak pakai $pengumuman->update()
+        DB::table('daftar_pengumuman')
+            ->where('id_pengumuman', $id_pengumuman)
+            ->where('id_sekolah', $id_sekolah)
+            ->update([
+                'judul'      => $request->judul,
+                'isi'        => $request->isi,
+                'updated_at' => now(),
+            ]);
+
+        return redirect()
+            ->route('manajPengumumanDaftar', [
+                'id_kelas' => $id_kelas,
+                'id_mapel' => $id_mapel
+            ])
+            ->with('success', 'Pengumuman berhasil diperbarui!');
+
+    } catch (ModelNotFoundException $e) {
+        return back()->with('error', 'Pengumuman tidak ditemukan atau Anda tidak memiliki izin.');
+    } catch (\Exception $e) {
+        return back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+    }
+}
+public function destroyPengumuman($id_pengumuman, Request $request)
+{
+    $id_sekolah = $request->cookie('id_sekolah');
+    $id_user    = $request->cookie('id_user');
+
+    try {
+        // Cari pengumuman sesuai ID & sekolah
+        $pengumuman = DaftarPengumuman::where('id_pengumuman', $id_pengumuman)
+            ->where('id_sekolah', $id_sekolah)
+            ->firstOrFail();
+
+        $id_kelas = $pengumuman->id_kelas;
+        $id_mapel = $pengumuman->id_mapel;
+
+        // Cek otorisasi guru
+        Jadwal::where('id_kelas', $id_kelas)
+            ->where('id_mapel', $id_mapel)
+            ->where('id_sekolah', $id_sekolah)
+            ->whereHas('mapel', function ($query) use ($id_user) {
+                $query->where('id_guru', $id_user);
+            })
+            ->firstOrFail();
+
+        // Hapus pengumuman
+        DB::table('daftar_pengumuman')
+            ->where('id_pengumuman', $id_pengumuman)
+            ->where('id_sekolah', $id_sekolah)
+            ->delete();
+
+        return redirect()
+            ->route('manajPengumumanDaftar', [
+                'id_kelas' => $id_kelas,
+                'id_mapel' => $id_mapel
+            ])
+            ->with('success', 'Pengumuman berhasil dihapus!');
+    
+    } catch (ModelNotFoundException $e) {
+        return back()->with('error', 'Pengumuman tidak ditemukan atau Anda tidak memiliki izin.');
+    } catch (\Exception $e) {
+        return back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+    }
+}
+
+
   
     //////////////////////////////////////////////////////////////////
     public function updatePengumuman(Request $request, $id_pengumuman)
@@ -1257,5 +1363,6 @@ class GuruController extends Controller
         return Excel::download(new LaporanNilaiExport, $namaFile);
 
     }
+
 
 }
