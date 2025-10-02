@@ -133,11 +133,12 @@ Route::middleware('auth')->group(function () {
         });
 
         Route::prefix('manajemen-acara')->group(function () {
-            Route::get('/', [AdminController::class, 'manajAcara'])->name('manajAcara');
-            
-            Route::post('/acara-sekolah', [AdminController::class, 'store'])->name('admin.acara.store');
-            Route::delete('/acara-sekolah/{id}', [AdminController::class, 'destroy'])->name('admin.acara.destroy');
-        });
+    Route::get('/', [AdminController::class, 'manajAcara'])->name('manajAcara');
+    Route::post('/acara-sekolah', [AdminController::class, 'store'])->name('admin.acara.store');
+    Route::put('/acara-sekolah/{id}', [AdminController::class, 'update'])->name('admin.acara.update');
+    Route::delete('/acara-sekolah/{id}', [AdminController::class, 'destroy'])->name('admin.acara.destroy');
+});
+
 
     });
 
