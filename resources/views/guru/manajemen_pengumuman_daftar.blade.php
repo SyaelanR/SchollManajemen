@@ -12,6 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- SweetAlert2 for notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Custom styles */
         body {
@@ -80,10 +82,13 @@
             </a>
         </nav>
         <div class="p-6">
-            <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
-                <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
-                <span>Logout</span>
-            </a>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full text-left">
+                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
+                    <span>Logout</span>
+                </button>
+            </form>
         </div>
     </aside>
 
@@ -100,7 +105,9 @@
             </button>
             <div>
                 <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Manajemen Pengumuman</h1>
-                <p class="text-sm text-gray-500">Kelas: 10A - Bahasa Indonesia</p>
+                @if(isset($infoJKA))
+                <p class="text-sm text-gray-500">Kelas: {{ $infoJKA->kelas->nama_kelas ?? 'N/A' }} - {{ $infoJKA->mapel->nama_mapel ?? 'N/A' }}</p>
+                @endif
             </div>
             <div class="flex items-center space-x-4">
                 <button class="text-gray-500 hover:text-gray-700">
@@ -113,39 +120,52 @@
             </div>
         </header>
 
-        <!-- Notification Alert (Meniru manajemen_jadwal.blade.php) -->
-          @if (session('success'))
-            <div id="success-alert" class="fixed top-24 right-5 bg-green-500 text-white py-3 px-5 rounded-xl text-sm shadow-lg transition-transform transform translate-x-full z-50" role="alert">
-                <div class="flex items-center">
-                    <i class="fa-solid fa-check-circle mr-2"></i>
-                    <span>{{ session('success') }}</span>
-                </div>
-            </div>
+        <!-- Hidden divs for session messages to be picked up by JavaScript -->
+        @if (session('success'))
+            <div id="session-success" data-message="{{ session('success') }}" class="hidden"></div>
+        @endif
+        @if (session('error'))
+            <div id="session-error" data-message="{{ session('error') }}" class="hidden"></div>
         @endif
 
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
+            <!-- UPDATED: Welcome Header ala manajemen_pengumuman_kelas.blade.php -->
+            <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
+                <h2 class="text-3xl font-bold mb-2">Kelola Pengumuman</h2>
+                @if(isset($infoJKA))
+                    <p class="text-indigo-200">
+                        Membuat dan mengelola pengumuman untuk kelas 
+                        {{ $infoJKA->kelas->nama_kelas ?? 'N/A' }} - 
+                        Mata Pelajaran: {{ $infoJKA->mapel->nama_mapel ?? 'N/A' }}
+                    </p>
+                @else
+                    <p class="text-indigo-200">Membuat dan mengelola pengumuman.</p>
+                @endif
+            </header>
+            
             <div class="flex justify-end mb-6">
                 <button id="add-announcement-btn" class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 flex items-center">
                     <i class="fa-solid fa-plus-circle mr-2"></i> Tambah Pengumuman
                 </button>
             </div>
 
-            <!-- Announcement List -->
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h3 class="text-xl font-semibold mb-6 text-gray-800">Daftar Pengumuman</h3>
-                <div id="announcement-list" class="space-y-6">
+            <!-- Announcement List (UPDATED DESIGN) -->
+            <div class="space-y-6">
+                <h3 class="text-xl font-semibold mb-4 text-gray-800">Daftar Pengumuman Aktif</h3>
+                <div id="announcement-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Iterasi Daftar Pengumuman -->
                     @forelse ($daftarPengumuman ?? [] as $Pengumuman)
                     <!-- Menggunakan data attribute untuk menyimpan detail pengumuman untuk fungsionalitas Edit -->
-                    <div class="border-b pb-6" data-id="{{ $Pengumuman->id_pengumuman }}" data-judul="{{ $Pengumuman->judul }}" data-isi="{{ $Pengumuman->isi }}">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="text-lg font-bold text-gray-900">{{ $Pengumuman->judul }}</h4>
-                                <p class="mt-1 text-gray-600">{{ $Pengumuman->isi }}</p>
-                                <p class="text-xs text-gray-400 mt-2">{{ \Carbon\Carbon::parse($Pengumuman->created_at)->format('d M Y H:i') }}</p>
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-indigo-500 hover:shadow-xl hover:-translate-y-1 transform transition-all duration-300" 
+                         data-id="{{ $Pengumuman->id_pengumuman }}" data-judul="{{ $Pengumuman->judul }}" data-isi="{{ $Pengumuman->isi }}">
+                        
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-bullhorn text-indigo-500 text-xl flex-shrink-0"></i>
+                                <h4 class="text-lg font-bold text-gray-900 leading-tight">{{ $Pengumuman->judul }}</h4>
                             </div>
-                            <div class="flex space-x-3 flex-shrink-0 ml-4">
+                            <div class="flex space-x-3 flex-shrink-0 ml-4 pt-1">
                                 <!-- Tombol Edit -->
                                 <button class="edit-btn text-gray-500 hover:text-blue-600 transition duration-200" title="Edit"
                                         data-id="{{ $Pengumuman->id_pengumuman }}"
@@ -154,22 +174,34 @@
                                     <i class="fa-solid fa-pencil"></i>
                                 </button>
                                 
-                                <!-- Tombol Hapus: DIHAPUSKAN @method('DELETE') dan diatur POST agar sesuai route::post() -->
-                                <form action="{{ route('deletePengumuman', ['id_pengumuman' => $Pengumuman->id_pengumuman]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengumuman ini?');">
+                                <!-- Tombol Hapus -->
+                                <form class="delete-form" action="{{ route('deletePengumuman', $Pengumuman->id_pengumuman) }}" method="POST">
                                     @csrf
-                                    <!-- HAPUS BARIS INI: @method('DELETE') -->
+                                    @method('DELETE')
                                     <button type="submit" class="text-gray-500 hover:text-red-600 transition duration-200" title="Hapus">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>
                             </div>
                         </div>
+
+                        <p class="mt-3 text-gray-700 text-sm line-clamp-3">{{ Str::limit($Pengumuman->isi, 100) }}</p>
+
+                        <div class="mt-4 pt-4 border-t border-gray-100">
+                            <p class="text-xs text-gray-500">
+                                Dibuat: {{ \Carbon\Carbon::parse($Pengumuman->created_at)->format('d M Y H:i') }}
+                            </p>
+                            <p class="text-xs text-red-500 font-medium mt-1">
+                                Akan terhapus dalam 7 hari.
+                            </p>
+                        </div>
                     </div>
                     @empty
                     <!-- Placeholder untuk saat tidak ada pengumuman -->
-                    <div class="text-center text-gray-500 py-10">
-                        <i class="fa-solid fa-bell-slash text-4xl mb-4"></i>
-                        <p class="text-lg">Belum ada pengumuman untuk kelas ini.</p>
+                    <div class="col-span-full bg-white p-10 rounded-xl shadow-lg text-center border-2 border-dashed border-gray-300">
+                        <i class="fa-solid fa-bell-slash text-5xl text-gray-400 mb-4"></i>
+                        <p class="text-lg text-gray-600 font-semibold">Belum ada pengumuman untuk kelas ini.</p>
+                        <p class="text-sm text-gray-500 mt-1">Silakan tambahkan pengumuman baru menggunakan tombol di atas.</p>
                     </div>
                     @endforelse
                 </div>
@@ -188,6 +220,7 @@
                 </button>
             </div>
             <!-- ID form ditambahkan untuk memudahkan manipulasi JS -->
+            <!-- Catatan: [$infoJKA->id_kelas ?? 'kelas_dummy', $infoJKA->id_mapel ?? 'mapel_dummy'] adalah placeholder, sesuaikan dengan logic routing Laravel Anda -->
             <form id="announcement-form" action="{{ route('storePengumumanDaftar', [$infoJKA->id_kelas ?? 'kelas_dummy', $infoJKA->id_mapel ?? 'mapel_dummy']) }}" method="POST">
                 @csrf
                 <!-- Field untuk method PUT/PATCH (hanya muncul saat Edit) -->
@@ -227,18 +260,31 @@
         menuButton.addEventListener('click', toggleSidebar);
         overlay.addEventListener('click', toggleSidebar);
 
-        // --- Success Alert Functionality (Mirip manajemen_jadwal.blade.php) ---
-        const successAlert = document.getElementById('success-alert');
-        if (successAlert) {
-            // Tampilkan notifikasi
-            setTimeout(() => {
-                successAlert.classList.remove('translate-x-full');
-            }, 100);
+        // --- SweetAlert2 Notification Logic ---
+        const successMessage = document.getElementById('session-success');
+        if (successMessage) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: successMessage.dataset.message,
+                timer: 2500, // Notifikasi akan hilang setelah 2.5 detik
+                showConfirmButton: false,
+                customClass: {
+                    popup: 'rounded-xl'
+                }
+            });
+        }
 
-            // Sembunyikan notifikasi setelah 3.1 detik
-            setTimeout(() => {
-                successAlert.classList.add('translate-x-full');
-            }, 3100);
+        const errorMessage = document.getElementById('session-error');
+        if (errorMessage) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: errorMessage.dataset.message,
+                customClass: {
+                    popup: 'rounded-xl'
+                }
+            });
         }
 
         // --- Modal Functionality for Add/Edit ---
@@ -301,7 +347,8 @@
                 
                 // 3. Update Action Form untuk Update menggunakan route() helper Laravel
                 // Ganti URL manual dengan route helper
-                const updateRoute = "{{ route('updatePengumuman', ['id_pengumuman' => 'ID_PLACEHOLDER']) }}";
+                // Pastikan route 'updatePengumuman' Anda menerima ID pengumuman
+                const updateRoute = "{{ route('updatePengumuman', 'ID_PLACEHOLDER') }}";
                 form.setAttribute('action', updateRoute.replace('ID_PLACEHOLDER', id));
                 
                 // 4. Set Method ke PUT/PATCH
@@ -320,6 +367,29 @@
             if (e.target === modal) {
                 closeModal();
             }
+        });
+
+        // --- Delete Confirmation Logic using SweetAlert2 ---
+        const deleteForms = document.querySelectorAll('.delete-form');
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Mencegah form submit secara langsung
+                
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Anda tidak akan dapat mengembalikan pengumuman ini!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submit(); // Jika dikonfirmasi, lanjutkan submit form
+                    }
+                });
+            });
         });
     });
 </script>
