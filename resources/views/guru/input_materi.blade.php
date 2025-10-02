@@ -12,6 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- SweetAlert2 for cool alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 8px; }
@@ -91,6 +93,8 @@
                 </a>
             </header>
             
+            <!-- Placeholder for alerts, will be handled by SweetAlert2 -->
+
             <div class="bg-white p-6 rounded-xl shadow-md">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold text-gray-800">Semua Materi</h2>
@@ -123,7 +127,7 @@
                                             data-deskripsi="{{ $materi->deskripsi_materi }}"
                                             data-file="{{ $materi->nama_file }}"
                                             data-url="{{ route('updateMateri', $materi->id_daftar_materi) }}"><i class="fa-solid fa-edit"></i></button>
-                                        <form action="#" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');" class="delete-form">
+                                        <form action="{{ route('destroyMateri', $materi->id_daftar_materi) }}" method="POST" class="delete-form">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-red-500 hover:text-red-700" title="Hapus"><i class="fa-solid fa-trash-alt"></i></button>
@@ -290,6 +294,58 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target === editMateriModal) closeEditModal();
         });
     }
+
+    // SweetAlert2 Notifications
+    @if (session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ session('success') }}',
+            showConfirmButton: false,
+            timer: 3000,
+        });
+    @endif
+
+    @if (session('error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: '{{ session('error') }}',
+        });
+    @endif
+
+    @if ($errors->any())
+        Swal.fire({
+            icon: 'error',
+            title: 'Kesalahan Validasi',
+            html: '<ul class="text-left list-disc list-inside">' +
+                @foreach ($errors->all() as $error)
+                    '<li>{{ $error }}</li>' +
+                @endforeach
+            '</ul>',
+        });
+    @endif
+
+    // SweetAlert2 for Delete Confirmation
+    document.querySelectorAll('.delete-form').forEach(form => {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault(); // Mencegah form submit secara langsung
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Data materi yang dihapus tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit(); // Jika dikonfirmasi, submit form
+                }
+            });
+        });
+    });
 });
 </script>
 </body>

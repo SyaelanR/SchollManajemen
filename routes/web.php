@@ -181,6 +181,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/input-materi/{id_kelas}/{id_mapel}', [GuruController::class, 'inputMateri'])->name('inputMateri');
             Route::post('/input-materi/{id_kelas}/{id_mapel}', [GuruController::class, 'storeMateri'])->name('storeMateri');
             Route::put('/update-materi/{id}', [GuruController::class, 'updateMateri'])->name('updateMateri');
+            Route::delete('/destroy-materi/{id_materi}', [GuruController::class, 'destroyMateri'])->name('destroyMateri');
 
             Route::get('/lihat-materi/{namaFile}', [GuruController::class, 'lihatMateri'])->name('lihatMateri');
         });

@@ -8,6 +8,7 @@ use App\Models\DaftarAbsensiSiswa;
 use App\Models\DaftarMateri;
 use App\Models\DaftarNilai;
 use App\Models\DaftarNilaiSiswa;
+use App\Models\DaftarPengumuman;
 use App\Models\Jadwal;
 use App\Models\Kelas;
 use App\Models\User;
@@ -310,7 +311,6 @@ class GuruController extends Controller
                 'tanggal' => $request->tanggal,
                 'tingkat' => $tingkat,
                 'semester' => $semester,
-                'sifat' => 'online', // Otomatis diatur sebagai 'online'
             ]);
 
 
@@ -333,36 +333,6 @@ class GuruController extends Controller
 
         return redirect()->route('manajemenNilaiDaftar', ['id_kelas' => $id_kelas, 'id_mapel' => $id_mapel])->with('success', 'Nilai berhasil ditambahkan!');
 
-    }
-
-    /**
-     * Menghapus sesi penilaian dan semua nilai siswa yang terkait.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id_daftar_nilai
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function destroyDaftarNilai(Request $request, $id_daftar_nilai)
-    {
-        $id_sekolah = $request->cookie('id_sekolah');
-        $id_user = $request->cookie('id_user');
-
-        // 1. Cari sesi penilaian yang akan dihapus, pastikan milik guru yang login
-        $daftarNilai = DaftarNilai::where('id_daftar_nilai', $id_daftar_nilai)
-            ->where('id_sekolah', $id_sekolah)
-            ->whereHas('mapel', function ($query) use ($id_user) {
-                $query->where('id_guru', $id_user);
-            })
-            ->firstOrFail();
-
-        // 2. Hapus semua nilai siswa yang terkait dengan sesi ini (Cascading Delete)
-        DaftarNilaiSiswa::where('id_daftar_nilai', $daftarNilai->id_daftar_nilai)->delete();
-
-        // 3. Hapus sesi penilaian itu sendiri
-        $daftarNilai->delete();
-
-        // 4. Redirect kembali dengan pesan sukses
-        return back()->with('success', 'Sesi penilaian berhasil dihapus!');
     }
 
     public function manajAbsensi (Request $request)
@@ -901,6 +871,109 @@ class GuruController extends Controller
 
     }
 
+    public function updateMateri(Request $request, $id_materi)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+
+        $request->validate([
+            'judul_materi' => 'required|string|max:255',
+            'deskripsi_materi' => 'required|string|max:255',
+            'file' => 'nullable|file|mimes:pdf|max:5048' // File is optional on update
+        ], [
+            'judul_materi.required' => 'Judul tidak boleh kosong.',
+            'judul_materi.max' => 'Judul maksimal 255 karakter.',
+            'deskripsi_materi.required' => 'Deskripsi tidak boleh kosong.',
+            'deskripsi_materi.max' => 'Deskripsi maksimal 255 karakter.',
+            'file.mimes' => 'File harus berformat PDF.',
+            'file.max' => 'Ukuran file maksimal 5MB.',
+        ]);
+
+        try {
+            // 1. Find the material by its ID and school ID
+            $materi = DaftarMateri::where('id_daftar_materi', $id_materi)
+                ->where('id_sekolah', $id_sekolah)
+                ->firstOrFail();
+
+            // 2. Authorize: Check if the current teacher teaches this subject in this class
+            Jadwal::where('id_kelas', $materi->id_kelas)
+                ->where('id_mapel', $materi->id_mapel)
+                ->where('id_sekolah', $id_sekolah)
+                ->whereHas('mapel', function ($query) use ($id_user) {
+                    $query->where('id_guru', $id_user);
+                })
+                ->firstOrFail();
+
+            $updateData = [
+                'judul_materi' => $request->judul_materi,
+                'deskripsi_materi' => $request->deskripsi_materi,
+            ];
+
+            // 3. Handle file update if a new file is uploaded
+            if ($request->hasFile('file')) {
+                // Delete the old file
+                if ($materi->nama_file && Storage::disk('local')->exists('materi/' . $materi->nama_file)) {
+                    Storage::disk('local')->delete('materi/' . $materi->nama_file);
+                }
+
+                // Store the new file
+                $file = $request->file('file');
+                $namaFile = time() . '_' . $file->getClientOriginalName();
+                $file->storeAs('materi', $namaFile);
+                $updateData['nama_file'] = $namaFile;
+            }
+
+            // 4. Update the record
+            $materi->update($updateData);
+
+            // 5. Redirect back with a success message
+            return redirect()->route('inputMateri', ['id_kelas' => $materi->id_kelas, 'id_mapel' => $materi->id_mapel])
+                ->with('success', 'Materi berhasil diperbarui!');
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            // This will trigger a 404 Not Found response if the material or authorization fails
+            abort(404, 'Materi tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.');
+        }
+    }
+
+    public function destroyMateri(Request $request, $id_materi)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+
+        try {
+            // 1. Find the material by its ID and school ID
+            $materi = DaftarMateri::where('id_daftar_materi', $id_materi)
+                ->where('id_sekolah', $id_sekolah)
+                ->firstOrFail();
+
+            // 2. Authorize: Check if the current teacher teaches this subject in this class
+            Jadwal::where('id_kelas', $materi->id_kelas)
+                ->where('id_mapel', $materi->id_mapel)
+                ->where('id_sekolah', $id_sekolah)
+                ->whereHas('mapel', function ($query) use ($id_user) {
+                    $query->where('id_guru', $id_user);
+                })
+                ->firstOrFail();
+
+            // 3. Delete the associated file from storage
+            if ($materi->nama_file && Storage::disk('local')->exists('materi/' . $materi->nama_file)) {
+                Storage::disk('local')->delete('materi/' . $materi->nama_file);
+            }
+
+            // 4. Delete the record from the database
+            $materi->delete();
+
+            // 5. Redirect back with a success message
+            return redirect()->route('inputMateri', ['id_kelas' => $materi->id_kelas, 'id_mapel' => $materi->id_mapel])
+                ->with('success', 'Materi berhasil dihapus!');
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            // This will trigger a 404 Not Found response if the material or authorization fails
+            abort(404, 'Materi tidak ditemukan atau Anda tidak memiliki izin untuk menghapusnya.');
+        }
+    }
+
 
     public function lihatSoalSiswa (Request $request, $namaFile)
     {
@@ -948,127 +1021,226 @@ class GuruController extends Controller
     }
 
 
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////yoga////////////////////////////////////////////////////////////////////////
-    
-    public function updateTugas(Request $request, $id)
+    public function manajPengumumanKelas(Request $request)
     {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+
+    $daftarkelasYangDiampu = Jadwal::with('kelas.angkatan', 'mapel')
+        ->whereHas('mapel', function ($query) use ($id_user) {
+            $query->where('id_guru', $id_user);
+        })
+        ->whereHas('kelas.angkatan', function ($query) use ($id_sekolah) {
+            $query->where('id_sekolah', $id_sekolah);
+        })
+        ->whereHas('kelas.angkatan', function ($query) {
+            $query->whereColumn('angkatans.semester', 'jadwals.semester');
+        })
+        ->whereHas('kelas.angkatan', function ($query) {
+            $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+        })
+        ->whereHas('kelas.angkatan', function ($query) {
+            // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+            $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+        })
+        ->select('id_kelas', 'id_mapel') // hanya ambil kombinasi unik kelas+mapel
+        ->distinct()
+        // ->with('kelas.angkatan', 'mapel') // tetap load relasi
+        ->get();
+
+    // Iterasi untuk menghitung jumlah siswa untuk setiap kelas yang diampu
+    foreach ($daftarkelasYangDiampu as $jadwal) {
+        // Muat relasi yang dibutuhkan jika belum ada
+        $jadwal->loadMissing('kelas.angkatan', 'mapel');
+        // Hitung dan tambahkan properti jumlah_siswa ke setiap item jadwal
+        $jadwal->jumlah_siswa = User::where('id_kelas', $jadwal->id_kelas)->count();
+    }
+
+
+        
+        return view('guru.manajemen_pengumuman_kelas', ['daftarkelasYangDiampu' => $daftarkelasYangDiampu]);
+    }
+
+    public function manajPengumumanDaftar (Request $request, $id_kelas, $id_mapel) 
+    {
+
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+
+            // cek apakah guru mengajar kelas&mapel ini + ambil kelas & angkatan, & cek semester & angkatan aktif
+        $infoJKA = Jadwal::where('id_kelas', $id_kelas)
+                    ->where('id_mapel', $id_mapel)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->with('kelas.angkatan')
+                    ->with('mapel')
+                    ->whereHas('mapel', function ($query) use ($id_user) {
+                        $query->where('id_guru', $id_user);
+                    })
+                    ->firstOrFail();
+
+        // dd($infoKelas->semester);
+
+        if($infoJKA->kelas->angkatan->id_tingkat != $infoJKA->tingkat || $infoJKA->kelas->angkatan->semester != $infoJKA->semester){
+            abort(404);
+        }
+        
+
+        $DaftarPengumuman = DaftarPengumuman::where('id_kelas', $id_kelas)
+            ->where('id_mapel', $id_mapel)
+            ->where('id_sekolah', $id_sekolah)
+            ->where('created_at', '>=', Carbon::now()->subWeeks(1))
+            ->get();
+
+        return view('guru.manajemen_pengumuman_daftar', ['infoJKA' => $infoJKA, 'daftarPengumuman' => $DaftarPengumuman]);
+
+    }
+
+    public function storePengumuman (Request $request, $id_kelas, $id_mapel)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+
         $request->validate([
-            'keterangan_tugas' => 'required|string|max:255',
-            'deadline' => 'required|date',
-            'file' => 'nullable|file|mimes:pdf|max:10240', // Opsional, PDF, max 10MB
-        ], [
-            'keterangan_tugas.required' => 'Keterangan tugas tidak boleh kosong.',
-            'deadline.required' => 'Deadline tidak boleh kosong.',
-            'file.mimes' => 'File harus dalam format PDF.',
-            'file.max' => 'Ukuran file maksimal adalah 10MB.',
+            'judul' => 'required|string|max:255',
+            'isi' => 'required|string|max:255'
+        ],[
+            'judul.required' => 'Judul tidak boleh kosong.',
+            'judul.max' => 'Judul maksimal 255 karakter.',
+            'isi.required' => 'Isi tidak boleh kosong.',
+            'isi.max' => 'Isi maksimal 255 karakter.',
         ]);
 
-        // Cari tugas berdasarkan ID
-        $tugas = DaftarTugas::findOrFail($id);
 
-        // Update keterangan dan deadline
-        $tugas->keterangan = $request->keterangan_tugas;
-        $tugas->deadline = $request->deadline;
+        $infoJKA = Jadwal::where('id_kelas', $id_kelas)
+                    ->where('id_mapel', $id_mapel)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->with('kelas.angkatan')
+                    ->with('mapel')
+                    ->whereHas('mapel', function ($query) use ($id_user) {
+                        $query->where('id_guru', $id_user);
+                    })
+                    ->firstOrFail();
 
-        // Cek jika ada file baru yang diunggah
-        if ($request->hasFile('file')) {
-            // Hapus file lama dari storage jika ada
-            if ($tugas->nama_file && Storage::disk('local')->exists('tugas/' . $tugas->nama_file)) {
-                Storage::disk('local')->delete('tugas/' . $tugas->nama_file);
-            }
+        // dd($infoKelas->semester);
 
-            // Simpan file baru
-            $file = $request->file('file');
-            $namaFile = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('tugas', $namaFile, 'local'); // Simpan di storage/app/tugas
-
-            // Update nama file di database
-            $tugas->nama_file = $namaFile;
+        if($infoJKA->kelas->angkatan->id_tingkat != $infoJKA->tingkat || $infoJKA->kelas->angkatan->semester != $infoJKA->semester){
+            abort(404);
         }
 
-        // Simpan perubahan pada tabel daftar_tugas
-        $tugas->save();
+        DaftarPengumuman::create([
+            'id_sekolah' => $id_sekolah,
+            'id_kelas' => $id_kelas,
+            'id_mapel' => $id_mapel,
+            'judul' => $request->judul,
+            'isi' => $request->isi,
+        ]);
+        
+        return redirect()->route('manajPengumumanDaftar', ['id_kelas' => $id_kelas, 'id_mapel' => $id_mapel])->with('success', 'Pengumuman berhasil ditambahkan!');
 
-        // Sinkronkan perubahan ke tabel daftar_nilai yang terkait
-        $daftarNilai = DaftarNilai::where('id_daftar_tugas', $tugas->id_daftar_tugas)->first();
-        if ($daftarNilai) {
-            $daftarNilai->keterangan = $request->keterangan_tugas;
-            $daftarNilai->tanggal = $request->deadline;
-            $daftarNilai->save();
-        }
-
-        return back()->with('success', 'Tugas berhasil diperbarui!');
     }
-
-    public function updateMateri(Request $request, DaftarMateri $materi)
+    //////////////////////////////////////////////////////////////////
+    public function updatePengumuman(Request $request, $id_pengumuman)
     {
+        // Mengambil ID dari cookie
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_guru = $request->cookie('id_user'); 
+        
         $request->validate([
-            'judul_materi' => 'required|string|max:255',
-            'deskripsi_materi' => 'nullable|string|max:500',
-            'file' => 'nullable|file|mimes:pdf|max:10240', // Opsional, PDF, max 10MB
+            'judul' => 'required|string|max:255',
+            'isi' => 'required|string|max:255', 
         ], [
-            'judul_materi.required' => 'Judul materi tidak boleh kosong.',
-            'file.mimes' => 'File harus dalam format PDF.',
-            'file.max' => 'Ukuran file maksimal adalah 10MB.',
+            'judul.required' => 'Judul tidak boleh kosong.',
+            'judul.max' => 'Judul maksimal 255 karakter.',
+            'isi.required' => 'Isi tidak boleh kosong.',
+            'isi.max' => 'Isi maksimal 255 karakter.',
         ]);
 
-        // Cari materi berdasarkan ID
-        $materi = DaftarMateri::findOrFail($id);
+        try {
+            // 1. Cari Pengumuman berdasarkan ID Pengumuman dan ID Sekolah (firstOrFail)
+            $pengumuman = DaftarPengumuman::where('id_pengumuman', $id_pengumuman)
+                                          ->where('id_sekolah', $id_sekolah)
+                                          ->firstOrFail();
+            
+            $id_kelas = $pengumuman->id_kelas;
+            $id_mapel = $pengumuman->id_mapel;
+            
+            // 2. Cek Otorisasi: Pastikan guru yang bersangkutan mengajar kelas & mapel ini (firstOrFail)
+            Jadwal::where('id_kelas', $id_kelas)
+                ->where('id_mapel', $id_mapel)
+                ->where('id_sekolah', $id_sekolah)
+                ->whereHas('mapel', function ($query) use ($id_guru) {
+                    $query->where('id_guru', $id_guru); 
+                })
+                ->firstOrFail(); // Jika otorisasi gagal, akan otomatis 404
 
-        // Update judul dan deskripsi
-        $materi->judul_materi = $request->judul_materi;
-        $materi->deskripsi_materi = $request->deskripsi_materi;
+            // 3. Update data
+            $pengumuman->update([
+                'judul' => $request->judul,
+                'isi' => $request->isi,
+            ]);
 
-        // Cek jika ada file baru yang diunggah
-        if ($request->hasFile('file')) {
-            // Hapus file lama dari storage jika ada
-            if ($materi->nama_file && Storage::disk('local')->exists('materi/' . $materi->nama_file)) {
-                Storage::disk('local')->delete('materi/' . $materi->nama_file);
-            }
-
-            // Simpan file baru
-            $file = $request->file('file');
-            $namaFile = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('materi', $namaFile, 'local'); // Simpan di storage/app/materi
-
-            // Update nama file di database
-            $materi->nama_file = $namaFile;
+            // 4. Redirect kembali ke halaman daftar
+            return redirect()->route('manajPengumumanDaftar', ['id_kelas' => $id_kelas, 'id_mapel' => $id_mapel])
+                            ->with('success', 'Pengumuman berhasil diperbarui!');
+        } 
+        // Tangani ModelNotFoundException (diubah dari \Exception)
+        catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+             // Jika Pengumuman atau Jadwal tidak ditemukan, Laravel akan secara otomatis merespons dengan 404.
+             // Kita bisa menangkapnya untuk memberikan pesan yang lebih ramah di sesi, tetapi default-nya 404.
+             Log::warning("Aksi update gagal/tidak diizinkan (ModelNotFound): ID {$id_pengumuman}");
+             // return back()->with('error', 'Aksi gagal. Pengumuman tidak ditemukan atau Anda tidak memiliki izin.');
+             throw $e; // Melemparkan kembali exception agar 404 tetap muncul (sesuai permintaan)
         }
-
-        // Simpan perubahan
-        $materi->save();
-
-        return back()->with('success', 'Materi berhasil diperbarui!');
+        catch (\Exception $e) {
+            // Tangani error validasi atau error umum lainnya
+            Log::error("Error saat update pengumuman ID {$id_pengumuman}: " . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat memperbarui pengumuman: ' . $e->getMessage());
+        }
     }
 
-    public function destroyTugas($id)
+    /**
+     * Menghapus pengumuman dari database.
+     */
+    public function destroyPengumuman(Request $request, $id_pengumuman) 
     {
-        // Cari tugas berdasarkan ID
-        $tugas = DaftarTugas::findOrFail($id);
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_guru = $request->cookie('id_user'); 
+        
+        try {
+            // 1. Cari Pengumuman berdasarkan ID (firstOrFail)
+            $pengumuman = DaftarPengumuman::where('id_pengumuman', $id_pengumuman)
+                                          ->where('id_sekolah', $id_sekolah)
+                                          ->firstOrFail();
+            
+            $id_kelas = $pengumuman->id_kelas;
+            $id_mapel = $pengumuman->id_mapel;
 
-        // Cari daftar nilai yang terkait dengan tugas ini
-        $daftarNilai = DaftarNilai::where('id_daftar_tugas', $tugas->id_daftar_tugas)->first();
+            // 2. Cek Otorisasi (firstOrFail)
+            Jadwal::where('id_kelas', $id_kelas)
+                ->where('id_mapel', $id_mapel)
+                ->where('id_sekolah', $id_sekolah)
+                ->whereHas('mapel', function ($query) use ($id_guru) {
+                    $query->where('id_guru', $id_guru);
+                })
+                ->firstOrFail(); // Jika otorisasi gagal, akan otomatis 404
 
-        if ($daftarNilai) {
-            // Hapus semua entri nilai siswa yang terkait
-            DaftarNilaiSiswa::where('id_daftar_nilai', $daftarNilai->id_daftar_nilai)->delete();
-            // Hapus daftar nilai itu sendiri
-            $daftarNilai->delete();
+            // 3. Hapus data
+            $pengumuman->delete();
+            
+            // 4. Redirect kembali ke halaman daftar
+            return redirect()->route('manajPengumumanDaftar', ['id_kelas' => $id_kelas, 'id_mapel' => $id_mapel])
+                            ->with('success', 'Pengumuman berhasil dihapus!');
+
+        } 
+        catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+             // Jika Pengumuman atau Jadwal tidak ditemukan, Laravel akan secara otomatis merespons dengan 404.
+             Log::warning("Aksi hapus gagal/tidak diizinkan (ModelNotFound): ID {$id_pengumuman}");
+             throw $e; // Melemparkan kembali exception agar 404 tetap muncul (sesuai permintaan)
         }
-
-        // Hapus file soal dari storage jika ada
-        if ($tugas->nama_file && Storage::disk('local')->exists('tugas/' . $tugas->nama_file)) {
-            Storage::disk('local')->delete('tugas/' . $tugas->nama_file);
+        catch (\Exception $e) {
+            Log::error("Error saat delete pengumuman ID {$id_pengumuman}: " . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat menghapus pengumuman: ' . $e->getMessage());
         }
-
-        // Hapus tugas itu sendiri
-        $tugas->delete();
-
-        // Redirect kembali dengan pesan sukses
-        return back()->with('success', 'Tugas berhasil dihapus!');
     }
-
 
 }
