@@ -72,6 +72,12 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{id_kelas}', [AdminController::class, 'destroyKelas'])->name('destroyKelas');
 
         });
+        
+        Route::prefix('manajemen-kurikulum')->group(function(){
+            Route::get('/', [AdminController::class, 'manajKurikulum'])->name('manajemenKurikulum');
+            Route::post('/', [AdminController::class, 'storeKurikulum'])->name('storeKurikulum');
+
+        });
 
         Route::prefix('manajemen-keuangan')->group(function () {
             Route::get('/', [AdminController::class, 'manajKeuangan'])->name('manajemenKeuangan');
@@ -110,6 +116,7 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{id_tingkat}', [AdminController::class, 'destroyTingkat'])->name('destroyTingkat');
         });
 
+
         Route::prefix('pelanggaran')->group(function () {
             Route::get('/', [\App\Http\Controllers\pelanggaranController::class, 'index'])->name('pelanggaran.index');
             Route::post('/', [\App\Http\Controllers\pelanggaranController::class, 'store'])->name('pelanggaran.store');
@@ -119,6 +126,18 @@ Route::middleware('auth')->group(function () {
         });
 
 
+        Route::prefix('manajemen-rapor')->group(function (){
+            Route::get('/', [AdminController::class, 'manajRapor'])->name('manajemenRapor');
+            Route::get('/rapor/{id_kelas}', [AdminController::class, 'Rapors'])->name('Rapors');
+
+        });
+
+        Route::prefix('manajemen-acara')->group(function () {
+            Route::get('/', [AdminController::class, 'manajAcara'])->name('manajAcara');
+            
+            Route::post('/acara-sekolah', [AdminController::class, 'store'])->name('admin.acara.store');
+            Route::delete('/acara-sekolah/{id}', [AdminController::class, 'destroy'])->name('admin.acara.destroy');
+        });
 
     });
 
@@ -168,7 +187,7 @@ Route::middleware('auth')->group(function () {
 
 
         Route::prefix('manajemen-tugas')->group(function () {
-            Route::get('/', [GuruController::class, 'manajTugasKelas'])->name('manajMateri');
+            Route::get('/', [GuruController::class, 'manajTugasKelas'])->name('manajTugas');
             Route::get('/input-tugas/{id_kelas}/{id_mapel}', [GuruController::class, 'inputTugas'])->name('inputTugas');
             Route::post('/input-tugas/{id_kelas}/{id_mapel}', [GuruController::class, 'storeTugas'])->name('storeTugas');
             Route::put('/update/{id}', [GuruController::class, 'updateTugas'])->name('updateTugas');
@@ -185,6 +204,17 @@ Route::middleware('auth')->group(function () {
 
             Route::get('/lihat-materi/{namaFile}', [GuruController::class, 'lihatMateri'])->name('lihatMateri');
         });
+
+
+        Route::prefix('manajemen-pengumuman')->group(function () {
+            Route::get('/', [GuruController::class, 'manajPengumumanKelas'])->name('manajPengumuman');
+            Route::get('/manajemen-pengumuman-daftar/{id_kelas}/{id_mapel}', [GuruController::class, 'manajPengumumanDaftar'])->name('manajPengumumanDaftar');
+            Route::post('/manajemen-pengumuman-daftar/{id_kelas}/{id_mapel}', [GuruController::class, 'storePengumuman'])->name('storePengumumanDaftar');
+
+
+        });
+
+        Route::get('/export-nilai', [GuruController::class, 'exportNilai'])->name('exportNilai');
 
             
         
@@ -270,3 +300,11 @@ Route::get('/daftarPelanggar', [pelanggaranController::class, 'daftarPelanggar']
 Route::get('/daftarPelanggar/{id_kelas}', [pelanggaranController::class, 'daftarPelanggar'])->name('pelanggaran.daftar');
 
 Route::get('/input-nilai', [AdminController::class, 'inputnilai'])->name('inputnilai');
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#####################################################################################################################################################
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Halaman daftar acara
+

@@ -4,22 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Angkatan extends Model
+class DaftarAcara extends Model
 {
-    // protected $table = 'angkatan';
-    protected $primaryKey = 'id_angkatan';
+    protected $table ='daftar_acaras';
+
     protected $fillable = [
-        'id_angkatan',
-        'angkatan',
         'id_sekolah',
-        'semester',
+        'judul_acara',
         'tanggal_mulai',
         'tanggal_selesai',
-        'id_tingkat',
-        'tingkat',
-];
+        'lokasi',
+        'peserta',
+        'deskripsi',
+    ];
 
-public function sekolah()
+    public function sekolah ()
     {
         return $this->belongsTo(Clien::class, 'id_sekolah', 'id_sekolah');
     }

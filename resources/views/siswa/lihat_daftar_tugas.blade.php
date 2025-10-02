@@ -110,7 +110,8 @@
                                         <span class="text-xs font-semibold bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full flex-shrink-0">Belum Dikerjakan</span>
                                     </div>
                                     <p class="text-sm text-gray-600 mb-4 flex items-center">
-                                        <i class="fa-solid fa-calendar-alt w-4 mr-2 text-gray-400"></i>Deadline: <strong>{{ \Carbon\Carbon::parse($tugas->daftarNilai->tugas->deadline)->format('d M Y H:i') ?? 'N/A' }}</strong>
+                                        {{-- <i class="fa-solid fa-calendar-alt w-4 mr-2 text-gray-400"></i>Deadline:<strong> {{ $tugas->daftarNilai->tugas->deadline ?? 'N/A' }}</strong> --}}
+                                        <i class="fa-solid fa-calendar-alt w-4 mr-2 text-gray-400"></i>Deadline:<strong> {{ $tugas->daftarNilai->tugas->deadline ? \Carbon\Carbon::parse($tugas->daftarNilai->tugas->deadline)->format('d M Y H:i') : 'N/A' }}</strong>
                                     </p>
                                 </div>
                                 <div class="border-t pt-4 flex items-center justify-between gap-4">

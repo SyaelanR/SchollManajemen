@@ -19,6 +19,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel; // <-- Import Facade Excel
+use App\Exports\LaporanNilaiExport;
+
 
 class GuruController extends Controller
 {
@@ -1138,6 +1141,7 @@ class GuruController extends Controller
         return redirect()->route('manajPengumumanDaftar', ['id_kelas' => $id_kelas, 'id_mapel' => $id_mapel])->with('success', 'Pengumuman berhasil ditambahkan!');
 
     }
+  
     //////////////////////////////////////////////////////////////////
     public function updatePengumuman(Request $request, $id_pengumuman)
     {
@@ -1241,6 +1245,16 @@ class GuruController extends Controller
             Log::error("Error saat delete pengumuman ID {$id_pengumuman}: " . $e->getMessage());
             return back()->with('error', 'Terjadi kesalahan saat menghapus pengumuman: ' . $e->getMessage());
         }
+
+
+    public function exportNilai()
+    {
+        // Tentukan nama file yang akan di-download
+        $namaFile = 'laporan_nilai_siswa_' . date('Y-m-d') . '.xlsx';
+
+        // Panggil facade Excel untuk men-download file
+        return Excel::download(new LaporanNilaiExport, $namaFile);
+
     }
 
 }
