@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use function Laravel\Prompts\table;
 
 class DaftarMateri extends Model
 {
     protected $table = 'daftar_materis';
+    use HasFactory;
 
     protected $fillable = [
         'id_daftar_materi',
@@ -37,4 +39,10 @@ class DaftarMateri extends Model
         return $this->belongsTo(Clien::class, 'id_sekolah', 'id_sekolah');
     }
 
+    /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'id_daftar_materi';
 }

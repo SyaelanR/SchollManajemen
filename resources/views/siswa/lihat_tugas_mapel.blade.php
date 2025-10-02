@@ -37,119 +37,117 @@
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 min-h-screen flex">
 
-    <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
-        <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
-            <div class="p-6">
-                <a href="#" class="flex items-center space-x-3">
-                    <i class="fa-solid fa-school text-3xl text-indigo-600"></i>
-                    <span class="text-2xl font-bold text-gray-800">EduSys</span>
-                </a>
-            </div>
-            <nav class="mt-6">
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
-                    <span>Jadwal Pelajaran</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-star w-6 h-6 mr-3"></i>
-                    <span>Nilai Saya</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
-                    <i class="fa-solid fa-book w-6 h-6 mr-3"></i>
-                    <span>Mata Pelajaran</span>
-                </a>
-            </nav>
-            <div class="absolute bottom-0 w-full p-6">
-                 <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg">
-                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
-                    <span>Logout</span>
-                </a>
-            </div>
-        </aside>
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
+        <div class="p-6">
+            <a href="#" class="flex items-center space-x-3">
+                <i class="fa-solid fa-school text-3xl text-indigo-600"></i>
+                <span class="text-2xl font-bold text-gray-800">EduSys</span>
+            </a>
+        </div>
+        <nav class="mt-6">
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
+                <span>Jadwal Pelajaran</span>
+            </a>
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-star w-6 h-6 mr-3"></i>
+                <span>Nilai Saya</span>
+            </a>
+            <a href="#" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book w-6 h-6 mr-3"></i>
+                <span>Mata Pelajaran</span>
+            </a>
+        </nav>
+        <div class="absolute bottom-0 w-full p-6">
+            <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg">
+                <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
 
-        <!-- Overlay for mobile -->
-        <div id="overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden lg:hidden"></div>
+    <!-- Overlay for mobile -->
+    <div id="overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden lg:hidden"></div>
 
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-y-auto">
-            <!-- Header -->
-            <header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-30">
-                <!-- Mobile Menu Button -->
-                <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
-                    <i class="fa-solid fa-bars text-2xl"></i>
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-y-auto">
+        <!-- Header -->
+        <header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-30">
+            <!-- Mobile Menu Button -->
+            <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
+                <i class="fa-solid fa-bars text-2xl"></i>
+            </button>
+            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Mata Pelajaran Saya</h1>
+            <div class="flex items-center space-x-4">
+                <button class="text-gray-500 hover:text-gray-700">
+                    <i class="fa-solid fa-bell"></i>
                 </button>
-                <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Mata Pelajaran Saya</h1>
-                <div class="flex items-center space-x-4">
-                    <button class="text-gray-500 hover:text-gray-700">
-                        <i class="fa-solid fa-bell"></i>
-                    </button>
-                    <div class="relative">
-                        <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=S" alt="User avatar">
-                        <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
-                    </div>
+                <div class="relative">
+                    <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=S" alt="User avatar">
+                    <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
                 </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="p-6 md:p-8 flex-1">
+            <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
+                <h2 class="text-3xl font-bold mb-2">Daftar Mata Pelajaran</h2>
+                <p class="text-indigo-200">Berikut adalah semua mata pelajaran yang Anda ambil semester ini.</p>
             </header>
 
-            <!-- Page Content -->
-            <main class="p-6 md:p-8 flex-1">
-                <div class="mb-8">
-                    <h2 class="text-3xl font-bold text-gray-800">Daftar Mata Pelajaran</h2>
-                    <p class="text-gray-500 mt-1">Berikut adalah semua mata pelajaran yang Anda ambil semester ini.</p>
-                </div>
-
-                <!-- Subjects Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    
-                    <!-- Subject Card 1: Matematika Wajib -->
-                    @forelse ($daftarMapel ?? [] as $mapel)
-                    <a href="{{ route('lihatTugasDaftar', $mapel->mapel->id_mapel)}}">
-                        <div class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-                            <div>
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="bg-blue-100 text-blue-600 p-3 rounded-full">
-                                        <i class="fa-solid fa-book-open text-xl"></i>
-                                    </div>
+            <!-- Subjects Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                
+                @forelse ($daftarMapel ?? [] as $mapel)
+                <a href="{{ route('lihatTugasDaftar', $mapel->mapel->id_mapel)}}" class="block">
+                    <div class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between h-full hover:shadow-lg hover:-translate-y-1 transform transition-all duration-300">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="bg-indigo-100 text-indigo-600 p-3 rounded-full">
+                                    <i class="fa-solid fa-book-open text-xl"></i>
                                 </div>
-                                <h3 class="text-xl font-bold text-gray-800 mb-2">{{$mapel->mapel->nama_mapel}}</h3>
-                                <p class="text-gray-600 text-sm flex items-center"><i class="fa-solid fa-chalkboard-user w-4 mr-2 text-gray-400"></i>{{$mapel->mapel->guru->name}}</p>
                             </div>
-                            <div class="border-t mt-4 pt-4">
-                                <p class="text-sm font-semibold text-gray-700">SKS: <span class="font-bold text-blue-600">{{$mapel->mapel->sks}}</span></p>
-                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">{{$mapel->mapel->nama_mapel}}</h3>
+                            <p class="text-gray-600 text-sm flex items-center"><i class="fa-solid fa-chalkboard-user w-4 mr-2 text-gray-400"></i>{{$mapel->mapel->guru->name}}</p>
                         </div>
-                    </a>
-                    @empty
-                    <div class="col-span-full text-center py-10">
-                        <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
-                        <p class="text-gray-600 font-semibold text-lg">Belum ada Mapel tersedia.</p>
+                        <div class="border-t mt-4 pt-4">
+                            <p class="text-sm font-semibold text-gray-700">SKS: <span class="font-bold text-indigo-600">{{$mapel->mapel->sks}}</span></p>
+                        </div>
                     </div>
-                    @endforelse
+                </a>
+                @empty
+                <div class="col-span-full text-center py-10 bg-white rounded-xl shadow-md">
+                    <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600 font-semibold text-lg">Belum ada mata pelajaran yang tersedia.</p>
                 </div>
-            </main>
-        </div>
+                @endforelse
+            </div>
+        </main>
     </div>
-                    
-    <script>
-        // --- Sidebar Toggle Functionality ---
-        const menuButton = document.getElementById('menu-button');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
+</div>
+            
+<script>
+    // --- Sidebar Toggle Functionality ---
+    const menuButton = document.getElementById('menu-button');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
 
-        const toggleSidebar = () => {
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
-        };
+    const toggleSidebar = () => {
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
+    };
 
-        menuButton.addEventListener('click', toggleSidebar);
-        overlay.addEventListener('click', toggleSidebar);
-    </script>
+    menuButton.addEventListener('click', toggleSidebar);
+    overlay.addEventListener('click', toggleSidebar);
+</script>
 
 </body>
 </html>

@@ -116,10 +116,27 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{id_tingkat}', [AdminController::class, 'destroyTingkat'])->name('destroyTingkat');
         });
 
+
+        Route::prefix('pelanggaran')->group(function () {
+            Route::get('/', [\App\Http\Controllers\pelanggaranController::class, 'index'])->name('pelanggaran.index');
+            Route::post('/', [\App\Http\Controllers\pelanggaranController::class, 'store'])->name('pelanggaran.store');
+            Route::get('/daftar/{id_kelas}', [\App\Http\Controllers\pelanggaranController::class, 'daftarPelanggar'])->name('pelanggaran.daftar');
+            Route::put('/{pelanggaran}', [\App\Http\Controllers\pelanggaranController::class, 'update'])->name('pelanggaran.update');
+            Route::delete('/{pelanggaran}', [\App\Http\Controllers\pelanggaranController::class, 'destroy'])->name('pelanggaran.destroy');
+        });
+
+
         Route::prefix('manajemen-rapor')->group(function (){
             Route::get('/', [AdminController::class, 'manajRapor'])->name('manajemenRapor');
             Route::get('/rapor/{id_kelas}', [AdminController::class, 'Rapors'])->name('Rapors');
 
+        });
+
+        Route::prefix('manajemen-acara')->group(function () {
+            Route::get('/', [AdminController::class, 'manajAcara'])->name('manajAcara');
+            
+            Route::post('/acara-sekolah', [AdminController::class, 'store'])->name('admin.acara.store');
+            Route::delete('/acara-sekolah/{id}', [AdminController::class, 'destroy'])->name('admin.acara.destroy');
         });
 
     });
@@ -150,6 +167,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/manajemen-nilai-daftar/{id_kelas}/{id_mapel}', [GuruController::class, 'storeDaftarNilai'])->name('storeDaftarNilai');
             Route::post('/input-nilai', [GuruController::class, 'storeNilaiSiswa'])->name('storeNilaiSiswa');
             Route::put('/update-nilai/{id_daftar_nilai_siswa}', [GuruController::class, 'updateNilaiSiswa'])->name('updateNilaiSiswa');
+            Route::delete('/destroy/{id_daftar_nilai}', [GuruController::class, 'destroyDaftarNilai'])->name('destroyDaftarNilai');
 
             Route::get('/input-nilai-online/{id_kelas}/{id_mapel}/{id_daftar_nilai}', [GuruController::class, 'inputNilaiOnline'])->name('inputNilaiOnline');
             Route::get('/lihatTugasSiswa/{namaFile}', [GuruController::class, 'lihatTugasSiswa'])->name('lihatTugasSiswa');
@@ -172,6 +190,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [GuruController::class, 'manajTugasKelas'])->name('manajTugas');
             Route::get('/input-tugas/{id_kelas}/{id_mapel}', [GuruController::class, 'inputTugas'])->name('inputTugas');
             Route::post('/input-tugas/{id_kelas}/{id_mapel}', [GuruController::class, 'storeTugas'])->name('storeTugas');
+            Route::put('/update/{id}', [GuruController::class, 'updateTugas'])->name('updateTugas');
+            Route::delete('/delete/{id}', [GuruController::class, 'destroyTugas'])->name('destroyTugas');
 
         });
 
@@ -179,6 +199,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [GuruController::class, 'manajMateriKelas'])->name('manajMateri');
             Route::get('/input-materi/{id_kelas}/{id_mapel}', [GuruController::class, 'inputMateri'])->name('inputMateri');
             Route::post('/input-materi/{id_kelas}/{id_mapel}', [GuruController::class, 'storeMateri'])->name('storeMateri');
+            Route::put('/update-materi/{id}', [GuruController::class, 'updateMateri'])->name('updateMateri');
+            Route::delete('/destroy-materi/{id_materi}', [GuruController::class, 'destroyMateri'])->name('destroyMateri');
 
             Route::get('/lihat-materi/{namaFile}', [GuruController::class, 'lihatMateri'])->name('lihatMateri');
         });
@@ -189,11 +211,15 @@ Route::middleware('auth')->group(function () {
             Route::get('/manajemen-pengumuman-daftar/{id_kelas}/{id_mapel}', [GuruController::class, 'manajPengumumanDaftar'])->name('manajPengumumanDaftar');
             Route::post('/manajemen-pengumuman-daftar/{id_kelas}/{id_mapel}', [GuruController::class, 'storePengumumanDaftar'])->name('storePengumumanDaftar');
 
+
           // --- Rute Tambahan untuk Edit dan Hapus ---
 
         // 3. Rute Memperbarui Pengumuman yang Ada (PUT/PATCH)
         // URL: /manajemen-pengumuman/update/{id_pengumuman}
         Route::put('/pengumuman/{id_pengumuman}', [GuruController::class, 'updatePengumuman'])->name('updatePengumuman');
+
+        Route::get('/export-nilai', [GuruController::class, 'exportNilai'])->name('exportNilai');
+
 
         // 4. Rute Menghapus Pengumuman (POST)
         // Nama diubah menjadi 'deletePengumuman' agar sesuai dengan panggilan di Blade.
@@ -282,6 +308,7 @@ Route::prefix('absensi')->group(function () {
 Route::get('/pelanggaran', [pelanggaranController::class, 'index'])->name('pelanggaran.index');
 Route::post('/pelanggaran', [pelanggaranController::class, 'store'])->name('pelanggaran.store');
 Route::get('/daftarPelanggar', [pelanggaranController::class, 'daftarPelanggar'])->name('pelanggaran.daftar');
+Route::get('/daftarPelanggar/{id_kelas}', [pelanggaranController::class, 'daftarPelanggar'])->name('pelanggaran.daftar');
 
 Route::get('/input-nilai', [AdminController::class, 'inputnilai'])->name('inputnilai');
 
@@ -291,6 +318,4 @@ Route::get('/input-nilai', [AdminController::class, 'inputnilai'])->name('inputn
 #####################################################################################################################################################
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Halaman daftar acara
-Route::get('/acara-sekolah', [AdminController::class, 'index'])->name('admin.acara.index');
-    Route::post('/acara-sekolah', [AdminController::class, 'store'])->name('admin.acara.store');
-    Route::delete('/acara-sekolah/{id}', [AdminController::class, 'destroy'])->name('admin.acara.destroy');
+

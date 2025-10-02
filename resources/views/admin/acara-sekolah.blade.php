@@ -109,115 +109,102 @@
                 <div class="grid grid-cols-1 gap-6" id="event-list-container">
                     
                     <!-- Card Acara Contoh 1: Acara Mendatang -->
-                    <div class="event-card" data-event-id="1">
-                        <div class="bg-white rounded-xl shadow-2xl overflow-hidden transform hover:scale-[1.01] transition duration-300 border-t-4 border-indigo-500 w-full">
-                            <div class="p-5">
-                                <div class="flex justify-between items-start mb-3">
-                                    <h3 class="text-xl font-bold text-gray-800 leading-snug">Lomba Debat Bahasa Inggris</h3>
-                                    <span class="text-xs font-semibold px-3 py-1 rounded-full bg-green-100 text-green-800 whitespace-nowrap">
-                                        <i class="fa-solid fa-bolt mr-1"></i> Mendatang
-                                    </span>
-                                </div>
+                    @forelse($daftarAcara ?? [] as $acara)
+                        @if(\Carbon\Carbon::parse($acara->tanggal_selesai)->lt(\Carbon\Carbon::now()))
+                            {{-- Card Acara Sudah Lewat --}}
+                            <div class="event-card" data-event-id="{{ $acara->id_daftar_acara }}">
+                                <div class="bg-white rounded-xl shadow-lg overflow-hidden opacity-80 border-t-4 border-gray-400 w-full">
+                                    <div class="p-5">
+                                        <div class="flex justify-between items-start mb-3">
+                                            <h3 class="text-xl font-bold text-gray-800 leading-snug">{{ $acara->judul_acara }}</h3>
+                                            <span class="text-xs font-semibold px-3 py-1 rounded-full bg-gray-100 text-gray-600 whitespace-nowrap">
+                                                <i class="fa-solid fa-check mr-1"></i> Selesai
+                                            </span>
+                                        </div>
 
-                                <p class="text-sm text-gray-600 mb-4">Ajang kompetisi kemampuan berbahasa Inggris antar kelas yang bertujuan untuk meningkatkan kemampuan berargumentasi dan kepercayaan diri siswa dalam menggunakan bahasa Inggris di depan umum.</p>
+                                        <p class="text-sm text-gray-600 mb-4">{{ $acara->deskripsi }}</p>
 
-                                <div class="space-y-2 text-sm text-gray-700 mb-5">
-                                    <p><i class="fa-solid fa-calendar-day w-5 mr-2 text-indigo-500"></i> 15 Oktober 2025</p>
-                                    <p><i class="fa-solid fa-clock w-5 mr-2 text-indigo-500"></i> 08:00 - 12:00 WIB</p>
-                                    <p><i class="fa-solid fa-location-dot w-5 mr-2 text-indigo-500"></i> Aula Serbaguna</p>
-                                </div>
-                                
-                                <!-- Detail Peserta dan Aksi -->
-                                <div class="flex justify-between items-center border-t pt-4">
-                                    <span class="text-xs font-medium text-gray-500">
-                                        <i class="fa-solid fa-user-group mr-1"></i> Kelas XI & XII
-                                    </span>
-                                    <div>
-                                        <button data-id="1" class="edit-btn text-indigo-600 hover:text-indigo-900 mx-1 p-1 transition" title="Edit Acara">
-                                            <i class="fa-solid fa-edit"></i>
-                                        </button>
-                                        <button data-id="1" data-title="Lomba Debat Bahasa Inggris" class="delete-btn text-red-600 hover:text-red-900 mx-1 p-1 transition" title="Hapus Acara">
-                                            <i class="fa-solid fa-trash-alt"></i>
-                                        </button>
+                                        <div class="space-y-2 text-sm text-gray-700 mb-5">
+                                            @if(\Carbon\Carbon::parse($acara->tanggal_mulai)->isSameDay($acara->tanggal_selesai))
+                                                <p><i class="fa-solid fa-calendar-day w-5 mr-2 text-gray-500"></i> {{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('d M Y') }}</p>
+                                            @else
+                                                <p><i class="fa-solid fa-calendar-day w-5 mr-2 text-gray-500"></i> {{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('d M Y') }} - {{ \Carbon\Carbon::parse($acara->tanggal_selesai)->format('d M Y') }}</p>
+                                            @endif
+                                            <p><i class="fa-solid fa-clock w-5 mr-2 text-gray-500"></i> {{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($acara->tanggal_selesai)->format('H:i') }}</p>
+                                            <p><i class="fa-solid fa-location-dot w-5 mr-2 text-gray-500"></i> {{ $acara->lokasi }}</p>
+                                        </div>
+                                        
+                                        <div class="flex justify-between items-center border-t pt-4">
+                                            <span class="text-xs font-medium text-gray-500">
+                                                <i class="fa-solid fa-user-group mr-1"></i> {{ $acara->peserta }}
+                                            </span>
+                                            <div>
+                                                <button data-id="{{ $acara->id_daftar_acara }}" class="edit-btn text-indigo-600 hover:text-indigo-900 mx-1 p-1 transition" title="Edit Acara">
+                                                    <i class="fa-solid fa-edit"></i>
+                                                </button>
+                                                <button data-id="{{ $acara->id_daftar_acara }}" data-title="{{ $acara->judul_acara }}" class="delete-btn text-red-600 hover:text-red-900 mx-1 p-1 transition" title="Hapus Acara">
+                                                    <i class="fa-solid fa-trash-alt"></i>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        @else
+                            {{-- Card Acara Mendatang --}}
+                            <div class="event-card" data-event-id="{{ $acara->id_daftar_acara }}">
+                                <div class="bg-white rounded-xl shadow-2xl overflow-hidden transform hover:scale-[1.01] transition duration-300 border-t-4 border-indigo-500 w-full">
+                                    <div class="p-5">
+                                        <div class="flex justify-between items-start mb-3">
+                                            <h3 class="text-xl font-bold text-gray-800 leading-snug">{{ $acara->judul_acara }}</h3>
+                                            <span class="text-xs font-semibold px-3 py-1 rounded-full bg-blue-100 text-blue-800 whitespace-nowrap">
+                                                <i class="fa-solid fa-user-tie mr-1"></i> Mendatang
+                                            </span>
+                                        </div>
 
-                    <!-- Card Acara Contoh 2: Acara Sudah Lewat (Opacity/Greyed out) -->
-                    <div class="event-card" data-event-id="2">
-                        <div class="bg-white rounded-xl shadow-lg overflow-hidden opacity-80 border-t-4 border-gray-400 w-full">
-                            <div class="p-5">
-                                <div class="flex justify-between items-start mb-3">
-                                    <h3 class="text-xl font-bold text-gray-800 leading-snug">Perayaan Hari Guru Nasional</h3>
-                                    <span class="text-xs font-semibold px-3 py-1 rounded-full bg-gray-100 text-gray-600 whitespace-nowrap">
-                                        <i class="fa-solid fa-check mr-1"></i> Selesai
-                                    </span>
-                                </div>
+                                        <p class="text-sm text-gray-600 mb-4">{{ $acara->deskripsi }}</p>
 
-                                <p class="text-sm text-gray-600 mb-4">Apel bendera dan pentas seni oleh siswa untuk menghormati dan berterima kasih kepada pahlawan tanpa tanda jasa, yaitu seluruh guru di sekolah.</p>
-
-                                <div class="space-y-2 text-sm text-gray-700 mb-5">
-                                    <p><i class="fa-solid fa-calendar-day w-5 mr-2 text-gray-500"></i> 25 November 2024</p>
-                                    <p><i class="fa-solid fa-clock w-5 mr-2 text-gray-500"></i> 10:00 - 13:00 WIB</p>
-                                    <p><i class="fa-solid fa-location-dot w-5 mr-2 text-gray-500"></i> Lapangan Utama</p>
-                                </div>
-                                
-                                <!-- Detail Peserta dan Aksi -->
-                                <div class="flex justify-between items-center border-t pt-4">
-                                    <span class="text-xs font-medium text-gray-500">
-                                        <i class="fa-solid fa-user-group mr-1"></i> Semua Siswa & Guru
-                                    </span>
-                                    <div>
-                                        <button data-id="2" class="edit-btn text-indigo-600 hover:text-indigo-900 mx-1 p-1 transition" title="Edit Acara">
-                                            <i class="fa-solid fa-edit"></i>
-                                        </button>
-                                        <button data-id="2" data-title="Perayaan Hari Guru Nasional" class="delete-btn text-red-600 hover:text-red-900 mx-1 p-1 transition" title="Hapus Acara">
-                                            <i class="fa-solid fa-trash-alt"></i>
-                                        </button>
+                                        <div class="space-y-2 text-sm text-gray-700 mb-5">
+                                            @if(\Carbon\Carbon::parse($acara->tanggal_mulai)->isSameDay($acara->tanggal_selesai))
+                                                <p><i class="fa-solid fa-calendar-day w-5 mr-2 text-indigo-500"></i> {{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('d M Y') }}</p>
+                                            @else
+                                                <p><i class="fa-solid fa-calendar-day w-5 mr-2 text-indigo-500"></i> {{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('d M Y') }} - {{ \Carbon\Carbon::parse($acara->tanggal_selesai)->format('d M Y') }}</p>
+                                            @endif
+                                            <p><i class="fa-solid fa-clock w-5 mr-2 text-indigo-500"></i> {{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($acara->tanggal_selesai)->format('H:i') }}</p>
+                                            <p><i class="fa-solid fa-location-dot w-5 mr-2 text-indigo-500"></i> {{ $acara->lokasi }}</p>
+                                        </div>
+                                        
+                                        <div class="flex justify-between items-center border-t pt-4">
+                                            <span class="text-xs font-medium text-gray-500">
+                                                <i class="fa-solid fa-user-group mr-1"></i> {{ $acara->peserta }}
+                                            </span>
+                                            <div>
+                                                <button data-id="{{ $acara->id_daftar_acara }}" class="edit-btn text-indigo-600 hover:text-indigo-900 mx-1 p-1 transition" title="Edit Acara">
+                                                    <i class="fa-solid fa-edit"></i>
+                                                </button>
+                                                <button data-id="{{ $acara->id_daftar_acara }}" data-title="{{ $acara->judul_acara }}" class="delete-btn text-red-600 hover:text-red-900 mx-1 p-1 transition" title="Hapus Acara">
+                                                    <i class="fa-solid fa-trash-alt"></i>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                        @endif
+                    @empty
+                        <div class="w-full flex flex-col items-center justify-center text-center p-10 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                            <i class="fa-solid fa-calendar-xmark text-5xl text-gray-400 mb-3"></i>
+                            <h3 class="text-lg font-semibold text-gray-600">Belum ada acara</h3>
+                            <p class="text-sm text-gray-500 mt-1">Silakan tambahkan acara baru agar muncul di daftar.</p>
+                            <a href="#" 
+                            class="mt-4 inline-block px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg shadow hover:bg-indigo-700 transition">
+                                <i class="fa-solid fa-plus mr-1"></i> Tambah Acara
+                            </a>
                         </div>
-                    </div>
+                    @endforelse
 
-                    <!-- Card Acara Contoh 3: Acara Khusus Guru (Warna berbeda) -->
-                    <div class="event-card" data-event-id="3">
-                        <div class="bg-white rounded-xl shadow-2xl overflow-hidden transform hover:scale-[1.01] transition duration-300 border-t-4 border-teal-500 w-full">
-                            <div class="p-5">
-                                <div class="flex justify-between items-start mb-3">
-                                    <h3 class="text-xl font-bold text-gray-800 leading-snug">Workshop Kurikulum Merdeka</h3>
-                                    <span class="text-xs font-semibold px-3 py-1 rounded-full bg-blue-100 text-blue-800 whitespace-nowrap">
-                                        <i class="fa-solid fa-user-tie mr-1"></i> Mendatang
-                                    </span>
-                                </div>
 
-                                <p class="text-sm text-gray-600 mb-4">Pelatihan intensif mengenai implementasi Kurikulum Merdeka, fokus pada asesmen formatif dan penyusunan modul ajar yang berdiferensiasi untuk semua staf pengajar.</p>
-
-                                <div class="space-y-2 text-sm text-gray-700 mb-5">
-                                    <p><i class="fa-solid fa-calendar-day w-5 mr-2 text-teal-500"></i> 05 September 2025</p>
-                                    <p><i class="fa-solid fa-clock w-5 mr-2 text-teal-500"></i> 09:00 - 15:00 WIB</p>
-                                    <p><i class="fa-solid fa-location-dot w-5 mr-2 text-teal-500"></i> Ruang Rapat Guru</p>
-                                </div>
-                                
-                                <!-- Detail Peserta dan Aksi -->
-                                <div class="flex justify-between items-center border-t pt-4">
-                                    <span class="text-xs font-medium text-gray-500">
-                                        <i class="fa-solid fa-user-group mr-1"></i> Hanya Guru
-                                    </span>
-                                    <div>
-                                        <button data-id="3" class="edit-btn text-indigo-600 hover:text-indigo-900 mx-1 p-1 transition" title="Edit Acara">
-                                            <i class="fa-solid fa-edit"></i>
-                                        </button>
-                                        <button data-id="3" data-title="Workshop Kurikulum Merdeka" class="delete-btn text-red-600 hover:text-red-900 mx-1 p-1 transition" title="Hapus Acara">
-                                            <i class="fa-solid fa-trash-alt"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
             </div>
         </main>

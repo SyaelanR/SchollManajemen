@@ -28,6 +28,8 @@ class SiswaController extends Controller
                         ->where('tingkat', $infoAngkatan->id_tingkat ?? 0)
                         ->where('semester', $infoAngkatan->semester ?? 0)
                         ->with(['mapel.guru'])
+                        ->select('id_kelas', 'id_mapel') // hanya ambil kombinasi unik kelas+mapel
+                        ->distinct()
                         ->get();
 
         return view('siswa.lihat_tugas_mapel', ['daftarMapel' => $daftarMapel]);

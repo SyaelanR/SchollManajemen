@@ -20,7 +20,6 @@ return new class extends Migration
             $table->integer('jumlah_matpel');
             $table->enum('status', ['aktif', 'non-aktif'])->default('aktif');
             $table->timestamps();
-            $table->timestamps();
 
             $table->foreign('id_sekolah')->references('id_sekolah')->on('cliens')->onDelete('set null');
             $table->foreign('id_angkatan')->references('id_angkatan')->on('angkatans')->onDelete('set null');

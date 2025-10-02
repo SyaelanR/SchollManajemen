@@ -58,7 +58,7 @@
             </a>
             <a href="#" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
                 <i class="fa-solid fa-list-check mr-3"></i>
-                <span>Input Absensi</span>
+                <span>Input Tugas</span>
             </a>
         </nav>
         <div class="absolute bottom-0 w-full p-6">
