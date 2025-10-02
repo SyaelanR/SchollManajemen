@@ -113,6 +113,16 @@
             </div>
         </header>
 
+        <!-- Notification Alert (Meniru manajemen_jadwal.blade.php) -->
+          @if (session('success'))
+            <div id="success-alert" class="fixed top-24 right-5 bg-green-500 text-white py-3 px-5 rounded-xl text-sm shadow-lg transition-transform transform translate-x-full z-50" role="alert">
+                <div class="flex items-center">
+                    <i class="fa-solid fa-check-circle mr-2"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+            </div>
+        @endif
+
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
             <div class="flex justify-end mb-6">
@@ -125,44 +135,50 @@
             <div class="bg-white p-6 rounded-xl shadow-md">
                 <h3 class="text-xl font-semibold mb-6 text-gray-800">Daftar Pengumuman</h3>
                 <div id="announcement-list" class="space-y-6">
-                    <!-- Contoh Pengumuman 1 -->
+                    <!-- Iterasi Daftar Pengumuman -->
                     @forelse ($daftarPengumuman ?? [] as $Pengumuman)
-                    <div class="border-b pb-6">
+                    <!-- Menggunakan data attribute untuk menyimpan detail pengumuman untuk fungsionalitas Edit -->
+                    <div class="border-b pb-6" data-id="{{ $Pengumuman->id_pengumuman }}" data-judul="{{ $Pengumuman->judul }}" data-isi="{{ $Pengumuman->isi }}">
                         <div class="flex justify-between items-start">
                             <div>
-                                <h4 class="text-lg font-bold text-gray-900">{{$Pengumuman->judul}}</h4>
-                                <p class="mt-1 text-gray-600">{{$Pengumuman->isi}}</p>
-                                <p class="text-xs text-gray-400 mt-2">{{ \Carbon\Carbon::parse($Pengumuman->created_at)->format('d M Y') }}</p>
+                                <h4 class="text-lg font-bold text-gray-900">{{ $Pengumuman->judul }}</h4>
+                                <p class="mt-1 text-gray-600">{{ $Pengumuman->isi }}</p>
+                                <p class="text-xs text-gray-400 mt-2">{{ \Carbon\Carbon::parse($Pengumuman->created_at)->format('d M Y H:i') }}</p>
                             </div>
                             <div class="flex space-x-3 flex-shrink-0 ml-4">
-                                <button class="text-gray-500 hover:text-blue-600 transition duration-200" title="Edit">
+                                <!-- Tombol Edit -->
+                                <button class="edit-btn text-gray-500 hover:text-blue-600 transition duration-200" title="Edit"
+                                        data-id="{{ $Pengumuman->id_pengumuman }}"
+                                        data-judul="{{ $Pengumuman->judul }}"
+                                        data-isi="{{ $Pengumuman->isi }}">
                                     <i class="fa-solid fa-pencil"></i>
                                 </button>
-                                <button class="text-gray-500 hover:text-red-600 transition duration-200" title="Hapus">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
+                                
+                                <!-- Tombol Hapus: DIHAPUSKAN @method('DELETE') dan diatur POST agar sesuai route::post() -->
+                                <form action="{{ route('deletePengumuman', ['id_pengumuman' => $Pengumuman->id_pengumuman]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengumuman ini?');">
+                                    @csrf
+                                    <!-- HAPUS BARIS INI: @method('DELETE') -->
+                                    <button type="submit" class="text-gray-500 hover:text-red-600 transition duration-200" title="Hapus">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
                     @empty
-                    <div>
-                        <h1>Kosong</h1>
-                    </div>
-                    @endforelse
-                    
-                 
-
                     <!-- Placeholder untuk saat tidak ada pengumuman -->
-                    <!-- <div class="text-center text-gray-500 py-10">
+                    <div class="text-center text-gray-500 py-10">
                         <i class="fa-solid fa-bell-slash text-4xl mb-4"></i>
                         <p class="text-lg">Belum ada pengumuman untuk kelas ini.</p>
-                    </div> -->
+                    </div>
+                    @endforelse
                 </div>
             </div>
         </main>
     </div>
 
     <!-- Modal for Add/Edit Announcement -->
+    <!-- Form action di sini akan diubah oleh JavaScript untuk aksi Edit atau Tambah -->
     <div id="announcement-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 invisible opacity-0">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 md:p-8 transform transition-transform duration-300 scale-95">
             <div class="flex justify-between items-center mb-6">
@@ -171,8 +187,11 @@
                     <i class="fa-solid fa-times text-2xl"></i>
                 </button>
             </div>
-            <form action="{{ route('storePengumumanDaftar', [$infoJKA->id_kelas, $infoJKA->id_mapel]) }}" method="POST">
+            <!-- ID form ditambahkan untuk memudahkan manipulasi JS -->
+            <form id="announcement-form" action="{{ route('storePengumumanDaftar', [$infoJKA->id_kelas ?? 'kelas_dummy', $infoJKA->id_mapel ?? 'mapel_dummy']) }}" method="POST">
                 @csrf
+                <!-- Field untuk method PUT/PATCH (hanya muncul saat Edit) -->
+                <input type="hidden" name="_method" id="form-method" value="POST">
                 <div class="mb-4">
                     <label for="judul" class="block text-gray-700 font-semibold mb-2">Judul</label>
                     <input type="text" id="judul" name="judul" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Masukkan judul pengumuman" required>
@@ -183,11 +202,10 @@
                 </div>
                 <div class="flex justify-end space-x-4">
                     <button type="button" id="cancel-btn" class="py-2 px-6 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition duration-300">Batal</button>
-                    <button type="submit" class="py-2 px-6 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300">Simpan</button>
+                    <button type="submit" id="submit-btn" class="py-2 px-6 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300">Simpan</button>
                 </div>
-                <div>
-                    <br>
-                    <p>Noted: Pengumuman ini akan otomatis terhapus setelah satu minggu</p>
+                <div class="mt-4">
+                    <p class="text-sm text-gray-500">Noted: Pengumuman ini akan otomatis terhapus setelah satu minggu.</p>
                 </div>
             </form>
         </div>
@@ -196,7 +214,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Sidebar toggle functionality
+        // --- Sidebar Toggle Functionality ---
         const menuButton = document.getElementById('menu-button');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
@@ -209,13 +227,35 @@
         menuButton.addEventListener('click', toggleSidebar);
         overlay.addEventListener('click', toggleSidebar);
 
-        // Modal functionality
+        // --- Success Alert Functionality (Mirip manajemen_jadwal.blade.php) ---
+        const successAlert = document.getElementById('success-alert');
+        if (successAlert) {
+            // Tampilkan notifikasi
+            setTimeout(() => {
+                successAlert.classList.remove('translate-x-full');
+            }, 100);
+
+            // Sembunyikan notifikasi setelah 3.1 detik
+            setTimeout(() => {
+                successAlert.classList.add('translate-x-full');
+            }, 3100);
+        }
+
+        // --- Modal Functionality for Add/Edit ---
         const modal = document.getElementById('announcement-modal');
-        const modalContent = modal.querySelector('div');
+        const modalContent = modal.querySelector('div.bg-white'); // Target konten modal
         const addBtn = document.getElementById('add-announcement-btn');
         const closeModalBtn = document.getElementById('close-modal-btn');
         const cancelBtn = document.getElementById('cancel-btn');
+        const editBtns = document.querySelectorAll('.edit-btn');
         const form = document.getElementById('announcement-form');
+        const modalTitle = document.getElementById('modal-title');
+        const inputJudul = document.getElementById('judul');
+        const inputIsi = document.getElementById('isi');
+        const formMethod = document.getElementById('form-method');
+
+        // Base URL untuk simpan pengumuman baru (pastikan variabel ini sesuai dengan rute Laravel Anda)
+        const defaultStoreUrl = form.getAttribute('action'); // Ambil action default dari form
 
         const openModal = () => {
             modal.classList.remove('invisible', 'opacity-0');
@@ -228,35 +268,58 @@
             setTimeout(() => {
                 modal.classList.add('invisible');
                 form.reset(); // Reset form fields on close
+                // Kembalikan form ke mode default (Tambah)
+                modalTitle.textContent = 'Tambah Pengumuman Baru';
+                form.setAttribute('action', defaultStoreUrl);
+                formMethod.value = 'POST';
+                document.getElementById('submit-btn').textContent = 'Simpan';
             }, 300);
         };
 
+        // Handler untuk tombol 'Tambah Pengumuman'
         addBtn.addEventListener('click', () => {
-            document.getElementById('modal-title').textContent = 'Tambah Pengumuman Baru';
+            modalTitle.textContent = 'Tambah Pengumuman Baru';
+            form.setAttribute('action', defaultStoreUrl);
+            formMethod.value = 'POST'; // Set method ke POST untuk Tambah
+            document.getElementById('submit-btn').textContent = 'Simpan';
             openModal();
         });
 
+        // Handler untuk tombol 'Edit'
+        editBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.currentTarget.getAttribute('data-id');
+                const judul = e.currentTarget.getAttribute('data-judul');
+                const isi = e.currentTarget.getAttribute('data-isi');
+                
+                // 1. Set Judul Modal
+                modalTitle.textContent = 'Edit Pengumuman';
+                
+                // 2. Isi Form dengan Data yang Ada
+                inputJudul.value = judul;
+                inputIsi.value = isi;
+                
+                // 3. Update Action Form untuk Update menggunakan route() helper Laravel
+                // Ganti URL manual dengan route helper
+                const updateRoute = "{{ route('updatePengumuman', ['id_pengumuman' => 'ID_PLACEHOLDER']) }}";
+                form.setAttribute('action', updateRoute.replace('ID_PLACEHOLDER', id));
+                
+                // 4. Set Method ke PUT/PATCH
+                formMethod.value = 'PUT'; // Set method ke PUT/PATCH untuk Edit
+                document.getElementById('submit-btn').textContent = 'Update';
+
+                // 5. Buka Modal
+                openModal();
+            });
+        });
+
+        // Event listener untuk menutup modal
         closeModalBtn.addEventListener('click', closeModal);
         cancelBtn.addEventListener('click', closeModal);
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
                 closeModal();
             }
-        });
-
-        // Form submission (contoh)
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const title = document.getElementById('judul').value;
-            const content = document.getElementById('isi').value;
-            
-            console.log('Pengumuman Disimpan:', { title, content });
-            // Di sini Anda akan menambahkan logika untuk mengirim data ke server
-            // dan kemudian memperbarui daftar pengumuman di halaman
-            
-            closeModal();
-            // Tampilkan notifikasi sukses (opsional)
-            alert('Pengumuman berhasil disimpan!');
         });
     });
 </script>
