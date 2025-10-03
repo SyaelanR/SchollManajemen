@@ -76,11 +76,8 @@
                 <i class="fa-solid fa-calendar-alt mr-3"></i>
                 <span>Manajemen Jadwal</span>
             </a>
-<<<<<<< HEAD
             <a href="{{ route('manajAcara') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-=======
-            <a href="{{ route('manajAcara')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
->>>>>>> f237ddd5386d9139efdac2d54fa0d27ebea36fc8
+
                 <i class="fa-solid fa-calendar-check mr-3"></i>
                 <span>Acara</span>
             </a>
