@@ -1353,13 +1353,35 @@ public function destroyPengumuman($id_pengumuman, Request $request)
     //     }
     // }
 
-    public function exportNilai()
+    public function exportNilai(Request $request, $id_kelas, $id_mapel)
     {
-        // Tentukan nama file yang akan di-download
-        $namaFile = 'laporan_nilai_siswa_' . date('Y-m-d') . '.xlsx';
+        
+        $id_user = $request->cookie('id_user');
+        $id_sekolah = $request->cookie('id_sekolah');
+        
+        $infoJKA = Jadwal::where('id_kelas', $id_kelas)
+        ->where('id_mapel', $id_mapel)
+        ->where('id_sekolah', $id_sekolah)
+        ->with('kelas.angkatan')
+        ->with('mapel')
+        ->whereHas('mapel', function ($query) use ($id_user) {
+            $query->where('id_guru', $id_user);
+        })
+        ->firstOrFail();
+        
+        // dd($infoKelas->semester);
+        
+        if($infoJKA->kelas->angkatan->id_tingkat != $infoJKA->tingkat || $infoJKA->kelas->angkatan->semester != $infoJKA->semester){
+            abort(404);
+        }
+        
+        $namaFile = 'laporan_nilai_siswa_' . $infoJKA->kelas->nama_kelas .'_'. $infoJKA->mapel->nama_mapel .'_'. date('Y-m-d') . '.xlsx';
+        $id_tingkat = $infoJKA->kelas->angkatan->id_tingkat;
+        $semester = $infoJKA->kelas->angkatan->semester;
+        
 
         // Panggil facade Excel untuk men-download file
-        return Excel::download(new LaporanNilaiExport, $namaFile);
+        return Excel::download(new LaporanNilaiExport($id_kelas, $id_mapel, $id_tingkat, $semester), $namaFile);
 
     }
 

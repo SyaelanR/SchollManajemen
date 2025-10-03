@@ -118,13 +118,13 @@ Route::middleware('auth')->group(function () {
         });
 
 
-        Route::prefix('pelanggaran')->group(function () {
-            Route::get('/', [\App\Http\Controllers\pelanggaranController::class, 'index'])->name('pelanggaran.index');
-            Route::post('/', [\App\Http\Controllers\pelanggaranController::class, 'store'])->name('pelanggaran.store');
-            Route::get('/daftar/{id_kelas}', [\App\Http\Controllers\pelanggaranController::class, 'daftarPelanggar'])->name('pelanggaran.daftar');
-            Route::put('/{pelanggaran}', [\App\Http\Controllers\pelanggaranController::class, 'update'])->name('pelanggaran.update');
-            Route::delete('/{pelanggaran}', [\App\Http\Controllers\pelanggaranController::class, 'destroy'])->name('pelanggaran.destroy');
-        });
+        // Route::prefix('pelanggaran')->group(function () {
+        //     Route::get('/', [\App\Http\Controllers\pelanggaranController::class, 'index'])->name('pelanggaran.index');
+        //     Route::post('/', [\App\Http\Controllers\pelanggaranController::class, 'store'])->name('pelanggaran.store');
+        //     Route::get('/daftar/{id_kelas}', [\App\Http\Controllers\pelanggaranController::class, 'daftarPelanggar'])->name('pelanggaran.daftar');
+        //     Route::put('/{pelanggaran}', [\App\Http\Controllers\pelanggaranController::class, 'update'])->name('pelanggaran.update');
+        //     Route::delete('/{pelanggaran}', [\App\Http\Controllers\pelanggaranController::class, 'destroy'])->name('pelanggaran.destroy');
+        // });
 
 
         Route::prefix('manajemen-rapor')->group(function (){
@@ -174,6 +174,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/lihatTugasSiswa/{namaFile}', [GuruController::class, 'lihatTugasSiswa'])->name('lihatTugasSiswa');
             Route::get('/lihatSoalSiswa/{namaFile}', [GuruController::class, 'lihatSoalSiswa'])->name('lihatSoalSiswa');
 
+            Route::get('/export-nilai/{id_kelas}/{id_mapel}', [GuruController::class, 'exportNilai'])->name('exportNilai');
+
+
         });
 
 
@@ -211,22 +214,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [GuruController::class, 'manajPengumumanKelas'])->name('manajPengumuman');
             Route::get('/manajemen-pengumuman-daftar/{id_kelas}/{id_mapel}', [GuruController::class, 'manajPengumumanDaftar'])->name('manajPengumumanDaftar');
             Route::post('/manajemen-pengumuman-daftar/{id_kelas}/{id_mapel}', [GuruController::class, 'storePengumumanDaftar'])->name('storePengumumanDaftar');
+            Route::delete('/pengumuman/{id_pengumuman}', [GuruController::class, 'destroyPengumuman'])->name('deletePengumuman');
+            Route::put('/pengumuman/{id_pengumuman}', [GuruController::class, 'updatePengumuman'])->name('updatePengumuman');
 
-
-          // --- Rute Tambahan untuk Edit dan Hapus ---
-
-        // 3. Rute Memperbarui Pengumuman yang Ada (PUT/PATCH)
-        // URL: /manajemen-pengumuman/update/{id_pengumuman}
-        Route::put('/pengumuman/{id_pengumuman}', [GuruController::class, 'updatePengumuman'])->name('updatePengumuman');
-
-        Route::get('/export-nilai', [GuruController::class, 'exportNilai'])->name('exportNilai');
-
-
-        // 4. Rute Menghapus Pengumuman (POST)
-        // Nama diubah menjadi 'deletePengumuman' agar sesuai dengan panggilan di Blade.
-        // URL: /manajemen-pengumuman/delete/{id_pengumuman}
-        Route::delete('/pengumuman/{id_pengumuman}', [GuruController::class, 'destroyPengumuman'])->name('deletePengumuman');
-   
         });
     
         
