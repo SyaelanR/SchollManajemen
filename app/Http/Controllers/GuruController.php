@@ -1364,4 +1364,107 @@ public function destroyPengumuman($id_pengumuman, Request $request)
     }
 
 
+
+    public function updateTugas(Request $request, $id)
+    {
+        $request->validate([
+            'keterangan_tugas' => 'required|string|max:255',
+            'deadline' => 'required|date',
+            'file' => 'nullable|file|mimes:pdf|max:10240', // Opsional, PDF, max 10MB
+        ], [
+            'keterangan_tugas.required' => 'Keterangan tugas tidak boleh kosong.',
+            'deadline.required' => 'Deadline tidak boleh kosong.',
+            'file.mimes' => 'File harus dalam format PDF.',
+            'file.max' => 'Ukuran file maksimal adalah 10MB.',
+        ]);
+
+        // Cari tugas berdasarkan ID
+        $tugas = DaftarTugas::findOrFail($id);
+
+        // Update keterangan dan deadline
+        $tugas->keterangan = $request->keterangan_tugas;
+        $tugas->deadline = $request->deadline;
+
+        // Cek jika ada file baru yang diunggah
+        if ($request->hasFile('file')) {
+            // Hapus file lama dari storage jika ada
+            if ($tugas->nama_file && Storage::disk('local')->exists('tugas/' . $tugas->nama_file)) {
+                Storage::disk('local')->delete('tugas/' . $tugas->nama_file);
+            }
+
+            // Simpan file baru
+            $file = $request->file('file');
+            $namaFile = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('tugas', $namaFile, 'local'); // Simpan di storage/app/tugas
+
+            // Update nama file di database
+            $tugas->nama_file = $namaFile;
+        }
+
+        // Simpan perubahan pada tabel daftar_tugas
+        $tugas->save();
+
+        // Sinkronkan perubahan ke tabel daftar_nilai yang terkait
+        $daftarNilai = DaftarNilai::where('id_daftar_tugas', $tugas->id_daftar_tugas)->first();
+        if ($daftarNilai) {
+            $daftarNilai->keterangan = $request->keterangan_tugas;
+            $daftarNilai->tanggal = $request->deadline;
+            $daftarNilai->save();
+        }
+
+        return back()->with('success', 'Tugas berhasil diperbarui!');
+    }
+
+
+    public function destroyTugas($id)
+    {
+        // Cari tugas berdasarkan ID
+        $tugas = DaftarTugas::findOrFail($id);
+
+        // Cari daftar nilai yang terkait dengan tugas ini
+        $daftarNilai = DaftarNilai::where('id_daftar_tugas', $tugas->id_daftar_tugas)->first();
+
+        if ($daftarNilai) {
+            // Hapus semua entri nilai siswa yang terkait
+            DaftarNilaiSiswa::where('id_daftar_nilai', $daftarNilai->id_daftar_nilai)->delete();
+            // Hapus daftar nilai itu sendiri
+            $daftarNilai->delete();
+        }
+
+        // Hapus file soal dari storage jika ada
+        if ($tugas->nama_file && Storage::disk('local')->exists('tugas/' . $tugas->nama_file)) {
+            Storage::disk('local')->delete('tugas/' . $tugas->nama_file);
+        }
+
+        // Hapus tugas itu sendiri
+        $tugas->delete();
+
+        // Redirect kembali dengan pesan sukses
+        return back()->with('success', 'Tugas berhasil dihapus!');
+    }
+
+    public function destroyDaftarNilai(Request $request, $id_daftar_nilai)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+
+        // 1. Cari sesi penilaian yang akan dihapus, pastikan milik guru yang login
+        $daftarNilai = DaftarNilai::where('id_daftar_nilai', $id_daftar_nilai)
+            ->where('id_sekolah', $id_sekolah)
+            ->whereHas('mapel', function ($query) use ($id_user) {
+                $query->where('id_guru', $id_user);
+            })
+            ->firstOrFail();
+
+        // 2. Hapus semua nilai siswa yang terkait dengan sesi ini (Cascading Delete)
+        DaftarNilaiSiswa::where('id_daftar_nilai', $daftarNilai->id_daftar_nilai)->delete();
+
+        // 3. Hapus sesi penilaian itu sendiri
+        $daftarNilai->delete();
+
+        // 4. Redirect kembali dengan pesan sukses
+        return back()->with('success', 'Sesi penilaian berhasil dihapus!');
+    }
+
+
 }

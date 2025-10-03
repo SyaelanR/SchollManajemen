@@ -12,6 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- SweetAlert2 for notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Custom styles */
         body {
@@ -107,6 +109,12 @@
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
             <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+                @if (session('success'))
+                    <div id="session-success" data-message="{{ session('success') }}" class="hidden"></div>
+                @endif
+                @if ($errors->any())
+                    <div id="validation-errors" data-errors='@json($errors->all())' class="hidden"></div>
+                @endif
                 <div class="relative w-full md:w-1/3 mb-4 md:mb-0">
                     <input type="text" placeholder="Cari kurikulum..." class="w-full pl-10 pr-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
@@ -138,11 +146,27 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{$kurikulum->angkatan->angkatan}}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{$kurikulum->jumlah_matpel}}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-center">
-                                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">{{$kurikulum->status}}</span>
+                                @if($kurikulum->status == 'non-aktif')
+                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 capitalize">{{$kurikulum->status}}</span>
+                                @else
+                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 capitalize">{{$kurikulum->status}}</span>
+                                @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
-                                <button href="#" class="text-blue-600 hover:text-blue-900 mr-3" title="Edit"><i class="fa-solid fa-pencil"></i></button>
-                                <a href="#" class="text-red-600 hover:text-red-900" title="Hapus"><i class="fa-solid fa-trash"></i></a>
+                                <button class="edit-btn text-blue-600 hover:text-blue-900 mr-3" title="Edit"
+                                    data-id="{{ $kurikulum->id_kurikulum }}"
+                                    data-nama="{{ $kurikulum->nama_kurikulum }}"
+                                    data-jenjang="{{ $kurikulum->jenjang }}"
+                                    data-angkatan_id="{{ $kurikulum->id_angkatan }}"
+                                    data-jumlah_matpel="{{ $kurikulum->jumlah_matpel }}"
+                                    data-status="{{ $kurikulum->status }}">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </button>
+                                <form action="{{ route('destroyKurikulum', $kurikulum->id_kurikulum) }}" method="POST" class="inline-block delete-form">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+                                </form>
                             </td>
                         </tr>
                         @empty
@@ -167,7 +191,8 @@
                     <i class="fa-solid fa-times text-2xl"></i>
                 </button>
             </div>
-            <form action="{{ route('storeKurikulum')}}" method="post">
+            <form id="curriculum-form" action="{{ route('storeKurikulum')}}" method="post">
+                <input type="hidden" id="form-method" name="_method" value="POST">
                 @csrf
                 <div class="space-y-4">
                     <div>
@@ -186,7 +211,7 @@
                     </div>
                     <div>
                         <label for="angkatan" class="block text-gray-700 font-semibold mb-2">Tahun Angkatan</label>
-                        <select id="angkatan" name="angkatan" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                        <select id="angkatan" name="id_angkatan" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
                             <option disabled value="">Pilih Tahun</option>
                             @forelse ($angkatans as $angkatan)
                             <option value="{{$angkatan->id_angkatan}}">{{$angkatan->angkatan}}</option>
@@ -201,17 +226,17 @@
                         <input type="number" id="jumlah_matpel" name="jumlah_matpel" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Contoh: 15" required>
                     </div>
                     <div>
-                        {{-- <label class="block text-gray-700 font-semibold mb-2">Status</label>
+                        <label for="status" class="block text-gray-700 font-semibold mb-2">Status</label>
                         <div class="flex items-center space-x-6">
                             <label class="flex items-center">
-                                <input type="radio" name="status" value="Aktif" class="form-radio h-4 w-4 text-indigo-600" checked>
+                                <input type="radio" name="status" value="aktif" class="form-radio h-4 w-4 text-indigo-600" checked>
                                 <span class="ml-2 text-gray-700">Aktif</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="radio" name="status" value="Tidak Aktif" class="form-radio h-4 w-4 text-indigo-600">
+                                <input type="radio" name="status" value="non-aktif" class="form-radio h-4 w-4 text-indigo-600">
                                 <span class="ml-2 text-gray-700">Tidak Aktif</span>
                             </label>
-                        </div> --}}
+                        </div>
                     </div>
                 </div>
                 <div class="flex justify-end space-x-4 mt-8">
@@ -243,23 +268,10 @@
         const closeModalBtn = document.getElementById('close-modal-btn');
         const cancelBtn = document.getElementById('cancel-btn');
         const form = document.getElementById('curriculum-form');
-
-        const populateYearDropdown = () => {
-            const yearDropdown = document.getElementById('angkatan');
-            const currentYear = new Date().getFullYear();
-            const startYear = currentYear - 10;
-
-            for (let i = currentYear; i >= startYear; i--) {
-                const option = document.createElement('option');
-                option.value = i;
-                option.textContent = i;
-                yearDropdown.appendChild(option);
-            }
-        };
+        const formMethodInput = document.getElementById('form-method');
 
         const openModal = () => {
             modal.classList.remove('invisible', 'opacity-0');
-            modalContent.classList.remove('scale-95');
         };
 
         const closeModal = () => {
@@ -273,6 +285,8 @@
 
         addBtn.addEventListener('click', () => {
             document.getElementById('modal-title').textContent = 'Tambah Kurikulum Baru';
+            form.action = "{{ route('storeKurikulum') }}";
+            formMethodInput.value = 'POST';
             openModal();
         });
 
@@ -284,21 +298,70 @@
             }
         });
 
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-            console.log('Data Kurikulum:', data);
-            
-            // Logika untuk mengirim data ke server
-            
-            closeModal();
-            alert('Kurikulum berhasil disimpan!');
+        // --- Edit Button Logic ---
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const data = this.dataset;
+                
+                // Set modal title
+                document.getElementById('modal-title').textContent = 'Edit Kurikulum';
+
+                // Populate form fields
+                document.getElementById('nama').value = data.nama;
+                document.getElementById('jenjang').value = data.jenjang;
+                document.getElementById('angkatan').value = data.angkatan_id;
+                document.getElementById('jumlah_matpel').value = data.jumlah_matpel;
+                
+                // Set radio button for status
+                document.querySelector(`input[name="status"][value="${data.status}"]`).checked = true;
+
+                // Update form action and method
+                let updateUrl = "{{ route('updateKurikulum', ':id') }}";
+                form.action = updateUrl.replace(':id', data.id);
+                formMethodInput.value = 'PUT';
+
+                // Open the modal
+                openModal();
+            });
         });
-        
+
+        // --- Delete Confirmation ---
+        document.querySelectorAll('.delete-form').forEach(form => {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Data kurikulum yang dihapus tidak dapat dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submit();
+                    }
+                });
+            });
+        });
+
+        // --- SweetAlert2 Notifications ---
+        const successMessage = document.getElementById('session-success');
+        if (successMessage) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: successMessage.dataset.message,
+                timer: 2500,
+                showConfirmButton: false
+            });
+        }
+
+        // (Anda bisa menambahkan penanganan untuk validation-errors di sini jika diperlukan)
+
     });
 </script>
 
 </body>
 </html>
-

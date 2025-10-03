@@ -1299,35 +1299,106 @@ public function manajAcara(Request $request)
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
-    {
-        // 1. Validasi data input
-        $validatedData = $request->validate([
-            'judul_acara' => 'required|string|max:255',
-            'tanggal_acara' => 'required|date',
-            'waktu_acara' => 'required|date_format:H:i',
-            'lokasi' => 'required|string|max:255',
-            'peserta_target' => 'required|string|in:Semua,Siswa,Guru,Kelas XI & XII',
-            'deskripsi' => 'nullable|string|max:500',
+public function storeAcara(Request $request)
+{
+    $validatedData = $request->validate([
+        'judul_acara'     => 'required|string|max:255',
+        'waktu_mulai'     => 'required|date',
+        'waktu_berakhir'  => 'required|date',
+        'lokasi'          => 'required|string|max:255',
+        'peserta_target'  => 'required|string|max:255',
+        'deskripsi'       => 'nullable|string|max:500',
+    ]);
+
+    DaftarAcara::create([
+        'id_sekolah'      => $request->cookie('id_sekolah'),
+        'judul_acara'     => $validatedData['judul_acara'],
+        'tanggal_mulai'   => $validatedData['waktu_mulai'],
+        'tanggal_selesai' => $validatedData['waktu_berakhir'],
+        'lokasi'          => $validatedData['lokasi'],
+        'peserta'         => $validatedData['peserta_target'],
+        'deskripsi'       => $validatedData['deskripsi'],
+    ]);
+
+    return redirect()->route('manajAcara')->with('success', 'Acara baru berhasil ditambahkan!');
+}
+
+
+public function updateAcara(Request $request, $id)
+{
+    $validatedData = $request->validate([
+        'judul_acara'     => 'required|string|max:255',
+        'waktu_mulai'     => 'required|date',
+        'waktu_berakhir'  => 'required|date',
+        'lokasi'          => 'required|string|max:255',
+        'peserta_target'  => 'required|string|max:255',
+        'deskripsi'       => 'nullable|string|max:500',
+    ]);
+
+    DB::table('daftar_acaras')
+        ->where('id_daftar_acara', $id)
+        ->update([
+            'judul_acara'     => $validatedData['judul_acara'],
+            'tanggal_mulai'   => $validatedData['waktu_mulai'],
+            'tanggal_selesai' => $validatedData['waktu_berakhir'],
+            'lokasi'          => $validatedData['lokasi'],
+            'peserta'         => $validatedData['peserta_target'],
+            'deskripsi'       => $validatedData['deskripsi'],
+            'updated_at'      => now(),
         ]);
 
-        // 2. Simpan ke database (Contoh menggunakan Model Event, yang harus Anda buat)
-        // \App\Models\Event::create($validatedData);
+    return redirect()->route('manajAcara')->with('success', 'Acara berhasil diperbarui!');
+}
 
-        // 3. Redirect ke halaman index dengan pesan sukses
-        return redirect()->route('admin.acara-sekolah')->with('success', 'Acara baru berhasil ditambahkan!');
-    }
+
     
-    /**
-     * Placeholder untuk menghapus acara.
-     * Corresponds to DELETE /admin/acara-sekolah/{id}
-     */
-    public function destroy($id)
-    {
-        // Temukan dan hapus event
-        // \App\Models\Event::destroy($id);
-        
-        return redirect()->route('admin.acara-sekolah')->with('success', 'Acara berhasil dihapus.');
-    }
+public function destroyAcara($id)
+{
+    DB::table('daftar_acaras')
+        ->where('id_daftar_acara', $id)
+        ->delete();
+
+    return redirect()->route('manajAcara')->with('success', 'Acara berhasil dihapus.');
+}
+
+public function destroyKurikulum(Request $request, $id)
+{
+    $id_sekolah = $request->cookie('id_sekolah');
+
+    $kurikulum = DaftarKurikulum::where('id_kurikulum', $id)
+                                ->where('id_sekolah', $id_sekolah)
+                                ->firstOrFail();
+
+    $kurikulum->delete();
+
+    return redirect()->route('manajemenKurikulum')->with('success', 'Kurikulum berhasil dihapus!');
+}
+
+public function updateKurikulum(Request $request, $id)
+{
+    $id_sekolah = $request->cookie('id_sekolah');
+
+    $request->validate([
+        'id_angkatan' => 'required|exists:angkatans,id_angkatan,id_sekolah,' . $id_sekolah,
+        'nama' => 'required|string|max:255',
+        'jenjang' => 'required|string|in:SMA,SMK,SD,SMP',
+        'jumlah_matpel' => 'required|integer|min:1',
+        'status' => 'required|in:aktif,non-aktif',
+    ]);
+
+    $kurikulum = DaftarKurikulum::where('id_kurikulum', $id)
+                                ->where('id_sekolah', $id_sekolah)
+                                ->firstOrFail();
+
+    $kurikulum->update([
+        'id_angkatan' => $request->id_angkatan,
+        'nama_kurikulum' => $request->nama,
+        'jenjang' => $request->jenjang,
+        'jumlah_matpel' => $request->jumlah_matpel,
+        'status' => $request->status,
+    ]);
+
+    return redirect()->route('manajemenKurikulum')->with('success', 'Kurikulum berhasil diperbarui!');
+}
 }
 

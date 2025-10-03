@@ -76,7 +76,8 @@ Route::middleware('auth')->group(function () {
         Route::prefix('manajemen-kurikulum')->group(function(){
             Route::get('/', [AdminController::class, 'manajKurikulum'])->name('manajemenKurikulum');
             Route::post('/', [AdminController::class, 'storeKurikulum'])->name('storeKurikulum');
-
+            Route::put('/{id}', [AdminController::class, 'updateKurikulum'])->name('updateKurikulum');
+            Route::delete('/{id}', [AdminController::class, 'destroyKurikulum'])->name('destroyKurikulum');
         });
 
         Route::prefix('manajemen-keuangan')->group(function () {
@@ -134,9 +135,9 @@ Route::middleware('auth')->group(function () {
 
         Route::prefix('manajemen-acara')->group(function () {
             Route::get('/', [AdminController::class, 'manajAcara'])->name('manajAcara');
-            
-            Route::post('/acara-sekolah', [AdminController::class, 'store'])->name('admin.acara.store');
-            Route::delete('/acara-sekolah/{id}', [AdminController::class, 'destroy'])->name('admin.acara.destroy');
+            Route::post('/acara-sekolah', [AdminController::class, 'storeAcara'])->name('admin.acara.store');
+            Route::put('/acara-sekolah/{id}', [AdminController::class, 'updateAcara'])->name('admin.acara.update');
+            Route::delete('/acara-sekolah/{id}', [AdminController::class, 'destroyAcara'])->name('admin.acara.destroy');
         });
 
     });
