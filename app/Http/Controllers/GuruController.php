@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Models\Mapel;
 use App\Models\DaftarTugas;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redis;
