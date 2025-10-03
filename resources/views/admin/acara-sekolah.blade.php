@@ -105,7 +105,7 @@
                     </div>
                 </div>
                 
-                <!-- Card View Acara (Layout Satu Kolom) - Konten Asli Dipertahankan -->
+                <!-- Card View Acara (Layout Satu Kolom) -->
                 <div class="grid grid-cols-1 gap-6" id="event-list-container">
                     
                     <!-- Card Acara Contoh 1: Acara Mendatang -->
@@ -139,7 +139,14 @@
                                                 <i class="fa-solid fa-user-group mr-1"></i> {{ $acara->peserta }}
                                             </span>
                                             <div>
-                                                <button data-id="{{ $acara->id_daftar_acara }}" class="edit-btn text-indigo-600 hover:text-indigo-900 mx-1 p-1 transition" title="Edit Acara">
+                                                <button class="edit-btn text-indigo-600 hover:text-indigo-900 mx-1 p-1 transition" title="Edit Acara"
+                                                    data-id="{{ $acara->id_daftar_acara }}"
+                                                    data-judul_acara="{{ $acara->judul_acara }}"
+                                                    data-deskripsi="{{ $acara->deskripsi }}"
+                                                    data-tanggal_mulai="{{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('Y-m-d\TH:i') }}"
+                                                    data-tanggal_selesai="{{ \Carbon\Carbon::parse($acara->tanggal_selesai)->format('Y-m-d\TH:i') }}"
+                                                    data-lokasi="{{ $acara->lokasi }}"
+                                                    data-peserta="{{ $acara->peserta }}">
                                                     <i class="fa-solid fa-edit"></i>
                                                 </button>
                                                 <button data-id="{{ $acara->id_daftar_acara }}" data-title="{{ $acara->judul_acara }}" class="delete-btn text-red-600 hover:text-red-900 mx-1 p-1 transition" title="Hapus Acara">
@@ -179,7 +186,14 @@
                                                 <i class="fa-solid fa-user-group mr-1"></i> {{ $acara->peserta }}
                                             </span>
                                             <div>
-                                                <button data-id="{{ $acara->id_daftar_acara }}" class="edit-btn text-indigo-600 hover:text-indigo-900 mx-1 p-1 transition" title="Edit Acara">
+                                                <button class="edit-btn text-indigo-600 hover:text-indigo-900 mx-1 p-1 transition" title="Edit Acara"
+                                                    data-id="{{ $acara->id_daftar_acara }}"
+                                                    data-judul_acara="{{ $acara->judul_acara }}"
+                                                    data-deskripsi="{{ $acara->deskripsi }}"
+                                                    data-tanggal_mulai="{{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('Y-m-d\TH:i') }}"
+                                                    data-tanggal_selesai="{{ \Carbon\Carbon::parse($acara->tanggal_selesai)->format('Y-m-d\TH:i') }}"
+                                                    data-lokasi="{{ $acara->lokasi }}"
+                                                    data-peserta="{{ $acara->peserta }}">
                                                     <i class="fa-solid fa-edit"></i>
                                                 </button>
                                                 <button data-id="{{ $acara->id_daftar_acara }}" data-title="{{ $acara->judul_acara }}" class="delete-btn text-red-600 hover:text-red-900 mx-1 p-1 transition" title="Hapus Acara">
@@ -224,8 +238,10 @@
         </div>
 
         <!-- Modal Body (Form) -->
-        <form class="p-6 space-y-6">
+        <form id="event-form" action="{{ route('admin.acara.store') }}" method="POST" class="p-6 space-y-6">
             <!-- Hidden ID field for editing -->
+            @csrf
+            <input type="hidden" name="_method" id="form-method" value="POST">
             <input type="hidden" id="event_id" name="event_id"> 
             
             <!-- Judul Acara -->
@@ -334,56 +350,9 @@
     // Handle form submission (menggunakan SweetAlert2)
     form.addEventListener('submit', (e) => {
         e.preventDefault();
-        
-        const title = document.getElementById('judul_acara').value;
-        const actionText = isEditing ? 'DIUPDATE' : 'DISIMPAN';
-        
-        // SweetAlert2 Success Message
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil!',
-            text: `Acara "${title}" berhasil ${actionText}!`,
-            timer: 2500,
-            showConfirmButton: false
-        });
-        
-        form.reset(); 
-        hideModal();
+        // Kirim form ke server
+        e.target.submit();
     });
-
-    // Fungsi untuk mensimulasikan pemuatan data (jika dalam mode edit)
-    function loadEventData(id) {
-        // Data placeholder
-        const dummyData = {
-            1: {
-                title: "Lomba Debat Bahasa Inggris",
-                datetime_start: "2025-10-15T08:00",
-                datetime_end: "2025-10-15T12:00", 
-                location: "Aula Serbaguna",
-                target: "Kelas XI & XII",
-                description: "Ajang kompetisi kemampuan berbahasa Inggris antar kelas yang bertujuan untuk meningkatkan kemampuan berargumentasi dan kepercayaan diri siswa dalam menggunakan bahasa Inggris di depan umum."
-            },
-            2: {
-                title: "Perayaan Hari Guru Nasional",
-                datetime_start: "2024-11-25T10:00",
-                datetime_end: "2024-11-25T13:00",
-                location: "Lapangan Utama",
-                target: "Semua Siswa & Guru",
-                description: "Apel bendera dan pentas seni oleh siswa untuk menghormati dan berterima kasih kepada pahlawan tanpa tanda jasa, yaitu seluruh guru di sekolah."
-            },
-            3: {
-                title: "Workshop Kurikulum Merdeka",
-                datetime_start: "2025-09-05T09:00",
-                datetime_end: "2025-09-05T15:00",
-                location: "Ruang Rapat Guru",
-                target: "Hanya Guru",
-                description: "Pelatihan intensif mengenai implementasi Kurikulum Merdeka, fokus pada asesmen formatif dan penyusunan modul ajar yang berdiferensiasi untuk semua staf pengajar."
-            },
-        };
-
-        return dummyData[id];
-    }
-
 
     // --- LOGIKA Aksi Card (Edit/Hapus) ---
 
@@ -394,29 +363,30 @@
         const deleteBtn = e.target.closest('.delete-btn');
 
         if (editBtn) {
-            const id = parseInt(editBtn.getAttribute('data-id'));
+            const data = editBtn.dataset;
             
             // 1. Set state ke mode edit
             isEditing = true;
-            currentEventId = id;
+            currentEventId = data.id;
             
             // 2. Set judul modal
-            modalTitle.innerHTML = `<i class="fa-solid fa-edit mr-2 text-indigo-600"></i> Edit Acara ID: ${id}`;
+            modalTitle.innerHTML = `<i class="fa-solid fa-edit mr-2 text-indigo-600"></i> Edit Acara`;
             saveButton.innerHTML = '<i class="fa-solid fa-save mr-2"></i> Update Acara';
 
-            // 3. Isi form dengan data placeholder
-            const data = loadEventData(id);
-            if (data) {
-                document.getElementById('event_id').value = id;
-                document.getElementById('judul_acara').value = data.title;
-                document.getElementById('waktu_mulai').value = data.datetime_start;
-                document.getElementById('waktu_berakhir').value = data.datetime_end;
-                document.getElementById('lokasi').value = data.location;
-                document.getElementById('peserta_target').value = data.target;
-                document.getElementById('deskripsi').value = data.description;
-            }
+            // 3. Isi form dengan data dari atribut data-*
+            document.getElementById('event_id').value = data.id;
+            document.getElementById('judul_acara').value = data.judul_acara;
+            document.getElementById('waktu_mulai').value = data.tanggal_mulai;
+            document.getElementById('waktu_berakhir').value = data.tanggal_selesai;
+            document.getElementById('lokasi').value = data.lokasi;
+            document.getElementById('peserta_target').value = data.peserta;
+            document.getElementById('deskripsi').value = data.deskripsi;
 
-            // 4. Tampilkan modal
+            // 4. Update action form dan method
+            form.action = `{{ url('manajemen-acara/acara-sekolah') }}/${data.id}`;
+            document.getElementById('form-method').value = 'PUT';
+
+            // 5. Tampilkan modal
             showModal();
 
             
@@ -428,8 +398,8 @@
 
             // Ganti custom confirmation modal dengan SweetAlert2
             Swal.fire({
-                title: 'Konfirmasi Hapus Acara',
-                text: `Anda yakin ingin menghapus acara: "${title}" (ID: ${id})? Tindakan ini tidak dapat dibatalkan.`,
+                title: 'Konfirmasi Hapus',
+                text: `Anda yakin ingin menghapus acara "${title}"? Tindakan ini tidak dapat dibatalkan.`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#dc2626', // red-600
@@ -438,17 +408,16 @@
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Logika menghapus elemen dari DOM (contoh visual)
-                    const card = deleteBtn.closest('.event-card');
-                    if(card) card.remove();
-                    
-                    // Tampilkan Notifikasi Sukses Hapus
-                    Swal.fire({
-                        title: 'Dihapus!',
-                        text: `Acara "${title}" berhasil dihapus.`,
-                        icon: 'success',
-                        timer: 2000
-                    });
+                    // Buat form dinamis untuk mengirim request DELETE
+                    const deleteForm = document.createElement('form');
+                    deleteForm.action = `{{ url('manajemen-acara/acara-sekolah') }}/${id}`;
+                    deleteForm.method = 'POST'; // Method tetap POST, tapi di-spoof dengan _method
+                    deleteForm.innerHTML = `
+                        @csrf
+                        @method('DELETE')
+                    `;
+                    document.body.appendChild(deleteForm);
+                    deleteForm.submit();
                 }
             });
         }
