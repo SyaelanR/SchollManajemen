@@ -56,7 +56,7 @@
     <!-- Main Content -->
     <div class="flex-1 flex flex-col overflow-y-auto">
         
-        <!-- Header Sesuai Permintaan User -->
+        <!-- Header -->
         <header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-30">
             <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
                 <i class="fa-solid fa-bars text-2xl"></i>
@@ -79,8 +79,11 @@
             @if(session('success'))
                 <div id="session-success" data-message="{{ session('success') }}" class="hidden"></div>
             @endif
+            @if(session('error'))
+                <div id="session-error" data-message="{{ session('error') }}" class="hidden"></div>
+            @endif
 
-            <!-- START: Content Header/Intro (Dikembalikan ke Acara) -->
+            <!-- START: Content Header/Intro -->
             <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
                 <h2 class="text-3xl font-bold mb-2">Manajemen Acara</h2>
                 <p class="text-indigo-200">Kelola semua kegiatan, jadwal, dan acara penting sekolah.</p>
@@ -88,38 +91,53 @@
             <!-- END: Content Header/Intro -->
 
             <div class="bg-white p-6 rounded-xl shadow-md">
-                <!-- Action Bar (Dikembalikan ke Acara) -->
+                <!-- Action Bar -->
                 <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                     <h2 class="text-2xl font-bold text-gray-800">Daftar Acara</h2>
                     <div class="flex items-center gap-4 w-full md:w-auto">
                         <div class="relative w-full md:w-64">
-                            <!-- Placeholder dikembalikan ke Acara -->
-                            <input type="text" placeholder="Cari acara..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <input type="text" id="search-input" placeholder="Cari acara..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                         </div>
-                        <!-- Tombol dikembalikan ke Tambah Acara dan memanggil showModal() -->
-                        <button onclick="showModal()" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap shadow-md hover:shadow-lg">
+                        <!-- Tombol Tambah Acara -->
+                        <button id="btn-add" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap shadow-md hover:shadow-lg">
                             <i class="fa-solid fa-plus mr-2"></i>
                             Tambah Acara
                         </button>
                     </div>
                 </div>
                 
+<<<<<<< HEAD
                 <!-- Card View Acara (Layout Satu Kolom) -->
+=======
+                <!-- Card View Acara -->
+>>>>>>> f237ddd5386d9139efdac2d54fa0d27ebea36fc8
                 <div class="grid grid-cols-1 gap-6" id="event-list-container">
-                    
-                    <!-- Card Acara Contoh 1: Acara Mendatang -->
                     @forelse($daftarAcara ?? [] as $acara)
-                        @if(\Carbon\Carbon::parse($acara->tanggal_selesai)->lt(\Carbon\Carbon::now()))
-                            {{-- Card Acara Sudah Lewat --}}
-                            <div class="event-card" data-event-id="{{ $acara->id_daftar_acara }}">
-                                <div class="bg-white rounded-xl shadow-lg overflow-hidden opacity-80 border-t-4 border-gray-400 w-full">
-                                    <div class="p-5">
-                                        <div class="flex justify-between items-start mb-3">
-                                            <h3 class="text-xl font-bold text-gray-800 leading-snug">{{ $acara->judul_acara }}</h3>
+                        @php
+                            // safety: ensure Carbon parsing
+                            $isPast = \Carbon\Carbon::parse($acara->tanggal_selesai)->lt(\Carbon\Carbon::now());
+                            $startIso = \Carbon\Carbon::parse($acara->tanggal_mulai)->format('Y-m-d\TH:i');
+                            $endIso = \Carbon\Carbon::parse($acara->tanggal_selesai)->format('Y-m-d\TH:i');
+                        @endphp
+
+                        <div class="event-card" 
+                             data-id="{{ $acara->id_daftar_acara }}"
+                             data-judul="{{ e($acara->judul_acara) }}"
+                             data-tanggal-mulai="{{ $startIso }}"
+                             data-tanggal-selesai="{{ $endIso }}"
+                             data-lokasi="{{ e($acara->lokasi) }}"
+                             data-peserta="{{ e($acara->peserta) }}"
+                             data-deskripsi="{{ e($acara->deskripsi) }}">
+                            <div class="{{ $isPast ? 'bg-white rounded-xl shadow-lg overflow-hidden opacity-80 border-t-4 border-gray-400 w-full' : 'bg-white rounded-xl shadow-2xl overflow-hidden transform hover:scale-[1.01] transition duration-300 border-t-4 border-indigo-500 w-full' }}">
+                                <div class="p-5">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-bold text-gray-800 leading-snug">{{ $acara->judul_acara }}</h3>
+                                        @if($isPast)
                                             <span class="text-xs font-semibold px-3 py-1 rounded-full bg-gray-100 text-gray-600 whitespace-nowrap">
                                                 <i class="fa-solid fa-check mr-1"></i> Selesai
                                             </span>
+<<<<<<< HEAD
                                         </div>
 
                                         <p class="text-sm text-gray-600 mb-4">{{ $acara->deskripsi }}</p>
@@ -164,13 +182,18 @@
                                     <div class="p-5">
                                         <div class="flex justify-between items-start mb-3">
                                             <h3 class="text-xl font-bold text-gray-800 leading-snug">{{ $acara->judul_acara }}</h3>
+=======
+                                        @else
+>>>>>>> f237ddd5386d9139efdac2d54fa0d27ebea36fc8
                                             <span class="text-xs font-semibold px-3 py-1 rounded-full bg-blue-100 text-blue-800 whitespace-nowrap">
                                                 <i class="fa-solid fa-user-tie mr-1"></i> Mendatang
                                             </span>
-                                        </div>
+                                        @endif
+                                    </div>
 
-                                        <p class="text-sm text-gray-600 mb-4">{{ $acara->deskripsi }}</p>
+                                    <p class="text-sm text-gray-600 mb-4">{{ $acara->deskripsi }}</p>
 
+<<<<<<< HEAD
                                         <div class="space-y-2 text-sm text-gray-700 mb-5">
                                             @if(\Carbon\Carbon::parse($acara->tanggal_mulai)->isSameDay($acara->tanggal_selesai))
                                                 <p><i class="fa-solid fa-calendar-day w-5 mr-2 text-indigo-500"></i> {{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('d M Y') }}</p>
@@ -197,28 +220,50 @@
                                                     <i class="fa-solid fa-edit"></i>
                                                 </button>
                                                 <button data-id="{{ $acara->id_daftar_acara }}" data-title="{{ $acara->judul_acara }}" class="delete-btn text-red-600 hover:text-red-900 mx-1 p-1 transition" title="Hapus Acara">
+=======
+                                    <div class="space-y-2 text-sm text-gray-700 mb-5">
+                                        @if(\Carbon\Carbon::parse($acara->tanggal_mulai)->isSameDay($acara->tanggal_selesai))
+                                            <p><i class="fa-solid fa-calendar-day w-5 mr-2 {{ $isPast ? 'text-gray-500' : 'text-indigo-500' }}"></i> {{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('d M Y') }}</p>
+                                        @else
+                                            <p><i class="fa-solid fa-calendar-day w-5 mr-2 {{ $isPast ? 'text-gray-500' : 'text-indigo-500' }}"></i> {{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('d M Y') }} - {{ \Carbon\Carbon::parse($acara->tanggal_selesai)->format('d M Y') }}</p>
+                                        @endif
+                                        <p><i class="fa-solid fa-clock w-5 mr-2 {{ $isPast ? 'text-gray-500' : 'text-indigo-500' }}"></i> {{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($acara->tanggal_selesai)->format('H:i') }}</p>
+                                        <p><i class="fa-solid fa-location-dot w-5 mr-2 {{ $isPast ? 'text-gray-500' : 'text-indigo-500' }}"></i> {{ $acara->lokasi }}</p>
+                                    </div>
+                                    
+                                    <div class="flex justify-between items-center border-t pt-4">
+                                        <span class="text-xs font-medium text-gray-500">
+                                            <i class="fa-solid fa-user-group mr-1"></i> {{ $acara->peserta }}
+                                        </span>
+                                        <div class="flex items-center">
+                                            <button type="button" class="edit-btn text-indigo-600 hover:text-indigo-900 mx-1 p-1 transition" title="Edit Acara" data-id="{{ $acara->id_daftar_acara }}">
+                                                <i class="fa-solid fa-edit"></i>
+                                            </button>
+
+                                            <!-- Delete: hidden form + visible button that JS will confirm -->
+                                            <form id="delete-form-{{ $acara->id_daftar_acara }}" action="{{ route('admin.acara.destroy', $acara->id_daftar_acara) }}" method="POST" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button" class="delete-btn text-red-600 hover:text-red-900 mx-1 p-1 transition" title="Hapus Acara" data-id="{{ $acara->id_daftar_acara }}" data-title="{{ $acara->judul_acara }}">
+>>>>>>> f237ddd5386d9139efdac2d54fa0d27ebea36fc8
                                                     <i class="fa-solid fa-trash-alt"></i>
                                                 </button>
-                                            </div>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        @endif
+                        </div>
                     @empty
                         <div class="w-full flex flex-col items-center justify-center text-center p-10 bg-gray-50 rounded-xl border border-dashed border-gray-300">
                             <i class="fa-solid fa-calendar-xmark text-5xl text-gray-400 mb-3"></i>
                             <h3 class="text-lg font-semibold text-gray-600">Belum ada acara</h3>
                             <p class="text-sm text-gray-500 mt-1">Silakan tambahkan acara baru agar muncul di daftar.</p>
-                            <a href="#" 
-                            class="mt-4 inline-block px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg shadow hover:bg-indigo-700 transition">
+                            <button onclick="openAddModal()" class="mt-4 inline-block px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg shadow hover:bg-indigo-700 transition">
                                 <i class="fa-solid fa-plus mr-1"></i> Tambah Acara
-                            </a>
+                            </button>
                         </div>
                     @endforelse
-
-
-                    
                 </div>
             </div>
         </main>
@@ -238,11 +283,24 @@
         </div>
 
         <!-- Modal Body (Form) -->
+<<<<<<< HEAD
         <form id="event-form" action="{{ route('admin.acara.store') }}" method="POST" class="p-6 space-y-6">
+=======
+        <!-- Default action -> store; JS akan mengganti action & method saat edit -->
+        <form id="event-form" action="{{ route('admin.acara.store') }}" method="POST" class="p-6 space-y-6">
+            @csrf
+            <!-- method override (set by JS to PUT on edit) -->
+            <input type="hidden" name="_method" id="form_method" value="">
+
+>>>>>>> f237ddd5386d9139efdac2d54fa0d27ebea36fc8
             <!-- Hidden ID field for editing -->
             @csrf
             <input type="hidden" name="_method" id="form-method" value="POST">
             <input type="hidden" id="event_id" name="event_id"> 
+
+            <!-- Hidden fields expected by controller -->
+            <input type="hidden" id="tanggal_acara" name="tanggal_acara">
+            <input type="hidden" id="waktu_acara" name="waktu_acara">
             
             <!-- Judul Acara -->
             <div>
@@ -250,7 +308,7 @@
                 <input type="text" id="judul_acara" name="judul_acara" placeholder="Contoh: Lomba Sains Nasional" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
             </div>
 
-            <!-- Tanggal dan Waktu Acara (Dipisah: Mulai dan Berakhir) -->
+            <!-- Tanggal dan Waktu Acara (Visible: datetime-local untuk UX) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label for="waktu_mulai" class="block text-sm font-medium text-gray-700 mb-1">Tanggal & Waktu Mulai <span class="text-red-500">*</span></label>
@@ -294,46 +352,47 @@
 </div>
 
 <script>
-    // --- LOGIKA UTAMA APLIKASI ---
-    let isEditing = false;
-    let currentEventId = null;
-
-    // Logika Sidebar dan Overlay
+    // --- STATE & SELECTORS ---
+    const btnAdd = document.getElementById('btn-add');
     const menuButton = document.getElementById('menu-button');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
-
-    const toggleSidebar = () => {
-        sidebar.classList.toggle('-translate-x-full');
-        overlay.classList.toggle('hidden');
-    };
-
-    menuButton.addEventListener('click', toggleSidebar);
-    overlay.addEventListener('click', toggleSidebar);
-
-    // Logika Modal Tambah/Edit Acara (Popup)
+    const eventModal = document.getElementById('event-modal');
     const closeModalButton = document.getElementById('close-modal-button');
     const cancelButton = document.getElementById('cancel-button');
-    const eventModal = document.getElementById('event-modal');
-    const form = eventModal.querySelector('form');
+    const eventForm = document.getElementById('event-form');
     const modalTitle = document.getElementById('modal-title');
     const saveButton = document.getElementById('save-button');
-    const eventIdInput = document.getElementById('event_id');
+    const eventListContainer = document.getElementById('event-list-container');
+    const emptyState = document.getElementById('empty-state');
+    const searchInput = document.getElementById('search-input');
 
-    const showModal = () => {
-        eventModal.classList.remove('hidden');
-        document.body.classList.add('overflow-hidden'); // Mencegah scrolling di background
-    };
+    // route base for update (will append /{id})
+    const updateBaseUrl = "{{ url('manajemen-acara/acara-sekolah') }}";
 
-    const hideModal = () => {
-        eventModal.classList.add('hidden');
-        document.body.classList.remove('overflow-hidden');
-        form.reset(); // Pastikan form di-reset saat ditutup
-        isEditing = false;
-        currentEventId = null;
-        // Reset judul modal ke "Tambah Acara Baru"
+    // default store url (already on form action by blade)
+    const storeUrl = "{{ route('admin.acara.store') }}";
+
+    // --- SIDEBAR ---
+    menuButton.addEventListener('click', () => {
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
+    });
+    overlay.addEventListener('click', () => {
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
+    });
+
+    // --- MODAL HELPERS ---
+    function openAddModal() {
+        // Reset form to add mode
+        eventForm.reset();
+        eventForm.action = storeUrl;
+        document.getElementById('form_method').value = '';
+        document.getElementById('event_id').value = '';
         modalTitle.innerHTML = '<i class="fa-solid fa-calendar-plus mr-2 text-indigo-600"></i> Tambah Acara Baru';
         saveButton.innerHTML = '<i class="fa-solid fa-save mr-2"></i> Simpan Acara';
+<<<<<<< HEAD
     };
 
     // Event Listeners Modal
@@ -355,13 +414,46 @@
     });
 
     // --- LOGIKA Aksi Card (Edit/Hapus) ---
+=======
+        showModal();
+    }
 
-    const eventListContainer = document.getElementById('event-list-container');
+    function showModal() {
+        eventModal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+    }
+    function hideModal() {
+        eventModal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    }
 
-    eventListContainer.addEventListener('click', (e) => {
-        const editBtn = e.target.closest('.edit-btn');
-        const deleteBtn = e.target.closest('.delete-btn');
+    btnAdd.addEventListener('click', openAddModal);
+    closeModalButton.addEventListener('click', hideModal);
+    cancelButton.addEventListener('click', hideModal);
+    // close on overlay click
+    eventModal.addEventListener('click', (e) => { if (e.target === eventModal) hideModal(); });
+>>>>>>> f237ddd5386d9139efdac2d54fa0d27ebea36fc8
 
+    // --- Fill modal for Edit ---
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = btn.getAttribute('data-id');
+            // find parent card
+            const card = btn.closest('.event-card');
+            if (!card) return;
+            const judul = card.getAttribute('data-judul') || '';
+            const tanggalMulai = card.getAttribute('data-tanggal-mulai') || '';
+            const tanggalSelesai = card.getAttribute('data-tanggal-selesai') || '';
+            const lokasi = card.getAttribute('data-lokasi') || '';
+            const peserta = card.getAttribute('data-peserta') || '';
+            const deskripsi = card.getAttribute('data-deskripsi') || '';
+
+            // set form to update
+            eventForm.action = updateBaseUrl + '/' + id;
+            document.getElementById('form_method').value = 'PUT'; // override method
+            document.getElementById('event_id').value = id;
+
+<<<<<<< HEAD
         if (editBtn) {
             const data = editBtn.dataset;
             
@@ -387,27 +479,46 @@
             document.getElementById('form-method').value = 'PUT';
 
             // 5. Tampilkan modal
+=======
+            // visible fields
+            document.getElementById('judul_acara').value = judul;
+            document.getElementById('waktu_mulai').value = tanggalMulai;
+            document.getElementById('waktu_berakhir').value = tanggalSelesai;
+            document.getElementById('lokasi').value = lokasi;
+            document.getElementById('peserta_target').value = peserta;
+            document.getElementById('deskripsi').value = deskripsi;
+
+            // change modal title and button
+            modalTitle.innerHTML = `<i class="fa-solid fa-edit mr-2 text-indigo-600"></i> Edit Acara ID: ${id}`;
+            saveButton.innerHTML = '<i class="fa-solid fa-save mr-2"></i> Update Acara';
+
+>>>>>>> f237ddd5386d9139efdac2d54fa0d27ebea36fc8
             showModal();
+        });
+    });
 
-            
-        }
-
-        if (deleteBtn) {
-            const id = deleteBtn.getAttribute('data-id');
-            const title = deleteBtn.getAttribute('data-title');
-
-            // Ganti custom confirmation modal dengan SweetAlert2
+    // --- Delete with confirmation (SweetAlert) ---
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = btn.getAttribute('data-id');
+            const title = btn.getAttribute('data-title') || 'acara ini';
             Swal.fire({
+<<<<<<< HEAD
                 title: 'Konfirmasi Hapus',
                 text: `Anda yakin ingin menghapus acara "${title}"? Tindakan ini tidak dapat dibatalkan.`,
+=======
+                title: 'Konfirmasi Hapus Acara',
+                text: `Anda yakin ingin menghapus acara: "${title}"? Tindakan ini tidak dapat dibatalkan.`,
+>>>>>>> f237ddd5386d9139efdac2d54fa0d27ebea36fc8
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#dc2626', // red-600
-                cancelButtonColor: '#6b7280', // gray-500
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
                 confirmButtonText: 'Ya, Hapus!',
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
+<<<<<<< HEAD
                     // Buat form dinamis untuk mengirim request DELETE
                     const deleteForm = document.createElement('form');
                     deleteForm.action = `{{ url('manajemen-acara/acara-sekolah') }}/${id}`;
@@ -418,28 +529,85 @@
                     `;
                     document.body.appendChild(deleteForm);
                     deleteForm.submit();
+=======
+                    const form = document.getElementById('delete-form-' + id);
+                    if (form) {
+                        form.submit();
+                    } else {
+                        // fallback: direct fetch delete (not used normally)
+                        Swal.fire('Gagal', 'Form hapus tidak ditemukan.', 'error');
+                    }
+>>>>>>> f237ddd5386d9139efdac2d54fa0d27ebea36fc8
                 }
             });
+        });
+    });
+
+    // --- Before submit: convert visible datetime-local(waktu_mulai) -> tanggal_acara + waktu_acara fields (controller expects those) ---
+    eventForm.addEventListener('submit', (e) => {
+        // Validate visible date/time presence
+        const waktuMulaiVal = document.getElementById('waktu_mulai').value;
+        const waktuBerakhirVal = document.getElementById('waktu_berakhir').value;
+
+        if (!waktuMulaiVal || !waktuBerakhirVal) {
+            e.preventDefault();
+            Swal.fire({ icon: 'error', title: 'Form Tidak Lengkap', text: 'Harap isi tanggal & waktu mulai dan berakhir.'});
+            return;
+        }
+
+        // basic validation: mulai < berakhir
+        if (new Date(waktuMulaiVal) >= new Date(waktuBerakhirVal)) {
+            e.preventDefault();
+            Swal.fire({ icon: 'error', title: 'Kesalahan Validasi', text: 'Tanggal & waktu mulai harus sebelum berakhir.'});
+            return;
+        }
+
+        // derive tanggal_acara & waktu_acara from waktu_mulai
+        const parts = waktuMulaiVal.split('T'); // ["YYYY-MM-DD", "HH:MM"]
+        if (parts.length === 2) {
+            document.getElementById('tanggal_acara').value = parts[0];
+            // ensure seconds are not included (controller expects HH:mm)
+            document.getElementById('waktu_acara').value = parts[1].slice(0,5);
+        } else {
+            // fallback — do nothing
+        }
+
+        // let the form submit normally (server-side will store)
+    });
+
+    // --- Search (client-side filter on rendered cards) ---
+    searchInput.addEventListener('keyup', () => {
+        const term = searchInput.value.toLowerCase().trim();
+        document.querySelectorAll('.event-card').forEach(card => {
+            const title = (card.getAttribute('data-judul') || '').toLowerCase();
+            const desc = (card.getAttribute('data-deskripsi') || '').toLowerCase();
+            const lokasi = (card.getAttribute('data-lokasi') || '').toLowerCase();
+            const peserta = (card.getAttribute('data-peserta') || '').toLowerCase();
+
+            const show = title.includes(term) || desc.includes(term) || lokasi.includes(term) || peserta.includes(term);
+            card.style.display = show ? '' : 'none';
+        });
+
+        // check if all hidden -> show empty state
+        const anyVisible = Array.from(document.querySelectorAll('.event-card')).some(c => c.style.display !== 'none');
+        if (!anyVisible) {
+            emptyState.classList.remove('hidden');
+        } else {
+            emptyState.classList.add('hidden');
         }
     });
 
-    // Inisialisasi: Menerapkan logika pemeriksaan pesan flash (session-success)
-    window.onload = () => {
-        const successMessage = document.getElementById('session-success');
-        
-        // Logika sesuai permintaan user untuk pesan sukses setelah redirect/load
-        if (successMessage) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: successMessage.dataset.message,
-                timer: 2500,
-                showConfirmButton: false
-            });
-        } else {
-            // Tampilkan pesan selamat datang default jika tidak ada pesan flash
+    // --- Flash messages (SweetAlert) ---
+    window.addEventListener('load', () => {
+        const successEl = document.getElementById('session-success');
+        const errorEl = document.getElementById('session-error');
+        if (successEl) {
+            Swal.fire({ icon: 'success', title: 'Berhasil!', text: successEl.dataset.message, timer: 2000, showConfirmButton: false });
         }
-    }
+        if (errorEl) {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: errorEl.dataset.message, timer: 3000, showConfirmButton: false });
+        }
+    });
 </script>
 </body>
 </html>
