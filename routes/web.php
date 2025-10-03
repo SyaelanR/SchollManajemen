@@ -134,18 +134,10 @@ Route::middleware('auth')->group(function () {
         });
 
         Route::prefix('manajemen-acara')->group(function () {
-<<<<<<< HEAD
-            Route::get('/', [AdminController::class, 'index'])->name('manajAcara');
-            
-            Route::post('/acara-sekolah', [AdminController::class, 'store'])->name('admin.acara.store');
-            Route::put('/acara-sekolah/{id}', [AdminController::class, 'update'])->name('admin.acara.update');
-            Route::delete('/acara-sekolah/{id}', [AdminController::class, 'destroy'])->name('admin.acara.destroy');
-=======
             Route::get('/', [AdminController::class, 'manajAcara'])->name('manajAcara');
             Route::post('/acara-sekolah', [AdminController::class, 'storeAcara'])->name('admin.acara.store');
             Route::put('/acara-sekolah/{id}', [AdminController::class, 'updateAcara'])->name('admin.acara.update');
             Route::delete('/acara-sekolah/{id}', [AdminController::class, 'destroyAcara'])->name('admin.acara.destroy');
->>>>>>> f237ddd5386d9139efdac2d54fa0d27ebea36fc8
         });
 
     });

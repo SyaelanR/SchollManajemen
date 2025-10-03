@@ -1280,19 +1280,6 @@ class AdminController extends Controller
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ########################################################################################################################################
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
-<<<<<<< HEAD
-public function index()
-{
-    $id_sekolah = request()->cookie('id_sekolah');
-    // Mengambil data acara dari database, diurutkan berdasarkan tanggal mulai terbaru
-    $daftarAcara = DB::table('daftar_acaras')
-        ->where('id_sekolah', $id_sekolah)
-        ->orderBy('tanggal_mulai', 'desc')
-        ->get();
-
-    // Melewatkan data acara ke view 'admin.acara-sekolah'
-    return view('admin.acara-sekolah', compact('daftarAcara'));
-=======
 public function manajAcara(Request $request)
     {
 
@@ -1303,7 +1290,6 @@ public function manajAcara(Request $request)
                         ->get();
 
         return View('admin.acara-sekolah', ['daftarAcara' => $daftarAcara]);
->>>>>>> f237ddd5386d9139efdac2d54fa0d27ebea36fc8
     }
 
     /**
@@ -1313,80 +1299,6 @@ public function manajAcara(Request $request)
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-<<<<<<< HEAD
-    public function store(Request $request)
-    {
-        // 1. Validasi data input
-        $request->validate([
-            'judul_acara' => 'required|string|max:255',
-            'waktu_mulai' => 'required|date',
-            'waktu_berakhir' => 'required|date|after_or_equal:waktu_mulai',
-            'lokasi' => 'required|string|max:255',
-            'peserta_target' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string|max:500',
-        ]);
-
-        // 2. Simpan ke database menggunakan Query Builder
-        DB::table('daftar_acaras')->insert([
-            'id_sekolah' => $request->cookie('id_sekolah'),
-            'judul_acara' => $request->judul_acara,
-            'deskripsi' => $request->deskripsi,
-            'tanggal_mulai' => $request->waktu_mulai,
-            'tanggal_selesai' => $request->waktu_berakhir,
-            'lokasi' => $request->lokasi,
-            'peserta' => $request->peserta_target,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        // 3. Redirect ke halaman index dengan pesan sukses
-        return redirect()->route('manajAcara')->with('success', 'Acara baru berhasil ditambahkan!');
-    }
-
-    public function update(Request $request, $id)
-    {
-        $id_sekolah = $request->cookie('id_sekolah');
-
-        // 1. Validasi data input
-        $request->validate([
-            'judul_acara' => 'required|string|max:255',
-            'waktu_mulai' => 'required|date',
-            'waktu_berakhir' => 'required|date|after_or_equal:waktu_mulai',
-            'lokasi' => 'required|string|max:255',
-            'peserta_target' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string|max:500',
-        ]);
-
-        // 2. Update data di database
-        DB::table('daftar_acaras')
-            ->where('id_daftar_acara', $id)
-            ->where('id_sekolah', $id_sekolah)
-            ->update([
-                'judul_acara' => $request->judul_acara,
-                'deskripsi' => $request->deskripsi,
-                'tanggal_mulai' => $request->waktu_mulai,
-                'tanggal_selesai' => $request->waktu_berakhir,
-                'lokasi' => $request->lokasi,
-                'peserta' => $request->peserta_target,
-                'updated_at' => now(),
-            ]);
-
-        // 3. Redirect ke halaman index dengan pesan sukses
-        return redirect()->route('manajAcara')->with('success', 'Acara berhasil diperbarui!');
-    }
-    
-    /**
-     * Placeholder untuk menghapus acara.
-     * Corresponds to DELETE /admin/acara-sekolah/{id}
-     */
-    public function destroy(Request $request, $id)
-    {
-        $id_sekolah = $request->cookie('id_sekolah');
-        DB::table('daftar_acaras')->where('id_daftar_acara', $id)->where('id_sekolah', $id_sekolah)->delete();
-
-        return redirect()->route('manajAcara')->with('success', 'Acara berhasil dihapus.');
-    }
-=======
 public function storeAcara(Request $request)
 {
     $validatedData = $request->validate([
@@ -1436,7 +1348,6 @@ public function updateAcara(Request $request, $id)
         ]);
 
     return redirect()->route('manajAcara')->with('success', 'Acara berhasil diperbarui!');
->>>>>>> f237ddd5386d9139efdac2d54fa0d27ebea36fc8
 }
 
 

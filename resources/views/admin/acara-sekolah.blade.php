@@ -107,11 +107,7 @@
                     </div>
                 </div>
                 
-<<<<<<< HEAD
-                <!-- Card View Acara (Layout Satu Kolom) -->
-=======
                 <!-- Card View Acara -->
->>>>>>> f237ddd5386d9139efdac2d54fa0d27ebea36fc8
                 <div class="grid grid-cols-1 gap-6" id="event-list-container">
                     @forelse($daftarAcara ?? [] as $acara)
                         @php
@@ -137,54 +133,7 @@
                                             <span class="text-xs font-semibold px-3 py-1 rounded-full bg-gray-100 text-gray-600 whitespace-nowrap">
                                                 <i class="fa-solid fa-check mr-1"></i> Selesai
                                             </span>
-<<<<<<< HEAD
-                                        </div>
-
-                                        <p class="text-sm text-gray-600 mb-4">{{ $acara->deskripsi }}</p>
-
-                                        <div class="space-y-2 text-sm text-gray-700 mb-5">
-                                            @if(\Carbon\Carbon::parse($acara->tanggal_mulai)->isSameDay($acara->tanggal_selesai))
-                                                <p><i class="fa-solid fa-calendar-day w-5 mr-2 text-gray-500"></i> {{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('d M Y') }}</p>
-                                            @else
-                                                <p><i class="fa-solid fa-calendar-day w-5 mr-2 text-gray-500"></i> {{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('d M Y') }} - {{ \Carbon\Carbon::parse($acara->tanggal_selesai)->format('d M Y') }}</p>
-                                            @endif
-                                            <p><i class="fa-solid fa-clock w-5 mr-2 text-gray-500"></i> {{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($acara->tanggal_selesai)->format('H:i') }}</p>
-                                            <p><i class="fa-solid fa-location-dot w-5 mr-2 text-gray-500"></i> {{ $acara->lokasi }}</p>
-                                        </div>
-                                        
-                                        <div class="flex justify-between items-center border-t pt-4">
-                                            <span class="text-xs font-medium text-gray-500">
-                                                <i class="fa-solid fa-user-group mr-1"></i> {{ $acara->peserta }}
-                                            </span>
-                                            <div>
-                                                <button class="edit-btn text-indigo-600 hover:text-indigo-900 mx-1 p-1 transition" title="Edit Acara"
-                                                    data-id="{{ $acara->id_daftar_acara }}"
-                                                    data-judul_acara="{{ $acara->judul_acara }}"
-                                                    data-deskripsi="{{ $acara->deskripsi }}"
-                                                    data-tanggal_mulai="{{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('Y-m-d\TH:i') }}"
-                                                    data-tanggal_selesai="{{ \Carbon\Carbon::parse($acara->tanggal_selesai)->format('Y-m-d\TH:i') }}"
-                                                    data-lokasi="{{ $acara->lokasi }}"
-                                                    data-peserta="{{ $acara->peserta }}">
-                                                    <i class="fa-solid fa-edit"></i>
-                                                </button>
-                                                <button data-id="{{ $acara->id_daftar_acara }}" data-title="{{ $acara->judul_acara }}" class="delete-btn text-red-600 hover:text-red-900 mx-1 p-1 transition" title="Hapus Acara">
-                                                    <i class="fa-solid fa-trash-alt"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @else
-                            {{-- Card Acara Mendatang --}}
-                            <div class="event-card" data-event-id="{{ $acara->id_daftar_acara }}">
-                                <div class="bg-white rounded-xl shadow-2xl overflow-hidden transform hover:scale-[1.01] transition duration-300 border-t-4 border-indigo-500 w-full">
-                                    <div class="p-5">
-                                        <div class="flex justify-between items-start mb-3">
-                                            <h3 class="text-xl font-bold text-gray-800 leading-snug">{{ $acara->judul_acara }}</h3>
-=======
                                         @else
->>>>>>> f237ddd5386d9139efdac2d54fa0d27ebea36fc8
                                             <span class="text-xs font-semibold px-3 py-1 rounded-full bg-blue-100 text-blue-800 whitespace-nowrap">
                                                 <i class="fa-solid fa-user-tie mr-1"></i> Mendatang
                                             </span>
@@ -193,34 +142,6 @@
 
                                     <p class="text-sm text-gray-600 mb-4">{{ $acara->deskripsi }}</p>
 
-<<<<<<< HEAD
-                                        <div class="space-y-2 text-sm text-gray-700 mb-5">
-                                            @if(\Carbon\Carbon::parse($acara->tanggal_mulai)->isSameDay($acara->tanggal_selesai))
-                                                <p><i class="fa-solid fa-calendar-day w-5 mr-2 text-indigo-500"></i> {{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('d M Y') }}</p>
-                                            @else
-                                                <p><i class="fa-solid fa-calendar-day w-5 mr-2 text-indigo-500"></i> {{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('d M Y') }} - {{ \Carbon\Carbon::parse($acara->tanggal_selesai)->format('d M Y') }}</p>
-                                            @endif
-                                            <p><i class="fa-solid fa-clock w-5 mr-2 text-indigo-500"></i> {{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($acara->tanggal_selesai)->format('H:i') }}</p>
-                                            <p><i class="fa-solid fa-location-dot w-5 mr-2 text-indigo-500"></i> {{ $acara->lokasi }}</p>
-                                        </div>
-                                        
-                                        <div class="flex justify-between items-center border-t pt-4">
-                                            <span class="text-xs font-medium text-gray-500">
-                                                <i class="fa-solid fa-user-group mr-1"></i> {{ $acara->peserta }}
-                                            </span>
-                                            <div>
-                                                <button class="edit-btn text-indigo-600 hover:text-indigo-900 mx-1 p-1 transition" title="Edit Acara"
-                                                    data-id="{{ $acara->id_daftar_acara }}"
-                                                    data-judul_acara="{{ $acara->judul_acara }}"
-                                                    data-deskripsi="{{ $acara->deskripsi }}"
-                                                    data-tanggal_mulai="{{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('Y-m-d\TH:i') }}"
-                                                    data-tanggal_selesai="{{ \Carbon\Carbon::parse($acara->tanggal_selesai)->format('Y-m-d\TH:i') }}"
-                                                    data-lokasi="{{ $acara->lokasi }}"
-                                                    data-peserta="{{ $acara->peserta }}">
-                                                    <i class="fa-solid fa-edit"></i>
-                                                </button>
-                                                <button data-id="{{ $acara->id_daftar_acara }}" data-title="{{ $acara->judul_acara }}" class="delete-btn text-red-600 hover:text-red-900 mx-1 p-1 transition" title="Hapus Acara">
-=======
                                     <div class="space-y-2 text-sm text-gray-700 mb-5">
                                         @if(\Carbon\Carbon::parse($acara->tanggal_mulai)->isSameDay($acara->tanggal_selesai))
                                             <p><i class="fa-solid fa-calendar-day w-5 mr-2 {{ $isPast ? 'text-gray-500' : 'text-indigo-500' }}"></i> {{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('d M Y') }}</p>
@@ -245,7 +166,6 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button" class="delete-btn text-red-600 hover:text-red-900 mx-1 p-1 transition" title="Hapus Acara" data-id="{{ $acara->id_daftar_acara }}" data-title="{{ $acara->judul_acara }}">
->>>>>>> f237ddd5386d9139efdac2d54fa0d27ebea36fc8
                                                     <i class="fa-solid fa-trash-alt"></i>
                                                 </button>
                                             </form>
@@ -283,16 +203,11 @@
         </div>
 
         <!-- Modal Body (Form) -->
-<<<<<<< HEAD
-        <form id="event-form" action="{{ route('admin.acara.store') }}" method="POST" class="p-6 space-y-6">
-=======
         <!-- Default action -> store; JS akan mengganti action & method saat edit -->
         <form id="event-form" action="{{ route('admin.acara.store') }}" method="POST" class="p-6 space-y-6">
             @csrf
             <!-- method override (set by JS to PUT on edit) -->
-            <input type="hidden" name="_method" id="form_method" value="">
-
->>>>>>> f237ddd5386d9139efdac2d54fa0d27ebea36fc8
+            <input type="hidden" name="_method" id="form-method" value="">
             <!-- Hidden ID field for editing -->
             @csrf
             <input type="hidden" name="_method" id="form-method" value="POST">
@@ -390,31 +305,9 @@
         eventForm.action = storeUrl;
         document.getElementById('form_method').value = '';
         document.getElementById('event_id').value = '';
+        document.getElementById('form-method').value = 'POST';
         modalTitle.innerHTML = '<i class="fa-solid fa-calendar-plus mr-2 text-indigo-600"></i> Tambah Acara Baru';
         saveButton.innerHTML = '<i class="fa-solid fa-save mr-2"></i> Simpan Acara';
-<<<<<<< HEAD
-    };
-
-    // Event Listeners Modal
-    closeModalButton.addEventListener('click', hideModal);
-    cancelButton.addEventListener('click', hideModal);
-
-    // Tutup modal ketika mengklik di luar form (overlay)
-    eventModal.addEventListener('click', (e) => {
-        if (e.target === eventModal) {
-            hideModal();
-        }
-    });
-
-    // Handle form submission (menggunakan SweetAlert2)
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        // Kirim form ke server
-        e.target.submit();
-    });
-
-    // --- LOGIKA Aksi Card (Edit/Hapus) ---
-=======
         showModal();
     }
 
@@ -432,7 +325,6 @@
     cancelButton.addEventListener('click', hideModal);
     // close on overlay click
     eventModal.addEventListener('click', (e) => { if (e.target === eventModal) hideModal(); });
->>>>>>> f237ddd5386d9139efdac2d54fa0d27ebea36fc8
 
     // --- Fill modal for Edit ---
     document.querySelectorAll('.edit-btn').forEach(btn => {
@@ -450,36 +342,9 @@
 
             // set form to update
             eventForm.action = updateBaseUrl + '/' + id;
-            document.getElementById('form_method').value = 'PUT'; // override method
+            document.getElementById('form-method').value = 'PUT'; // override method
             document.getElementById('event_id').value = id;
 
-<<<<<<< HEAD
-        if (editBtn) {
-            const data = editBtn.dataset;
-            
-            // 1. Set state ke mode edit
-            isEditing = true;
-            currentEventId = data.id;
-            
-            // 2. Set judul modal
-            modalTitle.innerHTML = `<i class="fa-solid fa-edit mr-2 text-indigo-600"></i> Edit Acara`;
-            saveButton.innerHTML = '<i class="fa-solid fa-save mr-2"></i> Update Acara';
-
-            // 3. Isi form dengan data dari atribut data-*
-            document.getElementById('event_id').value = data.id;
-            document.getElementById('judul_acara').value = data.judul_acara;
-            document.getElementById('waktu_mulai').value = data.tanggal_mulai;
-            document.getElementById('waktu_berakhir').value = data.tanggal_selesai;
-            document.getElementById('lokasi').value = data.lokasi;
-            document.getElementById('peserta_target').value = data.peserta;
-            document.getElementById('deskripsi').value = data.deskripsi;
-
-            // 4. Update action form dan method
-            form.action = `{{ url('manajemen-acara/acara-sekolah') }}/${data.id}`;
-            document.getElementById('form-method').value = 'PUT';
-
-            // 5. Tampilkan modal
-=======
             // visible fields
             document.getElementById('judul_acara').value = judul;
             document.getElementById('waktu_mulai').value = tanggalMulai;
@@ -492,7 +357,6 @@
             modalTitle.innerHTML = `<i class="fa-solid fa-edit mr-2 text-indigo-600"></i> Edit Acara ID: ${id}`;
             saveButton.innerHTML = '<i class="fa-solid fa-save mr-2"></i> Update Acara';
 
->>>>>>> f237ddd5386d9139efdac2d54fa0d27ebea36fc8
             showModal();
         });
     });
@@ -503,13 +367,8 @@
             const id = btn.getAttribute('data-id');
             const title = btn.getAttribute('data-title') || 'acara ini';
             Swal.fire({
-<<<<<<< HEAD
-                title: 'Konfirmasi Hapus',
-                text: `Anda yakin ingin menghapus acara "${title}"? Tindakan ini tidak dapat dibatalkan.`,
-=======
                 title: 'Konfirmasi Hapus Acara',
                 text: `Anda yakin ingin menghapus acara: "${title}"? Tindakan ini tidak dapat dibatalkan.`,
->>>>>>> f237ddd5386d9139efdac2d54fa0d27ebea36fc8
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#dc2626',
@@ -518,18 +377,6 @@
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-<<<<<<< HEAD
-                    // Buat form dinamis untuk mengirim request DELETE
-                    const deleteForm = document.createElement('form');
-                    deleteForm.action = `{{ url('manajemen-acara/acara-sekolah') }}/${id}`;
-                    deleteForm.method = 'POST'; // Method tetap POST, tapi di-spoof dengan _method
-                    deleteForm.innerHTML = `
-                        @csrf
-                        @method('DELETE')
-                    `;
-                    document.body.appendChild(deleteForm);
-                    deleteForm.submit();
-=======
                     const form = document.getElementById('delete-form-' + id);
                     if (form) {
                         form.submit();
@@ -537,7 +384,6 @@
                         // fallback: direct fetch delete (not used normally)
                         Swal.fire('Gagal', 'Form hapus tidak ditemukan.', 'error');
                     }
->>>>>>> f237ddd5386d9139efdac2d54fa0d27ebea36fc8
                 }
             });
         });
