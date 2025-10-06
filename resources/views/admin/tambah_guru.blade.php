@@ -12,6 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- SweetAlert2 for notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Custom styles */
         body {
@@ -158,8 +160,16 @@
                         <p class="text-gray-500 mt-1">Isi data Guru pada baris yang tersedia. Klik "Tambah Baris" untuk menambahkan lebih banyak Guru.</p>
                     </div>
 
+                    <!-- Session Messages Handling -->
+                    @if(session('success'))
+                        <div id="session-success" data-message="{{ session('success') }}" class="hidden"></div>
+                    @endif
+                    @if ($errors->any())
+                        <div id="validation-errors" data-errors='@json($errors->all())' class="hidden"></div>
+                    @endif
+
                     <!-- teacher Form Table -->
-                    <form id="add-teacher-form" method="POST" action="{{ route('storeGuru') }}">
+                    <form id="add-teacher-form" method="POST" action="{{ route('storeGuru') }}">@csrf
                         <!-- MODIFIED: Changed overflow-x: auto for better responsiveness -->
                         <div class="force-scroll-x">
                             <table class="w-full text-left">
@@ -295,71 +305,41 @@
             }
         });
 
-        // Handle form submission
-        const form = document.getElementById('add-teacher-form');
-        form.addEventListener('submit', async function(event) {
-            event.preventDefault();
+        // --- SweetAlert2 Notifications for Success ---
+        const successMessage = document.getElementById('session-success');
+        if (successMessage) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: successMessage.dataset.message,
+                timer: 2500,
+                showConfirmButton: false
+            });
+        }
 
-            // Clear previous errors
-            document.querySelectorAll('.error-message').forEach(el => el.remove());
-            document.querySelectorAll('.table-input.border-red-500').forEach(el => el.classList.remove('border-red-500'));
-
-            const formData = new FormData(this);
-
+        // --- SweetAlert2 Notifications for Validation Errors ---
+        const validationErrors = document.getElementById('validation-errors');
+        if (validationErrors) {
             try {
-                const response = await fetch(this.action, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}', // Pastikan CSRF token ada
-                        'Accept': 'application/json',
-                    },
-                    body: formData
+                const errorsData = validationErrors.dataset.errors;
+                // Replace HTML entities that might break JSON parsing
+                const sanitizedErrorsData = errorsData.replace(/&quot;/g, '"');
+                const errors = JSON.parse(sanitizedErrorsData);
+                let errorText = '<ul class="list-disc list-inside text-left">';
+                errors.forEach(error => {
+                    errorText += `<li>${error}</li>`;
                 });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    // Handle success
-                    alert(result.message);
-                    window.location.href = "{{ route('manajemenGuru') }}"; // Redirect ke manajemen guru
-                } else if (response.status === 422) {
-                    // Handle validation errors
-                    displayErrors(result.errors);
-                    alert('Terdapat kesalahan pada data yang Anda masukkan. Silakan periksa kembali.');
-                } else {
-                    // Handle other server errors
-                    throw new Error(result.message || 'Terjadi kesalahan pada server.');
-                }
-
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Gagal mengirim data. Pastikan tidak ada NIK/Username yang duplikat dan semua kolom terisi.');
-            }
-        });
-
-        function displayErrors(errors) {
-            for (const key in errors) {
-                // key akan berbentuk seperti "teacher.1.nik"
-                const parts = key.split('.');
-                if (parts[0] === 'teacher' && parts.length === 3) {
-                    const rowKey = parts[1];
-                    const fieldName = parts[2];
-                    const message = errors[key][0];
-
-                    // Cari input berdasarkan atribut 'name'
-                    const input = document.querySelector([name="teacher[${rowKey}][${fieldName}]"]);
-                    
-                    if (input) {
-                        input.classList.add('border-red-500');
-                        const errorElement = document.createElement('p');
-                        errorElement.className = 'text-red-600 text-xs mt-1 error-message';
-                        errorElement.textContent = message;
-                        // Sisipkan pesan error setelah input
-                        input.parentNode.appendChild(errorElement);
-                    }
-                }
+                errorText += '</ul>';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Validasi',
+                    html: errorText,
+                });
+            } catch (e) {
+                console.error("Error parsing validation errors:", e);
             }
         }
+
     </script>
 </body>
 </html>

@@ -244,6 +244,10 @@ Route::middleware('auth')->group(function () {
             Route::get('/lihat-jawaban/{namaFile}', [SiswaController::class, 'lihatJawaban'])->name('lihatJawaban');
         });
 
+        Route::get('/lihat-absensi', [SiswaController::class, 'pilihMapelAbsensi'])->name('lihatAbsensi');
+        Route::get('/lihat-materi/{id_kelas}/{id_mapel}', [SiswaController::class, 'lihatMateri'])->name('lihatMateriSiswa');
+        Route::get('/lihat-absensi/{id_mapel}', [SiswaController::class, 'lihatAbsensiPerMapel'])->name('lihatAbsensi.perMapel');
+
         
     });
 
