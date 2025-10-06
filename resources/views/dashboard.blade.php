@@ -535,23 +535,59 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         // Chart for Siswa
-        if (document.getElementById('attendanceChart')) {
-            const ctx = document.getElementById('attendanceChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Hadir', 'Izin', 'Sakit', 'Alpa'],
-                    datasets: [{
-                        label: 'Persentase Kehadiran',
-                        data: [70, 10, 10, 10], // Sample data
-                        backgroundColor: ['rgba(79, 70, 229, 0.8)', 'rgba(251, 191, 36, 0.8)', 'rgba(59, 130, 246, 0.8)', 'rgba(239, 68, 68, 0.8)'],
-                        borderColor: ['#4f46e5', '#fbb_f24', '#3b82f6', '#ef4444'],
-                        borderWidth: 1
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-        }
+    const totalAbsensi = @json($totalAbsensi ?? []);
+
+    // Hitung total kehadiran
+    const total = Object.values(totalAbsensi).reduce((a, b) => a + b, 0);
+
+    // Hitung persentase masing-masing status
+    const persentaseAbsensi = Object.fromEntries(
+        Object.entries(totalAbsensi).map(([key, val]) => [key, total ? ((val / total) * 100).toFixed(1) : 0])
+    );
+
+    if (document.getElementById('attendanceChart')) {
+        const ctx = document.getElementById('attendanceChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(persentaseAbsensi), // ['Hadir', 'Izin', 'Sakit', 'Alfa']
+                datasets: [{
+                    label: 'Persentase Kehadiran (%)',
+                    data: Object.values(persentaseAbsensi), // [persen Hadir, Izin, Sakit, Alfa]
+                    backgroundColor: [
+                        'rgba(79, 70, 229, 0.8)',   // Hadir
+                        'rgba(251, 191, 36, 0.8)',  // Izin
+                        'rgba(59, 130, 246, 0.8)',  // Sakit
+                        'rgba(239, 68, 68, 0.8)'    // Alfa
+                    ],
+                    borderColor: [
+                        '#4f46e5',
+                        '#fbbf24',
+                        '#3b82f6',
+                        '#ef4444'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed.toFixed(1) + '%';
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
         
         // Chart for Admin
         if (document.getElementById('attendanceChartAdmin')) {

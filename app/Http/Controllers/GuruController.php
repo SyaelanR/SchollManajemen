@@ -576,15 +576,12 @@ class GuruController extends Controller
             $query->whereColumn('angkatans.semester', 'jadwals.semester');
         })
         ->whereHas('kelas.angkatan', function ($query) {
-            $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
-        })
-        ->whereHas('kelas.angkatan', function ($query) {
             // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
             $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
         })
         ->select('id_kelas', 'id_mapel') // hanya ambil kombinasi unik kelas+mapel
         ->distinct()
-        // ->with('kelas.angkatan', 'mapel') // tetap load relasi
+        ->with('kelas.angkatan', 'mapel') // tetap load relasi
         ->get();
 
     // Iterasi untuk menghitung jumlah siswa untuk setiap kelas yang diampu

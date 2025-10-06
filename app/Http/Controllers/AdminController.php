@@ -1051,7 +1051,7 @@ class AdminController extends Controller
 
         // Hanya update password jika diisi
         if ($request->filled('password')) {
-            $updateData['password'] = bcrypt($request->password);
+            $updateData['password'] =$request->password;
         }
         
         // Hanya update email jika username berubah (karena email dibuat dari username)
@@ -1136,7 +1136,7 @@ class AdminController extends Controller
 
         // Hanya update password jika diisi
         if ($request->filled('password')) {
-            $updateData['password'] = Hash::make($request->password);
+            $updateData['password'] = $request->password;
         }
 
         // Hanya update email jika username berubah (karena email dibuat dari username)

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_mapel')->nullable();
             $table->unsignedBigInteger('tingkat')->nullable();
             $table->enum('semester', ['ganjil', 'genap']);
-            $table->enum('status',['Hadir', 'Sakit', 'Izin', 'Alpha'])->nullable();
+            $table->enum('status',['Hadir', 'Sakit', 'Izin', 'Alfa'])->nullable();
             $table->timestamps();
 
             $table->foreign('id_siswa')->references('id')->on('users')->onDelete('set null');

@@ -6,6 +6,7 @@ use App\Models\Angkatan;
 use App\Models\DaftarNilaiSiswa;
 use App\Models\DaftarTugas;
 use App\Models\Jadwal;
+use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 // use Illuminate\Container\Attributes\Storage;
 use Illuminate\Http\Request;
@@ -172,5 +173,80 @@ class SiswaController extends Controller
 
         abort(404, 'File not found');
 
+    }
+
+    public function lihatJadwalS (Request $request)
+    {
+        $id_kelas = $request->cookie('id_kelas');
+        $id_sekolah = $request->cookie('id_sekolah');
+        
+        $jadwals = Jadwal::with('kelas.angkatan', 'mapel.guru')
+        ->whereHas('mapel', function ($query) use ($id_kelas) {
+            $query->where('id_kelas', $id_kelas);
+        })
+        ->whereHas('kelas.angkatan', function ($query) use ($id_sekolah) {
+            $query->where('id_sekolah', $id_sekolah);
+        })
+        ->whereHas('kelas.angkatan', function ($query) {
+            $query->whereColumn('angkatans.semester', 'jadwals.semester');
+        })
+        ->whereHas('kelas.angkatan', function ($query) {
+            // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+            $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+        })
+        ->orderBy('hari') // Mengurutkan berdasarkan hari
+        ->orderBy('jam_mulai') // Kemudian berdasarkan jam mulai
+        ->get();
+
+        return view('siswa.lihat_jadwalS', ['jadwals' => $jadwals]);
+    }
+
+    public function KRS (Request $request)
+    {
+        $id_kelas = $request->cookie('id_kelas');
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+        
+        $user = User::where('id', $id_user)->first();
+
+        $jadwals = Jadwal::with('kelas.angkatan.sekolah', 'mapel')
+        ->whereHas('mapel', function ($query) use ($id_kelas) {
+            $query->where('id_kelas', $id_kelas);
+        })
+        ->whereHas('kelas.angkatan', function ($query) use ($id_sekolah) {
+            $query->where('id_sekolah', $id_sekolah);
+        })
+        ->whereHas('kelas.angkatan', function ($query) {
+            $query->whereColumn('angkatans.semester', 'jadwals.semester');
+        })
+        ->whereHas('kelas.angkatan', function ($query) {
+            // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+            $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+        })
+        ->select('id_kelas', 'id_mapel') // hanya ambil kombinasi unik kelas+mapel
+        ->distinct()
+        // ->with('kelas.angkatan', 'mapel') // tetap load relasi
+        ->get();
+
+        $waliKelas = optional($jadwals->first()->kelas)->wali_kelas;
+        $sekolah = optional($jadwals->first()->kelas->angkatan->sekolah)->nama_sekolah;
+        $tingkat = optional($jadwals->first()->kelas->angkatan)->tingkat;
+        $semester = optional($jadwals->first()->kelas->angkatan)->semester;
+
+        $jumlahSKS = 0;
+        foreach ($jadwals as $jadwal) {
+            $jumlahSKS += $jadwal->mapel->sks;
+        }
+
+
+        // return view('debug', ['tes' => $jadwals]);
+        return view('siswa.krs', ['jadwals' => $jadwals, 
+                                            'user' => $user, 
+                                            'waliKelas' => $waliKelas, 
+                                            'sekolah' => $sekolah,
+                                            'tingkat' => $tingkat,
+                                            'semester' => $semester,
+                                            'jumlahSKS' => $jumlahSKS
+                                        ]);
     }
 }

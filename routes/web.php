@@ -234,6 +234,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/lihat-jawaban/{namaFile}', [SiswaController::class, 'lihatJawaban'])->name('lihatJawaban');
         });
 
+        Route::get('/lihat-jadwal', [SiswaController::class, 'lihatJadwalS'])->name('lihatJadwalS');
+
+        Route::get('/krs', [SiswaController::class, 'KRS'])->name('KRS');
         
     });
 

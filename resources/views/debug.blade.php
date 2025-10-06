@@ -28,8 +28,9 @@
     <p>spasi2</p> --}}
 
 
-    <pre>{{ json_encode($students, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+    <pre>{{ json_encode($tes, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
 
+    {{-- <p>{{$tes}}</p> --}}
     {{-- <h1>{{$tess}}</h1> --}}
  
     {{-- <p>{{$daftarSiswa}}</p> --}}
