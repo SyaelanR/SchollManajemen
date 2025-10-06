@@ -318,5 +318,13 @@ Route::get('/input-nilai', [AdminController::class, 'inputnilai'])->name('inputn
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #####################################################################################################################################################
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Halaman daftar acara
+// Halaman lihat tugas
+
+Route::get('/mapel', [SiswaController::class, 'pilihMapel'])->name('pilihMapel');
+
+// 2. Rute untuk menampilkan detail nilai per mata pelajaran
+// URL yang diminta: /mapel/{id_mapel}/nilai
+// Mengarah ke SiswaController@lihatNilaiMapel (atau NilaiController@lihatNilaiMapel)
+Route::get('/mapel/{id_mapel}/nilai', [SiswaController::class, 'lihatNilaiMapel'])
+    ->name('lihatNilaiMapel');
 

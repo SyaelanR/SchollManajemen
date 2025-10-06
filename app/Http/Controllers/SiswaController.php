@@ -173,4 +173,102 @@ class SiswaController extends Controller
         abort(404, 'File not found');
 
     }
+
+    /////////////////////////////////lihat nilai///////////////////////////////////////////////////
+    public function pilihMapel(Request $request)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_kelas = $request->cookie('id_kelas');
+        $id_angkatan = $request->cookie('id_angkatan');
+
+        // Ambil info angkatan untuk mendapatkan semester & tingkat aktif
+        $infoAngkatan = Angkatan::where('id_angkatan', $id_angkatan)
+                                ->where('id_sekolah', $id_sekolah)
+                                ->first();
+
+        // Mengambil daftar mapel yang unik untuk kelas siswa yang sedang login
+        // berdasarkan jadwal yang ada.
+        $mapelList = Jadwal::with('mapel.guru')
+            ->where('id_sekolah', $id_sekolah)
+            ->where('id_kelas', $id_kelas)
+            // Hanya jalankan filter tambahan jika info angkatan valid
+            ->when($infoAngkatan, function ($query) use ($infoAngkatan) {
+                // Filter jadwal yang sesuai dengan semester dan tingkat angkatan siswa saat ini
+                return $query->where('semester', $infoAngkatan->semester)
+                               ->where('tingkat', $infoAngkatan->id_tingkat);
+            })
+            // Pastikan mapel yang terkait ada dan statusnya aktif/null
+            ->whereHas('mapel', fn($q) => $q->where('status', 'aktif')->orWhereNull('status'))
+            ->select('id_mapel')
+            ->distinct()
+            ->get();
+
+        return view('siswa.lihatmapelnilai', ['mapelList' => $mapelList]);
+    }
+
+    /**
+     * Menampilkan detail nilai untuk mata pelajaran tertentu.
+     * Corresponds to: nilai_detail_mapel.blade.php
+     *
+     * @param int $id_mapel ID Mata Pelajaran yang dipilih.
+     * @return \Illuminate\View\View
+     */
+    public function lihatNilaiMapel(Request $request, $id_mapel)
+    {
+        // 1. Ambil data siswa dan sekolah dari cookie
+        $id_siswa = $request->cookie('id_user');
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_kelas = $request->cookie('id_kelas');
+        $id_angkatan = $request->cookie('id_angkatan');
+
+        // 2. Ambil informasi penting dari database
+        $user = \App\Models\User::with('kelas')->findOrFail($id_siswa);
+        $mapel = \App\Models\Mapel::findOrFail($id_mapel);
+        $angkatan = \App\Models\Angkatan::findOrFail($id_angkatan);
+
+        // 3. Ambil semua nilai siswa untuk mapel, tingkat, dan semester yang relevan
+        $semuaNilai = DaftarNilaiSiswa::where('id_siswa', $id_siswa)
+            ->where('id_mapel', $id_mapel)
+            ->where('id_sekolah', $id_sekolah)
+            ->where('tingkat', $angkatan->id_tingkat)
+            ->where('semester', $angkatan->semester)
+            ->with('daftarNilai') // Eager load relasi ke DaftarNilai
+            ->get();
+
+        // 4. Proses dan kelompokkan nilai
+        $nilaiTugas = $semuaNilai->where('daftarNilai.tipe_nilai', 'Tugas')->pluck('nilai')->filter()->avg();
+        $nilaiPR = $semuaNilai->where('daftarNilai.tipe_nilai', 'PR')->pluck('nilai')->filter()->avg();
+        $nilaiUTS = $semuaNilai->where('daftarNilai.tipe_nilai', 'UTS')->pluck('nilai')->filter()->avg();
+        $nilaiUAS = $semuaNilai->where('daftarNilai.tipe_nilai', 'UAS')->pluck('nilai')->filter()->avg();
+
+        // Gabungkan nilai Tugas dan PR (jika ada)
+        $nilaiHarian = $nilaiTugas;
+        if (is_numeric($nilaiTugas) && is_numeric($nilaiPR)) {
+            $nilaiHarian = ($nilaiTugas * 0.7) + ($nilaiPR * 0.3);
+        } elseif (is_numeric($nilaiPR) && !is_numeric($nilaiTugas)) {
+            $nilaiHarian = $nilaiPR;
+        }
+
+        // 5. Siapkan array nilai akhir untuk view
+        $nilaiProses = [
+            'harian' => $nilaiHarian !== null ? round($nilaiHarian) : null,
+            'uts' => $nilaiUTS !== null ? round($nilaiUTS) : null,
+            'uas' => $nilaiUAS !== null ? round($nilaiUAS) : null,
+        ];
+
+        // 6. Hitung rata-rata akhir dari nilai yang ada
+        $skorValid = array_filter($nilaiProses, 'is_numeric');
+        $rataRata = !empty($skorValid) ? array_sum($skorValid) / count($skorValid) : 0;
+
+        // 7. Kirim data ke view
+        return view('siswa.lihatnilai', [
+            'namaMapel' => $mapel->nama_mapel,
+            'namaKelas' => $user->kelas->nama_kelas ?? 'Belum ada kelas',
+            'namaSiswa' => $user->name,
+            'kkm' => 75, // Asumsi KKM, bisa diambil dari tabel mapel jika ada
+            'nilaiSiswa' => $nilaiProses,
+            'rataRata' => $rataRata,
+        ]);
+    }
+
 }

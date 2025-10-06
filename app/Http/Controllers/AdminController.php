@@ -532,6 +532,7 @@ class AdminController extends Controller
             'kategori' => $request->kategori,
             'sks' => $request->sks,
             'id_guru' => $request->guru_id,
+            'status' => 'aktif', // Tambahkan ini agar status defaultnya aktif
         ]);
 
         return redirect()->route('manajemenMapel')->with('success', 'Mata pelajaran berhasil ditambahkan!');    
@@ -1362,4 +1363,3 @@ public function destroy($id)
 
 
 }
-
