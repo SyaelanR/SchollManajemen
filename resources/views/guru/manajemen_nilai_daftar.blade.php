@@ -105,7 +105,7 @@
                             <i class="fa-solid fa-plus mr-2"></i> Tambah Sesi
                         </button>
                         <button onclick="window.location.href = '{{ route('exportNilai',[$infoKelas->kelas->id_kelas, $infoMapel->id_mapel]) }}'" class="bg-green-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-green-700 transition duration-300 flex items-center">
-                            <i class="fa-solid fa-file-excel mr-2"></i> Export Nilai {{$infoKelas->kelas->id_kelas}} - {{$infoMapel->id_mapel}}
+                            <i class="fa-solid fa-file-excel mr-2"></i> Export Nilai
                         </button>
                     </div>
                 </div>
