@@ -38,7 +38,10 @@ class LoginController extends Controller
         }elseif ($role == 'guru'){
             $idUser = $request->cookie('id_user');
 
-            $jadwalHariIni = Jadwal::where('hari', Carbon::now()->isoFormat('dddd'))
+            // Set lokal Carbon ke Indonesia untuk mendapatkan nama hari yang benar
+            $hariIni = Carbon::now()->locale('id')->isoFormat('dddd');
+
+            $jadwalHariIni = Jadwal::where('hari', $hariIni)
                 ->with(['kelas.angkatan', 'mapel']) 
                 ->whereHas('mapel', function ($query) use ($idUser) {
                     $query->where('id_guru', $idUser);

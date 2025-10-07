@@ -171,19 +171,18 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200">
-                                @forelse ($daftarSiswa ?? [] as $siswa)
-                                    {{-- Ganti dengan data pelanggaran dinamis jika sudah ada --}}
+                                @forelse ($pelanggarans ?? [] as $pelanggaran)
                                     <tr class="hover:bg-gray-50 transition duration-200">
-                                        <td class="py-4 px-6 whitespace-nowrap font-medium">{{ $siswa->name }}</td>
-                                        <td class="py-4 px-6 whitespace-nowrap text-gray-500 italic">Belum ada data</td>
-                                        <td class="py-4 px-6 whitespace-nowrap text-gray-500 italic">N/A</td>
-                                        <td class="py-4 px-6 whitespace-nowrap font-bold text-center text-gray-500">0</td>
+                                        <td class="py-4 px-6 whitespace-nowrap font-medium">{{ $pelanggaran->siswa->name ?? 'Siswa Dihapus' }}</td>
+                                        <td class="py-4 px-6 whitespace-nowrap text-gray-600">{{ $pelanggaran->jenis_pelanggaran }}</td>
+                                        <td class="py-4 px-6 whitespace-nowrap text-gray-600">{{ \Carbon\Carbon::parse($pelanggaran->tanggal)->isoFormat('D MMMM YYYY') }}</td>
+                                        <td class="py-4 px-6 whitespace-nowrap font-bold text-center text-red-600">{{ $pelanggaran->poin }}</td>
                                         <td class="py-4 px-6 whitespace-nowrap">
                                             <div class="flex items-center space-x-3">
-                                                <button class="text-indigo-600 hover:text-indigo-800 transform hover:scale-110 transition duration-200" title="Edit">
+                                                <button class="text-indigo-600 hover:text-indigo-800 transform hover:scale-110 transition duration-200" title="Edit" onclick="showEditModal({{ json_encode($pelanggaran) }})">
                                                     <i class="fa-solid fa-pen-to-square text-lg"></i>
                                                 </button>
-                                                <button class="text-red-600 hover:text-red-800 transform hover:scale-110 transition duration-200" title="Hapus">
+                                                <button class="text-red-600 hover:text-red-800 transform hover:scale-110 transition duration-200" title="Hapus" onclick="showDeleteModal({{ $pelanggaran->id_pelanggaran }})">
                                                     <i class="fa-solid fa-trash-alt text-lg"></i>
                                                 </button>
                                             </div>
@@ -191,9 +190,9 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="text-center py-10">
-                                            <i class="fa-solid fa-users-slash text-5xl text-gray-400 mb-4"></i>
-                                            <p class="text-gray-600 font-semibold text-lg">Tidak ada siswa di kelas ini.</p>
+                                        <td colspan="5" class="text-center py-12">
+                                            <i class="fa-solid fa-shield-halved text-5xl text-gray-400 mb-4"></i>
+                                            <p class="text-gray-600 font-semibold text-lg">Belum ada data pelanggaran untuk kelas ini.</p>
                                         </td>
                                     </tr>
                                 @endforelse

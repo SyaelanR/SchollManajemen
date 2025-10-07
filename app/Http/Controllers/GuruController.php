@@ -29,9 +29,34 @@ use App\Exports\LaporanNilaiExport;
 
 class GuruController extends Controller
 {
-    public function lihatjadwalG()
+    public function lihatjadwalG(Request $request)
     {
-        return view('guru.lihat_jadwalG');
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+
+        $Jadwals = Jadwal::with('kelas.angkatan', 'mapel')
+        ->whereHas('mapel', function ($query) use ($id_user) {
+            $query->where('id_guru', $id_user);
+        })
+        ->whereHas('kelas.angkatan', function ($query) use ($id_sekolah) {
+            $query->where('id_sekolah', $id_sekolah);
+        })
+        ->whereHas('kelas.angkatan', function ($query) {
+            $query->whereColumn('angkatans.semester', 'jadwals.semester');
+        })
+        ->whereHas('kelas.angkatan', function ($query) {
+            $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+        })
+        ->whereHas('kelas.angkatan', function ($query) {
+            // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+            $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+        })
+        ->orderBy('hari') // Urutkan berdasarkan hari
+        ->orderBy('jam_mulai') // Kemudian urutkan berdasarkan jam mulai
+        ->get();
+
+
+        return view('guru.lihat_jadwalG', ['Jadwals' => $Jadwals]);
     }
 
     public function manajNilaiKelas(Request $request)

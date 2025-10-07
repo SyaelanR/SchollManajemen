@@ -19,8 +19,13 @@ class Angkatan extends Model
         'tingkat',
 ];
 
-public function sekolah()
+    public function sekolah()
     {
         return $this->belongsTo(Clien::class, 'id_sekolah', 'id_sekolah');
+    }
+
+    public function kelas()
+    {
+        return $this->hasMany(Kelas::class, 'id_angkatan', 'id_angkatan');
     }
 }

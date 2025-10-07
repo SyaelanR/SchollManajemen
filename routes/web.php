@@ -237,6 +237,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/lihat-jadwal', [SiswaController::class, 'lihatJadwalS'])->name('lihatJadwalS');
 
         Route::get('/krs', [SiswaController::class, 'KRS'])->name('KRS');
+        Route::get('/lihat-absensi', [SiswaController::class, 'pilihMapelAbsensi'])->name('lihatAbsensi');
+        Route::get('/lihat-materi/{id_kelas}/{id_mapel}', [SiswaController::class, 'lihatMateri'])->name('lihatMateriSiswa');
+        Route::get('/lihat-absensi/{id_mapel}', [SiswaController::class, 'lihatAbsensiPerMapel'])->name('lihatAbsensi.perMapel');
+
         
     });
 
@@ -312,4 +316,3 @@ Route::get('/input-nilai', [AdminController::class, 'inputnilai'])->name('inputn
 #####################################################################################################################################################
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Halaman daftar acara
-

@@ -95,7 +95,7 @@ class AdminController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
         foreach ($request->input('students', []) as $studentData) {
@@ -124,7 +124,7 @@ class AdminController extends Controller
             }
         }
 
-        return response()->json(['message' => 'Data semua siswa berhasil disimpan!'], 200);
+        return redirect()->route('manajemenSiswa')->with('success', 'Data siswa berhasil ditambahkan!');
     }
 
 
@@ -149,7 +149,7 @@ class AdminController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
         foreach ($request->input('teacher', []) as $teacherData) {
@@ -172,7 +172,7 @@ class AdminController extends Controller
             }
         }
 
-        return response()->json(['message' => 'Data semua staf/guru berhasil disimpan!'], 200);
+        return redirect()->route('manajemenGuru')->with('success', 'Data guru/staf berhasil ditambahkan!');
     }
 
 
@@ -1401,4 +1401,3 @@ public function updateKurikulum(Request $request, $id)
     return redirect()->route('manajemenKurikulum')->with('success', 'Kurikulum berhasil diperbarui!');
 }
 }
-
