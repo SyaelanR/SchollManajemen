@@ -254,6 +254,8 @@ class SiswaController extends Controller
     /**
      * Menampilkan halaman riwayat absensi untuk siswa yang sedang login.
      */
+    }
+    
     public function lihatAbsensi(Request $request)
     {
         $id_sekolah = $request->cookie('id_sekolah');
