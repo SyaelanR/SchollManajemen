@@ -1288,7 +1288,7 @@ class AdminController extends Controller
         // Ambil acara yang masih berlangsung atau akan datang (belum lewat tanggal_selesai)
         $daftarAcara = DaftarAcara::where('id_sekolah', $id_sekolah)
                         ->where('tanggal_selesai', '>=', Carbon::now()->subWeeks(1))
-                        ->orderBy('tanggal_mulai', 'asc')
+                        ->orderBy('tanggal_mulai', 'desc')
                         ->get();
 
 
