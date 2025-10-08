@@ -167,12 +167,12 @@
                     <table class="w-full min-w-[700px] text-left">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Tahun Ajaran</th>
-                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Semester</th>
-                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Tanggal Mulai</th>
-                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Tanggal Selesai</th>
-                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Tingkat</th>
-                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm text-center">Aksi</th>
+                                <th class="p-3 font-semibold text-gray-600 ">TAHUN AJARAN</th>
+                                <th class="p-3 font-semibold text-gray-600 ">SEMESTER</th>
+                                <th class="p-3 font-semibold text-gray-600 ">TANGGAL MULAI</th>
+                                <th class="p-3 font-semibold text-gray-600 ">TANGGAL SELESAI</th>
+                                <th class="p-3 text-center font-semibold text-gray-600 ">TINGKAT</th>
+                                <th class="p-3 font-semibold text-gray-600  text-center">AKSI</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y">
@@ -182,7 +182,15 @@
                                     <td class="p-3 text-gray-700 capitalize">{{$item->semester}}</td>
                                     <td class="p-3 text-gray-700">{{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d F Y') }}</td>
                                     <td class="p-3 text-gray-700">{{ \Carbon\Carbon::parse($item->tanggal_selesai)->format('d F Y') }}</td>
-                                    <td class="p-3 text-gray-700">{{$item->tingkat}}</td>
+                                    @if($item->id_tingkat == null)
+                                    <td class="p-3 text-center">
+                                        <span class="bg-blue-100 text-blue-800 font-medium py-1 px-3 rounded-full text-xs capitalize">Alumni</span>
+                                    </td>
+                                    @else
+                                    <td class="p-3 text-center">
+                                        <span class="bg-yellow-100 text-yellow-800 font-medium py-1 px-3 rounded-full text-xs capitalize">{{$item->tingkat}}</span>
+                                    </td>
+                                    @endif
                                     <td class="p-3 text-center">
                                         <div class="flex justify-center space-x-4">
                                             <button class="text-blue-600 hover:text-blue-800 edit-btn" title="Edit"
@@ -291,6 +299,7 @@
                         @empty
                             <option value="" disabled>Tidak ada data tingkat</option>
                         @endforelse
+                        <option value="2147483646" >Alumni</option>
                     </select>
                 </div>
                 <div>

@@ -228,8 +228,16 @@ class AdminController extends Controller
     {
         $id_sekolah = request()->cookie('id_sekolah');
 
-        $angkatans = Angkatan::where('id_sekolah', $id_sekolah)->where('id_sekolah', $id_sekolah)->latest()->get();
-        $kelas = Kelas::latest()->where('id_sekolah', $id_sekolah)->get();
+        $angkatans = Angkatan::where('id_sekolah', $id_sekolah)->where('id_sekolah', $id_sekolah)
+                    ->whereNotNull('id_tingkat')
+                    ->latest()->get();
+
+        $kelas = Kelas::where('id_sekolah', $id_sekolah)
+                    ->with('angkatan')
+                    ->whereHas('angkatan', function ($query) {
+                        $query->whereNotNull('id_tingkat');
+                    })//filter alumni
+                    ->get();
 
         return view('admin.manajemen_kelas', ['angkatans' => $angkatans, 'kelasList' => $kelas]);
     }
@@ -269,7 +277,14 @@ class AdminController extends Controller
     {
         $id_sekolah = $request->cookie('id_sekolah');
         
-        $infoKelas = Kelas::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->with('angkatan')->first();
+        $infoKelas = Kelas::where('id_kelas', $id_kelas)
+                        ->where('id_sekolah', $id_sekolah)
+                        ->with('angkatan')
+                        ->whereHas('angkatan', function ($query) {
+                            $query->whereNotNull('id_tingkat');
+                        }) //filter alumni
+                        ->firstOrFail();
+
         $daftarSiswa = User::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->get();
         $daftarSiswaBelumPunyaKelas = User::where('id_kelas', null)->where('id_sekolah', $id_sekolah)->where('role', 'siswa')->get();
         $jumlahSiswa = $daftarSiswa->count();
@@ -292,7 +307,14 @@ class AdminController extends Controller
         ]);
 
         $id_kelas = $request->input('id_kelas');
-        $id_kelass = Kelas::where('id_kelas', $id_kelas)->where('id_sekolah', $request->cookie('id_sekolah'))->firstOrFail();
+        $id_kelass = Kelas::where('id_kelas', $id_kelas)
+                        ->where('id_sekolah', $request->cookie('id_sekolah'))
+                        ->with('angkatan')
+                        ->whereHas('angkatan', function ($query) {
+                            $query->whereNotNull('id_tingkat');
+                        }) //filter alumni
+                        ->firstOrFail();
+                        
         $siswa_ids = $request->input('siswa_ids');
 
         // 2. Update id_kelas untuk semua siswa yang dipilih
@@ -543,7 +565,15 @@ class AdminController extends Controller
     public function manajJadwal(){
         $id_sekolah = request()->cookie('id_sekolah');
 
-        $kelaslist = Kelas::where('id_sekolah', $id_sekolah)->get();
+        // Menggunakan whereHas untuk memfilter Kelas berdasarkan kondisi pada relasi angkatan.
+        // Di sini, kita mengambil kelas yang angkatannya memiliki id_tingkat bukan alumni(bukan null).
+        $kelaslist = Kelas::where('id_sekolah', $id_sekolah)
+                        ->with('angkatan')
+                        ->whereHas('angkatan', function ($query) {
+                            $query->whereNotNull('id_tingkat');
+                        }) //filter alumni
+                        ->get();
+
         return view('admin.manajemen_jadwal', ['kelasList' => $kelaslist]);
     }
 
@@ -555,6 +585,9 @@ class AdminController extends Controller
         $kelas = Kelas::with('angkatan')
                       ->where('id_kelas', $id_kelas)
                       ->where('id_sekolah', $id_sekolah)
+                      ->whereHas('angkatan', function ($query) {
+                        $query->whereNotNull('id_tingkat');
+                         })//filter alumni
                       ->firstOrFail(); // Akan melempar 404 Not Found jika kelas tidak ada
 
         // Mengambil semester dari relasi angkatan yang sudah di-load, bukan query baru.
@@ -602,8 +635,13 @@ class AdminController extends Controller
             'ruangan.required' => 'ruangan tidak boleh kosong.',
         ]);
 
-        $idAngkatan = Kelas::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->value('id_angkatan');
-        $angkatan = Angkatan::where('id_angkatan', $idAngkatan)->where('id_sekolah', $id_sekolah)->get();
+        $infoAngkatan = Kelas::with('angkatan')
+                      ->where('id_kelas', $id_kelas)
+                      ->where('id_sekolah', $id_sekolah)
+                      ->whereHas('angkatan', function ($query) {
+                        $query->whereNotNull('id_tingkat');
+                         })//filter alumni
+                      ->firstOrFail(); // Akan melempar 404 Not Found jika kelas tidak ada
 
         Jadwal::create([
             'id_sekolah' => $id_sekolah,
@@ -612,8 +650,8 @@ class AdminController extends Controller
             'jam_mulai' => $request->jam_mulai,
             'jam_selesai' => $request->jam_selesai,
             'id_mapel' => $request->id_mapel,
-            'semester' => $angkatan->first()->semester ?? null,
-            'tingkat' => $angkatan->first()->id_tingkat ?? null,
+            'semester' => $infoAngkatan->angkatan->semester,
+            'tingkat' => $infoAngkatan->angkatan->id_tingkat,
             'ruangan' => $request->ruangan,
         ]);
         return redirect()->route('tambahJadwal', ['id_kelas' => $id_kelas])->with('success', 'Jadwal berhasil ditambahkan!');
@@ -779,7 +817,12 @@ class AdminController extends Controller
     {
         $id_sekolah = request()->cookie('id_sekolah');
 
-        $kelaslist = Kelas::where('id_sekolah', $id_sekolah)->get();
+        $kelaslist = Kelas::where('id_sekolah', $id_sekolah)
+                        ->with('angkatan')
+                        ->whereHas('angkatan', function ($query) {
+                        $query->whereNotNull('id_tingkat');
+                         })//filter alumni
+                        ->get();
 
         foreach ($kelaslist as $kelas) {
         // Hitung dan tambahkan properti jumlah_siswa ke setiap item jadwal
@@ -794,7 +837,11 @@ class AdminController extends Controller
         $id_sekolah = $request->cookie('id_sekolah');
     
         // Ambil info kelas dan angkatan untuk data umum di rapor
-        $kelasInfo = Kelas::with('angkatan.sekolah')->findOrFail($id_kelas);
+        $kelasInfo = Kelas::with('angkatan.sekolah')
+                        ->whereHas('angkatan', function ($query) {
+                        $query->whereNotNull('id_tingkat');
+                         })//filter alumni
+                        ->findOrFail($id_kelas);
     
         // Ambil semua siswa dalam kelas beserta relasi nilai mereka
         $students = User::where('id_kelas', $id_kelas)
@@ -1007,6 +1054,10 @@ class AdminController extends Controller
         // Temukan kelas spesifik dari database berdasarkan ID dan id_sekolah
         $kelas = Kelas::where('id_kelas', $id_kelas)
                       ->where('id_sekolah', $id_sekolah)
+                      ->with('angkatan')
+                      ->whereHas('angkatan', function ($query) {
+                        $query->whereNotNull('id_tingkat');
+                         })//filter alumni
                       ->firstOrFail();
 
         // Ambil data angkatan yang tersedia untuk sekolah ini saja
@@ -1071,7 +1122,7 @@ class AdminController extends Controller
 
         $request->validate([
             'angkatan' => 'required|string|max:255|unique:angkatans,angkatan,' . $id . ',id_angkatan,id_sekolah,' . $id_sekolah, // Tambahkan id_sekolah ke unique rule
-            'id_tingkat' => 'required|integer|exists:tingkats,id_tingkat',
+            'id_tingkat' => 'required|integer',
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
             'semester' => 'required|in:ganjil,genap', // Tambahkan validasi untuk semester
@@ -1087,7 +1138,18 @@ class AdminController extends Controller
         $angkatan = Angkatan::where('id_angkatan', $id)
                             ->where('id_sekolah', $id_sekolah)
                             ->firstOrFail();
+                            
 
+    if ($request->id_tingkat == 2147483646){
+        $angkatan->update([
+        'angkatan' => $request->angkatan,
+        'tanggal_mulai' => $request->tanggal_mulai,
+        'tanggal_selesai' => $request->tanggal_selesai,
+        'semester' => $request->semester, // Tambahkan ini
+        'tingkat' => null,
+        'id_tingkat' => null,
+    ]);
+    } else {
         $angkatan->update([
             'angkatan' => $request->angkatan,
             'id_tingkat' => $request->id_tingkat,
@@ -1096,7 +1158,8 @@ class AdminController extends Controller
             'tanggal_selesai' => $request->tanggal_selesai,
             'semester' => $request->semester, // Tambahkan ini
         ]);
-
+    }
+                            
         return redirect()->route('manajemenAngkatan')->with('success', 'Angkatan berhasil diperbarui!');
     }
 

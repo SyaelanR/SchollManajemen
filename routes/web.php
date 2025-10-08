@@ -65,7 +65,7 @@ Route::middleware('auth')->group(function () {
  
             Route::get('/edit-kelas/{id}', [AdminController::class, 'editKelas'])->name('editKelas');
             Route::put('/edit-kelas/{id}', [AdminController::class, 'updateKelas'])->name('updateKelas');
-            Route::delete('/edit-kelas/{id}', [AdminController::class, 'destroyKelas'])->name('destroyKelas');
+            // Route::delete('/edit-kelas/{id}', [AdminController::class, 'destroyKelas'])->name('destroyKelas');
             Route::delete('/kelas/keluarkan-siswa/{id_siswa}/{id_kelas}', [AdminController::class, 'keluarkanSiswaDariKelas'])->name('keluarkanSiswaDariKelas');
 
 

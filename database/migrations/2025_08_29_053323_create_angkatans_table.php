@@ -19,7 +19,7 @@ return new class extends Migration
             $table->date('tanggal_mulai')->nullable();
             $table->date('tanggal_selesai')->nullable();
             $table->unsignedBigInteger('id_tingkat')->nullable();
-            $table->integer('tingkat')->default(1);
+            $table->integer('tingkat')->nullable()->default(1);
             $table->timestamps();
 
             $table->foreign('id_tingkat')->references('id_tingkat')->on('tingkats')->onDelete('set null');
