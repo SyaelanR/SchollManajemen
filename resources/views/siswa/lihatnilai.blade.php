@@ -30,26 +30,36 @@
     <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
         <div class="p-6">
             <a href="#" class="flex items-center space-x-3">
-                <i class="fa-solid fa-graduation-cap text-3xl text-indigo-600"></i>
-                <span class="text-2xl font-bold text-gray-800">Sistem Nilai</span>
+                <i class="fa-solid fa-school text-3xl text-indigo-600"></i>
+                <span class="text-2xl font-bold text-gray-800">EduSys</span>
             </a>
         </div>
         <nav class="mt-6">
-            <!-- Link Kembalian dipertahankan -->
-            <a href="{{ route('pilihMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-arrow-left mr-3"></i>
-                <span>Kembali ke Mapel</span>
+            <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-tachometer-alt mr-3"></i>
+                <span>Dashboard</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
-                <i class="fa-solid fa-file-invoice mr-3"></i>
-                <span>Detail Nilai</span>
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
+                <span>Jadwal Pelajaran</span>
+            </a>
+            <a href="{{ route('pilihMapel') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
+                <i class="fa-solid fa-star w-6 h-6 mr-3"></i>
+                <span>Nilai Saya</span>
+            </a>
+            <a href="{{ route('lihatTugasMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book w-6 h-6 mr-3"></i>
+                <span>Mata Pelajaran</span>
             </a>
         </nav>
         <div class="absolute bottom-0 w-full p-6">
-            <!-- Contoh Logout -->
-            <button class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full text-left">
-                <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i><span>Logout</span>
-            </button>
+            <form action="{{ route('logout') }}" method="POST" id="logout-form">
+                @csrf
+                <button type="submit" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full text-left">
+                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
+                    <span>Logout</span>
+                </button>
+            </form>
         </div>
     </aside>
 
@@ -66,7 +76,7 @@
             <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Nilai Mata Pelajaran</h1>
             <div class="flex items-center space-x-4">
                  <!-- Avatar inisial S (Siswa) -->
-                 <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/38a169/ffffff?text=S" alt="User Avatar">
+                 <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=S" alt="User Avatar">
             </div>
         </header>
 
@@ -75,7 +85,7 @@
             
             <header class="mb-8 bg-blue-600 p-8 rounded-2xl shadow-lg text-white">
                 <h2 class="text-3xl font-bold mb-2">Nilai {{ $namaMapel }}</h2>
-                <p class="text-blue-200">Tampilan nilai untuk **{{ $namaSiswa }}** di kelas **{{ $namaKelas }}**.</p>
+                <p class="text-blue-200">Tampilan nilai untuk <strong>{{ $namaSiswa }} (Anda)</strong> di kelas <strong>{{ $namaKelas }}</strong>.</p>
             </header>
             
             <div class="bg-white rounded-xl shadow-md p-6">
@@ -101,11 +111,11 @@
                             
                             @forelse ($nilaiSiswa as $key => $nilai)
                                 <tr class="hover:bg-gray-50 transition duration-150">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 capitalize">Nilai {{ strtoupper($key) }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-lg font-semibold text-gray-700">{{ $nilai ?? 'N/A' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 capitalize">{{ $key }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-lg font-semibold text-gray-700">{{ is_numeric($nilai) ? $nilai : 'N/A' }}</td>
                                     @php
                                         $status = ($nilai ?? 0) >= $kkm ? 'Tuntas' : 'Belum Tuntas';
-                                        $statusClass = $nilai >= $kkm ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100';
+                                        $statusClass = ($nilai ?? 0) >= $kkm ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100';
                                     @endphp
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusClass }}">

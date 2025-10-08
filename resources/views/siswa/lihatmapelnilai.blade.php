@@ -24,29 +24,40 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex">
 
-    <!-- Sidebar (Disederhanakan) -->
+    <!-- Sidebar -->
     <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
         <div class="p-6">
             <a href="#" class="flex items-center space-x-3">
-                <i class="fa-solid fa-graduation-cap text-3xl text-indigo-600"></i>
-                <span class="text-2xl font-bold text-gray-800">Sistem Nilai</span>
+                <i class="fa-solid fa-school text-3xl text-indigo-600"></i>
+                <span class="text-2xl font-bold text-gray-800">EduSys</span>
             </a>
         </div>
         <nav class="mt-6">
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-tachometer-alt mr-3"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
-                <i class="fa-solid fa-file-invoice mr-3"></i>
-                <span>Daftar Nilai</span>
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
+                <span>Jadwal Pelajaran</span>
+            </a>
+            <a href="{{ route('pilihMapel') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
+                <i class="fa-solid fa-star w-6 h-6 mr-3"></i>
+                <span>Nilai Saya</span>
+            </a>
+            <a href="{{ route('lihatTugasMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book w-6 h-6 mr-3"></i>
+                <span>Mata Pelajaran</span>
             </a>
         </nav>
         <div class="absolute bottom-0 w-full p-6">
-            <!-- Contoh Logout -->
-            <button class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full text-left">
-                <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i><span>Logout</span>
-            </button>
+            <form action="{{ route('logout') }}" method="POST" id="logout-form">
+                @csrf
+                <button type="submit" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full text-left">
+                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
+                    <span>Logout</span>
+                </button>
+            </form>
         </div>
     </aside>
 
@@ -62,54 +73,47 @@
             </button>
             <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Daftar Mata Pelajaran</h1>
             <div class="flex items-center space-x-4">
-                 <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/38a169/ffffff?text=U" alt="User Avatar">
+                 <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=S" alt="User Avatar">
+                 <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
             </div>
         </header>
 
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
-            <header class="mb-8 bg-green-600 p-8 rounded-2xl shadow-lg text-white">
+            <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
                 <h2 class="text-3xl font-bold mb-2">Nilai Per Mata Pelajaran</h2>
-                <p class="text-green-200">Silakan pilih mata pelajaran untuk melihat dan mengelola detail nilainya.</p>
+                <p class="text-indigo-200">Silakan pilih mata pelajaran untuk melihat detail nilai Anda.</p>
             </header>
             
-            <div class="bg-white rounded-xl shadow-md p-6">
-                <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6">Pilih Mata Pelajaran</h2>
-                
-                @if (isset($mapelList) && $mapelList->isNotEmpty())
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    @foreach ($mapelList as $jadwal)
-                    <!-- Card Mata Pelajaran -->
-                    <a href="{{ route('lihatNilaiMapel', ['id_mapel' => $jadwal->mapel->id_mapel]) }}" 
-                       class="block bg-white border border-gray-200 rounded-xl shadow-lg p-6 relative hover:shadow-xl hover:border-green-500 hover:-translate-y-1 transition-all duration-300 group">
-                        
-                        <div class="flex flex-col h-full">
-                            <div class="flex-grow">
-                                <div class="bg-green-100 text-green-600 p-4 rounded-full flex items-center justify-center w-16 h-16 mb-4">
-                                    <i class="fa-solid fa-book-open text-2xl"></i>
-                                </div>
-                                <h3 class="text-xl font-bold text-gray-800 group-hover:text-green-600">{{ $jadwal->mapel->nama_mapel ?? 'N/A' }}</h3>
-                                <p class="text-sm text-gray-500 mt-1">Kode: {{ $jadwal->mapel->kode_mapel ?? 'N/A' }}</p>
-                            </div>
-                            <div class="border-t mt-4 pt-4 text-sm text-gray-600">
-                                <div class="flex items-center">
-                                    <i class="fa-solid fa-user-tie w-4 mr-2 text-gray-400"></i>
-                                    <!-- Asumsi ada field 'guru' di data mapel -->
-                                    <span>Guru Pengampu: {{ $jadwal->mapel->guru->name ?? 'Belum Ditentukan' }}</span>
+            @if (isset($mapelList) && $mapelList->isNotEmpty())
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                @foreach ($mapelList as $jadwal)
+                <!-- Card Mata Pelajaran -->
+                <a href="{{ route('lihatNilaiMapel', ['id_mapel' => $jadwal->mapel->id_mapel]) }}" class="block">
+                    <div class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between h-full hover:shadow-lg hover:-translate-y-1 transform transition-all duration-300">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="bg-indigo-100 text-indigo-600 p-3 rounded-full">
+                                    <i class="fa-solid fa-book-open text-xl"></i>
                                 </div>
                             </div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">{{ $jadwal->mapel->nama_mapel ?? 'N/A' }}</h3>
+                            <p class="text-gray-600 text-sm flex items-center"><i class="fa-solid fa-chalkboard-user w-4 mr-2 text-gray-400"></i>{{ $jadwal->mapel->guru->name ?? 'Belum Ditentukan' }}</p>
                         </div>
-                    </a>
-                    @endforeach
-                </div>
-                @else
-                <div class="text-center py-12">
-                    <i class="fa-solid fa-boxes-stacked text-5xl text-gray-400 mb-4"></i>
-                    <p class="text-gray-600 font-semibold text-lg">Belum ada mata pelajaran yang tersedia.</p>
-                    <p class="text-gray-500 mt-2">Silakan hubungi administrator untuk penambahan data mapel.</p>
-                </div>
-                @endif
+                        <div class="border-t mt-4 pt-4">
+                            <p class="text-sm font-semibold text-gray-700">SKS: <span class="font-bold text-indigo-600">{{ $jadwal->mapel->sks ?? 'N/A' }}</span></p>
+                        </div>
+                    </div>
+                </a>
+                @endforeach
             </div>
+            @else
+            <div class="col-span-full text-center py-10 bg-white rounded-xl shadow-md">
+                <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
+                <p class="text-gray-600 font-semibold text-lg">Belum ada mata pelajaran yang tersedia.</p>
+                <p class="text-gray-500 mt-2">Jadwal mata pelajaran untuk semester ini belum diatur.</p>
+            </div>
+            @endif
         </main>
     </div>
 </div>
