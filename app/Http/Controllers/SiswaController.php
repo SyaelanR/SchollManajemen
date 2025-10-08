@@ -346,6 +346,38 @@ class SiswaController extends Controller
         return view('siswa.pilih_mapel_absensi', compact('daftarMapel'));
     }
 
+    /////////////////////////////////lihat nilai///////////////////////////////////////////////////
+    public function pilihMapel(Request $request)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_kelas = $request->cookie('id_kelas');
+        $id_angkatan = $request->cookie('id_angkatan');
+
+        // Ambil info angkatan untuk mendapatkan semester & tingkat aktif
+        $infoAngkatan = Angkatan::where('id_angkatan', $id_angkatan)
+                                ->where('id_sekolah', $id_sekolah)
+                                ->first();
+
+        // Mengambil daftar mapel yang unik untuk kelas siswa yang sedang login
+        // berdasarkan jadwal yang ada.
+        $mapelList = Jadwal::with('mapel.guru')
+            ->where('id_sekolah', $id_sekolah)
+            ->where('id_kelas', $id_kelas)
+            // Hanya jalankan filter tambahan jika info angkatan valid
+            ->when($infoAngkatan, function ($query) use ($infoAngkatan) {
+                // Filter jadwal yang sesuai dengan semester dan tingkat angkatan siswa saat ini
+                return $query->where('semester', $infoAngkatan->semester)
+                               ->where('tingkat', $infoAngkatan->id_tingkat);
+            })
+            // Pastikan mapel yang terkait ada dan statusnya aktif/null
+            ->whereHas('mapel', fn($q) => $q->where('status', 'aktif')->orWhereNull('status'))
+            ->select('id_mapel')
+            ->distinct()
+            ->get();
+
+        return view('siswa.lihatmapelnilai', ['mapelList' => $mapelList]);
+    }
+
     /**
      * Menampilkan riwayat absensi untuk satu mata pelajaran.
      */
@@ -376,4 +408,38 @@ class SiswaController extends Controller
 
         return view('siswa.lihat_absensi_per_mapel', compact('daftarAbsensi', 'infoMapel'));
     }
+    //     return view('siswa.lihatmapelnilai', ['mapelList' => $mapelList]);
+    // }
+
+    /**
+     * Menampilkan detail nilai untuk mata pelajaran tertentu.
+     * Corresponds to: nilai_detail_mapel.blade.php
+     *
+     * @param int $id_mapel ID Mata Pelajaran yang dipilih.
+     * @return \Illuminate\View\View
+     */
+    public function lihatNilaiMapel(Request $request, $id_mapel)
+    {
+        $id_user = $request->cookie('id_user');
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        // Menggunakan join untuk membandingkan kolom antar tabel
+        $daftarNilai = DaftarNilaiSiswa::query()
+                        ->select('daftar_nilai_siswas.*') // Pilih semua kolom dari tabel utama untuk menghindari ambiguitas
+                        ->join('kelas', 'daftar_nilai_siswas.id_kelas', '=', 'kelas.id_kelas')
+                        ->join('angkatans', 'kelas.id_angkatan', '=', 'angkatans.id_angkatan')
+                        ->where('daftar_nilai_siswas.id_siswa', $id_user)
+                        ->where('daftar_nilai_siswas.id_mapel', $id_mapel)
+                        ->where('daftar_nilai_siswas.id_sekolah', $id_sekolah)
+                        // Sekarang whereColumn akan bekerja karena tabel sudah di-join
+                        ->whereColumn('daftar_nilai_siswas.tingkat', 'angkatans.id_tingkat')
+                        ->whereColumn('daftar_nilai_siswas.semester', 'angkatans.semester')
+                        // Eager load relasi yang dibutuhkan untuk view
+                        ->with(['daftarNilai', 'kelas.angkatan'])
+                        ->get();
+
+
+        return view('siswa.lihatnilai', ['daftarNilai' => $daftarNilai]);
+    }
+
 }

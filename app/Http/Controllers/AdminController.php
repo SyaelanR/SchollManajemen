@@ -532,6 +532,7 @@ class AdminController extends Controller
             'kategori' => $request->kategori,
             'sks' => $request->sks,
             'id_guru' => $request->guru_id,
+            'status' => 'aktif', // Tambahkan ini agar status defaultnya aktif
         ]);
 
         return redirect()->route('manajemenMapel')->with('success', 'Mata pelajaran berhasil ditambahkan!');    
@@ -1280,14 +1281,16 @@ class AdminController extends Controller
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ########################################################################################################################################
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
-public function manajAcara(Request $request)
+    public function manajAcara(Request $request)
     {
-
         $id_sekolah = request()->cookie('id_sekolah');
 
+        // Ambil acara yang masih berlangsung atau akan datang (belum lewat tanggal_selesai)
         $daftarAcara = DaftarAcara::where('id_sekolah', $id_sekolah)
                         ->where('tanggal_selesai', '>=', Carbon::now()->subWeeks(1))
+                        ->orderBy('tanggal_mulai', 'asc')
                         ->get();
+
 
         return View('admin.acara-sekolah', ['daftarAcara' => $daftarAcara]);
     }
