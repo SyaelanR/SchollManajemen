@@ -60,6 +60,10 @@
                 <i class="fa-solid fa-list-check mr-3"></i>
                 <span>Input Absensi</span>
             </a>
+            <a href="{{ route('manajPengumuman') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-bullhorn mr-3"></i>
+                <span>Pengumuman</span>
+            </a>
         </nav>
         <div class="absolute bottom-0 w-full p-6">
             <form action="{{ route('logout') }}" method="POST">
@@ -151,4 +155,3 @@
 </script>
 </body>
 </html>
-

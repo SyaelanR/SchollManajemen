@@ -36,11 +36,30 @@
                 <i class="fa-solid fa-tachometer-alt w-6 mr-3"></i>
                 <span>Dashboard</span>
             </a>
+            <a href="{{ route('pilihMapel')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-pen w-6 mr-3"></i>
+                <span>Lihat Nilai</span>
+            </a>
             <a href="{{ route('lihatAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-calendar-check w-6 mr-3"></i>
+                <i class="fa-solid fa-list-check w-6 mr-3"></i>
                 <span>Lihat Absensi</span>
             </a>
-            {{-- Tambahkan menu siswa lainnya di sini --}}
+            <a href="{{ route('pilihMapelMateri') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open w-6 mr-3"></i>
+                <span>Lihat Materi</span>
+            </a>
+            <a href="{{ route('lihatAcaraSiswa')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-check mr-3"></i>
+                <span>Acara</span>
+            </a>
+            <a href="{{ route('lihatPengumumanSiswa')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-bullhorn mr-3"></i>
+                <span>Pengumuman</span>
+            </a>
+            <a href="{{ route('pilihMapelTugas') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-upload w-6 mr-3"></i>
+                <span>Upload Tugas</span>
+            </a>
         </nav>
         <div class="absolute bottom-0 w-full p-6">
             <form method="POST" action="{{ route('logout') }}">
@@ -128,47 +147,3 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 </body>
 </html>
-
-```
-
-### 4. Perbarui Tampilan `lihat_absensi.blade.php`
-
-Terakhir, modifikasi file `resources/views/siswa/lihat_absensi.blade.php` untuk menambahkan kolom "Aksi" dan tombol "Masuk".
-
-```diff
---- a/c:\Users\ASUS\Documents\magang\SchollManajer\SchollManajemen\resources\views\siswa\lihat_absensi.blade.php
-+++ b/c:\Users\ASUS\Documents\magang\SchollManajer\SchollManajemen\resources\views\siswa\lihat_absensi.blade.php
-@@ -102,6 +102,7 @@
-                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Mata Pelajaran</th>
-                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Status</th>
-                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Keterangan Pertemuan</th>
-+                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm text-center">Aksi</th>
-                             </tr>
-                         </thead>
-                         <tbody class="divide-y divide-gray-200">
-@@ -137,9 +138,14 @@
-                                 <td class="p-3 text-gray-600">
-                                     {{ $absensi->daftarAbsensi->keterangan ?? '-' }}
-                                 </td>
-+                                <td class="p-3 text-center">
-+                                    <a href="{{ route('lihatMateriSiswa', ['id_kelas' => $absensi->id_kelas, 'id_mapel' => $absensi->id_mapel]) }}" class="bg-indigo-100 text-indigo-700 text-sm font-medium py-1.5 px-3 rounded-lg hover:bg-indigo-200 transition duration-300 whitespace-nowrap">
-+                                        Masuk
-+                                    </a>
-+                                </td>
-                             </tr>
-                             @empty
-                             <tr>
--                                <td colspan="4" class="text-center py-12">
-+                                <td colspan="5" class="text-center py-12">
-                                     <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
-                                     <p class="text-gray-600 font-semibold text-lg">Belum ada data absensi untuk semester ini.</p>
-                                 </td>
-
-```
-
-Dengan semua perubahan ini, halaman riwayat absensi siswa kini akan memiliki tombol "Masuk" yang fungsional untuk melihat materi pelajaran terkait.
-
-<!--
-[PROMPT_SUGGESTION]Tambahkan rekapitulasi jumlah Hadir, Sakit, Izin, dan Alpha di atas tabel absensi[/PROMPT_SUGGESTION]
-[PROMPT_SUGGESTION]Buat halaman untuk siswa melihat nilai mereka[/PROMPT_SUGGESTION]
--->

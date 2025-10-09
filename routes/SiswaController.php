@@ -144,28 +144,9 @@ class SiswaController extends Controller
         // // 4. Update nama file di database
         $tugasSiswa->update(['nama_fileTugas' => $namaFile]);
 
-        return redirect()->route('lihatTugasDaftar', ['id_mapel' => $tugasSiswa->id_mapel])->with('success', 'Jawaban tugas berhasil diunggah!');
-
-
+        return back()->with('success', 'Jawaban tugas berhasil diunggah!');
+        // return view ('dashboard');
     }
-
-    public function halamanUnggahTugas(Request $request, $id_daftar_nilai_siswa)
-    {
-        $idSiswa = $request->cookie('id_user');
-
-        // Find the task for the student
-        $tugasSiswa = DaftarNilaiSiswa::where('id_daftar_nilai_siswa', $id_daftar_nilai_siswa)
-            ->where('id_siswa', $idSiswa)
-            ->firstOrFail();
-
-        // Pass the task data to the view
-        return view('siswa.upload_tugas', compact('tugasSiswa'));
-    }
-
-
-
-
-
 
         public function lihatJawaban (Request $request, $namaFile)
     {
@@ -390,7 +371,7 @@ class SiswaController extends Controller
             ->where('tingkat', $infoAngkatan->id_tingkat ?? 0)
             ->where('semester', $infoAngkatan->semester ?? 'ganjil')
             ->with('mapel.guru')
-            ->select('id_mapel', 'id_kelas')
+            ->select('id_mapel', 'id_kelas') // <-- Tambahkan id_kelas di sini
             ->distinct()
             ->get();
 

@@ -225,11 +225,13 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:siswa')->group(function () {
 
+        Route::get('/pilih-mapel-tugas', [SiswaController::class, 'lihatTugasMapel'])->name('pilihMapelTugas');
         Route::prefix('tugas-mapel')->group(function () {
             Route::get('', [SiswaController::class, 'lihatTugasMapel'])->name('lihatTugasMapel');
             Route::get('/tugas-daftar/{id_mapel}', [SiswaController::class, 'lihatTugasDaftar'])->name('lihatTugasDaftar');
             Route::get('/lihat-soal/{namaFile}', [SiswaController::class, 'lihatSoal'])->name('lihatSoal');
             Route::post('/unggah-tugas', [SiswaController::class, 'unggahTugas'])->name('unggahTugas');
+            Route::get('/unggah-tugas/{id_daftar_nilai_siswa}', [SiswaController::class, 'halamanUnggahTugas'])->name('halamanUnggahTugas');
 
             Route::get('/lihat-jawaban/{namaFile}', [SiswaController::class, 'lihatJawaban'])->name('lihatJawaban');
         });
@@ -238,8 +240,11 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/krs', [SiswaController::class, 'KRS'])->name('KRS');
         Route::get('/lihat-absensi', [SiswaController::class, 'pilihMapelAbsensi'])->name('lihatAbsensi');
+        Route::get('/lihat-materi', [SiswaController::class, 'pilihMapelMateri'])->name('pilihMapelMateri');
         Route::get('/lihat-materi/{id_kelas}/{id_mapel}', [SiswaController::class, 'lihatMateri'])->name('lihatMateriSiswa');
         Route::get('/lihat-absensi/{id_mapel}', [SiswaController::class, 'lihatAbsensiPerMapel'])->name('lihatAbsensi.perMapel');
+        Route::get('/lihat-acara', [SiswaController::class, 'lihatAcara'])->name('lihatAcaraSiswa');
+        Route::get('/lihat-pengumuman', [SiswaController::class, 'lihatPengumuman'])->name('lihatPengumumanSiswa');
 
         
     });
@@ -323,4 +328,3 @@ Route::get('/mapel', [SiswaController::class, 'pilihMapel'])->name('pilihMapel')
 // URL yang diminta: /mapel/{id_mapel}/nilai
 // Mengarah ke SiswaController@lihatNilaiMapel (atau NilaiController@lihatNilaiMapel)
 Route::get('/mapel/{id_mapel}/nilai', [SiswaController::class, 'lihatNilaiMapel'])->name('lihatNilaiMapel');
-

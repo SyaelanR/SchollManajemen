@@ -118,9 +118,9 @@
                                     <button onclick="window.location.href='{{ route('lihatSoal', $tugas->daftarNilai->tugas->nama_file ?? 0) }}'" class="w-1/2 bg-blue-100 text-blue-700 font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 transition-all duration-300 flex items-center justify-center">
                                         <i class="fa-solid fa-file mr-2"></i> Lihat Soal
                                     </button>
-                                    <button data-task-id="{{ $tugas->id_daftar_nilai_siswa }}" class="upload-button w-1/2 bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 flex items-center justify-center">
+                                    <a href="{{ route('halamanUnggahTugas', $tugas->id_daftar_nilai_siswa) }}" class="w-1/2 bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 flex items-center justify-center">
                                         <i class="fa-solid fa-upload mr-2"></i> Unggah Jawaban
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
                         @elseif ($tugas->nilai == 0 && $tugas->nama_fileTugas != null)
@@ -138,9 +138,9 @@
                                     <button onclick="window.location.href='{{ route('lihatJawaban',  $tugas->nama_fileTugas ?? 0) }}'" class="w-1/2 bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200 transition-all duration-300 flex items-center justify-center">
                                         <i class="fa-solid fa-eye mr-2"></i> Lihat Jawaban
                                     </button>
-                                    <button data-task-id="{{ $tugas->id_daftar_nilai_siswa }}" class="upload-button w-1/2 bg-blue-100 text-blue-700 font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 transition-all duration-300 flex items-center justify-center">
+                                    <a href="{{ route('halamanUnggahTugas', $tugas->id_daftar_nilai_siswa) }}" class="w-1/2 bg-blue-100 text-blue-700 font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 transition-all duration-300 flex items-center justify-center">
                                         <i class="fa-solid fa-pencil mr-2"></i> Edit Jawaban
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
                         @elseif ($tugas->nilai != 0)
@@ -172,46 +172,6 @@
         </div>
     </div>
     
-    <!-- Modal for file upload -->
-    <div id="uploadModal" class="modal-bg fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden p-4">
-        <div class="modal-content bg-white rounded-xl shadow-2xl w-11/12 max-w-lg transform transition-all duration-300 ease-out scale-95 opacity-0" id="modalContent">
-            <div class="flex justify-between items-center p-6 border-b">
-                <h3 class="text-2xl font-bold text-gray-800">Unggah Jawaban Tugas</h3>
-                <button id="closeModal" class="text-gray-500 hover:text-gray-800 focus:outline-none">
-                    <i class="fa-solid fa-times text-2xl"></i>
-                </button>
-            </div>
-            <form action="{{ route('unggahTugas') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <input type="hidden" name="id_daftar_nilai_siswa" id="modal_task_id">
-                <div class="p-6">
-                    <div id="fileUploadArea" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-indigo-500 transition-colors">
-                        <input type="file" id="fileInput" name="file" class="hidden" accept=".pdf">
-                        <div id="fileUploadPlaceholder">
-                            <i class="fa-solid fa-cloud-arrow-up text-4xl text-indigo-500 mb-4"></i>
-                            <p class="font-semibold text-gray-700">Klik untuk memilih file</p>
-                            <p class="text-sm text-gray-500 mt-1">atau seret dan lepas file di sini</p>
-                            <p class="text-xs text-gray-400 mt-2">Hanya file PDF, maks. 10MB</p>
-                        </div>
-                        <div id="fileNameDisplay" class="hidden items-center justify-center">
-                            <i class="fa-solid fa-file-pdf text-3xl text-red-500 mr-3"></i>
-                            <span class="font-medium text-gray-800"></span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-2 flex justify-end space-x-4 p-6 bg-gray-50 rounded-b-xl">
-                    <button type="button" id="cancelButton" class="bg-gray-100 text-gray-700 font-semibold py-2 px-6 rounded-lg hover:bg-gray-200 transition-all duration-300">
-                        Batal
-                    </button>
-                    <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition-all duration-300 flex items-center justify-center">
-                        <i class="fa-solid fa-paper-plane mr-2"></i> Kirim Jawaban
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <script>
         const menuButton = document.getElementById('menu-button');
         const sidebar = document.getElementById('sidebar');
@@ -224,93 +184,6 @@
 
         menuButton.addEventListener('click', toggleSidebar);
         overlay.addEventListener('click', toggleSidebar);
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            const uploadModal = document.getElementById('uploadModal');
-            const modalContent = document.getElementById('modalContent');
-            const closeModalButton = document.getElementById('closeModal');
-            const cancelButton = document.getElementById('cancelButton');
-            const uploadButtons = document.querySelectorAll('.upload-button');
-
-            const fileUploadArea = document.getElementById('fileUploadArea');
-            const fileInput = document.getElementById('fileInput');
-            const fileUploadPlaceholder = document.getElementById('fileUploadPlaceholder');
-            const fileNameDisplay = document.getElementById('fileNameDisplay');
-            const fileNameSpan = fileNameDisplay.querySelector('span');
-            
-            const modalTaskIdInput = document.getElementById('modal_task_id');
-
-            const openModal = (taskId) => {
-                modalTaskIdInput.value = taskId;
-                uploadModal.classList.remove('hidden');
-                setTimeout(() => {
-                    uploadModal.classList.remove('opacity-0');
-                    modalContent.classList.remove('scale-95', 'opacity-0');
-                }, 10);
-            };
-
-            const closeModal = () => {
-                modalContent.classList.add('scale-95', 'opacity-0');
-                uploadModal.classList.add('opacity-0');
-                setTimeout(() => {
-                    uploadModal.classList.add('hidden');
-                    fileInput.value = '';
-                    fileNameDisplay.classList.add('hidden');
-                    fileNameDisplay.classList.remove('flex');
-                    fileUploadPlaceholder.classList.remove('hidden');
-                }, 300);
-            };
-
-            uploadButtons.forEach(button => {
-                button.addEventListener('click', (event) => {
-                    const taskId = event.currentTarget.dataset.taskId;
-                    openModal(taskId);
-                });
-            });
-
-            closeModalButton.addEventListener('click', closeModal);
-            cancelButton.addEventListener('click', closeModal);
-            uploadModal.addEventListener('click', (event) => {
-                if (event.target === uploadModal) {
-                    closeModal();
-                }
-            });
-
-            fileUploadArea.addEventListener('click', () => fileInput.click());
-
-            fileInput.addEventListener('change', () => {
-                if (fileInput.files.length > 0) {
-                    fileNameSpan.textContent = fileInput.files[0].name;
-                    fileUploadPlaceholder.classList.add('hidden');
-                    fileNameDisplay.classList.remove('hidden');
-                    fileNameDisplay.classList.add('flex');
-                }
-            });
-            
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                fileUploadArea.addEventListener(eventName, e => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }, false);
-            });
-
-            ['dragenter', 'dragover'].forEach(eventName => {
-                fileUploadArea.addEventListener(eventName, () => {
-                    fileUploadArea.classList.add('border-indigo-500', 'bg-indigo-50');
-                }, false);
-            });
-
-            ['dragleave', 'drop'].forEach(eventName => {
-                fileUploadArea.addEventListener(eventName, () => {
-                    fileUploadArea.classList.remove('border-indigo-500', 'bg-indigo-50');
-                }, false);
-            });
-
-            fileUploadArea.addEventListener('drop', e => {
-                fileInput.files = e.dataTransfer.files;
-                fileInput.dispatchEvent(new Event('change'));
-            }, false);
-        });
     </script>
 </body>
 </html>

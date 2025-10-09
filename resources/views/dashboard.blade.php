@@ -99,10 +99,6 @@
             @endcan
 
             @can('view-guru')
-            <a href="{{ route('manajemenNilai') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-pen w-6 mr-3"></i>
-                <span>Input Nilai</span>
-            </a>
             <a href="{{ route('lihatjadwalG') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-calendar-days w-6 mr-3"></i>
                 <span>Jadwal Mengajar</span>
@@ -111,22 +107,50 @@
                 <i class="fa-solid fa-list-check w-6 mr-3"></i>
                 <span>Input Absensi</span>
             </a>
+            <a href="{{ route('manajemenNilai') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-pen w-6 mr-3"></i>
+                <span>Input Nilai</span>
+            </a>
+            <a href="{{ route('manajPengumuman') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-bullhorn w-6 mr-3"></i>
+                <span>Pengumuman</span>
+            </a>
+            <a href="{{ route('manajTugas') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-bullhorn w-6 mr-3"></i>
+                <span>Input Tugas</span>
+            </a>
             @endcan
 
             @can('view-siswa')
-            <a href="{{ route('pilihMapel')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('pilihMapelMateri') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open w-6 mr-3"></i>
+                <span>Lihat Materi</span>
+            </a>
+            <a href="{{ route('pilihMapelTugas') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-upload w-6 mr-3"></i>
+                <span>Lihat Tugas</span>
+            </a>
+             <a href="{{ route('lihatAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-list-check w-6 mr-3"></i>
+                <span>Lihat Absensi</span>
+            </a>
+           <a href="{{ route('pilihMapel')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-pen w-6 mr-3"></i>
                 <span>Lihat Nilai</span>
             </a>
-            <a href="{{ route('lihatAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-list-check w-6 mr-3"></i>
-                <span>Lihat Absensi</span>
+            <a href="{{ route('lihatPengumumanSiswa')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-bullhorn w-6 mr-3"></i>
+                <span>Pengumuman</span>
+            </a>
+            <a href="{{ route('lihatAcaraSiswa')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-check mr-3"></i>
+                <span>Acara</span>
             </a>
             @endcan
 
             @can('view-adminDev')
             <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-users w-6 mr-3"></i>
+                <i class="fa-solid fa-users mr-3"></i>
                 <span>Manajemen Klien</span>
             </a>
             @endcan
@@ -405,7 +429,7 @@
                 <div class="bg-white p-6 rounded-xl shadow-md">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-xl font-bold text-gray-800">Acara Sekolah</h3>
-                         <a href="#" class="text-sm font-medium text-indigo-600 hover:underline">Lihat Semua</a>
+                         <a href="{{ route('lihatAcaraSiswa')}}" class="text-sm font-medium text-indigo-600 hover:underline">Lihat Semua</a>
                     </div>
                     <div class="space-y-4">
                         <!-- Item Acara 1 -->
