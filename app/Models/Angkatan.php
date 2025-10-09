@@ -17,6 +17,7 @@ class Angkatan extends Model
         'tanggal_selesai',
         'id_tingkat',
         'tingkat',
+        'is_alumni'
 ];
 
     public function sekolah()

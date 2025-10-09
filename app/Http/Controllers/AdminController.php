@@ -38,10 +38,9 @@ class AdminController extends Controller
         // Menggunakan leftJoin untuk memastikan semua siswa tetap tampil meskipun belum punya kelas.
         // 'nama_kelas' akan bernilai null jika siswa belum masuk kelas.
         $students = User::where('users.role', 'siswa')
-                        ->where('users.id_sekolah', $id_sekolah)
-                        ->leftJoin('kelas', 'users.id_kelas', '=', 'kelas.id_kelas')
-                        ->select('users.*', 'kelas.nama_kelas')
-                        ->latest('users.created_at')->paginate(10);
+                        ->with('kelas.angkatan')
+                        ->latest('users.created_at')
+                        ->paginate(10);
         return view('admin.manajemen_siswa', ['students' => $students]);
     }
 
@@ -1148,6 +1147,7 @@ class AdminController extends Controller
         'semester' => $request->semester, // Tambahkan ini
         'tingkat' => null,
         'id_tingkat' => null,
+        'is_alumni' => true
     ]);
     } else {
         $angkatan->update([
@@ -1157,6 +1157,7 @@ class AdminController extends Controller
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
             'semester' => $request->semester, // Tambahkan ini
+            'is_alumni' => false
         ]);
     }
                             

@@ -182,7 +182,7 @@
                                     <td class="p-3 text-gray-700 capitalize">{{$item->semester}}</td>
                                     <td class="p-3 text-gray-700">{{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d F Y') }}</td>
                                     <td class="p-3 text-gray-700">{{ \Carbon\Carbon::parse($item->tanggal_selesai)->format('d F Y') }}</td>
-                                    @if($item->id_tingkat == null)
+                                    @if($item->is_alumni == true)
                                     <td class="p-3 text-center">
                                         <span class="bg-blue-100 text-blue-800 font-medium py-1 px-3 rounded-full text-xs capitalize">Alumni</span>
                                     </td>
