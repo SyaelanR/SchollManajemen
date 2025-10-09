@@ -215,60 +215,26 @@ class SiswaController extends Controller
      */
     public function lihatNilaiMapel(Request $request, $id_mapel)
     {
-        // 1. Ambil data siswa dan sekolah dari cookie
-        $id_siswa = $request->cookie('id_user');
+        $id_user = $request->cookie('id_user');
         $id_sekolah = $request->cookie('id_sekolah');
-        $id_kelas = $request->cookie('id_kelas');
-        $id_angkatan = $request->cookie('id_angkatan');
 
-        // 2. Ambil informasi penting dari database
-        $user = \App\Models\User::with('kelas')->findOrFail($id_siswa);
-        $mapel = \App\Models\Mapel::findOrFail($id_mapel);
-        $angkatan = \App\Models\Angkatan::findOrFail($id_angkatan);
+        // Menggunakan join untuk membandingkan kolom antar tabel
+        $daftarNilai = DaftarNilaiSiswa::query()
+                        ->select('daftar_nilai_siswas.*') // Pilih semua kolom dari tabel utama untuk menghindari ambiguitas
+                        ->join('kelas', 'daftar_nilai_siswas.id_kelas', '=', 'kelas.id_kelas')
+                        ->join('angkatans', 'kelas.id_angkatan', '=', 'angkatans.id_angkatan')
+                        ->where('daftar_nilai_siswas.id_siswa', $id_user)
+                        ->where('daftar_nilai_siswas.id_mapel', $id_mapel)
+                        ->where('daftar_nilai_siswas.id_sekolah', $id_sekolah)
+                        // Sekarang whereColumn akan bekerja karena tabel sudah di-join
+                        ->whereColumn('daftar_nilai_siswas.tingkat', 'angkatans.id_tingkat')
+                        ->whereColumn('daftar_nilai_siswas.semester', 'angkatans.semester')
+                        // Eager load relasi yang dibutuhkan untuk view
+                        ->with(['daftarNilai', 'kelas.angkatan'])
+                        ->get();
 
-        // 3. Ambil semua nilai siswa untuk mapel, tingkat, dan semester yang relevan
-        $semuaNilai = DaftarNilaiSiswa::where('id_siswa', $id_siswa)
-            ->where('id_mapel', $id_mapel)
-            ->where('id_sekolah', $id_sekolah)
-            ->where('tingkat', $angkatan->id_tingkat)
-            ->where('semester', $angkatan->semester)
-            ->with('daftarNilai') // Eager load relasi ke DaftarNilai
-            ->get();
 
-        // 4. Proses dan kelompokkan nilai
-        $nilaiTugas = $semuaNilai->where('daftarNilai.tipe_nilai', 'Tugas')->pluck('nilai')->filter()->avg();
-        $nilaiPR = $semuaNilai->where('daftarNilai.tipe_nilai', 'PR')->pluck('nilai')->filter()->avg();
-        $nilaiUTS = $semuaNilai->where('daftarNilai.tipe_nilai', 'UTS')->pluck('nilai')->filter()->avg();
-        $nilaiUAS = $semuaNilai->where('daftarNilai.tipe_nilai', 'UAS')->pluck('nilai')->filter()->avg();
-
-        // Gabungkan nilai Tugas dan PR (jika ada)
-        $nilaiHarian = $nilaiTugas;
-        if (is_numeric($nilaiTugas) && is_numeric($nilaiPR)) {
-            $nilaiHarian = ($nilaiTugas * 0.7) + ($nilaiPR * 0.3);
-        } elseif (is_numeric($nilaiPR) && !is_numeric($nilaiTugas)) {
-            $nilaiHarian = $nilaiPR;
-        }
-
-        // 5. Siapkan array nilai akhir untuk view
-        $nilaiProses = [
-            'harian' => $nilaiHarian !== null ? round($nilaiHarian) : null,
-            'uts' => $nilaiUTS !== null ? round($nilaiUTS) : null,
-            'uas' => $nilaiUAS !== null ? round($nilaiUAS) : null,
-        ];
-
-        // 6. Hitung rata-rata akhir dari nilai yang ada
-        $skorValid = array_filter($nilaiProses, 'is_numeric');
-        $rataRata = !empty($skorValid) ? array_sum($skorValid) / count($skorValid) : 0;
-
-        // 7. Kirim data ke view
-        return view('siswa.lihatnilai', [
-            'namaMapel' => $mapel->nama_mapel,
-            'namaKelas' => $user->kelas->nama_kelas ?? 'Belum ada kelas',
-            'namaSiswa' => $user->name,
-            'kkm' => 75, // Asumsi KKM, bisa diambil dari tabel mapel jika ada
-            'nilaiSiswa' => $nilaiProses,
-            'rataRata' => $rataRata,
-        ]);
+        return view('siswa.lihatnilai', ['daftarNilai' => $daftarNilai]);
     }
 
 }

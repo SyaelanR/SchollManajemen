@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nilai Mata Pelajaran - Sistem Nilai</title>
+    <title>Daftar Nilai - Sistem Manajemen Sekolah</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
@@ -12,8 +12,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- SweetAlert2 for notifications (Dihapus karena tidak ada aksi, namun CDN dipertahankan) -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Custom styles */
         body { font-family: 'Inter', sans-serif; }
@@ -39,7 +37,7 @@
                 <i class="fa-solid fa-tachometer-alt mr-3"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('siswa.jadwal') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
                 <span>Jadwal Pelajaran</span>
             </a>
@@ -73,7 +71,7 @@
             <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
                 <i class="fa-solid fa-bars text-2xl"></i>
             </button>
-            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Nilai Mata Pelajaran</h1>
+            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Daftar Nilai</h1>
             <div class="flex items-center space-x-4">
                  <!-- Avatar inisial S (Siswa) -->
                  <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=S" alt="User Avatar">
@@ -82,74 +80,50 @@
 
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
-            
-            <header class="mb-8 bg-blue-600 p-8 rounded-2xl shadow-lg text-white">
-                <h2 class="text-3xl font-bold mb-2">Nilai {{ $namaMapel }}</h2>
-                <p class="text-blue-200">Tampilan nilai untuk <strong>{{ $namaSiswa }} (Anda)</strong> di kelas <strong>{{ $namaKelas }}</strong>.</p>
+
+            <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg text-white">
+                <h2 class="text-2xl md:text-3xl font-bold mb-1">Matematika Wajib</h2>
+                <p class="text-indigo-200">Berikut adalah rincian nilai Anda.</p>
             </header>
             
-            <div class="bg-white rounded-xl shadow-md p-6">
-                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                    <h2 class="text-xl sm:text-2xl font-semibold text-gray-800">Rincian Nilai Mata Pelajaran</h2>
-                    <!-- Indikator KKM -->
-                    <div class="p-2 px-4 bg-gray-100 rounded-lg text-sm font-medium text-gray-600">
-                        KKM (Kriteria Ketuntasan Minimal): <strong>{{ $kkm }}</strong>
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-6">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Rincian Nilai</h2>
+                        <div class="p-2 px-4 bg-gray-100 rounded-lg text-sm font-medium text-gray-600">
+                            KKM (Kriteria Ketuntasan Minimal): <strong>75</strong>
+                        </div>
                     </div>
-                </div>
                 
-                <!-- Table for single student detail (Transposed view for clarity) -->
-                <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-inner">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-blue-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider w-48">Komponen Penilaian</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Nilai Anda</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Status Ketuntasan</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            
-                            @forelse ($nilaiSiswa as $key => $nilai)
-                                <tr class="hover:bg-gray-50 transition duration-150">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 capitalize">{{ $key }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-lg font-semibold text-gray-700">{{ is_numeric($nilai) ? $nilai : 'N/A' }}</td>
-                                    @php
-                                        $status = ($nilai ?? 0) >= $kkm ? 'Tuntas' : 'Belum Tuntas';
-                                        $statusClass = ($nilai ?? 0) >= $kkm ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100';
-                                    @endphp
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipe</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <!-- Data Dummy -->
+                                @forelse($daftarNilai as $nilai)
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">{{$nilai->daftarNilai->keterangan}}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        <span class="bg-blue-100 text-blue-800 font-medium py-1 px-3 rounded-full text-xs">{{$nilai->daftarNilai->tipe_nilai}}</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-lg font-semibold text-gray-700">{{$nilai->nilai}}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusClass }}">
-                                            {{ $status }}
-                                        </span>
                                     </td>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="3" class="px-6 py-10 text-center text-gray-500">Belum ada data nilai untuk mata pelajaran ini.</td>
-                                </tr>
-                            @endforelse
-
-                            <!-- Rata-rata Akhir -->
-                            <tr class="bg-indigo-50 border-t-2 border-indigo-200">
-                                <td class="px-6 py-4 whitespace-nowrap text-base font-bold text-indigo-800">RATA-RATA AKHIR</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-2xl font-extrabold 
-                                    {{ $rataRata >= $kkm ? 'text-green-700' : 'text-red-700' }}">
-                                    {{ number_format($rataRata, 2) }}
-                                </td>
-                                @php
-                                    $finalStatus = $rataRata >= $kkm ? 'LULUS' : 'REMIDI';
-                                    $finalStatusClass = $rataRata >= $kkm ? 'text-white bg-green-600' : 'text-white bg-red-600';
-                                @endphp
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-3 py-1 inline-flex text-sm leading-5 font-extrabold rounded-full {{ $finalStatusClass }} shadow-md">
-                                        {{ $finalStatus }}
-                                    </span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                @empty
+                                    
+                                @endforelse
+                                <!-- Akhir Data Dummy -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <!-- Menghilangkan pesan jika data kosong karena ini adalah data tunggal siswa -->
             </div>
         </main>
     </div>
@@ -170,8 +144,6 @@ document.addEventListener('DOMContentLoaded', function () {
         menuButton.addEventListener('click', toggleSidebar);
         overlay.addEventListener('click', toggleSidebar);
     }
-    
-    // --- Semua LOGIC EDIT/HAPUS DIHAPUS karena ini adalah menu siswa (hanya baca) ---
 });
 </script>
 
