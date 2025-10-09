@@ -16,5 +16,18 @@ class Clien extends Model
         'no_telp',
         'status'
 ];
+
+public function kelas(){
+    return $this->hasMany(Kelas::class, 'id_sekolah', 'id_sekolah');
+}
+
+public function users(){
+    return $this->hasMany(User::class, 'id_sekolah', 'id_sekolah');
+}
+
+
+public function acara(){
+    return $this->hasMany(DaftarAcara::class, 'id_sekolah', 'id_sekolah');
+}
     
 }

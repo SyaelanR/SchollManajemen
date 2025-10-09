@@ -171,8 +171,8 @@
         <main class="p-6 md:p-8 flex-1">
             <!-- Welcome Banner -->
             <div class="bg-indigo-600 rounded-xl shadow-lg p-8 mb-8 text-white">
-                <h2 class="text-3xl font-bold mb-2">{{$username}}</h2>
-                <p class="text-indigo-200">{{$time}}</p>
+                <h2 class="text-3xl font-bold mb-2">{{$username ?? 'Pengguna'}}</h2>
+                <p class="text-indigo-200">{{$time ?? ''}}</p>
             </div>
 
             @can('view-admin')
@@ -181,7 +181,7 @@
                 <div class="bg-white p-6 rounded-xl shadow-md flex items-center justify-between">
                     <div>
                         <p class="text-gray-500">Total Siswa</p>
-                        <p class="text-3xl font-bold text-gray-800">1,250</p>
+                        <p class="text-3xl font-bold text-gray-800">{{$jumlahSiswa ?? 0}}</p>
                     </div>
                     <div class="bg-indigo-100 text-indigo-600 p-4 rounded-full">
                         <i class="fa-solid fa-user-graduate text-2xl"></i>
@@ -190,7 +190,7 @@
                 <div class="bg-white p-6 rounded-xl shadow-md flex items-center justify-between">
                     <div>
                         <p class="text-gray-500">Total Guru</p>
-                        <p class="text-3xl font-bold text-gray-800">75</p>
+                        <p class="text-3xl font-bold text-gray-800">{{$jumlahGuru ?? 0}}</p>
                     </div>
                     <div class="bg-teal-100 text-teal-600 p-4 rounded-full">
                         <i class="fa-solid fa-chalkboard-user text-2xl"></i>
@@ -199,7 +199,7 @@
                 <div class="bg-white p-6 rounded-xl shadow-md flex items-center justify-between">
                     <div>
                         <p class="text-gray-500">Kelas</p>
-                        <p class="text-3xl font-bold text-gray-800">30</p>
+                        <p class="text-3xl font-bold text-gray-800">{{$jumlahKelas ?? 0}}</p>
                     </div>
                     <div class="bg-orange-100 text-orange-600 p-4 rounded-full">
                         <i class="fa-solid fa-school-flag text-2xl"></i>
@@ -208,7 +208,7 @@
                 <div class="bg-white p-6 rounded-xl shadow-md flex items-center justify-between">
                     <div>
                         <p class="text-gray-500">Acara Mendatang</p>
-                        <p class="text-3xl font-bold text-gray-800">5</p>
+                        <p class="text-3xl font-bold text-gray-800">{{$jumlahAcara ?? 0}}</p>
                     </div>
                     <div class="bg-pink-100 text-pink-600 p-4 rounded-full">
                         <i class="fa-solid fa-calendar-check text-2xl"></i>
@@ -231,9 +231,9 @@
                 <div class="bg-white p-6 rounded-xl shadow-md">
                     <h3 class="text-xl font-semibold mb-4 text-gray-800">Akses Cepat</h3>
                     <ul class="space-y-3">
-                        <li><a href="{{ route('manajemenSiswa')}}" class="flex items-center p-3 bg-indigo-50 hover:bg-indigo-100 rounded-lg text-indigo-700 font-medium transition duration-300"><i class="fa-solid fa-plus-circle mr-3"></i> Tambah Siswa Baru</a></li>
-                        <li><a href="#" class="flex items-center p-3 bg-teal-50 hover:bg-teal-100 rounded-lg text-teal-700 font-medium transition duration-300"><i class="fa-solid fa-file-invoice mr-3"></i> Buat Tagihan SPP</a></li>
-                        <li><a href="#" class="flex items-center p-3 bg-pink-50 hover:bg-pink-100 rounded-lg text-pink-700 font-medium transition duration-300"><i class="fa-solid fa-calendar-plus mr-3"></i> Tambah Acara Sekolah</a></li>
+                        <li><a href="{{ route('tambahSiswa')}}" class="flex items-center p-3 bg-indigo-50 hover:bg-indigo-100 rounded-lg text-indigo-700 font-medium transition duration-300"><i class="fa-solid fa-plus-circle mr-3"></i> Tambah Siswa Baru</a></li>
+                        <li><a href="{{ route('tambahGuru')}}" class="flex items-center p-3 bg-teal-50 hover:bg-teal-100 rounded-lg text-teal-700 font-medium transition duration-300"><i class="fa-solid fa-chalkboard-user mr-3"></i> Tambah Guru Baru </a></li>
+                        <li><a href="{{ route('manajAcara')}}" class="flex items-center p-3 bg-pink-50 hover:bg-pink-100 rounded-lg text-pink-700 font-medium transition duration-300"><i class="fa-solid fa-calendar-plus mr-3"></i> Tambah Acara Sekolah</a></li>
                     </ul>
                 </div>
             </div>
@@ -249,19 +249,19 @@
                         </div>
                         <div>
                             <p class="text-gray-500">Jadwal Hari Ini</p>
-                            <p class="text-2xl font-bold text-gray-800">{{$jumlahSesi}} Sesi</p>
+                            <p class="text-2xl font-bold text-gray-800">{{$jumlahSesi ?? 0}} Sesi</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Main Grid Layout -->
                 <div class="grid grid-cols-1 gap-8">
-                    <!-- Left Column: Schedule -->
+                    <!-- Left Column: Schedule --> 
                     <div class="bg-white p-6 rounded-xl shadow-md">
                         <h3 class="text-xl font-bold text-gray-800 mb-4">Jadwal Mengajar Hari Ini</h3>
                         <div class="space-y-4">
                             <!-- Schedule Item -->
-                            @forelse ($jadwalHariIni as $jadwal)
+                            @forelse ($jadwalHariIni ?? [] as $jadwal)
                             <div class="flex items-center bg-gray-50 p-4 rounded-lg">
                                 <div class="w-20 text-center mr-4">
                                     <p class="font-bold text-green-600 text-lg">{{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }}</p>
@@ -315,7 +315,7 @@
                             {{-- Ganti dengan @forelse ($jadwals as $jadwal) di aplikasi Laravel Anda --}}
 
                             {{-- Tampilan jika jadwal kosong --}}
-                            @forelse ($jadwalHariIni as $jadwal)
+                            @forelse ($jadwalHariIni ?? [] as $jadwal)
                             <div class="flex items-center bg-gray-50 p-4 rounded-lg">
                                 <div class="w-20 text-center mr-4">
                                     <p class="font-bold text-green-600 text-lg">{{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }}</p>
@@ -387,17 +387,28 @@
                     </div>
                     <div class="space-y-4">
                         <!-- Item Pengumuman 1 -->
+                        @forelse ($DaftarPengumuman ?? [] as $pengumuman)
                         <div class="border-l-4 border-orange-400 pl-4 py-2">
-                            <h4 class="font-semibold text-gray-900">Tugas Makalah Sejarah</h4>
-                            <p class="text-sm text-gray-600 line-clamp-2">Harap kumpulkan makalah tentang Kerajaan Majapahit paling lambat tanggal 15 Oktober. Detail format penulisan...</p>
-                            <span class="text-xs text-gray-400">2 hari yang lalu</span>
+                            <h4 class="font-semibold text-gray-900">{{$pengumuman->judul}}</h4>
+                            <p class="text-sm text-gray-600 line-clamp-2">{{$pengumuman->isi}}</p>
+                            <span class="text-xs text-gray-400">Tgl: {{ \Carbon\Carbon::parse($pengumuman->created_at)->format('d M Y') }}</span>
                         </div>
-                        <!-- Item Pengumuman 2 -->
-                        <div class="border-l-4 border-blue-400 pl-4 py-2">
-                            <h4 class="font-semibold text-gray-900">UTS Matematika</h4>
-                            <p class="text-sm text-gray-600 line-clamp-2">UTS Matematika akan dilaksanakan pada hari Senin, 6 Oktober 2025. Materi mencakup Bab 1 sampai Bab 3...</p>
-                            <span class="text-xs text-gray-400">3 hari yang lalu</span>
-                        </div>
+                        @empty
+                        <!-- Card Kosong -->
+                            <div class="flex flex-col items-center justify-center p-8 bg-white rounded-xl shadow-sm border border-dashed border-gray-300 text-center">
+                                <!-- Ikon -->
+                                <div class="bg-orange-100 text-orange-500 p-3 rounded-full mb-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13 16h-1v-4h-1m1-4h.01M12 18a9 9 0 110-18 9 9 0 010 18z" />
+                                    </svg>
+                                </div>
+                                <!-- Pesan -->
+                                <h3 class="text-gray-800 font-semibold text-lg mb-1">Belum Ada Pengumuman</h3>
+                            </div>
+                        @endforelse
+                        
                     </div>
                 </div>
 
@@ -409,29 +420,57 @@
                     </div>
                     <div class="space-y-4">
                         <!-- Item Acara 1 -->
+                        @forelse ($daftarAcara ?? [] as $acara)
                         <div class="flex items-center space-x-4">
                             <div class="w-16 h-16 bg-red-100 text-red-600 flex flex-col items-center justify-center rounded-lg font-bold">
                                 <span class="text-2xl leading-none">17</span>
                                 <span class="text-xs uppercase">OKT</span>
                             </div>
                             <div>
-                                <h4 class="font-semibold text-gray-900">Lomba Cerdas Cermat</h4>
-                                <p class="text-sm text-gray-600"><i class="fa-solid fa-clock mr-1"></i> 08:00 - Selesai</p>
-                                <p class="text-sm text-gray-600"><i class="fa-solid fa-map-marker-alt mr-1"></i> Aula Sekolah</p>
+                                <h4 class="font-semibold text-gray-900 text-base">{{ $acara->judul_acara ?? 'Tanpa Judul' }}</h4>
+
+                                @if(\Carbon\Carbon::parse($acara->tanggal_mulai)->isSameDay($acara->tanggal_selesai))
+                                    <p class="text-sm text-gray-600 flex items-center mt-1">
+                                        <i class="fa-solid fa-calendar-day w-4 mr-2 text-gray-500"></i>
+                                        {{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('d M Y') }}
+                                    </p>
+                                @else
+                                    <p class="text-sm text-gray-600 flex items-center mt-1">
+                                        <i class="fa-solid fa-calendar-day w-4 mr-2 text-gray-500"></i>
+                                        {{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('d M Y') }}
+                                        <span class="mx-1">–</span>
+                                        {{ \Carbon\Carbon::parse($acara->tanggal_selesai)->format('d M Y') }}
+                                    </p>
+                                @endif
+
+                                <p class="text-sm text-gray-600 flex items-center mt-0.5">
+                                    <i class="fa-solid fa-clock w-4 mr-2 text-gray-500"></i>
+                                    {{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('H:i') }} –
+                                    {{ \Carbon\Carbon::parse($acara->tanggal_selesai)->format('H:i') }}
+                                </p>
+
+                                <p class="text-sm text-gray-600 flex items-center mt-0.5">
+                                    <i class="fa-solid fa-location-dot w-4 mr-2 text-gray-500"></i>
+                                    {{ $acara->lokasi }}
+                                </p>
                             </div>
+
                         </div>
-                         <!-- Item Acara 2 -->
-                        <div class="flex items-center space-x-4">
-                            <div class="w-16 h-16 bg-green-100 text-green-600 flex flex-col items-center justify-center rounded-lg font-bold">
-                                <span class="text-2xl leading-none">25</span>
-                                <span class="text-xs uppercase">OKT</span>
+                        @empty
+                        <!-- Card kosong (tidak ada acara) -->
+                            <div class="flex flex-col items-center justify-center p-8 bg-white rounded-xl shadow-sm border border-dashed border-gray-300 text-center">
+                                <!-- Ikon -->
+                                <div class="bg-red-100 text-red-500 p-3 rounded-full mb-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7V3m8 4V3m-9 8h10m-9 8h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <!-- Pesan -->
+                                <h3 class="text-gray-800 font-semibold text-lg mb-1">Belum Ada Acara</h3>
                             </div>
-                            <div>
-                                <h4 class="font-semibold text-gray-900">Class Meeting</h4>
-                                <p class="text-sm text-gray-600"><i class="fa-solid fa-clock mr-1"></i> 09:00 - Selesai</p>
-                                <p class="text-sm text-gray-600"><i class="fa-solid fa-map-marker-alt mr-1"></i> Lapangan Olahraga</p>
-                            </div>
-                        </div>
+                        @endforelse
                     </div>
                 </div>
             </div>
@@ -470,7 +509,7 @@
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody class="bg-white divide-y divide-gray-200"> 
                             @forelse ($cliens as $clien)
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{$clien->id_sekolah}}</td>
@@ -584,26 +623,27 @@
             }
         });
     }
-        
-        // Chart for Admin
-        if (document.getElementById('attendanceChartAdmin')) {
-             const ctxAdmin = document.getElementById('attendanceChartAdmin').getContext('2d');
-            new Chart(ctxAdmin, {
-                type: 'bar', // Bar chart for admin
-                data: {
-                    labels: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'],
-                    datasets: [{
-                        label: 'Kehadiran (%)',
-                        data: [95, 92, 98, 96, 94], // Sample data
-                        backgroundColor: 'rgba(79, 70, 229, 0.8)',
-                        borderColor: '#4f46e5',
-                        borderWidth: 1
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-        }
+});
+
+// Chart for Admin
+if (document.getElementById('attendanceChartAdmin')) {
+     const ctxAdmin = document.getElementById('attendanceChartAdmin').getContext('2d');
+    new Chart(ctxAdmin, {
+        type: 'bar', // Bar chart for admin
+        data: {
+            labels: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
+            datasets: [{
+                label: 'Kehadiran (%)',
+                // data: [95, 92, 98, 96, 94, 90], // Sample data
+                data: @json($totalAbsensiHarianHadir ?? []),
+                backgroundColor: 'rgba(79, 70, 229, 0.8)',
+                borderColor: '#4f46e5',
+                borderWidth: 1
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
     });
+}
 </script>
 
 </body>

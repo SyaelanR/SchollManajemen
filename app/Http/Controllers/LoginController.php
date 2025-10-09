@@ -6,7 +6,9 @@ use App\Models\Angkatan;
 use App\Models\User;
 use App\Models\Clien;
 use App\Models\DaftarAbsensiSiswa;
+use App\Models\DaftarAcara;
 use App\Models\Jadwal;
+use App\Models\DaftarPengumuman;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
@@ -34,7 +36,70 @@ class LoginController extends Controller
             $cliens = Clien::all();
             return view('dashboard', ['username' => $username, 'time' => $time, 'cliens' => $cliens]);
         }else if ($role == 'admin'){
-            return view('dashboard', ['username' => $username, 'time' => $time]);
+            $idSekolah = $request->cookie('id_sekolah');
+
+            
+            $dataAbsensi = DaftarAbsensiSiswa::with('daftarAbsensi') // penting: eager load relasi
+                ->where('id_sekolah', $idSekolah)
+                ->whereHas('daftarAbsensi', function ($query) {
+                    $query->whereBetween('tanggal', [
+                        Carbon::now()->startOfWeek()->toDateString(),
+                        Carbon::now()->endOfWeek()->toDateString(),
+                    ]);
+                })
+                ->get();
+
+            $totalAbsensiHarian = [];
+
+            $hariList = [
+                'senin' => 0,
+                'selasa' => 1,
+                'rabu' => 2,
+                'kamis' => 3,
+                'jumat' => 4,
+                'sabtu' => 5,
+            ];
+
+            foreach ($hariList as $namaHari => $offset) {
+                $tanggal = Carbon::now()->startOfWeek()->addDays($offset);
+
+                // Ambil data absensi pada hari tersebut
+                $absensiHariIni = $dataAbsensi->filter(function ($item) use ($tanggal) {
+                    return optional($item->daftarAbsensi)->tanggal === $tanggal->toDateString();
+                });
+
+                $total = $absensiHariIni->count();
+                $hadir = $absensiHariIni->where('status', 'Hadir')->count();
+
+                // Hitung persentase kehadiran (hindari pembagian nol)
+                $persentase = $total > 0 ? round(($hadir / $total) * 100, 2) : 0;
+
+                $totalAbsensiHarianHadir[] = $persentase;
+            }
+
+            $infoJumlahSGKA = Clien::where('id_sekolah', $idSekolah)
+                                ->with('users')
+                                ->with('acara')
+                                ->with('kelas')
+                                ->first();
+            
+            $jumlahSiswa = $infoJumlahSGKA->users->where('role', 'siswa')->count();
+            $jumlahGuru = $infoJumlahSGKA->users->where('role', 'guru')->count();
+            $jumlahAcara = $infoJumlahSGKA->acara->count();
+            $jumlahKelas = $infoJumlahSGKA->kelas->count();
+
+
+            return view('dashboard', [
+                                'username' => $username, 
+                                'time' => $time, 
+                                'totalAbsensiHarianHadir' => $totalAbsensiHarianHadir,
+                                'jumlahSiswa' => $jumlahSiswa,
+                                'jumlahGuru' => $jumlahGuru,
+                                'jumlahAcara' => $jumlahAcara,
+                                'jumlahKelas' => $jumlahKelas
+                            ]);
+
+            // return view('debug', ['tes' => $jumlahAcara, 'tess' => $jumlahSiswa, 'tesss'=> $infoJumlahSGKA]);
         }elseif ($role == 'guru'){
             $idUser = $request->cookie('id_user');
 
@@ -81,8 +146,24 @@ class LoginController extends Controller
             $totalAbsensi['Sakit'] = $absensi->where('status', 'Sakit')->count();
             $totalAbsensi['Alfa'] = $absensi->where('status', 'Alfa')->count();
 
-            
-            return view('dashboard', ['username' => $username, 'time' => $time, 'jadwalHariIni' => $jadwalHariIni, 'totalAbsensi' => $totalAbsensi]);
+            $DaftarPengumuman = DaftarPengumuman::where('id_kelas', $idKelas)
+            ->where('id_sekolah', $idSekolah)
+            ->where('created_at', '>=', Carbon::now()->subWeeks(1))
+            ->get();
+
+            $daftarAcara = DaftarAcara::where('id_sekolah', $idSekolah)
+                        ->where('tanggal_selesai', '>=', Carbon::now()->subWeeks(1))
+                        ->orderBy('tanggal_mulai', 'desc')
+                        ->get();
+
+            return view('dashboard', ['username' => $username, 
+                                                    'time' => $time, 
+                                                    'jadwalHariIni' => $jadwalHariIni, 
+                                                    'totalAbsensi' => $totalAbsensi,
+                                                    'DaftarPengumuman' => $DaftarPengumuman,
+                                                    'daftarAcara' => $daftarAcara
+                                                ]);
+
         }elseif ($role == 'staf'){
             return view('dashboard', ['username' => $username, 'time' => $time]);
         }else{

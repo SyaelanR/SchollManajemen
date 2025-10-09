@@ -189,7 +189,7 @@
 
                         <div class="mt-4 pt-4 border-t border-gray-100">
                             <p class="text-xs text-gray-500">
-                                Dibuat: {{ \Carbon\Carbon::parse($Pengumuman->created_at)->format('d M Y H:i') }}
+                                Dibuat: {{ \Carbon\Carbon::parse($Pengumuman->created_at)->format('d M Y') }}
                             </p>
                             <p class="text-xs text-red-500 font-medium mt-1">
                                 Akan terhapus dalam 7 hari.
