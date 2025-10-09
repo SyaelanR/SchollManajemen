@@ -1014,6 +1014,24 @@ class AdminController extends Controller
         return redirect()->route('manajemenSiswa')->with('success', 'Data siswa berhasil dihapus!');
     }
 
+    public function lihatDetailSiswa(Request $request, User $siswa)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        // Keamanan: Pastikan siswa yang diminta adalah milik sekolah yang benar dan memiliki role 'siswa'.
+        if ($siswa->id_sekolah != $id_sekolah || $siswa->role !== 'siswa') {
+            abort(404, 'Siswa tidak ditemukan.');
+        }
+
+        // Eager load relasi untuk efisiensi query ke database
+        $siswa->load('kelas.angkatan');
+
+        // Kirim data siswa ke view baru
+        return view('admin.lihat_detail_siswa', compact('siswa'));
+    }
+
+
+
 
         public function destroyKelas(Request $request, $id_kelas) // Should be destroy() for KelasController
     {
@@ -1184,6 +1202,9 @@ class AdminController extends Controller
             'password' => 'nullable|string|min:6', // Password bisa kosong jika tidak ingin diubah
             'tempat_lahir' => 'nullable|string|max:100', // Tambahkan validasi lain jika diperlukan
             'no_telp' => 'nullable|string|max:20', // Tambahkan validasi lain jika diperlukan
+            'jumlah_saudara' => 'nullable|integer|min:0',
+            'gaji_orang_tua' => 'nullable|integer|min:0',
+
         ]);
 
         $updateData = [
@@ -1197,6 +1218,8 @@ class AdminController extends Controller
             'alamat' => $request->alamat,
             'no_telp' => $request->no_telp,
             'id_angkatan' => Kelas::where('id_kelas', $request->id_kelas)->value('id_angkatan'),
+            'jumlah_sodara' => $request->jumlah_saudara,
+            'gaji_orang_tua' => $request->gaji_orang_tua,
         ];
 
         // Hanya update password jika diisi

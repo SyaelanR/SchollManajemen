@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rapor - Sistem Manajemen Sekolah</title>
+    <title>Detail Siswa - {{ $siswa->name }}</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
@@ -14,17 +14,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
         .sidebar { transition: transform 0.3s ease-in-out; }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex">
 
     <!-- Sidebar -->
-        <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
+    <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
         <div class="p-6">
             <a href="#" class="flex items-center space-x-3">
                 <i class="fa-solid fa-school text-3xl text-indigo-600"></i>
@@ -38,7 +34,7 @@
             </a>
 
             @can('view-admin')
-            <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
                 <i class="fa-solid fa-user-graduate w-6 mr-3"></i>
                 <span>Manajemen Siswa</span>
             </a>
@@ -66,7 +62,7 @@
                 <i class="fa-solid fa-bookmark w-6 mr-3"></i>
                 <span>Angkatan</span>
             </a>
-            <a href="{{ route('manajemenRapor') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
+            <a href="{{ route('manajemenRapor') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-book-open w-6 mr-3"></i>
                 <span>Rapor</span>
             </a>
@@ -136,7 +132,7 @@
             <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
                 <i class="fa-solid fa-bars text-2xl"></i>
             </button>
-            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Rapor</h1>
+            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Detail Siswa</h1>
             <div class="flex items-center space-x-4">
                 <button class="text-gray-500 hover:text-gray-700">
                     <i class="fa-solid fa-bell"></i>
@@ -150,106 +146,125 @@
 
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
-             @if (session('success'))
-                <div id="success-alert" class="fixed top-24 right-5 bg-green-500 text-white py-3 px-5 rounded-xl text-sm shadow-lg transition-transform transform translate-x-full" role="alert">
-                    <div class="flex items-center">
-                        <i class="fa-solid fa-check-circle mr-2"></i>
-                        <span>{{ session('success') }}</span>
-                    </div>
+            <!-- Header Section -->
+            <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg text-white flex flex-col md:flex-row justify-between items-start gap-4">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold">{{ $siswa->name }}</h1>
+                    <p class="text-indigo-200 mt-1">NISN: {{ $siswa->nisn_nik }}</p>
                 </div>
-            @endif
-            
-            <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
-                <h2 class="text-3xl font-bold mb-2">Rapor</h2>
-                <p class="text-indigo-200">Pilih kelas untuk melihat dan mengelola Rapor.</p>
+                <a href="{{ route('manajemenSiswa') }}" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
+                    <i class="fa-solid fa-arrow-left mr-2"></i>
+                    <span>Kembali</span>
+                </a>
             </header>
 
-            <!-- Class Card Section -->
-            <div class="bg-white rounded-xl shadow-md p-6">
-                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                    <h2 class="text-2xl font-semibold text-gray-800">Daftar Kelas</h2>
-                    <div class="relative w-full md:w-1/3">
-                         <input type="text" id="class-search-input" placeholder="Cari nama kelas..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                         <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <!-- Student Details Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left Column: Profile & Academic Info -->
+                <div class="lg:col-span-1 space-y-8">
+                    <!-- Profile Card -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <div class="flex flex-col items-center">
+                            <img class="h-24 w-24 rounded-full object-cover mb-4 border-4 border-indigo-200" src="https://ui-avatars.com/api/?name={{ urlencode($siswa->name) }}&background=667eea&color=fff&size=128" alt="Foto Siswa">
+                            <h2 class="text-xl font-bold text-gray-800">{{ $siswa->name }}</h2>
+                            <p class="text-sm text-gray-500">{{ $siswa->username }}</p>
+                            <span class="mt-2 text-xs font-semibold px-3 py-1 rounded-full {{ $siswa->kelas && !$siswa->kelas->angkatan->is_alumni ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                {{ $siswa->kelas && !$siswa->kelas->angkatan->is_alumni ? 'Siswa Aktif' : 'Tidak Aktif/Alumni' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Academic Info Card -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-lg font-semibold text-gray-800 border-b pb-3 mb-4">Informasi Akademik</h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">Kelas</span>
+                                <span class="font-medium text-gray-800">{{ $siswa->kelas->nama_kelas ?? 'Belum ada kelas' }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">Angkatan</span>
+                                <span class="font-medium text-gray-800">{{ $siswa->kelas->angkatan->angkatan ?? '-' }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">Tanggal Masuk</span>
+                                <span class="font-medium text-gray-800">{{ $siswa->tanggal_masuk ? \Carbon\Carbon::parse($siswa->tanggal_masuk)->isoFormat('D MMMM YYYY') : '-' }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div id="class-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    @forelse ($kelasList ?? [] as $kelas)
-                        <a href="{{ route('Rapors', ['id_kelas' => $kelas->id_kelas])}}" class="block bg-white border rounded-xl shadow-md p-6 hover:shadow-lg hover:-translate-y-1 transform transition-all duration-300">
-                            <div class="flex items-center mb-4">
-                                <div class="bg-indigo-100 text-indigo-600 p-4 rounded-full flex items-center justify-center w-16 h-16">
-                                    <i class="fa-solid fa-chalkboard text-2xl"></i>
-                                </div>
-                            </div>
-                            <h3 class="text-xl font-semibold text-gray-800">{{ $kelas->nama_kelas }}</h3>
-                             <div class="text-sm text-gray-500 mt-1">{{ $kelas->jurusan }}</div>
-                            <div class="border-t mt-4 pt-4 text-sm text-gray-600">
-                                <div class="flex items-center">
-                                    <i class="fa-solid fa-user-tie w-4 mr-2 text-gray-400"></i>
-                                    <span>Wali kelas : {{ $kelas->wali_kelas }}</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="fa-solid fa-users w-4 mr-2 text-gray-400"></i>
-                                    <span>Jumlah Siswa : {{ $kelas->jumlah_siswa }}</span>
-                                </div>
-                            </div>
-                        </a>
-                    @empty
-                        <div class="col-span-full text-center py-12">
-                            <i class="fa-solid fa-school-circle-exclamation text-5xl text-gray-400 mb-4"></i>
-                            <p class="text-gray-600 font-semibold text-lg">Tidak ada kelas yang ditemukan.</p>
+                <!-- Right Column: Detailed Info -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-lg font-semibold text-gray-800 border-b pb-3 mb-4">Data Lengkap Siswa</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+                        <div>
+                            <label class="block text-gray-500">NISN/NIK</label>
+                            <p class="font-medium text-gray-800">{{ $siswa->nisn_nik ?? '-' }}</p>
                         </div>
-                    @endforelse
+                        <div>
+                            <label class="block text-gray-500">Jenis Kelamin</label>
+                            <p class="font-medium text-gray-800">{{ $siswa->jenis_kelamin ?? '-' }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-gray-500">Tempat Lahir</label>
+                            <p class="font-medium text-gray-800">{{ $siswa->tempat_lahir ?? '-' }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-gray-500">Tanggal Lahir</label>
+                            <p class="font-medium text-gray-800">{{ $siswa->tanggal_lahir ? \Carbon\Carbon::parse($siswa->tanggal_lahir)->isoFormat('D MMMM YYYY') : '-' }}</p>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-gray-500">Alamat</label>
+                            <p class="font-medium text-gray-800">{{ $siswa->alamat ?? '-' }}</p>
+                        </div>
+                        <div class="md:col-span-2 pt-4 mt-4 border-t">
+                            <h4 class="text-md font-semibold text-gray-700 mb-2">Informasi Wali</h4>
+                        </div>
+                        <div>
+                            <label class="block text-gray-500">Nama Orang Tua/Wali</label>
+                            <p class="font-medium text-gray-800">{{ $siswa->nama_orang_tua ?? '-' }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-gray-500">No. Telepon Wali</label>
+                            <p class="font-medium text-gray-800">{{ $siswa->no_telp ?? '-' }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-gray-500">Gaji Orang Tua</label>
+                            <p class="font-medium text-gray-800">{{ $siswa->gaji_orang_tua ? 'Rp ' . number_format(str_replace('.', '', $siswa->gaji_orang_tua), 0, ',', '.') : '-' }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-gray-500">Jumlah Saudara</label>
+                            <p class="font-medium text-gray-800">{{ $siswa->jumlah_sodara ?? '-' }}</p>
+                        </div>
+                    </div>
+                    <div class="mt-8 flex justify-end">
+                        <a href="{{ route('editSiswa', $siswa->id) }}" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center shadow-md hover:shadow-lg">
+                            <i class="fa-solid fa-pencil mr-2"></i>
+                            Edit Data Siswa
+                        </a>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
-</div>
 
 <script>
-    const menuButton = document.getElementById('menu-button');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-
-    const toggleSidebar = () => {
-        sidebar.classList.toggle('-translate-x-full');
-        overlay.classList.toggle('hidden');
-    };
-
-    menuButton.addEventListener('click', toggleSidebar);
-    overlay.addEventListener('click', toggleSidebar);
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const classSearchInput = document.getElementById('class-search-input');
-        const classGrid = document.getElementById('class-grid');
-        const classCards = Array.from(classGrid.children);
-
-        classSearchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            classCards.forEach(card => {
-                const className = card.querySelector('h3').textContent.toLowerCase();
-                if (className.includes(searchTerm)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
-
-        const successAlert = document.getElementById('success-alert');
-        if (successAlert) {
-            setTimeout(() => {
-                successAlert.classList.remove('translate-x-full');
-            }, 100);
-
-            setTimeout(() => {
-                successAlert.classList.add('translate-x-full');
-            }, 3100);
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- Sidebar Toggle ---
+        const menuButton = document.getElementById('menu-button');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        if(menuButton && sidebar && overlay) {
+            const toggleSidebar = () => {
+                sidebar.classList.toggle('-translate-x-full');
+                overlay.classList.toggle('hidden');
+            };
+            menuButton.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', toggleSidebar);
         }
     });
 </script>
 
 </body>
 </html>
-

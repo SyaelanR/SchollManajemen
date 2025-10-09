@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
             Route::put('/{siswa}', [AdminController::class, 'updateSiswa'])->name('updateSiswa');
             // Route untuk Hapus Siswa
             Route::delete('/{siswa}', [AdminController::class, 'hapusSiswa'])->name('hapusSiswa');
+            Route::get('/lihat-detail/{siswa}', [AdminController::class, 'lihatDetailSiswa'])->name('lihatDetailSiswa');
         });
         
         Route::prefix('manajemen-guru')->group(function () {
@@ -241,6 +242,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/lihat-materi/{id_kelas}/{id_mapel}', [SiswaController::class, 'lihatMateri'])->name('lihatMateriSiswa');
         Route::get('/lihat-absensi/{id_mapel}', [SiswaController::class, 'lihatAbsensiPerMapel'])->name('lihatAbsensi.perMapel');
 
+        Route::get('/lihat-acara', [SiswaController::class, 'lihatAcara'])->name('lihatAcaraSiswa');
         
     });
 

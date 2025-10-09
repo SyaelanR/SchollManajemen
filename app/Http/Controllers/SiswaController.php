@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\DaftarAcara;
 
 use App\Models\Angkatan;
 use App\Models\DaftarMateri;
@@ -12,6 +13,7 @@ use App\Models\Jadwal;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 // use Illuminate\Container\Attributes\Storage;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class SiswaController extends Controller
@@ -441,5 +443,19 @@ class SiswaController extends Controller
 
         return view('siswa.lihatnilai', ['daftarNilai' => $daftarNilai]);
     }
+
+    public function lihatAcara(Request $request)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        // Ambil acara yang masih berlangsung atau akan datang, dan yang baru saja selesai
+        $daftarAcara = DaftarAcara::where('id_sekolah', $id_sekolah)
+                        ->where('tanggal_selesai', '>=', Carbon::now()->subWeeks(1)) // Tampilkan acara hingga 1 minggu setelah selesai
+                        ->orderBy('tanggal_mulai', 'asc') // Urutkan dari yang paling dekat
+                        ->get();
+
+        return view('siswa.lihat_acara_siswa', ['daftarAcara' => $daftarAcara]);
+    }
+
 
 }
