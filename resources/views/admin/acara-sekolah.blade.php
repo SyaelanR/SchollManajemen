@@ -400,11 +400,11 @@
         }
 
         // basic validation: mulai < berakhir
-        if (new Date(waktuMulaiVal) >= new Date(waktuBerakhirVal)) {
-            e.preventDefault();
-            Swal.fire({ icon: 'error', title: 'Kesalahan Validasi', text: 'Tanggal & waktu mulai harus sebelum berakhir.'});
-            return;
-        }
+        // if (new Date(waktuMulaiVal) >= new Date(waktuBerakhirVal)) {
+        //     e.preventDefault();
+        //     Swal.fire({ icon: 'error', title: 'Kesalahan Validasi', text: 'Tanggal & waktu mulai harus sebelum berakhir.'});
+        //     return;
+        // }
 
         // derive tanggal_acara & waktu_acara from waktu_mulai
         const parts = waktuMulaiVal.split('T'); // ["YYYY-MM-DD", "HH:MM"]

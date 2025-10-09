@@ -37,6 +37,66 @@
         .sidebar {
             transition: transform 0.3s ease-in-out;
         }
+        /* Custom Pagination Styles */
+        .pagination-container nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .pagination-container .pagination-links > a,
+        .pagination-container .pagination-links > span {
+             padding: 0.5rem 1rem;
+             margin: 0 0.25rem;
+             border-radius: 0.5rem;
+             transition: all 0.2s ease-in-out;
+        }
+        .pagination-container .pagination-links > a {
+            background-color: white;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+         .pagination-container .pagination-links > a:hover {
+            background-color: #f7fafc;
+            border-color: #cbd5e0;
+        }
+        .pagination-container .pagination-links > .active {
+            background-color: #4f46e5;
+            color: white;
+            border: 1px solid #4f46e5;
+            font-weight: bold;
+        }
+        .pagination-container .pagination-links > .disabled {
+            background-color: #f7fafc;
+            color: #a0aec0;
+            cursor: not-allowed;
+            border: 1px solid #e2e8f0;
+        }
+
+            /* Pagination container */
+        .pagination-wrapper nav {
+            @apply inline-flex items-center space-x-1;
+        }
+
+        /* Pagination links */
+        .pagination-wrapper nav .page-link {
+            @apply px-3 py-1.5 rounded-lg text-gray-700 bg-white border border-gray-300 hover:bg-blue-500 hover:text-white transition-all duration-200;
+        }
+
+        /* Active page */
+        .pagination-wrapper nav .active .page-link {
+            @apply bg-blue-600 text-white border-blue-600;
+        }
+
+        /* Disabled page */
+        .pagination-wrapper nav .disabled .page-link {
+            @apply opacity-50 cursor-not-allowed;
+        }
+
+        /* Arrow icons (prev/next) */
+        .pagination-wrapper nav svg {
+            @apply w-4 h-4;
+        }
+
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex">
@@ -44,7 +104,7 @@
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
         <div class="p-6">
-            <a href="#" class="flex items-center space-x-3">
+            <a href="{{ route('dashboard') }}" class="flex items-center space-x-3">
                 <i class="fa-solid fa-school text-3xl text-indigo-600"></i>
                 <span class="text-2xl font-bold text-gray-800">EduSys</span>
             </a>
@@ -54,7 +114,7 @@
                 <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
+            <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
                 <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
                 <span>Manajemen Siswa</span>
             </a>
@@ -62,24 +122,38 @@
                 <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
                 <span>Manajemen Guru</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
-                <span>Jadwal Pelajaran</span>
-            </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('manajemenMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-book w-6 h-6 mr-3"></i>
-                <span>Mata Pelajaran</span>
+                <span>Manajemen Mapel</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-money-bill-wave w-6 h-6 mr-3"></i>
-                <span>Keuangan</span>
+            <a href="{{ route('manajemenKelas') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-door-closed w-6 h-6 mr-3"></i>
+                <span>Manajemen Kelas</span>
             </a>
-            @can('view-settings')
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                    <i class="fa-solid fa-cog w-6 h-6 mr-3"></i>
-                    <span>Pengaturan</span>
-                </a>
-            @endcan
+            <a href="{{ route('manajemenJadwal')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
+                <span>Manajemen Jadwal</span>
+            </a>
+            <a href="{{ route('manajAcara') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-check w-6 h-6 mr-3"></i>
+                <span>Acara</span>
+            </a>
+            <a href="{{ route('manajemenAngkatan') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-bookmark w-6 h-6 mr-3"></i>
+                <span>Angkatan</span>
+            </a>
+            <a href="{{ route('manajemenRapor') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open w-6 h-6 mr-3"></i>
+                <span>Rapor</span>
+            </a>
+            <a href="{{ route('manajemenKurikulum') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open-reader w-6 h-6 mr-3"></i>
+                <span>Kurikulum</span>
+            </a>
+            <a href="{{ route('manajemenTingkat') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-layer-group w-6 h-6 mr-3"></i>
+                <span>Tingkat</span>
+            </a>
         </nav>
         <div class="absolute bottom-0 w-full p-6">
             <form method="POST" action="{{ route('logout') }}">
@@ -123,8 +197,8 @@
                 <div id="session-success" data-message="{{ session('success') }}" class="hidden"></div>
             @endif
 
-             <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
-                <h2 class="text-3xl font-bold mb-2">Manajemen Siswa</h2>
+             <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg text-white">
+                <h2 class="text-2xl md:text-3xl font-bold mb-1">Manajemen Siswa</h2>
                 <p class="text-indigo-200">Kelola semua data siswa yang terdaftar di sekolah.</p>
             </header>
 
@@ -151,19 +225,29 @@
                             <tr>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">NISN</th>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Nama Siswa</th>
-                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Kelas</th>
-                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Jenis Kelamin</th>
+                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Angkatan</th>
+                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Status</th>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Detail</th>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y">
-                            @forelse ($students as $student)
+                            {{-- Contoh data dummy dengan loop --}}
+                            @forelse ($students ?? [] as $student)
                             <tr class="hover:bg-gray-50">
                                 <td class="p-3 text-gray-700">{{ $student->nisn_nik }}</td>
                                 <td class="p-3 text-gray-800 font-medium">{{ $student->name }}</td>
-                                <td class="p-3 text-gray-700">{{ $student->nama_kelas ?? '-' }}</td>
-                                <td class="p-3 text-gray-700">{{ $student->jenis_kelamin }}</td>
+                                <td class="p-3 text-gray-700">{{ $student->kelas->angkatan->angkatan ?? '-' }}</td>
+                                {{-- <td class="p-3 text-gray-700">{{ $student->kelas->angkatan->id_tingkat ?? '-' }}</td> --}}
+                                <td class="p-3 text-gray-700">
+                                    @if ($student->kelas == null)
+                                        <span class="bg-green-100 text-green-800 font-medium py-1 px-3 rounded-full text-xs">-</span>
+                                    @elseif ($student->kelas->angkatan->is_alumni == true)
+                                        <span class="bg-gray-200 text-gray-800 font-medium py-1 px-3 rounded-full text-xs">Alumni</span>
+                                    @elseif ($student->kelas->angkatan->is_alumni == false)
+                                        <span class="bg-green-100 text-green-800 font-medium py-1 px-3 rounded-full text-xs">Aktif</span>
+                                    @endif
+                                </td>
                                 <td class="p-3">
                                     <a href="#" class="bg-indigo-100 text-indigo-700 text-sm font-medium py-1.5 px-3 rounded-lg hover:bg-indigo-200 transition duration-300 whitespace-nowrap">Lihat Detail</a>
                                 </td>
@@ -194,8 +278,10 @@
                 </div>
 
                 <!-- Pagination -->
-                <div class="mt-6">
-                    {{ $students->links() }}
+                 <div class="mt-6 color">
+                    {{-- Pastikan Anda sudah mem-publish view paginasi Tailwind --}}
+                    {{-- Jalankan: php artisan vendor:publish --tag=laravel-pagination --}}
+                    {!! $students->links() !!}
                 </div>
             </div>
         </main>

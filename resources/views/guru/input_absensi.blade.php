@@ -41,7 +41,7 @@
             color: #075985; /* sky-800 */
             border-color: #7dd3fc; /* sky-300 */
         }
-        .status-Alpha { /* Matched to value="Alpha" */
+        .status-Alfa { /* Matched to value="Alfa" */
             background-color: #fee2e2; /* red-100 */
             color: #991b1b; /* red-800 */
             border-color: #fca5a5; /* red-300 */
@@ -153,10 +153,11 @@
                                     <td class="p-3 text-gray-700">{{$siswa->siswa->jenis_kelamin}}</td>
                                     <td class="p-3">
                                         <select name='status[{{$siswa->id_daftar_absensi_siswa}}]' class="select-status status-hadir w-full p-2 border rounded-lg font-semibold">
-                                            <option value="Hadir" class="text-green-800 font-medium" selected>Hadir</option>
+                                            <option value="" class="text-green-800 font-medium" selected></option>
+                                            <option value="Hadir" class="text-green-800 font-medium">Hadir</option>
                                             <option value="Izin" class="text-yellow-800 font-medium">Izin</option>
                                             <option value="Sakit" class="text-sky-800 font-medium">Sakit</option>
-                                            <option value="Alpha" class="text-red-800 font-medium">Alpha</option>
+                                            <option value="Alfa" class="text-red-800 font-medium">Alfa</option>
                                         </select>
                                     </td>
                                 </tr>
@@ -211,8 +212,8 @@
                                     <span class="bg-yellow-100 text-yellow-800 font-medium py-1 px-3 rounded-full text-xs">Izin</span>
                                     @elseif ($siswa->status == 'Sakit')
                                     <span class="bg-sky-100 text-sky-800 font-medium py-1 px-3 rounded-full text-xs">Sakit</span>
-                                    @elseif ($siswa->status == 'Alpha')
-                                    <span class="bg-red-100 text-red-800 font-medium py-1 px-3 rounded-full text-xs">Alpha</span>
+                                    @elseif ($siswa->status == 'Alfa')
+                                    <span class="bg-red-100 text-red-800 font-medium py-1 px-3 rounded-full text-xs">Alfa</span>
                                     @endif
                                 </td>
                                 <td class="p-3 text-center">
@@ -270,7 +271,7 @@
                             <option value="Hadir" class="text-green-800 font-medium">Hadir</option>
                             <option value="Izin" class="text-yellow-800 font-medium">Izin</option>
                             <option value="Sakit" class="text-sky-800 font-medium">Sakit</option>
-                            <option value="Alpha" class="text-red-800 font-medium">Alpha</option>
+                            <option value="Alfa" class="text-red-800 font-medium">Alfa</option>
                         </select>
                     </div>
                 </div>
@@ -309,7 +310,7 @@
             Hadir: 'status-hadir',
             Izin: 'status-Izin',
             Sakit: 'status-Sakit',
-            Alpha: 'status-Alpha'
+            Alfa: 'status-Alfa'
         };
 
         function updateSelectColor(selectElement) {

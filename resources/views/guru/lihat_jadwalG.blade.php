@@ -43,34 +43,39 @@
         <!-- Sidebar -->
         <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
             <div class="p-6">
-                <a href="#" class="flex items-center space-x-3">
+                <a href="{{ route('dashboard') }}" class="flex items-center space-x-3">
                     <i class="fa-solid fa-school text-3xl text-indigo-600"></i>
                     <span class="text-2xl font-bold text-gray-800">EduSys</span>
                 </a>
             </div>
             <nav class="mt-6">
-                 <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                 <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                     <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
+                <a href="{{ route('lihatjadwalG') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
                     <i class="fa-solid fa-calendar-days w-6 h-6 mr-3"></i>
                     <span>Jadwal Mengajar</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="{{ route('manajAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                     <i class="fa-solid fa-calendar-check w-6 h-6 mr-3"></i>
                     <span>Input Absen</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                <a href="{{ route('manajemenNilai') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                     <i class="fa-solid fa-star w-6 h-6 mr-3"></i>
                     <span>Input Nilai</span>
                 </a>
             </nav>
             <div class="absolute bottom-0 w-full p-6">
-                <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg">
-                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
-                    <span>Logout</span>
-                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <a href="{{ route('logout') }}"
+                       onclick="event.preventDefault(); this.closest('form').submit();"
+                       class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
+                        <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
+                        <span>Logout</span>
+                    </a>
+                </form>
             </div>
         </aside>
 
@@ -96,16 +101,12 @@
 
             <!-- Page Content -->
             <main class="p-6 md:p-8 flex-1">
+                <!-- Welcome Banner -->
+                <div class="bg-indigo-600 rounded-xl shadow-lg p-8 mb-8 text-white">
+                    <h2 class="text-3xl font-bold mb-2">Jadwal Mengajar Anda</h2>
+                    <p class="text-indigo-200">Berikut adalah jadwal lengkap Anda untuk pekan ini.</p>
+                </div>
                 <div class="bg-white p-6 rounded-xl shadow-md">
-                    <!-- Action Bar -->
-                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                        <div>
-                           <h2 class="text-2xl font-bold text-gray-800">Jadwal Mengajar Anda</h2>
-                           <p class="text-gray-500 mt-1">Berikut adalah jadwal lengkap Anda untuk pekan ini.</p>
-                        </div>
-                    </div>
-
-                    <!-- Schedule Table -->
                     <div class="overflow-x-auto">
                         <table class="w-full min-w-[800px] text-left">
                             <thead class="bg-gray-50">
@@ -117,38 +118,29 @@
                                     <th class="p-3 font-semibold text-gray-600">Ruangan</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y">
-                                <!-- Sample Data for Monday -->
-                                <tr class="hover:bg-gray-50">
-                                    <td class="p-3 text-gray-800 font-medium">Senin</td>
-                                    <td class="p-3 text-gray-700">08:00 - 09:30</td>
-                                    <td class="p-3 text-gray-700">10A</td>
-                                    <td class="p-3 text-gray-700">Matematika Wajib</td>
-                                    <td class="p-3 text-gray-700">Ruang 101</td>
-                                </tr>
-                                <tr class="hover:bg-gray-50">
-                                    <td class="p-3 text-gray-800 font-medium"></td>
-                                    <td class="p-3 text-gray-700">10:00 - 11:30</td>
-                                    <td class="p-3 text-gray-700">11B</td>
-                                    <td class="p-3 text-gray-700">Matematika Wajib</td>
-                                    <td class="p-3 text-gray-700">Ruang 202</td>
-                                </tr>
-                                <!-- Sample Data for Tuesday -->
-                                 <tr class="hover:bg-gray-50">
-                                    <td class="p-3 text-gray-800 font-medium">Selasa</td>
-                                    <td class="p-3 text-gray-700">08:00 - 09:30</td>
-                                    <td class="p-3 text-gray-700">12C</td>
-                                    <td class="p-3 text-gray-700">Matematika Wajib</td>
-                                    <td class="p-3 text-gray-700">Ruang 303</td>
-                                </tr>
-                                <!-- Sample Data for Wednesday -->
-                                <tr class="hover:bg-gray-50">
-                                    <td class="p-3 text-gray-800 font-medium">Rabu</td>
-                                    <td class="p-3 text-gray-700">13:00 - 14:30</td>
-                                    <td class="p-3 text-gray-700">10A</td>
-                                    <td class="p-3 text-gray-700">Matematika Wajib</td>
-                                    <td class="p-3 text-gray-700">Ruang 101</td>
-                                </tr>
+                            <tbody class="divide-y divide-gray-200">
+                                @php $currentDay = ''; @endphp
+                                @forelse ($Jadwals as $jadwal)
+                                    <tr class="hover:bg-gray-50">
+                                        @if ($jadwal->hari !== $currentDay)
+                                            <td class="p-3 text-gray-800 font-medium align-top" rowspan="{{ $Jadwals->where('hari', $jadwal->hari)->count() }}">
+                                                {{ $jadwal->hari }}
+                                            </td>
+                                            @php $currentDay = $jadwal->hari; @endphp
+                                        @endif
+                                        <td class="p-3 text-gray-700 whitespace-nowrap">{{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i') }}</td>
+                                        <td class="p-3 text-gray-700">{{ $jadwal->kelas->nama_kelas ?? 'N/A' }}</td>
+                                        <td class="p-3 text-gray-700">{{ $jadwal->mapel->nama_mapel ?? 'N/A' }}</td>
+                                        <td class="p-3 text-gray-700">{{ $jadwal->ruangan }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center p-6 text-gray-500">
+                                            <i class="fa-solid fa-calendar-xmark text-4xl mb-3"></i>
+                                            <p class="font-semibold">Tidak ada jadwal mengajar untuk Anda pekan ini.</p>
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>

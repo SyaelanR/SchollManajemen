@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Angkatan;
 use App\Models\User;
 use App\Models\Clien;
+use App\Models\DaftarAbsensiSiswa;
 use App\Models\Jadwal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,7 +38,10 @@ class LoginController extends Controller
         }elseif ($role == 'guru'){
             $idUser = $request->cookie('id_user');
 
-            $jadwalHariIni = Jadwal::where('hari', Carbon::now()->isoFormat('dddd'))
+            // Set lokal Carbon ke Indonesia untuk mendapatkan nama hari yang benar
+            $hariIni = Carbon::now()->locale('id')->isoFormat('dddd');
+
+            $jadwalHariIni = Jadwal::where('hari', $hariIni)
                 ->with(['kelas.angkatan', 'mapel']) 
                 ->whereHas('mapel', function ($query) use ($idUser) {
                     $query->where('id_guru', $idUser);
@@ -56,6 +60,8 @@ class LoginController extends Controller
         }elseif ($role == 'siswa'){
             $idKelas = $request->cookie('id_kelas');
             $idSekolah = $request->cookie('id_sekolah');
+            $idUser = $request->cookie('id_user');
+
 
 
             $jadwalHariIni = Jadwal::where('hari', Carbon::now()->isoFormat('dddd'))
@@ -64,7 +70,19 @@ class LoginController extends Controller
                 ->with('mapel.guru')
                 ->get();
 
-            return view('dashboard', ['username' => $username, 'time' => $time, 'jadwalHariIni' => $jadwalHariIni]);
+            $absensi = DaftarAbsensiSiswa::where('id_siswa', $idUser)
+                ->where('id_sekolah', $idSekolah)
+                ->get();
+
+            $totalAbsensi = [];
+
+            $totalAbsensi['Hadir'] = $absensi->where('status', 'Hadir')->count();
+            $totalAbsensi['Izin'] = $absensi->where('status', 'Izin')->count();
+            $totalAbsensi['Sakit'] = $absensi->where('status', 'Sakit')->count();
+            $totalAbsensi['Alfa'] = $absensi->where('status', 'Alfa')->count();
+
+            
+            return view('dashboard', ['username' => $username, 'time' => $time, 'jadwalHariIni' => $jadwalHariIni, 'totalAbsensi' => $totalAbsensi]);
         }elseif ($role == 'staf'){
             return view('dashboard', ['username' => $username, 'time' => $time]);
         }else{

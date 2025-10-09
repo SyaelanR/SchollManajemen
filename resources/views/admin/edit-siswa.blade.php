@@ -23,7 +23,7 @@
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
         <div class="p-6">
-            <a href="#" class="flex items-center space-x-3">
+            <a href="{{ route('dashboard') }}" class="flex items-center space-x-3">
                 <i class="fa-solid fa-school text-3xl text-indigo-600"></i>
                 <span class="text-2xl font-bold text-gray-800">EduSys</span>
             </a>
@@ -41,24 +41,38 @@
                 <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
                 <span>Manajemen Guru</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
-                <span>Jadwal Pelajaran</span>
-            </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('manajemenMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-book w-6 h-6 mr-3"></i>
-                <span>Mata Pelajaran</span>
+                <span>Manajemen Mapel</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-money-bill-wave w-6 h-6 mr-3"></i>
-                <span>Keuangan</span>
+            <a href="{{ route('manajemenKelas') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-door-closed w-6 h-6 mr-3"></i>
+                <span>Manajemen Kelas</span>
             </a>
-            @can('view-settings')
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                    <i class="fa-solid fa-cog w-6 h-6 mr-3"></i>
-                    <span>Pengaturan</span>
-                </a>
-            @endcan
+            <a href="{{ route('manajemenJadwal')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
+                <span>Manajemen Jadwal</span>
+            </a>
+            <a href="{{ route('manajAcara') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-check w-6 h-6 mr-3"></i>
+                <span>Acara</span>
+            </a>
+            <a href="{{ route('manajemenAngkatan') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-bookmark w-6 h-6 mr-3"></i>
+                <span>Angkatan</span>
+            </a>
+            <a href="{{ route('manajemenRapor') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open w-6 h-6 mr-3"></i>
+                <span>Rapor</span>
+            </a>
+            <a href="{{ route('manajemenKurikulum') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open-reader w-6 h-6 mr-3"></i>
+                <span>Kurikulum</span>
+            </a>
+            <a href="{{ route('manajemenTingkat') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-layer-group w-6 h-6 mr-3"></i>
+                <span>Tingkat</span>
+            </a>
         </nav>
         <div class="absolute bottom-0 w-full p-6">
             <form method="POST" action="{{ route('logout') }}">

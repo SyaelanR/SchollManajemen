@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
     <title>Rapor Pencapaian Ketuntasan Belajar</title>
     <style>
         /* Gaya untuk dicetak */
@@ -17,6 +17,7 @@
             padding: 0;
             line-height: 1.5;
             color: #000;
+            background-color: #f4f4f4; /* Latar belakang abu-abu untuk mode non-cetak */
         }
 
         .page-break {
@@ -26,7 +27,11 @@
 
         .container {
             width: 190mm; /* Lebar A4 dikurangi margin */
-            margin: 0 auto;
+            margin: 20px auto; /* Memberi jarak atas/bawah */
+            background-color: #fff; /* Latar belakang putih untuk kertas rapor */
+            padding: 15mm;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Efek bayangan */
+            box-sizing: border-box;
         }
 
         /* Header */
@@ -54,20 +59,6 @@
         }
         .data-siswa td:nth-child(2) {
             width: 5%;
-        }
-
-        /* Box F-1b - Dihilangkan atau disembunyikan jika tidak digunakan */
-        .box-f1b {
-            border: 1px solid #000;
-            width: 40px;
-            height: 30px;
-            text-align: center;
-            line-height: 30px;
-            font-weight: bold;
-            font-size: 14pt;
-            position: absolute;
-            top: 80px; /* Sesuaikan posisi agar mirip gambar */
-            right: 10mm;
         }
 
         /* Tabel Nilai */
@@ -104,55 +95,83 @@
             float: left;
             width: 45%;
         }
-        .keterangan-absensi .kanan {
-            float: right;
-            width: 50%;
-        }
-        .keterangan-absensi table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 5px;
-            font-size: 10pt;
-        }
-        .keterangan-absensi table td {
-            border: 1px solid #000;
-            padding: 5px;
-            text-align: left;
-        }
-        .keterangan-absensi table td:nth-child(2) {
-            width: 5%;
-            text-align: center;
-        }
-        .keterangan-absensi table td:nth-child(3) {
-            width: 15%;
-            text-align: center;
-        }
-
+        
         /* Tanda Tangan */
         .tanda-tangan {
             margin-top: 30px;
             width: 100%;
-            display: flex;
-            justify-content: space-between;
         }
-        .tanda-tangan div {
+        .tanda-tangan .kiri-tt {
+            float: left;
             width: 45%;
+            text-align: left;
+        }
+        .tanda-tangan .kanan-tt {
+            float: right;
+            width: 45%;
+            text-align: right;
         }
         .tanda-tangan .spacer {
             height: 60px; /* Ruang untuk tanda tangan */
         }
 
+        /* Tombol Aksi */
+        .action-buttons {
+            padding: 15px;
+            text-align: center;
+            background-color: #333;
+        }
+        .action-buttons button, .action-buttons a {
+            font-family: Arial, sans-serif;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            margin: 0 10px;
+            font-size: 14px;
+        }
+        .btn-back { background-color: #6c757d; }
+        .btn-back:hover { background-color: #5a6268; }
+        .btn-export { background-color: #c82333; }
+        .btn-export:hover { background-color: #bd2130; }
+
         /* Utility */
-        .float-right { float: right; }
         .clearfix::after {
             content: "";
             clear: both;
             display: table;
         }
+
+        /* Gaya untuk media cetak */
+        @media print {
+            body {
+                background-color: #fff;
+            }
+            .container {
+                margin: 0;
+                box-shadow: none;
+                padding: 0;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
     </style>
 </head>
-{{-- <body onload="window.print()"> --}}
 <body>
+
+    <!-- Tombol Aksi (Tidak akan dicetak) -->
+    <div class="action-buttons no-print">
+        <a href="{{ url()->previous() }}" class="btn-back">
+            <i class="fas fa-arrow-left" style="margin-right: 8px;"></i>Kembali
+        </a>
+        <button onclick="window.print()" class="btn-export">
+            <i class="fas fa-file-pdf" style="margin-right: 8px;"></i>Export / Print
+        </button>
+    </div>
+
     @foreach ($processedRapors as $index => $data)
         <div class="container">
             <div class="header">
@@ -173,9 +192,9 @@
                         <td>{{ $data['siswa']->nisn_nik }}</td>
                     </tr>
                     <tr>
-                        <td>KELAS</td>
+                        <td>TINGKAT</td>
                         <td>:</td>
-                        <td>{{ $kelasInfo->nama_kelas }}</td>
+                        <td>{{ $kelasInfo->angkatan->tingkat ?? 'N/A'}}</td>
                         <td>SEMESTER</td>
                         <td>:</td>
                         <td>{{ ucfirst($kelasInfo->angkatan->semester ?? 'N/A') }}</td>
@@ -256,8 +275,8 @@
                 </tbody>
             </table>
 
-            <!-- Keterangan Absensi -->
-            <div class="keterangan-absensi clearfix">
+            <!-- Keterangan Absensi dan TTD -->
+            <div class="clearfix" style="margin-top: 20px;">
                 <div class="kiri">
                     <p><strong>Ketidakhadiran</strong></p>
                     <table>
@@ -268,17 +287,14 @@
                 </div>
             </div>
 
-            <div class="clearfix"></div>
-
-            <!-- Tanda Tangan -->
-            <div class="tanda-tangan">
-                <div style="text-align: left;">
+            <div class="tanda-tangan clearfix">
+                <div class="kiri-tt">
                     <p>Mengetahui,</p>
                     <p>Orang Tua/Wali</p>
                     <div class="spacer"></div>
                     <p>(................................)</p>
                 </div>
-                <div style="text-align: right;">
+                <div class="kanan-tt">
                     <p>{{$kelasInfo->angkatan->sekolah->alamat}}, {{ \Carbon\Carbon::now()->isoFormat('D MMMM YYYY') }}</p>
                     <p>Wali Kelas</p>
                     <div class="spacer"></div>
@@ -292,5 +308,6 @@
             <div class="page-break"></div>
         @endif
     @endforeach
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
 </body>
 </html>

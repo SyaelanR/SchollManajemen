@@ -65,7 +65,7 @@ Route::middleware('auth')->group(function () {
  
             Route::get('/edit-kelas/{id}', [AdminController::class, 'editKelas'])->name('editKelas');
             Route::put('/edit-kelas/{id}', [AdminController::class, 'updateKelas'])->name('updateKelas');
-            Route::delete('/edit-kelas/{id}', [AdminController::class, 'destroyKelas'])->name('destroyKelas');
+            // Route::delete('/edit-kelas/{id}', [AdminController::class, 'destroyKelas'])->name('destroyKelas');
             Route::delete('/kelas/keluarkan-siswa/{id_siswa}/{id_kelas}', [AdminController::class, 'keluarkanSiswaDariKelas'])->name('keluarkanSiswaDariKelas');
 
 
@@ -76,7 +76,8 @@ Route::middleware('auth')->group(function () {
         Route::prefix('manajemen-kurikulum')->group(function(){
             Route::get('/', [AdminController::class, 'manajKurikulum'])->name('manajemenKurikulum');
             Route::post('/', [AdminController::class, 'storeKurikulum'])->name('storeKurikulum');
-
+            Route::put('/{id}', [AdminController::class, 'updateKurikulum'])->name('updateKurikulum');
+            Route::delete('/{id}', [AdminController::class, 'destroyKurikulum'])->name('destroyKurikulum');
         });
 
         Route::prefix('manajemen-keuangan')->group(function () {
@@ -117,13 +118,13 @@ Route::middleware('auth')->group(function () {
         });
 
 
-        Route::prefix('pelanggaran')->group(function () {
-            Route::get('/', [\App\Http\Controllers\pelanggaranController::class, 'index'])->name('pelanggaran.index');
-            Route::post('/', [\App\Http\Controllers\pelanggaranController::class, 'store'])->name('pelanggaran.store');
-            Route::get('/daftar/{id_kelas}', [\App\Http\Controllers\pelanggaranController::class, 'daftarPelanggar'])->name('pelanggaran.daftar');
-            Route::put('/{pelanggaran}', [\App\Http\Controllers\pelanggaranController::class, 'update'])->name('pelanggaran.update');
-            Route::delete('/{pelanggaran}', [\App\Http\Controllers\pelanggaranController::class, 'destroy'])->name('pelanggaran.destroy');
-        });
+        // Route::prefix('pelanggaran')->group(function () {
+        //     Route::get('/', [\App\Http\Controllers\pelanggaranController::class, 'index'])->name('pelanggaran.index');
+        //     Route::post('/', [\App\Http\Controllers\pelanggaranController::class, 'store'])->name('pelanggaran.store');
+        //     Route::get('/daftar/{id_kelas}', [\App\Http\Controllers\pelanggaranController::class, 'daftarPelanggar'])->name('pelanggaran.daftar');
+        //     Route::put('/{pelanggaran}', [\App\Http\Controllers\pelanggaranController::class, 'update'])->name('pelanggaran.update');
+        //     Route::delete('/{pelanggaran}', [\App\Http\Controllers\pelanggaranController::class, 'destroy'])->name('pelanggaran.destroy');
+        // });
 
 
         Route::prefix('manajemen-rapor')->group(function (){
@@ -133,12 +134,11 @@ Route::middleware('auth')->group(function () {
         });
 
         Route::prefix('manajemen-acara')->group(function () {
-    Route::get('/', [AdminController::class, 'manajAcara'])->name('manajAcara');
-    Route::post('/acara-sekolah', [AdminController::class, 'store'])->name('admin.acara.store');
-    Route::put('/acara-sekolah/{id}', [AdminController::class, 'update'])->name('admin.acara.update');
-    Route::delete('/acara-sekolah/{id}', [AdminController::class, 'destroy'])->name('admin.acara.destroy');
-});
-
+            Route::get('/', [AdminController::class, 'manajAcara'])->name('manajAcara');
+            Route::post('/acara-sekolah', [AdminController::class, 'storeAcara'])->name('admin.acara.store');
+            Route::put('/acara-sekolah/{id}', [AdminController::class, 'updateAcara'])->name('admin.acara.update');
+            Route::delete('/acara-sekolah/{id}', [AdminController::class, 'destroyAcara'])->name('admin.acara.destroy');
+        });
 
     });
 
@@ -173,6 +173,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/input-nilai-online/{id_kelas}/{id_mapel}/{id_daftar_nilai}', [GuruController::class, 'inputNilaiOnline'])->name('inputNilaiOnline');
             Route::get('/lihatTugasSiswa/{namaFile}', [GuruController::class, 'lihatTugasSiswa'])->name('lihatTugasSiswa');
             Route::get('/lihatSoalSiswa/{namaFile}', [GuruController::class, 'lihatSoalSiswa'])->name('lihatSoalSiswa');
+
+            Route::get('/export-nilai/{id_kelas}/{id_mapel}', [GuruController::class, 'exportNilai'])->name('exportNilai');
+
 
         });
 
@@ -211,22 +214,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [GuruController::class, 'manajPengumumanKelas'])->name('manajPengumuman');
             Route::get('/manajemen-pengumuman-daftar/{id_kelas}/{id_mapel}', [GuruController::class, 'manajPengumumanDaftar'])->name('manajPengumumanDaftar');
             Route::post('/manajemen-pengumuman-daftar/{id_kelas}/{id_mapel}', [GuruController::class, 'storePengumumanDaftar'])->name('storePengumumanDaftar');
+            Route::delete('/pengumuman/{id_pengumuman}', [GuruController::class, 'destroyPengumuman'])->name('deletePengumuman');
+            Route::put('/pengumuman/{id_pengumuman}', [GuruController::class, 'updatePengumuman'])->name('updatePengumuman');
 
-
-          // --- Rute Tambahan untuk Edit dan Hapus ---
-
-        // 3. Rute Memperbarui Pengumuman yang Ada (PUT/PATCH)
-        // URL: /manajemen-pengumuman/update/{id_pengumuman}
-        Route::put('/pengumuman/{id_pengumuman}', [GuruController::class, 'updatePengumuman'])->name('updatePengumuman');
-
-        Route::get('/export-nilai', [GuruController::class, 'exportNilai'])->name('exportNilai');
-
-
-        // 4. Rute Menghapus Pengumuman (POST)
-        // Nama diubah menjadi 'deletePengumuman' agar sesuai dengan panggilan di Blade.
-        // URL: /manajemen-pengumuman/delete/{id_pengumuman}
-        Route::delete('/pengumuman/{id_pengumuman}', [GuruController::class, 'destroyPengumuman'])->name('deletePengumuman');
-   
         });
     
         
@@ -243,6 +233,13 @@ Route::middleware('auth')->group(function () {
 
             Route::get('/lihat-jawaban/{namaFile}', [SiswaController::class, 'lihatJawaban'])->name('lihatJawaban');
         });
+
+        Route::get('/lihat-jadwal', [SiswaController::class, 'lihatJadwalS'])->name('lihatJadwalS');
+
+        Route::get('/krs', [SiswaController::class, 'KRS'])->name('KRS');
+        Route::get('/lihat-absensi', [SiswaController::class, 'pilihMapelAbsensi'])->name('lihatAbsensi');
+        Route::get('/lihat-materi/{id_kelas}/{id_mapel}', [SiswaController::class, 'lihatMateri'])->name('lihatMateriSiswa');
+        Route::get('/lihat-absensi/{id_mapel}', [SiswaController::class, 'lihatAbsensiPerMapel'])->name('lihatAbsensi.perMapel');
 
         
     });
@@ -325,6 +322,5 @@ Route::get('/mapel', [SiswaController::class, 'pilihMapel'])->name('pilihMapel')
 // 2. Rute untuk menampilkan detail nilai per mata pelajaran
 // URL yang diminta: /mapel/{id_mapel}/nilai
 // Mengarah ke SiswaController@lihatNilaiMapel (atau NilaiController@lihatNilaiMapel)
-Route::get('/mapel/{id_mapel}/nilai', [SiswaController::class, 'lihatNilaiMapel'])
-    ->name('lihatNilaiMapel');
+Route::get('/mapel/{id_mapel}/nilai', [SiswaController::class, 'lihatNilaiMapel'])->name('lihatNilaiMapel');
 

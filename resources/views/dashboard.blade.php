@@ -51,29 +51,29 @@
         </div>
         <nav class="mt-6">
             <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
-                <i class="fa-solid fa-tachometer-alt mr-3"></i>
+                <i class="fa-solid fa-tachometer-alt w-6 mr-3"></i>
                 <span>Dashboard</span>
             </a>
 
             @can('view-admin')
             <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-user-graduate mr-3"></i>
+                <i class="fa-solid fa-user-graduate w-6 mr-3"></i>
                 <span>Manajemen Siswa</span>
             </a>
             <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-chalkboard-user mr-3"></i>
+                <i class="fa-solid fa-chalkboard-user w-6 mr-3"></i>
                 <span>Manajemen Guru</span>
             </a>
             <a href="{{ route('manajemenMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-book mr-3"></i>
+                <i class="fa-solid fa-book w-6 mr-3"></i>
                 <span>Manajemen Mapel</span>
             </a>
             <a href="{{ route('manajemenKelas') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-door-closed mr-3"></i>
+                <i class="fa-solid fa-door-closed w-6 mr-3"></i>
                 <span>Manajemen Kelas</span>
             </a>
             <a href="{{ route('manajemenJadwal')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-calendar-alt mr-3"></i>
+                <i class="fa-solid fa-calendar-alt w-6 mr-3"></i>
                 <span>Manajemen Jadwal</span>
             </a>
             <a href="{{ route('manajAcara')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
@@ -81,56 +81,52 @@
                 <span>Acara</span>
             </a>
             <a href="{{ route('manajemenAngkatan') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-bookmark mr-3"></i>
+                <i class="fa-solid fa-bookmark w-6 mr-3"></i>
                 <span>Angkatan</span>
             </a>
             <a href="{{ route('manajemenRapor') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-book-open mr-3"></i>
+                <i class="fa-solid fa-book-open w-6 mr-3"></i>
                 <span>Rapor</span>
             </a>
             <a href="{{ route('manajemenKurikulum') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-book-open-reader mr-3"></i>
+                <i class="fa-solid fa-book-open-reader w-6 mr-3"></i>
                 <span>Kurikulum</span>
             </a>
             <a href="{{ route('manajemenTingkat') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-layer-group mr-3"></i>
+                <i class="fa-solid fa-layer-group w-6 mr-3"></i>
                 <span>Tingkat</span>
             </a>
             @endcan
 
             @can('view-guru')
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-pen mr-3"></i>
+            <a href="{{ route('manajemenNilai') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-pen w-6 mr-3"></i>
                 <span>Input Nilai</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-list-check mr-3"></i>
+            <a href="{{ route('lihatjadwalG') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-days w-6 mr-3"></i>
+                <span>Jadwal Mengajar</span>
+            </a>
+            <a href="{{ route('manajAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-list-check w-6 mr-3"></i>
                 <span>Input Absensi</span>
-            </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-puzzle-piece mr-3"></i>
-                <span>Ekstrakulikuler</span>
-            </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-circle-exclamation mr-3"></i>
-                <span>Pelanggaran Siswa</span>
             </a>
             @endcan
 
             @can('view-siswa')
-            <a href="/mapel" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-pen mr-3"></i>
+            <a href="{{ route('pilihMapel')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-pen w-6 mr-3"></i>
                 <span>Lihat Nilai</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-list-check mr-3"></i>
+            <a href="{{ route('lihatAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-list-check w-6 mr-3"></i>
                 <span>Lihat Absensi</span>
             </a>
             @endcan
 
             @can('view-adminDev')
             <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-users mr-3"></i>
+                <i class="fa-solid fa-users w-6 mr-3"></i>
                 <span>Manajemen Klien</span>
             </a>
             @endcan
@@ -141,7 +137,7 @@
                 <a href="{{ route('logout') }}"
                    onclick="event.preventDefault(); this.closest('form').submit();"
                    class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
-                    <i class="fa-solid fa-sign-out-alt mr-3"></i>
+                    <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
                     <span>Logout</span>
                 </a>
             </form>
@@ -293,11 +289,11 @@
                                <i class="fa-solid fa-calendar-alt text-xl text-indigo-600 mr-4"></i>
                                <span class="font-medium text-gray-700">Lihat Semua Jadwal</span>
                            </a>
-                           <a href="#" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-300">
+                           <a href="{{ route('manajemenNilai') }}" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-300">
                                <i class="fa-solid fa-pen-to-square text-xl text-green-600 mr-4"></i>
                                <span class="font-medium text-gray-700">Input Nilai Siswa</span>
                            </a>
-                           <a href="#" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-300">
+                           <a href="{{ route('manajAbsensi') }}" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-300">
                                <i class="fa-solid fa-calendar-check text-xl text-yellow-600 mr-4"></i>
                                <span class="font-medium text-gray-700">Input Absensi Kelas</span>
                            </a>
@@ -535,23 +531,59 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         // Chart for Siswa
-        if (document.getElementById('attendanceChart')) {
-            const ctx = document.getElementById('attendanceChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Hadir', 'Izin', 'Sakit', 'Alpa'],
-                    datasets: [{
-                        label: 'Persentase Kehadiran',
-                        data: [70, 10, 10, 10], // Sample data
-                        backgroundColor: ['rgba(79, 70, 229, 0.8)', 'rgba(251, 191, 36, 0.8)', 'rgba(59, 130, 246, 0.8)', 'rgba(239, 68, 68, 0.8)'],
-                        borderColor: ['#4f46e5', '#fbb_f24', '#3b82f6', '#ef4444'],
-                        borderWidth: 1
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-        }
+    const totalAbsensi = @json($totalAbsensi ?? []);
+
+    // Hitung total kehadiran
+    const total = Object.values(totalAbsensi).reduce((a, b) => a + b, 0);
+
+    // Hitung persentase masing-masing status
+    const persentaseAbsensi = Object.fromEntries(
+        Object.entries(totalAbsensi).map(([key, val]) => [key, total ? ((val / total) * 100).toFixed(1) : 0])
+    );
+
+    if (document.getElementById('attendanceChart')) {
+        const ctx = document.getElementById('attendanceChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(persentaseAbsensi), // ['Hadir', 'Izin', 'Sakit', 'Alfa']
+                datasets: [{
+                    label: 'Persentase Kehadiran (%)',
+                    data: Object.values(persentaseAbsensi), // [persen Hadir, Izin, Sakit, Alfa]
+                    backgroundColor: [
+                        'rgba(79, 70, 229, 0.8)',   // Hadir
+                        'rgba(251, 191, 36, 0.8)',  // Izin
+                        'rgba(59, 130, 246, 0.8)',  // Sakit
+                        'rgba(239, 68, 68, 0.8)'    // Alfa
+                    ],
+                    borderColor: [
+                        '#4f46e5',
+                        '#fbbf24',
+                        '#3b82f6',
+                        '#ef4444'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed.toFixed(1) + '%';
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
         
         // Chart for Admin
         if (document.getElementById('attendanceChartAdmin')) {
