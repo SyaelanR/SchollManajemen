@@ -408,7 +408,7 @@ class SiswaController extends Controller
     }
 
     /////////////////////////////////lihat nilai///////////////////////////////////////////////////
-    public function pilihMapel(Request $request)
+    public function lihatNilaiMapel(Request $request)
     {
         $id_sekolah = $request->cookie('id_sekolah');
         $id_kelas = $request->cookie('id_kelas');
@@ -479,7 +479,7 @@ class SiswaController extends Controller
      * @param int $id_mapel ID Mata Pelajaran yang dipilih.
      * @return \Illuminate\View\View
      */
-    public function lihatNilaiMapel(Request $request, $id_mapel)
+    public function lihatNilaiDaftar(Request $request, $id_mapel)
     {
         $id_user = $request->cookie('id_user');
         $id_sekolah = $request->cookie('id_sekolah');

@@ -247,6 +247,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/lihat-absensi/{id_mapel}', [SiswaController::class, 'lihatAbsensiPerMapel'])->name('lihatAbsensi.perMapel');
 
         
+        Route::prefix('nilai')->group(function () {
+            Route::get('/mapel', [SiswaController::class, 'lihatNilaiMapel'])->name('lihatNilaiMapel');
+            Route::get('/daftar-nilai/{id_mapel}', [SiswaController::class, 'lihatNilaiDaftar'])->name('lihatNilaiDaftar');
+
+        });
+
     });
 
 });
@@ -321,11 +327,3 @@ Route::get('/input-nilai', [AdminController::class, 'inputnilai'])->name('inputn
 #####################################################################################################################################################
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Halaman lihat tugas
-
-Route::get('/mapel', [SiswaController::class, 'pilihMapel'])->name('pilihMapel');
-
-// 2. Rute untuk menampilkan detail nilai per mata pelajaran
-// URL yang diminta: /mapel/{id_mapel}/nilai
-// Mengarah ke SiswaController@lihatNilaiMapel (atau NilaiController@lihatNilaiMapel)
-Route::get('/mapel/{id_mapel}/nilai', [SiswaController::class, 'lihatNilaiMapel'])->name('lihatNilaiMapel');
-
