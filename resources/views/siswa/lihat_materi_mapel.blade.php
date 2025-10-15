@@ -107,7 +107,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 
                 @forelse ($daftarMapel ?? [] as $mapel)
-                <a href="{{ route('lihatTugasDaftar', $mapel->mapel->id_mapel)}}" class="block">
+                <a href="{{ route('lihatDaftarMateri', $mapel->mapel->id_mapel)}}" class="block">
                     <div class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between h-full hover:shadow-lg hover:-translate-y-1 transform transition-all duration-300">
                         <div>
                             <div class="flex items-center justify-between mb-4">

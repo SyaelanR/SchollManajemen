@@ -287,32 +287,93 @@ class SiswaController extends Controller
     /**
      * Menampilkan daftar materi untuk kelas dan mapel tertentu.
      */
-    public function lihatMateri(Request $request, $id_kelas, $id_mapel)
+
+    public function lihatMateriMapel (Request $request)
+    {
+        $idKelas = $request->cookie('id_kelas');
+        $idSekolah = $request->cookie('id_sekolah');
+        $idAngkatan = $request->cookie('id_angkatan');
+
+
+        $infoAngkatan = Angkatan::where('id_sekolah', $idSekolah)
+                                ->where('id_angkatan', $idAngkatan)
+                                ->first();
+
+        $daftarMapel = Jadwal::where('id_kelas', $idKelas)
+                        ->where('id_sekolah', $idSekolah)
+                        ->where('tingkat', $infoAngkatan->id_tingkat ?? 0)
+                        ->where('semester', $infoAngkatan->semester ?? 0)
+                        ->with(['mapel.guru'])
+                        ->select('id_kelas', 'id_mapel') // hanya ambil kombinasi unik kelas+mapel
+                        ->distinct()
+                        ->get();
+
+        return view('siswa.lihat_materi_mapel', ['daftarMapel' => $daftarMapel]);
+    }
+
+
+    public function lihatDaftarMateri(Request $request, $id_mapel)
     {
         $id_sekolah = $request->cookie('id_sekolah');
         $id_angkatan = $request->cookie('id_angkatan');
+        $id_kelas = $request->cookie('id_kelas');
+
 
         // Validasi apakah siswa terdaftar di kelas ini
-        if ($request->cookie('id_kelas') != $id_kelas) {
-            abort(403, 'Akses ditolak.');
-        }
 
         $infoAngkatan = Angkatan::where('id_sekolah', $id_sekolah)
                                 ->where('id_angkatan', $id_angkatan)
                                 ->firstOrFail();
 
         $infoJadwal = Jadwal::where('id_kelas', $id_kelas)
-                            ->where('id_mapel', $id_mapel)
-                            ->with('mapel', 'kelas')
-                            ->firstOrFail();
+                        ->where('id_sekolah', $id_sekolah)
+                        ->where('id_mapel', $id_mapel)
+                        ->where('tingkat', $infoAngkatan->id_tingkat)
+                        ->where('semester', $infoAngkatan->semester)
+                        ->with(['mapel'])
+                        ->firstOrFail();
 
         $daftarMateri = DaftarMateri::where('id_kelas', $id_kelas)
                                     ->where('id_mapel', $id_mapel)
                                     ->where('tingkat', $infoAngkatan->id_tingkat)
                                     ->where('semester', $infoAngkatan->semester)
+                                    ->with('mapel')
                                     ->latest('tanggal')->get();
+                                    
 
         return view('siswa.lihat_materi', compact('daftarMateri', 'infoJadwal'));
+        // return view ('debug',['tes' => $daftarMateri]);
+    }
+
+    public function lihatMateriS (Request $request, $namaFile)
+    {
+        $idSekolah = $request->cookie('id_sekolah');
+        $idKelas = $request->cookie('id_kelas');
+        $idAngkatan = $request->cookie('id_angkatan');
+
+        $infoAngkatan = Angkatan::where('id_sekolah', $idSekolah)
+                                ->where('id_angkatan', $idAngkatan)
+                                ->first();
+
+
+        DaftarMateri::where('nama_file', $namaFile)
+                    ->where('id_sekolah', $idSekolah)
+                    ->where('id_kelas', $idKelas)
+                    ->where('tingkat', $infoAngkatan->id_tingkat)
+                    ->where('semester', $infoAngkatan->semester)
+                    ->firstOrFail();
+
+
+        if (Storage::disk('local')->exists("materi/$namaFile")) {
+            $path = Storage::disk('local')->path("materi/$namaFile");
+            $headers = ['Content-Type' => 'application/pdf'];
+
+            // Mengembalikan file sebagai respons inline
+            return response()->file($path, $headers);
+        }
+
+        abort(404, 'File not found');
+
     }
 
     /**
