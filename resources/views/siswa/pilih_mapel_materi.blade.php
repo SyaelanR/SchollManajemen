@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Nilai - Sistem Manajemen Sekolah</title>
+    <title>Pilih Mata Pelajaran - Sistem Manajemen Sekolah</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
@@ -13,7 +13,6 @@
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* Custom styles */
         body { font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
@@ -27,7 +26,7 @@
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
         <div class="p-6">
-            <a href="#" class="flex items-center space-x-3">
+            <a href="{{ route('dashboard') }}" class="flex items-center space-x-3">
                 <i class="fa-solid fa-school text-3xl text-indigo-600"></i>
                 <span class="text-2xl font-bold text-gray-800">EduSys</span>
             </a>
@@ -37,7 +36,7 @@
                 <i class="fa-solid fa-tachometer-alt w-6 mr-3"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="{{ route('lihatNilaiMapel')}}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
+            <a href="{{ route('lihatNilaiMapel')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-pen w-6 mr-3"></i>
                 <span>Lihat Nilai</span>
             </a>
@@ -45,7 +44,7 @@
                 <i class="fa-solid fa-list-check w-6 mr-3"></i>
                 <span>Lihat Absensi</span>
             </a>
-            <a href="{{ route('lihatMateriMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('lihatMateriMapel') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
                 <i class="fa-solid fa-book-open w-6 mr-3"></i>
                 <span>Lihat Materi</span>
             </a>
@@ -57,14 +56,20 @@
                 <i class="fa-solid fa-bullhorn mr-3"></i>
                 <span>Pengumuman</span>
             </a>
+            <a href="{{ route('lihatTugasMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-upload w-6 mr-3"></i>
+                <span>Lihat Tugas</span>
+            </a>
         </nav>
         <div class="absolute bottom-0 w-full p-6">
-            <form action="{{ route('logout') }}" method="POST" id="logout-form">
+            <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
+                <a href="{{ route('logout') }}"
+                   onclick="event.preventDefault(); this.closest('form').submit();"
+                   class="flex items-center px-4 py-3 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg w-full transition duration-200">
                     <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
                     <span>Logout</span>
-                </button>
+                </a>
             </form>
         </div>
     </aside>
@@ -79,72 +84,71 @@
             <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
                 <i class="fa-solid fa-bars text-2xl"></i>
             </button>
-            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Daftar Nilai</h1>
+            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Pilih Mata Pelajaran</h1>
             <div class="flex items-center space-x-4">
-                 <!-- Avatar inisial S (Siswa) -->
-                 <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=S" alt="User Avatar">
+                 <button class="text-gray-500 hover:text-gray-700">
+                    <i class="fa-solid fa-bell"></i>
+                </button>
+                <div class="relative">
+                    <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=S" alt="User Avatar">
+                    <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
+                </div>
             </div>
         </header>
 
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
-
-            <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg text-white">
-                <h2 class="text-2xl md:text-3xl font-bold mb-1">Matematika Wajib</h2>
-                <p class="text-indigo-200">Berikut adalah rincian nilai Anda.</p>
+            <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
+                <h2 class="text-3xl font-bold mb-2">Lihat Materi Pelajaran</h2>
+                <p class="text-indigo-200">Pilih mata pelajaran untuk melihat materi yang telah diunggah oleh guru.</p>
             </header>
             
-            <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                <div class="p-6">
-                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Rincian Nilai</h2>
-                        <div class="p-2 px-4 bg-gray-100 rounded-lg text-sm font-medium text-gray-600">
-                            KKM (Kriteria Ketuntasan Minimal): <strong>75</strong>
-                        </div>
-                    </div>
-                
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipe</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <!-- Data Dummy -->
-                                @forelse($daftarNilai as $nilai)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">{{$nilai->daftarNilai->keterangan}}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                        <span class="bg-blue-100 text-blue-800 font-medium py-1 px-3 rounded-full text-xs">{{$nilai->daftarNilai->tipe_nilai}}</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-lg font-semibold text-gray-700">{{$nilai->nilai}}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                    </td>
-                                </tr>
-                                @empty
-                                    
-                                @endforelse
-                                <!-- Akhir Data Dummy -->
-                            </tbody>
-                        </table>
-                    </div>
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                    <h2 class="text-xl sm:text-2xl font-semibold text-gray-800">Daftar Mata Pelajaran Anda</h2>
                 </div>
+                
+                @if (count($daftarMapel) > 0)
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    @foreach ($daftarMapel as $jadwal)
+                    <div class="bg-gray-50 border rounded-xl p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
+                        <!-- Clickable Area -->
+                        <a href="{{ route('lihatMateriSiswa', ['id_kelas' => $jadwal->id_kelas, 'id_mapel' => $jadwal->id_mapel]) }}" class="flex flex-col h-full">
+                            <div class="flex-grow">
+                                <div class="bg-indigo-100 text-indigo-600 p-4 rounded-full flex items-center justify-center w-16 h-16 mb-4 shadow-inner">
+                                    <i class="fa-solid fa-book-open text-2xl"></i>
+                                </div>
+                                <h3 class="text-xl font-semibold text-gray-800">{{ $jadwal->mapel->nama_mapel ?? 'N/A' }}</h3>
+                            </div>
+                            <div class="border-t mt-4 pt-4 text-sm text-gray-600">
+                                <div class="flex items-center">
+                                    <i class="fa-solid fa-user-tie w-4 mr-2 text-gray-400"></i>
+                                    <span>{{ $jadwal->mapel->guru->name ?? 'Guru Belum Diatur' }}</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    @endforeach
+                </div>
+                @else
+                <div class="text-center py-12">
+                    <i class="fa-solid fa-book-open-reader text-5xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600 font-semibold text-lg">Anda belum memiliki mata pelajaran.</p>
+                    <p class="text-gray-500 mt-2">Hubungi administrator untuk informasi lebih lanjut.</p>
+                </div>
+                @endif
             </div>
         </main>
     </div>
 </div>
-
+    
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     // --- Sidebar Toggle ---
     const menuButton = document.getElementById('menu-button');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
-    
-    if(menuButton && sidebar && overlay) {
+    if (menuButton && sidebar && overlay) {
         const toggleSidebar = () => {
             sidebar.classList.toggle('-translate-x-full');
             overlay.classList.toggle('hidden');
@@ -154,6 +158,5 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
-
 </body>
 </html>

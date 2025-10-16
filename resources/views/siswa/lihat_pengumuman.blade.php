@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Materi Pelajaran - {{ $infoJadwal->mapel->nama_mapel ?? 'N/A' }}</title>
+    <title>Pengumuman - EduSys</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 8px; }
@@ -44,21 +44,21 @@
                 <i class="fa-solid fa-list-check w-6 mr-3"></i>
                 <span>Lihat Absensi</span>
             </a>
-            <a href="{{ route('lihatMateriMapel') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
-                <i class="fa-solid fa-book-open w-6 mr-3"></i>
-                <span>Lihat Materi</span>
-            </a>
             <a href="{{ route('lihatAcaraSiswa')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-calendar-check mr-3"></i>
                 <span>Acara</span>
             </a>
-            <a href="{{ route('lihatPengumumanSiswa')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('lihatMateriMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open w-6 mr-3"></i>
+                <span>Lihat Materi</span>
+            </a>
+            <a href="{{ route('lihatPengumumanSiswa')}}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
                 <i class="fa-solid fa-bullhorn mr-3"></i>
                 <span>Pengumuman</span>
             </a>
             <a href="{{ route('lihatTugasMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-upload w-6 mr-3"></i>
-                <span>Upload Tugas</span>
+                <span>Lihat Tugas</span>
             </a>
         </nav>
         <div class="absolute bottom-0 w-full p-6">
@@ -84,13 +84,10 @@
             <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
                 <i class="fa-solid fa-bars text-2xl"></i>
             </button>
-            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Materi Pelajaran</h1>
+            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Papan Pengumuman</h1>
             <div class="flex items-center space-x-4">
-                 <button class="text-gray-500 hover:text-gray-700">
-                    <i class="fa-solid fa-bell"></i>
-                </button>
                 <div class="relative">
-                    <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=S" alt="User Avatar">
+                    <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=S" alt="User avatar">
                     <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
                 </div>
             </div>
@@ -98,51 +95,57 @@
 
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
-            <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
-                <h2 class="text-3xl font-bold mb-2">Materi: {{ $infoJadwal->mapel->nama_mapel ?? 'N/A' }}</h2>
+            <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg text-white">
+                <h1 class="text-2xl md:text-3xl font-bold">Informasi Terbaru</h1>
+                <p class="text-indigo-200 mt-2">Berikut adalah pengumuman penting dari guru-guru Anda.</p>
             </header>
-            
-            <div class="bg-white rounded-xl shadow-md p-6">
-                <div class="space-y-6">
-                    @forelse ($daftarMateri as $materi)
-                    <div class="border border-gray-200 rounded-lg p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:bg-gray-50 transition-colors">
-                        <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-gray-800">{{ $materi->judul_materi }}</h3>
-                            <p class="text-sm text-gray-600 mt-1">{{ $materi->deskripsi_materi }}</p>
-                            <p class="text-xs text-gray-400 mt-2">Diunggah pada: {{ \Carbon\Carbon::parse($materi->tanggal)->isoFormat('D MMMM YYYY') }}</p>
+
+            <!-- Daftar Pengumuman -->
+            <div class="space-y-6">
+                @forelse ($pengumumans as $pengumuman)
+                    <div class="bg-white p-6 border-l-4 border-indigo-500 rounded-r-lg shadow-md transition duration-300 ease-in-out hover:shadow-lg">
+                        <div class="flex items-start justify-between mb-2">
+                            <div>
+                                <h2 class="text-xl font-bold text-gray-800">{{ $pengumuman->judul }}</h2>
+                                <span class="text-xs font-semibold text-indigo-600 bg-indigo-100 py-1 px-2 rounded-full">
+                                    {{ $pengumuman->mapel->nama_mapel ?? 'Umum' }}
+                                </span>
+                            </div>
+                            <span class="text-sm text-gray-500 flex-shrink-0 ml-4">
+                                {{ \Carbon\Carbon::parse($pengumuman->created_at)->diffForHumans() }}
+                            </span>
                         </div>
-                        <a href="{{ route('lihatMateriS', ['namaFile' => $materi->nama_file]) }}" target="_blank" class="flex-shrink-0 bg-indigo-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-600 transition duration-300 flex items-center gap-2">
-                            <i class="fa-solid fa-eye"></i>
-                            <span>Lihat Materi</span>
-                        </a>
+                        <p class="text-gray-700 leading-relaxed mt-3">
+                            {{ $pengumuman->isi }}
+                        </p>
+                        <div class="mt-4 pt-3 border-t border-gray-200 text-xs text-gray-500">
+                            Dibuat pada: {{ \Carbon\Carbon::parse($pengumuman->created_at)->isoFormat('dddd, D MMMM YYYY, HH:mm') }}
+                        </div>
                     </div>
-                    @empty
-                    <div class="text-center py-12">
-                        <i class="fa-solid fa-book-open-reader text-5xl text-gray-400 mb-4"></i>
-                        <p class="text-gray-600 font-semibold text-lg">Belum ada materi yang diunggah untuk mata pelajaran ini.</p>
+                @empty
+                    <!-- Jika tidak ada pengumuman -->
+                    <div class="text-center py-12 bg-white rounded-xl shadow-md">
+                        <i class="fa-solid fa-bell-slash text-5xl text-gray-400 mb-4"></i>
+                        <h3 class="text-lg font-semibold text-gray-700">Belum Ada Pengumuman</h3>
+                        <p class="mt-1 text-gray-500">Saat ini tidak ada pengumuman baru untuk Anda.</p>
                     </div>
-                    @endforelse
-                </div>
+                @endforelse
             </div>
         </main>
     </div>
-</div>
-    
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // --- Sidebar Toggle ---
-    const menuButton = document.getElementById('menu-button');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-    if(menuButton && sidebar && overlay) {
-        const toggleSidebar = () => {
+
+    <script>
+        const menuButton = document.getElementById('menu-button');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        menuButton.addEventListener('click', () => {
             sidebar.classList.toggle('-translate-x-full');
             overlay.classList.toggle('hidden');
-        };
-        menuButton.addEventListener('click', toggleSidebar);
-        overlay.addEventListener('click', toggleSidebar);
-    }
-});
-</script>
+        });
+        overlay.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        });
+    </script>
 </body>
 </html>

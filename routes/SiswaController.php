@@ -5,14 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Angkatan;
 use App\Models\DaftarMateri;
 use App\Models\DaftarAbsensiSiswa;
-use App\Models\DaftarAcara;
 use App\Models\DaftarNilaiSiswa;
 use App\Models\DaftarPengumuman;
 use App\Models\DaftarTugas;
 use App\Models\Mapel;
 use App\Models\Jadwal;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 // use Illuminate\Container\Attributes\Storage;
 use Illuminate\Http\Request;
@@ -146,28 +144,9 @@ class SiswaController extends Controller
         // // 4. Update nama file di database
         $tugasSiswa->update(['nama_fileTugas' => $namaFile]);
 
-        return redirect()->route('lihatTugasDaftar', ['id_mapel' => $tugasSiswa->id_mapel])->with('success', 'Jawaban tugas berhasil diunggah!');
-
-
+        return back()->with('success', 'Jawaban tugas berhasil diunggah!');
+        // return view ('dashboard');
     }
-
-    public function halamanUnggahTugas(Request $request, $id_daftar_nilai_siswa)
-    {
-        $idSiswa = $request->cookie('id_user');
-
-        // Find the task for the student
-        $tugasSiswa = DaftarNilaiSiswa::where('id_daftar_nilai_siswa', $id_daftar_nilai_siswa)
-            ->where('id_siswa', $idSiswa)
-            ->firstOrFail();
-
-        // Pass the task data to the view
-        return view('siswa.upload_tugas', compact('tugasSiswa'));
-    }
-
-
-
-
-
 
         public function lihatJawaban (Request $request, $namaFile)
     {
@@ -309,93 +288,32 @@ class SiswaController extends Controller
     /**
      * Menampilkan daftar materi untuk kelas dan mapel tertentu.
      */
-
-    public function lihatMateriMapel (Request $request)
-    {
-        $idKelas = $request->cookie('id_kelas');
-        $idSekolah = $request->cookie('id_sekolah');
-        $idAngkatan = $request->cookie('id_angkatan');
-
-
-        $infoAngkatan = Angkatan::where('id_sekolah', $idSekolah)
-                                ->where('id_angkatan', $idAngkatan)
-                                ->first();
-
-        $daftarMapel = Jadwal::where('id_kelas', $idKelas)
-                        ->where('id_sekolah', $idSekolah)
-                        ->where('tingkat', $infoAngkatan->id_tingkat ?? 0)
-                        ->where('semester', $infoAngkatan->semester ?? 0)
-                        ->with(['mapel.guru'])
-                        ->select('id_kelas', 'id_mapel') // hanya ambil kombinasi unik kelas+mapel
-                        ->distinct()
-                        ->get();
-
-        return view('siswa.lihat_materi_mapel', ['daftarMapel' => $daftarMapel]);
-    }
-
-
-    public function lihatDaftarMateri(Request $request, $id_mapel)
+    public function lihatMateri(Request $request, $id_kelas, $id_mapel)
     {
         $id_sekolah = $request->cookie('id_sekolah');
         $id_angkatan = $request->cookie('id_angkatan');
-        $id_kelas = $request->cookie('id_kelas');
-
 
         // Validasi apakah siswa terdaftar di kelas ini
+        if ($request->cookie('id_kelas') != $id_kelas) {
+            abort(403, 'Akses ditolak.');
+        }
 
         $infoAngkatan = Angkatan::where('id_sekolah', $id_sekolah)
                                 ->where('id_angkatan', $id_angkatan)
                                 ->firstOrFail();
 
         $infoJadwal = Jadwal::where('id_kelas', $id_kelas)
-                        ->where('id_sekolah', $id_sekolah)
-                        ->where('id_mapel', $id_mapel)
-                        ->where('tingkat', $infoAngkatan->id_tingkat)
-                        ->where('semester', $infoAngkatan->semester)
-                        ->with(['mapel'])
-                        ->firstOrFail();
+                            ->where('id_mapel', $id_mapel)
+                            ->with('mapel', 'kelas')
+                            ->firstOrFail();
 
         $daftarMateri = DaftarMateri::where('id_kelas', $id_kelas)
                                     ->where('id_mapel', $id_mapel)
                                     ->where('tingkat', $infoAngkatan->id_tingkat)
                                     ->where('semester', $infoAngkatan->semester)
-                                    ->with('mapel')
                                     ->latest('tanggal')->get();
-                                    
 
         return view('siswa.lihat_materi', compact('daftarMateri', 'infoJadwal'));
-        // return view ('debug',['tes' => $daftarMateri]);
-    }
-
-    public function lihatMateriS (Request $request, $namaFile)
-    {
-        $idSekolah = $request->cookie('id_sekolah');
-        $idKelas = $request->cookie('id_kelas');
-        $idAngkatan = $request->cookie('id_angkatan');
-
-        $infoAngkatan = Angkatan::where('id_sekolah', $idSekolah)
-                                ->where('id_angkatan', $idAngkatan)
-                                ->first();
-
-
-        DaftarMateri::where('nama_file', $namaFile)
-                    ->where('id_sekolah', $idSekolah)
-                    ->where('id_kelas', $idKelas)
-                    ->where('tingkat', $infoAngkatan->id_tingkat)
-                    ->where('semester', $infoAngkatan->semester)
-                    ->firstOrFail();
-
-
-        if (Storage::disk('local')->exists("materi/$namaFile")) {
-            $path = Storage::disk('local')->path("materi/$namaFile");
-            $headers = ['Content-Type' => 'application/pdf'];
-
-            // Mengembalikan file sebagai respons inline
-            return response()->file($path, $headers);
-        }
-
-        abort(404, 'File not found');
-
     }
 
     /**
@@ -453,7 +371,7 @@ class SiswaController extends Controller
             ->where('tingkat', $infoAngkatan->id_tingkat ?? 0)
             ->where('semester', $infoAngkatan->semester ?? 'ganjil')
             ->with('mapel.guru')
-            ->select('id_mapel', 'id_kelas')
+            ->select('id_mapel', 'id_kelas') // <-- Tambahkan id_kelas di sini
             ->distinct()
             ->get();
 
@@ -461,7 +379,7 @@ class SiswaController extends Controller
     }
 
     /////////////////////////////////lihat nilai///////////////////////////////////////////////////
-    public function lihatNilaiMapel(Request $request)
+    public function pilihMapel(Request $request)
     {
         $id_sekolah = $request->cookie('id_sekolah');
         $id_kelas = $request->cookie('id_kelas');
@@ -532,7 +450,7 @@ class SiswaController extends Controller
      * @param int $id_mapel ID Mata Pelajaran yang dipilih.
      * @return \Illuminate\View\View
      */
-    public function lihatNilaiDaftar(Request $request, $id_mapel)
+    public function lihatNilaiMapel(Request $request, $id_mapel)
     {
         $id_user = $request->cookie('id_user');
         $id_sekolah = $request->cookie('id_sekolah');
@@ -560,13 +478,20 @@ class SiswaController extends Controller
     {
         $id_sekolah = $request->cookie('id_sekolah');
 
-        // Ambil acara hanya 1 minggu setelah acara selesai
-        $daftarAcara = DaftarAcara::where('id_sekolah', $id_sekolah)
-                        ->where('tanggal_selesai', '>=', Carbon::now()->subWeeks(1))
-                        ->orderBy('tanggal_mulai', 'desc')
-                        ->get();
+        // Ambil acara yang akan datang atau sedang berlangsung
+        $daftarAcara = \App\Models\DaftarAcara::where('id_sekolah', $id_sekolah)
+            ->where('tanggal_selesai', '>=', now())
+            ->orderBy('tanggal_mulai', 'asc')
+            ->get();
 
-        return view('siswa.lihat_acara_siswa', compact('daftarAcara'));
+        // Ambil acara yang sudah lewat
+        $acaraLampau = \App\Models\DaftarAcara::where('id_sekolah', $id_sekolah)
+            ->where('tanggal_selesai', '<', now())
+            ->orderBy('tanggal_mulai', 'desc')
+            ->limit(5) // Batasi 5 acara terakhir
+            ->get();
+
+        return view('siswa.lihat_acara', compact('daftarAcara', 'acaraLampau'));
     }
 ////////////////////////////////lihat pengumuman/////////////////////////////////////////////
     public function lihatPengumuman(Request $request)

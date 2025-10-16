@@ -231,6 +231,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/tugas-daftar/{id_mapel}', [SiswaController::class, 'lihatTugasDaftar'])->name('lihatTugasDaftar');
             Route::get('/lihat-soal/{namaFile}', [SiswaController::class, 'lihatSoal'])->name('lihatSoal');
             Route::post('/unggah-tugas', [SiswaController::class, 'unggahTugas'])->name('unggahTugas');
+            Route::get('/unggah-tugas/{id_daftar_nilai_siswa}', [SiswaController::class, 'halamanUnggahTugas'])->name('halamanUnggahTugas');
 
             Route::get('/lihat-jawaban/{namaFile}', [SiswaController::class, 'lihatJawaban'])->name('lihatJawaban');
         });
@@ -246,6 +247,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/lihat-file-materi/{namaFile}', [SiswaController::class, 'lihatMateriS'])->name('lihatMateriS');
         });
         Route::get('/lihat-absensi/{id_mapel}', [SiswaController::class, 'lihatAbsensiPerMapel'])->name('lihatAbsensi.perMapel');
+        Route::get('/lihat-acara', [SiswaController::class, 'lihatAcara'])->name('lihatAcaraSiswa');
+        Route::get('/lihat-pengumuman', [SiswaController::class, 'lihatPengumuman'])->name('lihatPengumumanSiswa');
 
         Route::get('/lihat-acara', [SiswaController::class, 'lihatAcara'])->name('lihatAcaraSiswa');
         

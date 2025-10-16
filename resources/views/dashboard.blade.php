@@ -127,12 +127,35 @@
 
             @can('view-siswa')
             <a href="{{ route('lihatNilaiMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-bullhorn w-6 mr-3"></i>
+                <span>Input Tugas</span>
+            </a>
+            @endcan
+
+            @can('view-siswa')
+            <a href="{{ route('lihatMateriMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open w-6 mr-3"></i>
+                <span>Lihat Materi</span>
+            </a>
+            <a href="{{ route('lihatTugasMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-upload w-6 mr-3"></i>
+                <span>Lihat Tugas</span>
+            </a>
+             <a href="{{ route('lihatAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-list-check w-6 mr-3"></i>
+                <span>Lihat Absensi</span>
+            </a>
+            <a href="{{ route('lihatNilaiMapel')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-pen w-6 mr-3"></i>
                 <span>Lihat Nilai</span>
             </a>
-            <a href="{{ route('lihatAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-list-check w-6 mr-3"></i>
-                <span>Lihat Absensi</span>
+            <a href="{{ route('lihatPengumumanSiswa')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-bullhorn w-6 mr-3"></i>
+                <span>Pengumuman</span>
+            </a>
+            <a href="{{ route('lihatAcaraSiswa')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-check mr-3"></i>
+                <span>Acara</span>
             </a>
             <a href="{{ route('lihatAcaraSiswa')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-calendar-check mr-3"></i>
@@ -142,7 +165,7 @@
 
             @can('view-adminDev')
             <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-users w-6 mr-3"></i>
+                <i class="fa-solid fa-users mr-3"></i>
                 <span>Manajemen Klien</span>
             </a>
             @endcan

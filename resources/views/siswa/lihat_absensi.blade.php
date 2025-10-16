@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Absensi {{ $infoMapel->nama_mapel ?? 'Mapel' }} - Sistem Manajemen Sekolah</title>
+    <title>Lihat Absensi - Sistem Manajemen Sekolah</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
@@ -36,7 +36,7 @@
                 <i class="fa-solid fa-tachometer-alt w-6 mr-3"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="{{ route('lihatNilaiMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('lihatNilaiMapel')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-pen w-6 mr-3"></i>
                 <span>Lihat Nilai</span>
             </a>
@@ -56,13 +56,17 @@
                 <i class="fa-solid fa-bullhorn mr-3"></i>
                 <span>Pengumuman</span>
             </a>
+            <a href="{{ route('lihatTugasMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-upload w-6 mr-3"></i>
+                <span>Lihat Tugas</span>
+            </a>
         </nav>
         <div class="absolute bottom-0 w-full p-6">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <a href="{{ route('logout') }}"
                    onclick="event.preventDefault(); this.closest('form').submit();"
-                   class="flex items-center px-4 py-3 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg w-full transition duration-200">
+                   class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
                     <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
                     <span>Logout</span>
                 </a>
@@ -95,22 +99,17 @@
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
             <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
-                <h2 class="text-3xl font-bold mb-2">Riwayat Kehadiran: {{ $infoMapel->nama_mapel ?? 'Mata Pelajaran' }}</h2>
-                <p class="text-indigo-200">Berikut adalah catatan kehadiran Anda pada mata pelajaran ini.</p>
+                <h2 class="text-3xl font-bold mb-2">Riwayat Kehadiran Anda</h2>
+                <p class="text-indigo-200">Berikut adalah catatan kehadiran Anda di setiap mata pelajaran.</p>
             </header>
             
             <div class="bg-white rounded-xl shadow-md p-6">
-                <div class="flex justify-end mb-4">
-                    <a href="{{ route('lihatAbsensi') }}" class="inline-flex items-center bg-gray-200 text-gray-700 hover:bg-gray-300 transition duration-300 px-4 py-2 rounded-lg shadow-sm font-semibold">
-                        <i class="fa-solid fa-arrow-left mr-2"></i>
-                        <span>Pilih Mapel Lain</span>
-                    </a>
-                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full min-w-[700px] text-left">
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Tanggal</th>
+                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Mata Pelajaran</th>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Status</th>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Keterangan Pertemuan</th>
                             </tr>
@@ -120,6 +119,9 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="p-3 text-gray-700 whitespace-nowrap">
                                     {{ \Carbon\Carbon::parse($absensi->daftarAbsensi->tanggal ?? $absensi->created_at)->isoFormat('dddd, D MMMM YYYY') }}
+                                </td>
+                                <td class="p-3 text-gray-800 font-medium">
+                                    {{ $absensi->mapel->nama_mapel ?? 'N/A' }}
                                 </td>
                                 <td class="p-3">
                                     @if ($absensi->status == 'Hadir')
@@ -134,9 +136,9 @@
                                         <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
                                             Izin
                                         </span>
-                                    @elseif ($absensi->status == 'Alfa')
+                                    @elseif ($absensi->status == 'Alpha')
                                         <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                            Alfa
+                                            Alpha
                                         </span>
                                     @else
                                         <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
@@ -150,9 +152,9 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="3" class="text-center py-12">
+                                <td colspan="4" class="text-center py-12">
                                     <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
-                                    <p class="text-gray-600 font-semibold text-lg">Belum ada data absensi untuk mata pelajaran ini.</p>
+                                    <p class="text-gray-600 font-semibold text-lg">Belum ada data absensi untuk semester ini.</p>
                                 </td>
                             </tr>
                             @endforelse
