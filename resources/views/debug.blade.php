@@ -13,6 +13,7 @@
 
     <br>
     <br>
+    <pre>{{ json_encode($tess ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
     <p>spasi</p>
     {{-- @forelse ($debug ?? [] as $item)
     <pre>{{ json_encode($item->name, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
@@ -28,7 +29,9 @@
     <p>spasi2</p> --}}
 
 
-    <pre>{{ json_encode($tes, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+    <pre>{{ json_encode($tes ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+    <br>
+    <pre>{{ json_encode($tesss ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
 
     {{-- <p>{{$tes}}</p> --}}
     {{-- <h1>{{$tess}}</h1> --}}

@@ -81,7 +81,6 @@
         <main class="p-6 md:p-8 flex-1">
             <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
                 <h2 class="text-3xl font-bold mb-2">Materi: {{ $infoJadwal->mapel->nama_mapel ?? 'N/A' }}</h2>
-                <p class="text-indigo-200">Kelas: {{ $infoJadwal->kelas->nama_kelas ?? 'N/A' }}</p>
             </header>
             
             <div class="bg-white rounded-xl shadow-md p-6">
@@ -93,9 +92,9 @@
                             <p class="text-sm text-gray-600 mt-1">{{ $materi->deskripsi_materi }}</p>
                             <p class="text-xs text-gray-400 mt-2">Diunggah pada: {{ \Carbon\Carbon::parse($materi->tanggal)->isoFormat('D MMMM YYYY') }}</p>
                         </div>
-                        <a href="{{ route('lihatMateri', ['namaFile' => $materi->nama_file]) }}" target="_blank" class="flex-shrink-0 bg-indigo-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-600 transition duration-300 flex items-center gap-2">
-                            <i class="fa-solid fa-download"></i>
-                            <span>Unduh Materi</span>
+                        <a href="{{ route('lihatMateriS', ['namaFile' => $materi->nama_file]) }}" target="_blank" class="flex-shrink-0 bg-indigo-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-600 transition duration-300 flex items-center gap-2">
+                            <i class="fa-solid fa-eye"></i>
+                            <span>Lihat Materi</span>
                         </a>
                     </div>
                     @empty
@@ -129,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
 </body>
 </html>
 
-```
+{{-- ```
 
 ### 4. Perbarui Tampilan `lihat_absensi.blade.php`
 
@@ -166,7 +165,7 @@ Terakhir, modifikasi file `resources/views/siswa/lihat_absensi.blade.php` untuk 
 
 ```
 
-Dengan semua perubahan ini, halaman riwayat absensi siswa kini akan memiliki tombol "Masuk" yang fungsional untuk melihat materi pelajaran terkait.
+Dengan semua perubahan ini, halaman riwayat absensi siswa kini akan memiliki tombol "Masuk" yang fungsional untuk melihat materi pelajaran terkait. --}}
 
 <!--
 [PROMPT_SUGGESTION]Tambahkan rekapitulasi jumlah Hadir, Sakit, Izin, dan Alpha di atas tabel absensi[/PROMPT_SUGGESTION]
