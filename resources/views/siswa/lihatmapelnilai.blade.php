@@ -80,7 +80,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     @foreach ($mapelList as $jadwal)
                     <!-- Card Mata Pelajaran -->
-                    <a href="{{ route('lihatNilaiMapel', ['id_mapel' => $jadwal->mapel->id_mapel]) }}" 
+                    <a href="{{ route('lihatNilaiDaftar', ['id_mapel' => $jadwal->mapel->id_mapel]) }}" 
                        class="block bg-white border border-gray-200 rounded-xl shadow-lg p-6 relative hover:shadow-xl hover:border-green-500 hover:-translate-y-1 transition-all duration-300 group">
                         
                         <div class="flex flex-col h-full">
