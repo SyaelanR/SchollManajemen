@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Angkatan;
 use App\Models\DaftarMateri;
 use App\Models\DaftarAbsensiSiswa;
+use App\Models\DaftarAcara;
 use App\Models\DaftarNilaiSiswa;
 use App\Models\DaftarPengumuman;
 use App\Models\DaftarTugas;
 use App\Models\Mapel;
 use App\Models\Jadwal;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 // use Illuminate\Container\Attributes\Storage;
 use Illuminate\Http\Request;
@@ -558,20 +560,13 @@ class SiswaController extends Controller
     {
         $id_sekolah = $request->cookie('id_sekolah');
 
-        // Ambil acara yang akan datang atau sedang berlangsung
-        $daftarAcara = \App\Models\DaftarAcara::where('id_sekolah', $id_sekolah)
-            ->where('tanggal_selesai', '>=', now())
-            ->orderBy('tanggal_mulai', 'asc')
-            ->get();
+        // Ambil acara hanya 1 minggu setelah acara selesai
+        $daftarAcara = DaftarAcara::where('id_sekolah', $id_sekolah)
+                        ->where('tanggal_selesai', '>=', Carbon::now()->subWeeks(1))
+                        ->orderBy('tanggal_mulai', 'desc')
+                        ->get();
 
-        // Ambil acara yang sudah lewat
-        $acaraLampau = \App\Models\DaftarAcara::where('id_sekolah', $id_sekolah)
-            ->where('tanggal_selesai', '<', now())
-            ->orderBy('tanggal_mulai', 'desc')
-            ->limit(5) // Batasi 5 acara terakhir
-            ->get();
-
-        return view('siswa.lihat_acara', compact('daftarAcara', 'acaraLampau'));
+        return view('siswa.lihat_acara', compact('daftarAcara'));
     }
 ////////////////////////////////lihat pengumuman/////////////////////////////////////////////
     public function lihatPengumuman(Request $request)

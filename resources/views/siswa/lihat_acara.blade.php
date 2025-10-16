@@ -36,7 +36,7 @@
                 <i class="fa-solid fa-tachometer-alt w-6 mr-3"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="{{ route('pilihMapel')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('lihatNilaiMapel')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-pen w-6 mr-3"></i>
                 <span>Lihat Nilai</span>
             </a>
@@ -48,7 +48,7 @@
                 <i class="fa-solid fa-calendar-check mr-3"></i>
                 <span>Acara</span>
             </a>
-            <a href="{{ route('pilihMapelMateri') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('lihatMateriMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-book-open w-6 mr-3"></i>
                 <span>Lihat Materi</span>
             </a>
@@ -56,7 +56,7 @@
                 <i class="fa-solid fa-bullhorn mr-3"></i>
                 <span>Pengumuman</span>
             </a>
-            <a href="{{ route('pilihMapelTugas') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('lihatTugasMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-upload w-6 mr-3"></i>
                 <span>Lihat Tugas</span>
             </a>
@@ -104,55 +104,37 @@
             </header>
 
             <!-- Acara Mendatang -->
-            <div class="mb-10">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">Acara Mendatang</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Daftar Acara</h2>
+                <div class="space-y-6">
                     @forelse ($daftarAcara as $acara)
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
-                        <div class="p-6">
-                            <div class="flex items-center space-x-4 mb-4">
-                                <div class="w-16 h-16 bg-indigo-100 text-indigo-600 flex flex-col items-center justify-center rounded-lg font-bold">
-                                    <span class="text-2xl leading-none">{{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('d') }}</span>
-                                    <span class="text-xs uppercase">{{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('M') }}</span>
-                                </div>
-                                <div>
-                                    <h3 class="text-lg font-bold text-gray-900">{{ $acara->judul_acara }}</h3>
-                                    <p class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('l, d F Y') }}</p>
-                                </div>
+                    <!-- Card Acara 1 (Contoh) -->
+                     <!-- Card Acara 2 (Contoh) -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 flex flex-col md:flex-row">
+                        <!-- Kolom Tanggal -->
+                        <div class="w-full md:w-32 bg-teal-500 text-white flex flex-col items-center justify-center p-4 text-center">
+                            <span class="text-5xl font-bold leading-none">{{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('d') }}</span>
+                            <span class="text-lg font-semibold uppercase">{{ \Carbon\Carbon::parse($acara->tanggal_mulai)->locale('id')->translatedFormat('M') }}</span>
+                            <span class="text-sm">{{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('Y') }}</span>
+                        </div>
+                        <!-- Kolom Informasi Acara -->
+                        <div class="p-6 flex-1">
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $acara->judul_acara }}</h3>
+                             <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm text-gray-600 mb-3">
+                                <p><i class="fa-solid fa-calendar-alt mr-2 text-gray-400"></i>{{ \Carbon\Carbon::parse($acara->tanggal_mulai)->locale('id')->translatedFormat('l, d F Y') }}</p>
+                                <p><i class="fa-solid fa-map-marker-alt mr-2 text-gray-400"></i>{{ $acara->lokasi }}</p>
+                                <p><i class="fa-solid fa-users mr-2 text-gray-400"></i>Peserta: {{ $acara->peserta }}</p>
                             </div>
-                            <p class="text-sm text-gray-600 mb-2"><i class="fa-solid fa-map-marker-alt mr-2 text-gray-400"></i>{{ $acara->lokasi }}</p>
-                            <p class="text-sm text-gray-600"><i class="fa-solid fa-users mr-2 text-gray-400"></i>Peserta: {{ $acara->peserta }}</p>
-                            @if($acara->deskripsi)
-                            <p class="text-sm text-gray-600 mt-3 border-t pt-3">{{ $acara->deskripsi }}</p>
-                            @endif
+                            <p class="text-gray-700 text-sm">{{ $acara->deskripsi }}</p>
                         </div>
                     </div>
                     @empty
-                    <div class="col-span-full text-center py-10 bg-white rounded-xl shadow-md">
+                    <div class="col-span-full text-center py-16 bg-white rounded-xl shadow-md">
                         <i class="fa-solid fa-calendar-xmark text-5xl text-gray-400 mb-4"></i>
                         <p class="text-gray-600 font-semibold text-lg">Tidak ada acara mendatang.</p>
+                        <p class="text-sm text-gray-500">Silakan cek kembali nanti.</p>
                     </div>
                     @endforelse
-                </div>
-            </div>
-
-            <!-- Acara Lampau -->
-            <div>
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">Acara Lampau</h2>
-                <div class="bg-white rounded-xl shadow-md p-6">
-                    <ul class="space-y-4">
-                        @forelse($acaraLampau as $acara)
-                        <li class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                            <div>
-                                <p class="font-semibold text-gray-800">{{ $acara->judul_acara }}</p>
-                                <p class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('d F Y') }}</p>
-                            </div>
-                            <span class="text-sm font-medium text-gray-400">Selesai</span>
-                        </li>
-                        @empty
-                        <li class="text-center py-4 text-gray-500">Tidak ada riwayat acara.</li>
-                        @endforelse
-                    </ul>
                 </div>
             </div>
         </main>
