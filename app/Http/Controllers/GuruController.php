@@ -566,7 +566,7 @@ class GuruController extends Controller
     {
         // 1. Validasi input
         $validated = $request->validate([
-            'status' => 'required|string|in:Hadir,Izin,Sakit,Alpha',
+            'status' => 'required|string|in:Hadir,Izin,Sakit,Alfa',
         ]);
 
         // 2. Cari data absensi siswa berdasarkan ID
