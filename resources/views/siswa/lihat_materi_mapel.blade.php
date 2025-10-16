@@ -48,45 +48,28 @@
             </a>
         </div>
         <nav class="mt-6">
-            <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-tachometer-alt w-6 mr-3"></i>
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="{{ route('pilihMapel')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-pen w-6 mr-3"></i>
-                <span>Lihat Nilai</span>
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
+                <span>Jadwal Pelajaran</span>
             </a>
-            <a href="{{ route('lihatAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-list-check w-6 mr-3"></i>
-                <span>Lihat Absensi</span>
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-star w-6 h-6 mr-3"></i>
+                <span>Nilai Saya</span>
             </a>
-            <a href="{{ route('pilihMapelMateri') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-book-open w-6 mr-3"></i>
-                <span>Lihat Materi</span>
-            </a>
-            <a href="{{ route('lihatAcaraSiswa')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-calendar-check mr-3"></i>
-                <span>Acara</span>
-            </a>
-            <a href="{{ route('lihatPengumumanSiswa')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-bullhorn mr-3"></i>
-                <span>Pengumuman</span>
-            </a>
-            <a href="{{ route('pilihMapelTugas') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
-                <i class="fa-solid fa-upload w-6 mr-3"></i>
-                <span>Lihat Tugas</span>
+            <a href="#" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book w-6 h-6 mr-3"></i>
+                <span>Mata Pelajaran</span>
             </a>
         </nav>
         <div class="absolute bottom-0 w-full p-6">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <a href="{{ route('logout') }}"
-                   onclick="event.preventDefault(); this.closest('form').submit();"
-                   class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
-                    <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
-                    <span>Logout</span>
-                </a>
-            </form>
+            <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg">
+                <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
+                <span>Logout</span>
+            </a>
         </div>
     </aside>
 
@@ -124,7 +107,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 
                 @forelse ($daftarMapel ?? [] as $mapel)
-                <a href="{{ route('lihatTugasDaftar', $mapel->mapel->id_mapel)}}" class="block">
+                <a href="{{ route('lihatDaftarMateri', $mapel->mapel->id_mapel)}}" class="block">
                     <div class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between h-full hover:shadow-lg hover:-translate-y-1 transform transition-all duration-300">
                         <div>
                             <div class="flex items-center justify-between mb-4">

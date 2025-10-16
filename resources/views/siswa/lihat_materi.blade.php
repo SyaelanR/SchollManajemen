@@ -36,7 +36,7 @@
                 <i class="fa-solid fa-tachometer-alt w-6 mr-3"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="{{ route('pilihMapel')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('lihatNilaiMapel')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-pen w-6 mr-3"></i>
                 <span>Lihat Nilai</span>
             </a>
@@ -44,7 +44,7 @@
                 <i class="fa-solid fa-list-check w-6 mr-3"></i>
                 <span>Lihat Absensi</span>
             </a>
-            <a href="{{ route('pilihMapelMateri') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
+            <a href="{{ route('lihatMateriMapel') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
                 <i class="fa-solid fa-book-open w-6 mr-3"></i>
                 <span>Lihat Materi</span>
             </a>
@@ -56,7 +56,7 @@
                 <i class="fa-solid fa-bullhorn mr-3"></i>
                 <span>Pengumuman</span>
             </a>
-            <a href="{{ route('pilihMapelTugas') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('lihatTugasMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-upload w-6 mr-3"></i>
                 <span>Upload Tugas</span>
             </a>
@@ -100,7 +100,6 @@
         <main class="p-6 md:p-8 flex-1">
             <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
                 <h2 class="text-3xl font-bold mb-2">Materi: {{ $infoJadwal->mapel->nama_mapel ?? 'N/A' }}</h2>
-                <p class="text-indigo-200">Kelas: {{ $infoJadwal->kelas->nama_kelas ?? 'N/A' }}</p>
             </header>
             
             <div class="bg-white rounded-xl shadow-md p-6">
@@ -112,9 +111,9 @@
                             <p class="text-sm text-gray-600 mt-1">{{ $materi->deskripsi_materi }}</p>
                             <p class="text-xs text-gray-400 mt-2">Diunggah pada: {{ \Carbon\Carbon::parse($materi->tanggal)->isoFormat('D MMMM YYYY') }}</p>
                         </div>
-                        <a href="{{ route('lihatMateri', ['namaFile' => $materi->nama_file]) }}" target="_blank" class="flex-shrink-0 bg-indigo-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-600 transition duration-300 flex items-center gap-2">
-                            <i class="fa-solid fa-download"></i>
-                            <span>Unduh Materi</span>
+                        <a href="{{ route('lihatMateriS', ['namaFile' => $materi->nama_file]) }}" target="_blank" class="flex-shrink-0 bg-indigo-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-600 transition duration-300 flex items-center gap-2">
+                            <i class="fa-solid fa-eye"></i>
+                            <span>Lihat Materi</span>
                         </a>
                     </div>
                     @empty
