@@ -126,44 +126,37 @@
             @endcan
 
             @can('view-siswa')
-            <a href="{{ route('lihatNilaiMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-bullhorn w-6 mr-3"></i>
-                <span>Input Tugas</span>
-            </a>
-            @endcan
-
-            @can('view-siswa')
-            <a href="{{ route('lihatJadwalS') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('lihatJadwalS') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('lihatJadwalS')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
                 <i class="fa-solid fa-calendar-days w-6 mr-3"></i>
                 <span>Lihat Jadwal</span>
             </a>
-            <a href="{{ route('lihatMateriMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('lihatMateriMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('lihatMateriMapel') || request()->routeIs('lihatDaftarMateri')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
                 <i class="fa-solid fa-book-open w-6 mr-3"></i>
                 <span>Lihat Materi</span>
             </a>
-            <a href="{{ route('lihatTugasMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('lihatTugasMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('lihatTugasMapel') || request()->routeIs('lihatTugasDaftar')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
                 <i class="fa-solid fa-upload w-6 mr-3"></i>
                 <span>Lihat Tugas</span>
             </a>
-             <a href="{{ route('lihatAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+             <a href="{{ route('lihatAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('lihatAbsensi') || request()->routeIs('lihatAbsensi.perMapel')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
                 <i class="fa-solid fa-list-check w-6 mr-3"></i>
                 <span>Lihat Absensi</span>
             </a>
-            <a href="{{ route('lihatNilaiMapel')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('lihatNilaiMapel')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('lihatNilaiMapel') || request()->routeIs('lihatNilaiDaftar')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
                 <i class="fa-solid fa-pen w-6 mr-3"></i>
                 <span>Lihat Nilai</span>
             </a>
-            <a href="{{ route('lihatPengumumanSiswa')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('lihatPengumumanSiswa')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('lihatPengumumanSiswa')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
                 <i class="fa-solid fa-bullhorn w-6 mr-3"></i>
                 <span>Pengumuman</span>
             </a>
-            <a href="{{ route('lihatAcaraSiswa')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('lihatAcaraSiswa')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('lihatAcaraSiswa')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
                 <i class="fa-solid fa-calendar-check mr-3"></i>
                 <span>Acara</span>
             </a>
-            <a href="{{ route('lihatAcaraSiswa')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-calendar-check mr-3"></i>
-                <span>Acara</span>
+            <a href="{{ route('KRS')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('lihatAcaraSiswa')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
+                <i class="fa-solid fa-id-card mr-3"></i>
+                <span>KRS</span>
             </a>
             @endcan
 
@@ -174,17 +167,16 @@
             </a>
             @endcan
         </nav>
-        <div class="absolute bottom-0 w-full p-6">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <a href="{{ route('logout') }}"
-                   onclick="event.preventDefault(); this.closest('form').submit();"
-                   class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
-                    <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
-                    <span>Logout</span>
-                </a>
-            </form>
-        </div>
+        <div class="p-6 border-t border-gray-200 flex-shrink-0">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <a href="{{ route('logout') }}"
+                onclick="event.preventDefault(); this.closest('form').submit();"
+                class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full transition duration-200">
+                <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
+                <span>Logout</span>
+            </a>
+        </form>
     </aside>
 
     <!-- Overlay for mobile -->
@@ -430,7 +422,7 @@
                     </div>
                     <div class="space-y-4">
                         <!-- Item Pengumuman 1 -->
-                        @forelse ($DaftarPengumuman ?? [] as $pengumuman)
+                        @forelse ($DaftarPengumuman ?? [] as $pengumuman) {{-- Variabel ini mungkin tidak ada lagi, tambahkan pengecekan jika perlu --}}
                         <div class="border-l-4 border-orange-400 pl-4 py-2">
                             <h4 class="font-semibold text-gray-900">{{$pengumuman->judul}}</h4>
                             <p class="text-sm text-gray-600 line-clamp-2">{{$pengumuman->isi}}</p>
@@ -456,18 +448,17 @@
                 </div>
 
                 <!-- Card Acara Sekolah -->
-                <div class="bg-white p-6 rounded-xl shadow-md">
+                <div class="bg-white p-6 rounded-xl shadow-md h-96 flex flex-col">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-xl font-bold text-gray-800">Acara Sekolah</h3>
-                         <a href="{{ route('lihatAcaraSiswa')}}" class="text-sm font-medium text-indigo-600 hover:underline">Lihat Semua</a>
+                        <a href="{{ route('lihatAcaraSiswa')}}" class="text-sm font-medium text-indigo-600 hover:underline">Lihat Semua</a>
                     </div>
-                    <div class="space-y-4">
-                        <!-- Item Acara 1 -->
+                    <div class="space-y-4 overflow-y-auto pr-2">
                         @forelse ($daftarAcara ?? [] as $acara)
                         <div class="flex items-center space-x-4">
-                            <div class="w-16 h-16 bg-red-100 text-red-600 flex flex-col items-center justify-center rounded-lg font-bold">
-                                <span class="text-2xl leading-none">17</span>
-                                <span class="text-xs uppercase">OKT</span>
+                            <div class="w-16 h-16 bg-red-100 text-red-600 flex flex-col items-center justify-center rounded-lg font-bold flex-shrink-0">
+                                <span class="text-2xl leading-none">{{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('d') }}</span>
+                                <span class="text-xs uppercase">{{ \Carbon\Carbon::parse($acara->tanggal_mulai)->format('M') }}</span>
                             </div>
                             <div>
                                 <h4 class="font-semibold text-gray-900 text-base">{{ $acara->judul_acara ?? 'Tanpa Judul' }}</h4>
@@ -497,7 +488,6 @@
                                     {{ $acara->lokasi }}
                                 </p>
                             </div>
-
                         </div>
                         @empty
                         <!-- Card kosong (tidak ada acara) -->

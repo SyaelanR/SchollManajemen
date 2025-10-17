@@ -580,12 +580,11 @@ class SiswaController extends Controller
                           ->pluck('id_mapel')->unique();
 
         // Ambil pengumuman yang relevan (berdasarkan id_sekolah, id_kelas, dan id_mapel)
-        $pengumumans = DaftarPengumuman::where('id_sekolah', $id_sekolah)
-            ->where('id_kelas', $id_kelas)
-            ->whereIn('id_mapel', $mapelIds)
-            ->with('mapel') // Eager load relasi mapel untuk efisiensi
-            ->latest('created_at')->get();
+        $DaftarPengumuman = DaftarPengumuman::where('id_kelas', $id_kelas)
+            ->where('id_sekolah', $id_sekolah)
+            ->where('created_at', '>=', Carbon::now()->subWeeks(1))
+            ->get();
 
-        return view('siswa.lihat_pengumuman', compact('pengumumans'));
+        return view('siswa.lihat_pengumuman', ['DaftarPengumuman' => $DaftarPengumuman]);
     }
 }

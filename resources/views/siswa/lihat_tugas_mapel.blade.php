@@ -80,20 +80,24 @@
                 <i class="fa-solid fa-calendar-check mr-3"></i>
                 <span>Acara</span>
             </a>
+            <a href="{{ route('KRS')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('lihatAcaraSiswa')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
+                <i class="fa-solid fa-id-card mr-3"></i>
+                <span>KRS</span>
+            </a>
         </nav>
-        <div class="absolute bottom-0 w-full p-6">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <a href="{{ route('logout') }}"
-                   onclick="event.preventDefault(); this.closest('form').submit();"
-                   class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
-                    <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
-                    <span>Logout</span>
-                </a>
-            </form>
-        </div>
+        <div class="p-6 border-t border-gray-200 flex-shrink-0">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <a href="{{ route('logout') }}"
+                onclick="event.preventDefault(); this.closest('form').submit();"
+                class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full transition duration-200">
+                <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
+                <span>Logout</span>
+            </a>
+        </form>
     </aside>
 
+    <!-- Overlay for mobile -->
     <!-- Overlay for mobile -->
     <div id="overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden lg:hidden"></div>
 
@@ -101,17 +105,16 @@
     <div class="flex-1 flex flex-col overflow-y-auto">
         <!-- Header -->
         <header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-30">
-            <!-- Mobile Menu Button -->
             <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
                 <i class="fa-solid fa-bars text-2xl"></i>
             </button>
             <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Pilih Mata Pelajaran</h1>
             <div class="flex items-center space-x-4">
-                <button class="text-gray-500 hover:text-gray-700">
+                 <button class="text-gray-500 hover:text-gray-700">
                     <i class="fa-solid fa-bell"></i>
                 </button>
                 <div class="relative">
-                    <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=S" alt="User avatar">
+                    <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=S" alt="User Avatar">
                     <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
                 </div>
             </div>
@@ -120,55 +123,64 @@
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
             <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
-                <h2 class="text-3xl font-bold mb-2">Tugas Mata Pelajaran</h2>
-                <p class="text-indigo-200">Berikut adalah semua mata pelajaran yang Anda ambil semester ini.</p>
+                <h2 class="text-3xl font-bold mb-2">Lihat Riwayat Absensi</h2>
+                <p class="text-indigo-200">Pilih mata pelajaran untuk melihat detail riwayat kehadiran Anda.</p>
             </header>
-
-            <!-- Subjects Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                    <h2 class="text-xl sm:text-2xl font-semibold text-gray-800">Daftar Mata Pelajaran Anda</h2>
+                </div>
                 
-                @forelse ($daftarMapel ?? [] as $mapel)
-                <a href="{{ route('lihatTugasDaftar', $mapel->mapel->id_mapel)}}" class="block">
-                    <div class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between h-full hover:shadow-lg hover:-translate-y-1 transform transition-all duration-300">
-                        <div>
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="bg-indigo-100 text-indigo-600 p-3 rounded-full">
-                                    <i class="fa-solid fa-book-open text-xl"></i>
+                @if (count($daftarMapel) > 0)
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    @foreach ($daftarMapel as $mapel)
+                    <div class="bg-gray-50 border rounded-xl p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
+                        <!-- Clickable Area -->
+                        <a href="{{ route('lihatTugasDaftar', $mapel->mapel->id_mapel)}}" class="flex flex-col h-full">
+                            <div class="flex-grow">
+                                <div class="bg-indigo-100 text-indigo-600 p-4 rounded-full flex items-center justify-center w-16 h-16 mb-4 shadow-inner">
+                                    <i class="fa-solid fa-book-open text-2xl"></i>
+                                </div>
+                                <h3 class="text-xl font-semibold text-gray-800">{{ $mapel->mapel->nama_mapel ?? 'N/A' }}</h3>
+                            </div>
+                            <div class="border-t mt-4 pt-4 text-sm text-gray-600">
+                                <div class="flex items-center">
+                                    <i class="fa-solid fa-user-tie w-4 mr-2 text-gray-400"></i>
+                                    <span>{{ $mapel->mapel->guru->name ?? 'Guru Belum Diatur' }}</span>
                                 </div>
                             </div>
-                            <h3 class="text-xl font-bold text-gray-800 mb-2">{{$mapel->mapel->nama_mapel}}</h3>
-                            <p class="text-gray-600 text-sm flex items-center"><i class="fa-solid fa-chalkboard-user w-4 mr-2 text-gray-400"></i>{{$mapel->mapel->guru->name}}</p>
-                        </div>
-                        <div class="border-t mt-4 pt-4">
-                            <p class="text-sm font-semibold text-gray-700">SKS: <span class="font-bold text-indigo-600">{{$mapel->mapel->sks}}</span></p>
-                        </div>
+                        </a>
                     </div>
-                </a>
-                @empty
-                <div class="col-span-full text-center py-10 bg-white rounded-xl shadow-md">
-                    <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
-                    <p class="text-gray-600 font-semibold text-lg">Belum ada mata pelajaran yang tersedia.</p>
+                    @endforeach
                 </div>
-                @endforelse
+                @else
+                <div class="text-center py-12">
+                    <i class="fa-solid fa-book-open-reader text-5xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600 font-semibold text-lg">Anda belum memiliki mata pelajaran.</p>
+                    <p class="text-gray-500 mt-2">Hubungi administrator untuk informasi lebih lanjut.</p>
+                </div>
+                @endif
             </div>
         </main>
     </div>
 </div>
-            
+    
 <script>
-    // --- Sidebar Toggle Functionality ---
+document.addEventListener('DOMContentLoaded', function () {
+    // --- Sidebar Toggle ---
     const menuButton = document.getElementById('menu-button');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
-
-    const toggleSidebar = () => {
-        sidebar.classList.toggle('-translate-x-full');
-        overlay.classList.toggle('hidden');
-    };
-
-    menuButton.addEventListener('click', toggleSidebar);
-    overlay.addEventListener('click', toggleSidebar);
+    if (menuButton && sidebar && overlay) {
+        const toggleSidebar = () => {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        };
+        menuButton.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
+    }
+});
 </script>
-
 </body>
 </html>

@@ -236,27 +236,29 @@ Route::middleware('auth')->group(function () {
             Route::get('/lihat-jawaban/{namaFile}', [SiswaController::class, 'lihatJawaban'])->name('lihatJawaban');
         });
 
-        Route::get('/lihat-jadwal', [SiswaController::class, 'lihatJadwalS'])->name('lihatJadwalS');
-
-        Route::get('/krs', [SiswaController::class, 'KRS'])->name('KRS');
-        Route::get('/lihat-absensi', [SiswaController::class, 'pilihMapelAbsensi'])->name('lihatAbsensi');
-
         Route::prefix('materi')->group(function (){
             Route::get('/mapel', [SiswaController::class, 'lihatMateriMapel'])->name('lihatMateriMapel');
             Route::get('/lihat-materi/{id_materi}', [SiswaController::class, 'lihatDaftarMateri'])->name('lihatDaftarMateri');
             Route::get('/lihat-file-materi/{namaFile}', [SiswaController::class, 'lihatMateriS'])->name('lihatMateriS');
         });
-        Route::get('/lihat-absensi/{id_mapel}', [SiswaController::class, 'lihatAbsensiPerMapel'])->name('lihatAbsensi.perMapel');
-        Route::get('/lihat-acara', [SiswaController::class, 'lihatAcara'])->name('lihatAcaraSiswa');
-        Route::get('/lihat-pengumuman', [SiswaController::class, 'lihatPengumuman'])->name('lihatPengumumanSiswa');
 
-        Route::get('/lihat-acara', [SiswaController::class, 'lihatAcara'])->name('lihatAcaraSiswa');
-        
         Route::prefix('nilai')->group(function () {
             Route::get('/mapel', [SiswaController::class, 'lihatNilaiMapel'])->name('lihatNilaiMapel');
             Route::get('/daftar-nilai/{id_mapel}', [SiswaController::class, 'lihatNilaiDaftar'])->name('lihatNilaiDaftar');
 
         });
+
+        Route::prefix('absensi')->group(function () {
+            Route::get('/mapel', [SiswaController::class, 'pilihMapelAbsensi'])->name('lihatAbsensi');
+            Route::get('/lihat-absensi/{id_mapel}', [SiswaController::class, 'lihatAbsensiPerMapel'])->name('lihatAbsensi.perMapel');
+
+        });
+        Route::get('/lihat-jadwal', [SiswaController::class, 'lihatJadwalS'])->name('lihatJadwalS');
+
+        Route::get('/krs', [SiswaController::class, 'KRS'])->name('KRS');
+
+        Route::get('/lihat-acara', [SiswaController::class, 'lihatAcara'])->name('lihatAcaraSiswa');
+        Route::get('/lihat-pengumuman', [SiswaController::class, 'lihatPengumuman'])->name('lihatPengumumanSiswa');
 
     });
 
