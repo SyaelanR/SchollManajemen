@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pilih Mata Pelajaran - Sistem Nilai</title>
+    <title>Pilih Pelajaran - Sistem Manajemen Sekolah</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
@@ -14,12 +14,27 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         /* Custom styles */
-        body { font-family: 'Inter', sans-serif; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
-        .sidebar { transition: transform 0.3s ease-in-out; }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex">
@@ -83,6 +98,7 @@
     </aside>
 
     <!-- Overlay for mobile -->
+    <!-- Overlay for mobile -->
     <div id="overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden lg:hidden"></div>
 
     <!-- Main Content -->
@@ -92,60 +108,69 @@
             <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
                 <i class="fa-solid fa-bars text-2xl"></i>
             </button>
-            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Daftar Mata Pelajaran</h1>
+            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Pilih Mata Pelajaran</h1>
             <div class="flex items-center space-x-4">
-                 <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=S" alt="User Avatar">
-                 <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
+                 <button class="text-gray-500 hover:text-gray-700">
+                    <i class="fa-solid fa-bell"></i>
+                </button>
+                <div class="relative">
+                    <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=S" alt="User Avatar">
+                    <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
+                </div>
             </div>
         </header>
 
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
             <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
-                <h2 class="text-3xl font-bold mb-2">Nilai Per Mata Pelajaran</h2>
-                <p class="text-indigo-200">Silakan pilih mata pelajaran untuk melihat detail nilai Anda.</p>
+                <h2 class="text-3xl font-bold mb-2">Nilai</h2>
+                <p class="text-indigo-200">Pilih mata pelajaran untuk melihat detail riwayat kehadiran Anda.</p>
             </header>
             
-            @if (isset($mapelList) && $mapelList->isNotEmpty())
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                @foreach ($mapelList as $jadwal)
-                <!-- Card Mata Pelajaran -->
-                <a href="{{ route('lihatNilaiDaftar', ['id_mapel' => $jadwal->mapel->id_mapel]) }}" class="block">
-                    <div class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between h-full hover:shadow-lg hover:-translate-y-1 transform transition-all duration-300">
-                        <div>
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="bg-indigo-100 text-indigo-600 p-3 rounded-full">
-                                    <i class="fa-solid fa-book-open text-xl"></i>
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                    <h2 class="text-xl sm:text-2xl font-semibold text-gray-800">Daftar Mata Pelajaran Anda</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    @forelse ($daftarMapel ?? [] as $mapel)
+                    <div class="bg-gray-50 border rounded-xl p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
+                        <!-- Clickable Area -->
+                        <a href="{{ route('lihatNilaiDaftar', $mapel->mapel->id_mapel)}}" class="flex flex-col h-full">
+                            <div class="flex-grow">
+                                <div class="bg-indigo-100 text-indigo-600 p-4 rounded-full flex items-center justify-center w-16 h-16 mb-4 shadow-inner">
+                                    <i class="fa-solid fa-book-open text-2xl"></i>
+                                </div>
+                                <h3 class="text-xl font-semibold text-gray-800">{{ $mapel->mapel->nama_mapel ?? 'N/A' }}</h3>
+                            </div>
+                            <div class="border-t mt-4 pt-4 text-sm text-gray-600">
+                                <div class="flex items-center">
+                                    <i class="fa-solid fa-user-tie w-4 mr-2 text-gray-400"></i>
+                                    <span>{{ $mapel->mapel->guru->name ?? 'Guru Belum Diatur' }}</span>
                                 </div>
                             </div>
-                            <h3 class="text-xl font-bold text-gray-800 mb-2">{{ $jadwal->mapel->nama_mapel ?? 'N/A' }}</h3>
-                            <p class="text-gray-600 text-sm flex items-center"><i class="fa-solid fa-chalkboard-user w-4 mr-2 text-gray-400"></i>{{ $jadwal->mapel->guru->name ?? 'Belum Ditentukan' }}</p>
-                        </div>
-                        <div class="border-t mt-4 pt-4">
-                            <p class="text-sm font-semibold text-gray-700">SKS: <span class="font-bold text-indigo-600">{{ $jadwal->mapel->sks ?? 'N/A' }}</span></p>
-                        </div>
+                        </a>
                     </div>
-                </a>
-                @endforeach
+                    @empty
+                </div>
+                <div class="text-center py-12">
+                    <i class="fa-solid fa-book-open-reader text-5xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600 font-semibold text-lg">Anda belum memiliki mata pelajaran.</p>
+                    <p class="text-gray-500 mt-2">Hubungi administrator untuk informasi lebih lanjut.</p>
+                </div>
+                @endforelse
             </div>
-            @else
-            <div class="col-span-full text-center py-10 bg-white rounded-xl shadow-md">
-                <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
-                <p class="text-gray-600 font-semibold text-lg">Belum ada mata pelajaran yang tersedia.</p>
-                <p class="text-gray-500 mt-2">Jadwal mata pelajaran untuk semester ini belum diatur.</p>
-            </div>
-            @endif
         </main>
     </div>
 </div>
-
+    
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Fungsi untuk toggle sidebar (dibuat sederhana karena tidak ada interaksi form)
+    // --- Sidebar Toggle ---
     const menuButton = document.getElementById('menu-button');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
-    if(menuButton && sidebar && overlay) {
+    if (menuButton && sidebar && overlay) {
         const toggleSidebar = () => {
             sidebar.classList.toggle('-translate-x-full');
             overlay.classList.toggle('hidden');

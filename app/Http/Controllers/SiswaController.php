@@ -474,7 +474,7 @@ class SiswaController extends Controller
 
         // Mengambil daftar mapel yang unik untuk kelas siswa yang sedang login
         // berdasarkan jadwal yang ada.
-        $mapelList = Jadwal::with('mapel.guru')
+        $daftarMapel = Jadwal::with('mapel.guru')
             ->where('id_sekolah', $id_sekolah)
             ->where('id_kelas', $id_kelas)
             // Hanya jalankan filter tambahan jika info angkatan valid
@@ -489,7 +489,7 @@ class SiswaController extends Controller
             ->distinct()
             ->get();
 
-        return view('siswa.lihatmapelnilai', ['mapelList' => $mapelList]);
+        return view('siswa.lihatmapelnilai', ['daftarMapel' => $daftarMapel]);
     }
 
     /**
@@ -549,11 +549,12 @@ class SiswaController extends Controller
                         ->whereColumn('daftar_nilai_siswas.tingkat', 'angkatans.id_tingkat')
                         ->whereColumn('daftar_nilai_siswas.semester', 'angkatans.semester')
                         // Eager load relasi yang dibutuhkan untuk view
-                        ->with(['daftarNilai', 'kelas.angkatan'])
+                        ->with(['daftarNilai', 'kelas.angkatan', 'mapel'])
                         ->get();
 
+        $nama_mapel = $daftarNilai->first()->mapel->nama_mapel;
 
-        return view('siswa.lihatnilai', ['daftarNilai' => $daftarNilai]);
+        return view('siswa.lihatnilai', ['daftarNilai' => $daftarNilai, 'nama_mapel' => $nama_mapel]);
     }
 
     public function lihatAcara(Request $request)

@@ -110,8 +110,8 @@
             <main class="p-6 md:p-8 flex-1">
                 <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg flex flex-wrap justify-between items-center text-white gap-4">
                     <div>
-                        <h1 class="text-2xl md:text-3xl font-bold">Daftar Tugas</h1>
-                        <p class="text-indigo-200 mt-2">Kerjakan tugas tugas yang diberikan oleh guru!</p>
+                        <h1 class="text-2xl md:text-3xl font-bold">Daftar Tugas: {{ $infoJadwal->mapel->nama_mapel }}</h1>
+                        <p class="text-indigo-200 mt-2">Kerjakan tugas-tugas yang diberikan oleh guru!</p>
                     </div>
                     <a href="javascript:void(0)" onclick="history.back()" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
                         <i class="fa-solid fa-arrow-left mr-2"></i>

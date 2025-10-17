@@ -121,7 +121,7 @@
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
             <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
-                <h2 class="text-3xl font-bold mb-2">Lihat Riwayat Absensi</h2>
+                <h2 class="text-3xl font-bold mb-2">Riwayat Absensi</h2>
                 <p class="text-indigo-200">Pilih mata pelajaran untuk melihat detail riwayat kehadiran Anda.</p>
             </header>
             
@@ -130,35 +130,33 @@
                     <h2 class="text-xl sm:text-2xl font-semibold text-gray-800">Daftar Mata Pelajaran Anda</h2>
                 </div>
                 
-                @if (count($daftarMapel) > 0)
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    @foreach ($daftarMapel as $jadwal)
+                    @forelse ($daftarMapel ?? [] as $mapel)
                     <div class="bg-gray-50 border rounded-xl p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
                         <!-- Clickable Area -->
-                        <a href="{{ route('lihatAbsensi.perMapel', ['id_mapel' => $jadwal->id_mapel]) }}" class="flex flex-col h-full">
+                        <a href="{{ route('lihatAbsensi.perMapel', ['id_mapel' => $mapel->id_mapel]) }}" class="flex flex-col h-full">
                             <div class="flex-grow">
                                 <div class="bg-indigo-100 text-indigo-600 p-4 rounded-full flex items-center justify-center w-16 h-16 mb-4 shadow-inner">
                                     <i class="fa-solid fa-book-open text-2xl"></i>
                                 </div>
-                                <h3 class="text-xl font-semibold text-gray-800">{{ $jadwal->mapel->nama_mapel ?? 'N/A' }}</h3>
+                                <h3 class="text-xl font-semibold text-gray-800">{{ $mapel->mapel->nama_mapel ?? 'N/A' }}</h3>
                             </div>
                             <div class="border-t mt-4 pt-4 text-sm text-gray-600">
                                 <div class="flex items-center">
                                     <i class="fa-solid fa-user-tie w-4 mr-2 text-gray-400"></i>
-                                    <span>{{ $jadwal->mapel->guru->name ?? 'Guru Belum Diatur' }}</span>
+                                    <span>{{ $mapel->mapel->guru->name ?? 'Guru Belum Diatur' }}</span>
                                 </div>
                             </div>
                         </a>
                     </div>
-                    @endforeach
                 </div>
-                @else
+                @empty
                 <div class="text-center py-12">
                     <i class="fa-solid fa-book-open-reader text-5xl text-gray-400 mb-4"></i>
                     <p class="text-gray-600 font-semibold text-lg">Anda belum memiliki mata pelajaran.</p>
                     <p class="text-gray-500 mt-2">Hubungi administrator untuk informasi lebih lanjut.</p>
                 </div>
-                @endif
+                @endforelse
             </div>
         </main>
     </div>

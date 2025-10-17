@@ -111,9 +111,8 @@
                     <h2 class="text-xl sm:text-2xl font-semibold text-gray-800">Daftar Mata Pelajaran Anda</h2>
                 </div>
                 
-                @if (count($daftarMapel) > 0)
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    @foreach ($daftarMapel as $jadwal)
+                    @forelse ($daftarMapel as $jadwal)
                     <div class="bg-gray-50 border rounded-xl p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
                         <!-- Clickable Area -->
                         <a href="{{ route('lihatMateriSiswa', ['id_kelas' => $jadwal->id_kelas, 'id_mapel' => $jadwal->id_mapel]) }}" class="flex flex-col h-full">
@@ -131,15 +130,14 @@
                             </div>
                         </a>
                     </div>
-                    @endforeach
                 </div>
-                @else
+                @empty
                 <div class="text-center py-12">
                     <i class="fa-solid fa-book-open-reader text-5xl text-gray-400 mb-4"></i>
                     <p class="text-gray-600 font-semibold text-lg">Anda belum memiliki mata pelajaran.</p>
                     <p class="text-gray-500 mt-2">Hubungi administrator untuk informasi lebih lanjut.</p>
                 </div>
-                @endif
+                @endforelse
             </div>
         </main>
     </div>

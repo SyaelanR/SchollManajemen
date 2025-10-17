@@ -415,12 +415,12 @@
             <!-- === KARTU PENGUMUMAN DAN ACARA DIMULAI DI SINI === -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- Card Pengumuman -->
-                <div class="bg-white p-6 rounded-xl shadow-md">
+                <div class="bg-white p-6 rounded-xl shadow-md h-96 flex flex-col">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-xl font-bold text-gray-800">Pengumuman Terbaru</h3>
-                        <a href="#" class="text-sm font-medium text-indigo-600 hover:underline">Lihat Semua</a>
+                        <a href="{{ route('lihatPengumumanSiswa')}}" class="text-sm font-medium text-indigo-600 hover:underline">Lihat Semua</a>
                     </div>
-                    <div class="space-y-4">
+                    <div class="space-y-4 overflow-y-auto pr-2">
                         <!-- Item Pengumuman 1 -->
                         @forelse ($DaftarPengumuman ?? [] as $pengumuman) {{-- Variabel ini mungkin tidak ada lagi, tambahkan pengecekan jika perlu --}}
                         <div class="border-l-4 border-orange-400 pl-4 py-2">

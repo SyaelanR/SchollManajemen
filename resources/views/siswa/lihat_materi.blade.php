@@ -105,8 +105,15 @@
 
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
-            <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
-                <h2 class="text-3xl font-bold mb-2">Materi: {{ $infoJadwal->mapel->nama_mapel ?? 'N/A' }}</h2>
+            <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg flex flex-wrap justify-between items-center text-white gap-4">
+                <div>
+                    <h2 class="text-3xl font-bold mb-2">Daftar Materi: {{ $infoJadwal->mapel->nama_mapel ?? 'N/A' }}</h2>
+                    <p class="text-indigo-200 mt-2">Pelajari materi-materi yang diberikan oleh guru!</p>
+                </div>
+                <a href="javascript:void(0)" onclick="history.back()" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
+                    <i class="fa-solid fa-arrow-left mr-2"></i>
+                    <span>Kembali</span>
+                </a>
             </header>
             
             <div class="bg-white rounded-xl shadow-md p-6">

@@ -103,7 +103,7 @@
         <main class="p-6 md:p-8 flex-1">
 
             <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg text-white">
-                <h2 class="text-2xl md:text-3xl font-bold mb-1">Matematika Wajib</h2>
+                <h2 class="text-2xl md:text-3xl font-bold mb-1">{{ $nama_mapel }}</h2>
                 <p class="text-indigo-200">Berikut adalah rincian nilai Anda.</p>
             </header>
             
@@ -111,9 +111,12 @@
                 <div class="p-6">
                     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                         <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Rincian Nilai</h2>
-                        <div class="p-2 px-4 bg-gray-100 rounded-lg text-sm font-medium text-gray-600">
-                            KKM (Kriteria Ketuntasan Minimal): <strong>75</strong>
-                        </div>
+                        <div class="flex justify-end mb-4">
+                            <a href="{{ route('lihatNilaiMapel') }}" class="inline-flex items-center bg-gray-200 text-gray-700 hover:bg-gray-300 transition duration-300 px-4 py-2 rounded-lg shadow-sm font-semibold">
+                                <i class="fa-solid fa-arrow-left mr-2"></i>
+                                <span>Pilih Mapel Lain</span>
+                            </a>
+                         </div>
                     </div>
                 
                     <div class="overflow-x-auto">
@@ -134,8 +137,6 @@
                                         <span class="bg-blue-100 text-blue-800 font-medium py-1 px-3 rounded-full text-xs">{{$nilai->daftarNilai->tipe_nilai}}</span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-lg font-semibold text-gray-700">{{$nilai->nilai}}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                    </td>
                                 </tr>
                                 @empty
                                     
