@@ -175,7 +175,7 @@
             <!-- UPDATED Header -->
             <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg flex flex-wrap justify-between items-center text-white gap-4">
                 <div>
-                    <h1 class="text-2xl md:text-3xl font-bold">Daftar Nilai: {{$infoKelas->kelas->nama_kelas}} - {{$infoMapel->nama_mapel}}</h1>
+                    <h1 class="text-2xl md:text-3xl font-bold">Daftar Nilai: {{$infoJKA->kelas?->nama_kelas ?? 'N/A'}} - {{$infoJKA->mapel?->nama_mapel ?? 'N/A'}}</h1>
                     <p class="text-indigo-200 mt-2">Pilih tugas untuk diisi nilainya atau buat tugas baru.</p>
                 </div>
                 <a href="{{ route('manajemenNilai') }}" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
@@ -191,7 +191,7 @@
                         <button id="add-task-btn" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 flex items-center">
                             <i class="fa-solid fa-plus mr-2"></i> Tambah Sesi
                         </button>
-                        <button onclick="window.location.href = '{{ route('exportNilai',[$infoKelas->kelas->id_kelas, $infoMapel->id_mapel]) }}'" class="bg-green-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-green-700 transition duration-300 flex items-center">
+                        <button onclick="window.location.href = '{{ route('exportNilai',[$infoJKA->kelas?->id_kelas ?? 0, $infoJKA->mapel->id_mapel ?? 0]) }}'" class="bg-green-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-green-700 transition duration-300 flex items-center">
                             <i class="fa-solid fa-file-excel mr-2"></i> Export Nilai
                         </button>
                     </div>
@@ -275,7 +275,7 @@
                 <i class="fa-solid fa-times text-2xl"></i>
             </button>
         </div>
-        <form id="task-form" action="{{route('storeDaftarNilai',[$infoKelas->kelas->id_kelas, $infoMapel->id_mapel])}}" method="POST">
+        <form id="task-form" action="{{route('storeDaftarNilai',[$infoJKA->kelas?->id_kelas ?? 0, $infoJKA->mapel->id_mapel ?? 0])}}" method="POST">
             @csrf
             <div class="p-6 space-y-4">
                 <div>

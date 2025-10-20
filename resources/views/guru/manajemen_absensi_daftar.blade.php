@@ -172,7 +172,7 @@
 
             <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg flex flex-wrap justify-between items-center text-white gap-4">
                 <div>
-                    <h1 class="text-2xl md:text-3xl font-bold">Daftar Absensi: {{$infoKelas->kelas->nama_kelas ?? 'N/A'}} - {{$infoMapel->nama_mapel ?? 'N/A'}}</h1>
+                    <h1 class="text-2xl md:text-3xl font-bold">Daftar Absensi: {{$infoJKA->kelas->nama_kelas ?? 'N/A'}} - {{$infoJKA->mapel->nama_mapel ?? 'N/A'}}</h1>
                     <p class="text-indigo-200 mt-2">Pilih sesi absensi untuk diisi atau buat sesi baru.</p>
                 </div>
                 <a href="{{ route('manajAbsensi') }}" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
@@ -238,7 +238,7 @@
                 <i class="fa-solid fa-times text-2xl"></i>
             </button>
         </div>
-        <form id="task-form" action="{{route('storeAbsensiDaftar',[$infoKelas->kelas->id_kelas ?? 0, $infoMapel->id_mapel ?? 0])}}" method="POST">
+        <form id="task-form" action="{{route('storeAbsensiDaftar',[$infoJKA->kelas->id_kelas ?? 0, $infoJKA->mapel->id_mapel ?? 0])}}" method="POST">
             @csrf
             <div class="p-6 space-y-4">
                 <div>

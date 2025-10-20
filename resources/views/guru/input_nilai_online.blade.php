@@ -175,11 +175,11 @@
 
             <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg flex flex-wrap justify-between items-center text-white gap-4">
                 <div>
-                    <h1 class="text-2xl md:text-3xl font-bold">Input Nilai: {{ $infoMapel->nama_mapel ?? 'Mapel' }} - Kelas {{ $infoKelas->kelas->nama_kelas ?? 'Kelas' }}</h1>
+                    <h1 class="text-2xl md:text-3xl font-bold">Input Nilai: {{ $infoJKA->mapel->nama_mapel ?? 'N/A' }} - Kelas {{ $infoJKA->kelas->nama_kelas ?? 'N/A' }}</h1>
                     <h2 class="text-xl md:text-2xl font-semibold text-indigo-200 mt-1">{{$infoDaftarNilai->keterangan ?? 'Keterangan Nilai' }}</h2>
                     <p class="text-indigo-200 mt-2">Silakan input nilai untuk siswa yang belum dinilai.</p>
                 </div>
-                <a href="{{ route('manajemenNilaiDaftar', ['id_kelas' => $infoKelas->id_kelas, 'id_mapel' => $infoMapel->id_mapel]) }}" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
+                <a href="{{ route('manajemenNilaiDaftar', ['id_kelas' => $infoJKA->kelas?->id_kelas, 'id_mapel' => $infoJKA->mapel->id_mapel]) }}" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
                     <i class="fa-solid fa-arrow-left mr-2"></i>
                     <span>Kembali</span>
                 </a>
