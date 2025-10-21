@@ -69,8 +69,7 @@
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <a href="{{ route('logout') }}"
-                   onclick="event.preventDefault(); this.closest('form').submit();"
-                   class="flex items-center px-4 py-3 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg w-full transition duration-200">
+                   onclick="event.preventDefault(); this.closest('form').submit();" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
                     <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
                     <span>Logout</span>
                 </a>
@@ -110,24 +109,28 @@
             <div class="bg-white rounded-xl shadow-md p-6">
                 <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                     <h2 class="text-xl sm:text-2xl font-semibold text-gray-800">Daftar Mata Pelajaran Anda</h2>
+                    <div class="relative w-full md:w-1/3">
+                        <input type="text" id="searchInput" placeholder="Cari mapel atau guru..." class="w-full pl-10 pr-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <i class="fa-solid fa-search text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>
+                    </div>
                 </div>
                 
                 @if (count($daftarMapel) > 0)
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div id="mapel-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     @foreach ($daftarMapel as $jadwal)
-                    <div class="bg-gray-50 border rounded-xl p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
+                    <div class="mapel-item bg-gray-50 border rounded-xl p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
                         <!-- Clickable Area -->
                         <a href="{{ route('lihatMateriSiswa', ['id_kelas' => $jadwal->id_kelas, 'id_mapel' => $jadwal->id_mapel]) }}" class="flex flex-col h-full">
                             <div class="flex-grow">
                                 <div class="bg-indigo-100 text-indigo-600 p-4 rounded-full flex items-center justify-center w-16 h-16 mb-4 shadow-inner">
                                     <i class="fa-solid fa-book-open text-2xl"></i>
                                 </div>
-                                <h3 class="text-xl font-semibold text-gray-800">{{ $jadwal->mapel->nama_mapel ?? 'N/A' }}</h3>
+                                <h3 class="mapel-title text-xl font-semibold text-gray-800">{{ $jadwal->mapel->nama_mapel ?? 'N/A' }}</h3>
                             </div>
                             <div class="border-t mt-4 pt-4 text-sm text-gray-600">
                                 <div class="flex items-center">
                                     <i class="fa-solid fa-user-tie w-4 mr-2 text-gray-400"></i>
-                                    <span>{{ $jadwal->mapel->guru->name ?? 'Guru Belum Diatur' }}</span>
+                                    <span class="guru-name">{{ $jadwal->mapel->guru->name ?? 'Guru Belum Diatur' }}</span>
                                 </div>
                             </div>
                         </a>
@@ -141,6 +144,12 @@
                     <p class="text-gray-500 mt-2">Hubungi administrator untuk informasi lebih lanjut.</p>
                 </div>
                 @endif
+                <!-- No Results Message -->
+                <div id="no-results" class="text-center py-12 hidden">
+                    <i class="fa-solid fa-magnifying-glass text-5xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600 font-semibold text-lg">Mata pelajaran tidak ditemukan.</p>
+                    <p class="text-gray-500 mt-2">Coba gunakan kata kunci yang berbeda.</p>
+                </div>
             </div>
         </main>
     </div>
@@ -159,6 +168,32 @@ document.addEventListener('DOMContentLoaded', function () {
         };
         menuButton.addEventListener('click', toggleSidebar);
         overlay.addEventListener('click', toggleSidebar);
+    }
+
+    // --- Search Functionality ---
+    const searchInput = document.getElementById('searchInput');
+    const mapelList = document.getElementById('mapel-list');
+    const mapelItems = mapelList ? mapelList.querySelectorAll('.mapel-item') : [];
+    const noResults = document.getElementById('no-results');
+
+    if (searchInput && mapelItems.length > 0) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            let found = false;
+
+            mapelItems.forEach(item => {
+                const title = item.querySelector('.mapel-title').textContent.toLowerCase();
+                const guru = item.querySelector('.guru-name').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || guru.includes(searchTerm)) {
+                    item.style.display = 'block';
+                    found = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            noResults.style.display = found ? 'none' : 'block';
+        });
     }
 });
 </script>

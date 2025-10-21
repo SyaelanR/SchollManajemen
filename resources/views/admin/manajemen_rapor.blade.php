@@ -140,7 +140,7 @@
 
                 <div id="class-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     @forelse ($kelasList ?? [] as $kelas)
-                        <a href="{{ route('Rapors', ['id_kelas' => $kelas->id_kelas])}}" class="block bg-white border rounded-xl shadow-md p-6 hover:shadow-lg hover:-translate-y-1 transform transition-all duration-300">
+                        <a href="{{ route('Rapors', ['id_kelas' => $kelas->id_kelas])}}" class="class-card block bg-white border rounded-xl shadow-md p-6 hover:shadow-lg hover:-translate-y-1 transform transition-all duration-300">
                             <div class="flex items-center mb-4">
                                 <div class="bg-indigo-100 text-indigo-600 p-4 rounded-full flex items-center justify-center w-16 h-16">
                                     <i class="fa-solid fa-chalkboard text-2xl"></i>
@@ -160,11 +160,17 @@
                             </div>
                         </a>
                     @empty
-                        <div class="col-span-full text-center py-12">
+                        <div id="empty-message" class="col-span-full text-center py-12">
                             <i class="fa-solid fa-school-circle-exclamation text-5xl text-gray-400 mb-4"></i>
                             <p class="text-gray-600 font-semibold text-lg">Tidak ada kelas yang ditemukan.</p>
                         </div>
                     @endforelse
+                </div>
+                <!-- No Results Message -->
+                <div id="no-results-message" class="text-center py-12 hidden">
+                    <i class="fa-solid fa-magnifying-glass text-5xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600 font-semibold text-lg">Kelas tidak ditemukan.</p>
+                    <p class="text-gray-500 mt-2">Coba gunakan kata kunci yang berbeda.</p>
                 </div>
             </div>
         </main>
@@ -186,20 +192,30 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         const classSearchInput = document.getElementById('class-search-input');
-        const classGrid = document.getElementById('class-grid');
-        const classCards = Array.from(classGrid.children);
+        const classCards = document.querySelectorAll('.class-card');
+        const noResultsMessage = document.getElementById('no-results-message');
+        const emptyMessage = document.getElementById('empty-message');
 
-        classSearchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            classCards.forEach(card => {
-                const className = card.querySelector('h3').textContent.toLowerCase();
-                if (className.includes(searchTerm)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
+        if (classSearchInput) {
+            classSearchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                let visibleCards = 0;
+
+                classCards.forEach(card => {
+                    const cardText = card.textContent.toLowerCase();
+                    if (cardText.includes(searchTerm)) {
+                        card.style.display = 'block';
+                        visibleCards++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                const hasClasses = classCards.length > 0;
+                if (noResultsMessage) noResultsMessage.style.display = (hasClasses && visibleCards === 0) ? 'block' : 'none';
+                if (emptyMessage) emptyMessage.style.display = (hasClasses) ? 'none' : 'block';
             });
-        });
+        }
 
         const successAlert = document.getElementById('success-alert');
         if (successAlert) {
@@ -216,4 +232,3 @@
 
 </body>
 </html>
-

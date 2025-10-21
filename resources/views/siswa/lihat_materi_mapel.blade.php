@@ -120,15 +120,23 @@
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
             <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
-                <h2 class="text-3xl font-bold mb-2">Tugas Mata Pelajaran</h2>
-                <p class="text-indigo-200">Berikut adalah semua mata pelajaran yang Anda ambil semester ini.</p>
+                <h2 class="text-3xl font-bold mb-2">Materi Pelajaran</h2>
+                <p class="text-indigo-200">Pilih mata pelajaran untuk melihat materi yang telah diunggah oleh guru.</p>
             </header>
 
+            <!-- Search Input -->
+            <div class="mb-6">
+                <div class="relative">
+                    <input type="text" id="searchInput" placeholder="Cari mapel atau guru..." class="w-full pl-10 pr-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <i class="fa-solid fa-search text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>
+                </div>
+            </div>
+
             <!-- Subjects Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div id="mapel-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 
                 @forelse ($daftarMapel ?? [] as $mapel)
-                <a href="{{ route('lihatDaftarMateri', $mapel->mapel->id_mapel)}}" class="block">
+                <a href="{{ route('lihatDaftarMateri', $mapel->mapel->id_mapel)}}" class="mapel-item block">
                     <div class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between h-full hover:shadow-lg hover:-translate-y-1 transform transition-all duration-300">
                         <div>
                             <div class="flex items-center justify-between mb-4">
@@ -136,8 +144,8 @@
                                     <i class="fa-solid fa-book-open text-xl"></i>
                                 </div>
                             </div>
-                            <h3 class="text-xl font-bold text-gray-800 mb-2">{{$mapel->mapel->nama_mapel}}</h3>
-                            <p class="text-gray-600 text-sm flex items-center"><i class="fa-solid fa-chalkboard-user w-4 mr-2 text-gray-400"></i>{{$mapel->mapel->guru->name}}</p>
+                            <h3 class="mapel-title text-xl font-bold text-gray-800 mb-2">{{$mapel->mapel->nama_mapel}}</h3>
+                            <p class="guru-name text-gray-600 text-sm flex items-center"><i class="fa-solid fa-chalkboard-user w-4 mr-2 text-gray-400"></i>{{$mapel->mapel->guru->name}}</p>
                         </div>
                         <div class="border-t mt-4 pt-4">
                             <p class="text-sm font-semibold text-gray-700">SKS: <span class="font-bold text-indigo-600">{{$mapel->mapel->sks}}</span></p>
@@ -145,11 +153,17 @@
                     </div>
                 </a>
                 @empty
-                <div class="col-span-full text-center py-10 bg-white rounded-xl shadow-md">
+                <div id="empty-message" class="col-span-full text-center py-10 bg-white rounded-xl shadow-md">
                     <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
                     <p class="text-gray-600 font-semibold text-lg">Belum ada mata pelajaran yang tersedia.</p>
                 </div>
                 @endforelse
+            </div>
+            <!-- No Results Message -->
+            <div id="no-results" class="text-center py-12 hidden col-span-full bg-white rounded-xl shadow-md">
+                <i class="fa-solid fa-magnifying-glass text-5xl text-gray-400 mb-4"></i>
+                <p class="text-gray-600 font-semibold text-lg">Mata pelajaran tidak ditemukan.</p>
+                <p class="text-gray-500 mt-2">Coba gunakan kata kunci yang berbeda.</p>
             </div>
         </main>
     </div>
@@ -168,6 +182,36 @@
 
     menuButton.addEventListener('click', toggleSidebar);
     overlay.addEventListener('click', toggleSidebar);
+
+    // --- Search Functionality ---
+    const searchInput = document.getElementById('searchInput');
+    const mapelList = document.getElementById('mapel-list');
+    const mapelItems = mapelList.querySelectorAll('.mapel-item');
+    const noResults = document.getElementById('no-results');
+    const emptyMessage = document.getElementById('empty-message');
+
+    // Hanya jalankan script jika ada item mapel
+    if (mapelItems.length > 0) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            let found = false;
+
+            mapelItems.forEach(item => {
+                const title = item.querySelector('.mapel-title').textContent.toLowerCase();
+                const guru = item.querySelector('.guru-name').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || guru.includes(searchTerm)) {
+                    item.style.display = 'block';
+                    found = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Tampilkan atau sembunyikan pesan "tidak ditemukan"
+            noResults.style.display = found ? 'none' : 'block';
+        });
+    }
 </script>
 
 </body>

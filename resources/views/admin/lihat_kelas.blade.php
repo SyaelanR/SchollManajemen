@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -195,7 +196,7 @@
                 <!-- Action Bar -->
                 <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                      <div class="relative w-full md:w-1/2">
-                        <input type="text" placeholder="Cari siswa di kelas ini..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <input type="text" id="student-search-input" placeholder="Cari siswa di kelas ini..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                     </div>
                     <button id="add-student-btn" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap shadow-md hover:shadow-lg">
@@ -215,9 +216,9 @@
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y">
+                        <tbody id="student-table-body" class="divide-y">
                             @forelse ($daftarSiswa ?? [] as $siswa)
-                            <tr class="hover:bg-gray-50">
+                            <tr class="student-row hover:bg-gray-50">
                                 <td class="p-3 text-gray-700">{{$siswa->nisn_nik}}</td>
                                 <td class="p-3 text-gray-800 font-medium">{{$siswa->name}}</td>
                                 <td class="p-3 text-gray-700">{{$siswa->jenis_kelamin}}</td>
@@ -232,7 +233,7 @@
                                 </td>
                             </tr>
                             @empty
-                            <tr>
+                            <tr id="empty-row">
                                 <td colspan="4" class="p-3 text-center text-gray-500">
                                     <div class="text-center py-12">
                                         <i class="fa-solid fa-users-slash text-5xl text-gray-400 mb-4"></i>
@@ -244,6 +245,11 @@
                             @endforelse
                         </tbody>
                     </table>
+                    <div id="no-results-row" class="text-center py-12 hidden">
+                        <i class="fa-solid fa-magnifying-glass text-5xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600 font-semibold text-lg">Siswa tidak ditemukan.</p>
+                        <p class="text-gray-500 mt-2">Coba gunakan kata kunci pencarian yang berbeda.</p>
+                    </div>
                 </div>
             </div>
         </main>
@@ -383,6 +389,34 @@
                     }
                 });
             });
+        });
+
+        // --- Search functionality for students in class ---
+        const searchInput = document.getElementById('student-search-input');
+        const tableBody = document.getElementById('student-table-body');
+        const studentRows = tableBody.querySelectorAll('.student-row');
+        const noResultsRow = document.getElementById('no-results-row');
+        const emptyRow = document.getElementById('empty-row'); // The row that shows "Belum ada siswa"
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            let visibleRows = 0;
+
+            studentRows.forEach(row => {
+                const rowText = row.textContent.toLowerCase();
+                if (rowText.includes(searchTerm)) {
+                    row.style.display = '';
+                    visibleRows++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Logic to show/hide messages
+            const hasStudents = studentRows.length > 0;
+            noResultsRow.style.display = (hasStudents && visibleRows === 0) ? 'block' : 'none';
+            if(emptyRow) emptyRow.style.display = (hasStudents && visibleRows > 0) ? 'none' : (hasStudents ? 'none' : 'table-row');
+
         });
     });
 

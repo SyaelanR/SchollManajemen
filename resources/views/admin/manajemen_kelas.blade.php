@@ -153,17 +153,23 @@
             
             <div class="bg-white rounded-xl shadow-md p-6">
                 <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                    <h2 class="text-xl sm:text-2xl font-semibold text-gray-800">Daftar Kelas Tersedia</h2>
-                    <button id="add-class-btn" class="w-full md:w-auto bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center justify-center whitespace-nowrap shadow-md hover:shadow-lg">
-                        <i class="fa-solid fa-plus mr-2"></i>
-                        Tambah Kelas
-                    </button>
+                    <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 flex-shrink-0">Daftar Kelas Tersedia</h2>
+                    <div class="flex items-center gap-4 w-full md:w-auto">
+                        <div class="relative w-full md:w-64">
+                            <input type="text" id="search-input" placeholder="Cari kelas..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                        <button id="add-class-btn" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center justify-center whitespace-nowrap shadow-md hover:shadow-lg">
+                            <i class="fa-solid fa-plus mr-2"></i>
+                            Tambah Kelas
+                        </button>
+                    </div>
                 </div>
                 
                 @if (count($kelasList) > 0)
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div id="class-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     @foreach ($kelasList as $kelas)
-                    <div class="bg-white border rounded-xl shadow-md p-6 relative hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
+                    <div class="class-card bg-white border rounded-xl shadow-md p-6 relative hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
                         <!-- Actions -->
                         <div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                             <a href="{{ route('editKelas', $kelas->id_kelas) }}" class="text-gray-400 hover:text-blue-600" title="Edit">
@@ -193,8 +199,13 @@
                     </div>
                     @endforeach
                 </div>
+                <div id="no-results-message" class="text-center py-12 hidden">
+                    <i class="fa-solid fa-magnifying-glass text-5xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600 font-semibold text-lg">Kelas tidak ditemukan.</p>
+                    <p class="text-gray-500 mt-2">Coba gunakan kata kunci pencarian yang berbeda.</p>
+                </div>
                 @else
-                <div class="text-center py-12">
+                <div id="empty-message" class="text-center py-12">
                     <i class="fa-solid fa-box-open text-5xl text-gray-400 mb-4"></i>
                     <p class="text-gray-600 font-semibold text-lg">Belum ada data kelas.</p>
                     <p class="text-gray-500 mt-2">Silakan tambahkan kelas baru untuk memulai</p>
@@ -353,6 +364,35 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     });
+
+    // --- Search Functionality ---
+    const searchInput = document.getElementById('search-input');
+    const classGrid = document.getElementById('class-grid');
+    const classCards = document.querySelectorAll('.class-card');
+    const noResultsMessage = document.getElementById('no-results-message');
+    const emptyMessage = document.getElementById('empty-message');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            let visibleCards = 0;
+
+            classCards.forEach(card => {
+                const cardText = card.textContent.toLowerCase();
+                if (cardText.includes(searchTerm)) {
+                    card.style.display = 'block';
+                    visibleCards++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            const hasClasses = classCards.length > 0;
+            if (noResultsMessage) noResultsMessage.style.display = (hasClasses && visibleCards === 0) ? 'block' : 'none';
+            if (classGrid) classGrid.style.display = (hasClasses && visibleCards === 0) ? 'none' : 'grid';
+            if (emptyMessage) emptyMessage.style.display = (hasClasses) ? 'none' : 'block';
+        });
+    }
 
 });
 </script>
