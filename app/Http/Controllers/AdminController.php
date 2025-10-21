@@ -35,12 +35,26 @@ class AdminController extends Controller
     public function manajSiswa(Request $request)
     {
         $id_sekolah = $request->cookie('id_sekolah');
-        // Menggunakan leftJoin untuk memastikan semua siswa tetap tampil meskipun belum punya kelas.
-        // 'nama_kelas' akan bernilai null jika siswa belum masuk kelas.
-        $students = User::where('users.role', 'siswa')
-                        ->with('kelas.angkatan')
-                        ->latest('users.created_at')
-                        ->paginate(10);
+        $search = $request->query('search');
+
+        // Memulai query untuk model User
+        $query = User::where('users.role', 'siswa')
+                     ->with('kelas.angkatan') // Eager load relasi
+                     ->latest('users.created_at');
+
+        // Jika ada input pencarian, tambahkan kondisi where
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('users.name', 'like', '%' . $search . '%')
+                  ->orWhere('users.nisn_nik', 'like', '%' . $search . '%')
+                  ->orWhereHas('kelas.angkatan', function ($subQuery) use ($search) {
+                      $subQuery->where('angkatan', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
+        $students = $query->paginate(10);
+
         return view('admin.manajemen_siswa', ['students' => $students]);
     }
 

@@ -175,15 +175,15 @@
                 </div>
 
                 <div id="class-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    @forelse ($kelasList as $kelas)
-                        <a href="{{ route('tambahJadwal', ['id_kelas' => $kelas->id_kelas]) }}" class="block bg-white border rounded-xl shadow-md p-6 hover:shadow-lg hover:-translate-y-1 transform transition-all duration-300">
+                    @forelse ($kelasList ?? [] as $kelas)
+                        <a href="{{ route('tambahJadwal', ['id_kelas' => $kelas->id_kelas]) }}" class="class-card block bg-white border rounded-xl shadow-md p-6 hover:shadow-lg hover:-translate-y-1 transform transition-all duration-300">
                             <div class="flex items-center mb-4">
                                 <div class="bg-indigo-100 text-indigo-600 p-4 rounded-full flex items-center justify-center w-16 h-16">
                                     <i class="fa-solid fa-chalkboard text-2xl"></i>
                                 </div>
                             </div>
                             <h3 class="text-xl font-semibold text-gray-800">{{ $kelas->nama_kelas }}</h3>
-                             <div class="text-sm text-gray-500 mt-1">{{ $kelas->jurusan }}</div>
+                             <div class="text-sm text-gray-500 mt-1">{{ $kelas->jurusan ?? 'Umum' }}</div>
                             <div class="border-t mt-4 pt-4 text-sm text-gray-600">
                                 <div class="flex items-center">
                                     <i class="fa-solid fa-user-tie w-4 mr-2 text-gray-400"></i>
@@ -192,11 +192,17 @@
                             </div>
                         </a>
                     @empty
-                        <div class="col-span-full text-center py-12">
+                        <div id="empty-state" class="col-span-full text-center py-12">
                             <i class="fa-solid fa-school-circle-exclamation text-5xl text-gray-400 mb-4"></i>
                             <p class="text-gray-600 font-semibold text-lg">Tidak ada kelas yang ditemukan.</p>
                         </div>
                     @endforelse
+                    <!-- Pesan jika tidak ada hasil pencarian -->
+                    <div id="no-results-state" class="hidden col-span-full text-center py-12">
+                        <i class="fa-solid fa-magnifying-glass text-5xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600 font-semibold text-lg">Kelas tidak ditemukan.</p>
+                        <p class="text-gray-500 mt-1">Coba gunakan kata kunci lain.</p>
+                    </div>
                 </div>
             </div>
         </main>
@@ -219,18 +225,31 @@
     document.addEventListener('DOMContentLoaded', function() {
         const classSearchInput = document.getElementById('class-search-input');
         const classGrid = document.getElementById('class-grid');
-        const classCards = Array.from(classGrid.children);
+        const classCards = classGrid.querySelectorAll('.class-card'); // Lebih spesifik memilih kartu kelas
+        const noResultsState = document.getElementById('no-results-state');
+        const emptyState = document.getElementById('empty-state');
 
         classSearchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
+            const searchTerm = this.value.toLowerCase().trim();
+            let visibleCount = 0;
+
             classCards.forEach(card => {
                 const className = card.querySelector('h3').textContent.toLowerCase();
-                if (className.includes(searchTerm)) {
+                const waliKelas = card.querySelector('span').textContent.toLowerCase();
+
+                if (className.includes(searchTerm) || waliKelas.includes(searchTerm)) {
                     card.style.display = 'block';
+                    visibleCount++;
                 } else {
                     card.style.display = 'none';
                 }
             });
+
+            // Tampilkan atau sembunyikan pesan "tidak ditemukan"
+            // Hanya tampil jika ada kartu untuk disaring, tapi tidak ada yang cocok
+            if (noResultsState) {
+                noResultsState.classList.toggle('hidden', visibleCount > 0 || classCards.length === 0);
+            }
         });
 
         const successAlert = document.getElementById('success-alert');
