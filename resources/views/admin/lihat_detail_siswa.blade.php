@@ -109,17 +109,17 @@
             </a>
             @endcan
         </nav>
-        <div class="p-6 border-t border-gray-200 flex-shrink-0">
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <a href="{{ route('logout') }}"
-                onclick="event.preventDefault(); this.closest('form').submit();"
-                class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full transition duration-200">
-                <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
-                <span>Logout</span>
-            </a>
-        </form>
-    </div>
+        <div class="p-6 mt-auto border-t border-gray-200">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <a href="{{ route('logout') }}"
+                    onclick="event.preventDefault(); this.closest('form').submit();"
+                    class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full transition duration-200">
+                    <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
+                    <span>Logout</span>
+                </a>
+            </form>
+        </div>
     </aside>
 
     <!-- Overlay for mobile -->
@@ -158,91 +158,166 @@
                 </a>
             </header>
 
-            <!-- Student Details Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Left Column: Profile & Academic Info -->
-                <div class="lg:col-span-1 space-y-8">
-                    <!-- Profile Card -->
-                    <div class="bg-white p-6 rounded-xl shadow-md">
-                        <div class="flex flex-col items-center">
-                            <img class="h-24 w-24 rounded-full object-cover mb-4 border-4 border-indigo-200" src="https://ui-avatars.com/api/?name={{ urlencode($siswa->name) }}&background=667eea&color=fff&size=128" alt="Foto Siswa">
-                            <h2 class="text-xl font-bold text-gray-800">{{ $siswa->name }}</h2>
-                            <p class="text-sm text-gray-500">{{ $siswa->username }}</p>
-                            <span class="mt-2 text-xs font-semibold px-3 py-1 rounded-full {{ $siswa->kelas && !$siswa->kelas->angkatan->is_alumni ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
-                                {{ $siswa->kelas && !$siswa->kelas->angkatan->is_alumni ? 'Siswa Aktif' : 'Tidak Aktif/Alumni' }}
-                            </span>
+            <!-- Student Details Layout -->
+            <div class="space-y-8">
+                <!-- Top Grid Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Left Column: Profile & Academic Info -->
+                    <div class="lg:col-span-1 space-y-8 flex flex-col justify-center">
+                        <!-- Profile Card -->
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <div class="flex flex-col items-center">
+                                <img class="h-24 w-24 rounded-full object-cover mb-4 border-4 border-indigo-200" src="https://ui-avatars.com/api/?name={{ urlencode($siswa->name) }}&background=667eea&color=fff&size=128" alt="Foto Siswa">
+                                <h2 class="text-xl font-bold text-gray-800">{{ $siswa->name }}</h2>
+                                <p class="text-sm text-gray-500">{{ $siswa->username }}</p>
+                                {{-- <span class="mt-2 text-xs font-semibold px-3 py-1 rounded-full {{ $siswa->kelas && !$siswa->kelas->angkatan->is_alumni ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                    {{ $siswa->kelas && !$siswa->kelas->angkatan->is_alumni ? 'Siswa Aktif' : 'Tidak Aktif/Alumni' }}
+                                </span> --}}
+                                @if ($siswa->kelas && $siswa->kelas->angkatan && $siswa->kelas->angkatan->is_alumni)
+                                    <span class="mt-2 text-xs font-semibold px-3 py-1 rounded-full bg-gray-100 text-gray-800">
+                                        Alumni
+                                    </span>
+                                @elseif ($siswa->kelas)
+                                    <span class="mt-2 text-xs font-semibold px-3 py-1 rounded-full bg-green-100 text-green-800">
+                                        Siswa Aktif
+                                    </span>
+                                @else
+                                    <span></span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Academic Info Card -->
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h3 class="text-lg font-semibold text-gray-800 border-b pb-3 mb-4">Informasi Akademik</h3>
+                            <div class="space-y-3 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-500">Kelas</span>
+                                    <span class="font-medium text-gray-800">{{ $siswa->kelas->nama_kelas ?? 'Belum ada kelas' }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-500">Angkatan</span>
+                                    <span class="font-medium text-gray-800">{{ $siswa->kelas->angkatan->angkatan ?? '-' }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-500">Tanggal Masuk</span>
+                                    <span class="font-medium text-gray-800">{{ $siswa->tanggal_masuk ? \Carbon\Carbon::parse($siswa->tanggal_masuk)->isoFormat('D MMMM YYYY') : '-' }}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Academic Info Card -->
-                    <div class="bg-white p-6 rounded-xl shadow-md">
-                        <h3 class="text-lg font-semibold text-gray-800 border-b pb-3 mb-4">Informasi Akademik</h3>
-                        <div class="space-y-3 text-sm">
-                            <div class="flex justify-between">
-                                <span class="text-gray-500">Kelas</span>
-                                <span class="font-medium text-gray-800">{{ $siswa->kelas->nama_kelas ?? 'Belum ada kelas' }}</span>
+                    <!-- Right Column: Detailed Info & School Year -->
+                    <div class="lg:col-span-2 space-y-8">
+                        <!-- Detailed Info Card -->
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h3 class="text-lg font-semibold text-gray-800 border-b pb-3 mb-4">Data Lengkap Siswa</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+                                <div>
+                                    <label class="block text-gray-500">NISN/NIK</label>
+                                    <p class="font-medium text-gray-800">{{ $siswa->nisn_nik ?? '-' }}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-500">Jenis Kelamin</label>
+                                    <p class="font-medium text-gray-800">{{ $siswa->jenis_kelamin ?? '-' }}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-500">Tempat Lahir</label>
+                                    <p class="font-medium text-gray-800">{{ $siswa->tempat_lahir ?? '-' }}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-500">Tanggal Lahir</label>
+                                    <p class="font-medium text-gray-800">{{ $siswa->tanggal_lahir ? \Carbon\Carbon::parse($siswa->tanggal_lahir)->isoFormat('D MMMM YYYY') : '-' }}</p>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-gray-500">Alamat</label>
+                                    <p class="font-medium text-gray-800">{{ $siswa->alamat ?? '-' }}</p>
+                                </div>
+                                <div class="md:col-span-2 pt-4 mt-4 border-t">
+                                    <h4 class="text-md font-semibold text-gray-700 mb-2">Informasi Wali</h4>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-500">Nama Orang Tua/Wali</label>
+                                    <p class="font-medium text-gray-800">{{ $siswa->nama_orang_tua ?? '-' }}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-500">No. Telepon Wali</label>
+                                    <p class="font-medium text-gray-800">{{ $siswa->no_telp ?? '-' }}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-500">Gaji Orang Tua</label>
+                                    <p class="font-medium text-gray-800">{{ $siswa->gaji_orang_tua ? 'Rp ' . number_format(str_replace('.', '', $siswa->gaji_orang_tua), 0, ',', '.') : '-' }}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-500">Jumlah Saudara</label>
+                                    <p class="font-medium text-gray-800">{{ $siswa->jumlah_sodara ?? '-' }}</p>
+                                </div>
                             </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-500">Angkatan</span>
-                                <span class="font-medium text-gray-800">{{ $siswa->kelas->angkatan->angkatan ?? '-' }}</span>
+                            <div class="mt-8 flex justify-end">
+                                <a href="{{ route('editSiswa', $siswa->id) }}" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center shadow-md hover:shadow-lg">
+                                    <i class="fa-solid fa-pencil mr-2"></i>
+                                    Edit Data Siswa
+                                </a>
                             </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-500">Tanggal Masuk</span>
-                                <span class="font-medium text-gray-800">{{ $siswa->tanggal_masuk ? \Carbon\Carbon::parse($siswa->tanggal_masuk)->isoFormat('D MMMM YYYY') : '-' }}</span>
+                        </div>
+
+                        <!-- School Year Info Card -->
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h3 class="text-lg font-semibold text-gray-800 border-b pb-3 mb-4">Informasi Tahun Ajaran</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+                                <div>
+                                    <label class="block text-gray-500">Tahun Ajaran</label>
+                                    <p class="font-medium text-gray-800">{{ $siswa->angkatan->angkatan ?? '-'}}</p>
+                                </div>
+                                 <div>
+                                    <label class="block text-gray-500">Tingkat</label>
+                                    <p class="font-medium text-gray-800">
+                                        <span class="bg-blue-100 text-blue-800 font-medium py-1 px-3 rounded-full text-xs">Tingkat {{ $siswa->kelas->angkatan->idtingkat->tingkat }}</span>
+                                    </p>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-500">Tanggal Mulai</label>
+                                    <p class="font-medium text-gray-800">{{ $siswa->angkatan->tanggal_mulai ? \Carbon\Carbon::parse($siswa->angkatan->tanggal_mulai)->isoFormat('D MMMM YYYY') : '-'}}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-500">Tanggal Selesai</label>
+                                    <p class="font-medium text-gray-800">{{ $siswa->angkatan->tanggal_selesai ? \Carbon\Carbon::parse($siswa->angkatan->tanggal_selesai)->isoFormat('D MMMM YYYY') : '-'}}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Column: Detailed Info -->
-                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
-                    <h3 class="text-lg font-semibold text-gray-800 border-b pb-3 mb-4">Data Lengkap Siswa</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
-                        <div>
-                            <label class="block text-gray-500">NISN/NIK</label>
-                            <p class="font-medium text-gray-800">{{ $siswa->nisn_nik ?? '-' }}</p>
-                        </div>
-                        <div>
-                            <label class="block text-gray-500">Jenis Kelamin</label>
-                            <p class="font-medium text-gray-800">{{ $siswa->jenis_kelamin ?? '-' }}</p>
-                        </div>
-                        <div>
-                            <label class="block text-gray-500">Tempat Lahir</label>
-                            <p class="font-medium text-gray-800">{{ $siswa->tempat_lahir ?? '-' }}</p>
-                        </div>
-                        <div>
-                            <label class="block text-gray-500">Tanggal Lahir</label>
-                            <p class="font-medium text-gray-800">{{ $siswa->tanggal_lahir ? \Carbon\Carbon::parse($siswa->tanggal_lahir)->isoFormat('D MMMM YYYY') : '-' }}</p>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-gray-500">Alamat</label>
-                            <p class="font-medium text-gray-800">{{ $siswa->alamat ?? '-' }}</p>
-                        </div>
-                        <div class="md:col-span-2 pt-4 mt-4 border-t">
-                            <h4 class="text-md font-semibold text-gray-700 mb-2">Informasi Wali</h4>
-                        </div>
-                        <div>
-                            <label class="block text-gray-500">Nama Orang Tua/Wali</label>
-                            <p class="font-medium text-gray-800">{{ $siswa->nama_orang_tua ?? '-' }}</p>
-                        </div>
-                        <div>
-                            <label class="block text-gray-500">No. Telepon Wali</label>
-                            <p class="font-medium text-gray-800">{{ $siswa->no_telp ?? '-' }}</p>
-                        </div>
-                        <div>
-                            <label class="block text-gray-500">Gaji Orang Tua</label>
-                            <p class="font-medium text-gray-800">{{ $siswa->gaji_orang_tua ? 'Rp ' . number_format(str_replace('.', '', $siswa->gaji_orang_tua), 0, ',', '.') : '-' }}</p>
-                        </div>
-                        <div>
-                            <label class="block text-gray-500">Jumlah Saudara</label>
-                            <p class="font-medium text-gray-800">{{ $siswa->jumlah_sodara ?? '-' }}</p>
-                        </div>
-                    </div>
-                    <div class="mt-8 flex justify-end">
-                        <a href="{{ route('editSiswa', $siswa->id) }}" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center shadow-md hover:shadow-lg">
-                            <i class="fa-solid fa-pencil mr-2"></i>
-                            Edit Data Siswa
-                        </a>
+                <!-- Bottom Section: KBM History Table -->
+                <div class="bg-white rounded-xl shadow-md">
+                    <h3 class="text-lg font-semibold text-gray-800 border-b p-6 mb-0">Histori KBM Semester</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full min-w-full text-left text-sm">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 font-medium text-gray-500 uppercase">Tahun Ajaran</th>
+                                    <th class="px-6 py-3 font-medium text-gray-500 uppercase">Semester</th>
+                                    <th class="px-6 py-3 font-medium text-gray-500 uppercase">Tingkat</th>
+                                    <th class="px-6 py-3 font-medium text-gray-500 uppercase text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                <!-- Dummy Data Row 1 -->
+                                @forelse ($historiKBMs ?? [] as $historiKBM)
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium text-gray-800">{{ $historiKBM['angkatan'] }}</td>
+                                    <td class="px-6 py-4 text-gray-600">{{ $historiKBM['semester'] }}</td>
+                                    <td class="px-6 py-4 text-gray-600">Tingkat {{ $historiKBM['tingkat'] }}</td>
+                                    <td class="px-6 py-4 text-center">
+                                        <a href="{{ route('historyKBM', [$siswa->id, $historiKBM['id_tingkat'], $historiKBM['semester']])}}" class="bg-indigo-100 text-indigo-700 font-semibold py-1.5 px-4 rounded-lg hover:bg-indigo-200 transition duration-300">
+                                            Masuk
+                                        </a>
+                                    </td>
+                                </tr>
+                                @empty
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -268,3 +343,4 @@
 
 </body>
 </html>
+

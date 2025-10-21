@@ -7,7 +7,9 @@ use App\Models\User; // Menggunakan model User untuk Siswa dan Guru
 use App\Models\Angkatan;
 use App\Models\DaftarAcara;
 use App\Models\DaftarKurikulum;
+use App\Models\DaftarNilai;
 use App\Models\DaftarNilaiSiswa;
+use App\Models\DaftarAbsensiSiswa;
 use App\Models\Kelas;
 use App\Models\PmabayaranSiswa;
 use App\Models\DaftarTagihan;
@@ -1019,20 +1021,87 @@ class AdminController extends Controller
         return redirect()->route('manajemenSiswa')->with('success', 'Data siswa berhasil dihapus!');
     }
 
-    public function lihatDetailSiswa(Request $request, User $siswa)
+    public function lihatDetailSiswa(Request $request, $idsiswa)
     {
         $id_sekolah = $request->cookie('id_sekolah');
 
-        // Keamanan: Pastikan siswa yang diminta adalah milik sekolah yang benar dan memiliki role 'siswa'.
-        if ($siswa->id_sekolah != $id_sekolah || $siswa->role !== 'siswa') {
-            abort(404, 'Siswa tidak ditemukan.');
+        
+        // $siswa = User::where('id', $siswa) // $siswa di sini adalah ID dari URL
+        //             ->where('id_sekolah', $id_sekolah)
+        //             ->where('role', 'siswa')
+        //             ->with('kelas.angkatan.idtingkat')
+        //             ->with('daftarNilaiSiswa.kelas.angkatan')
+        //             ->with('daftarAbsensiSiswa.kelas.angkatan')
+        //             ->select('daftarNilaiSiswa.semester', 'daftarNilaiSiswa.tingkat', 'daftarAbsensiSiswa.semester', 'daftarAbsensiSiswa.tingkat')
+        //             ->distinct()
+        //             ->firstOrFail();
+
+        // Ambil data siswa
+        $siswa = User::where('id', $idsiswa)
+                ->where('id_sekolah', $id_sekolah)
+                ->where('role', 'siswa')
+                ->with([
+                    'daftarNilaiSiswa' => function ($query) {
+                        $query->select('id_daftar_nilai_siswa', 'id_siswa', 'id_kelas', 'tingkat', 'semester')
+                            ->whereNotNull('tingkat')
+                            ->whereNotNull('semester')
+                            ->distinct('tingkat', 'semester')
+                            ->with('idTingkat')
+                            ->with('kelas.angkatan');
+                    },
+                    'daftarAbsensiSiswa' => function ($query) {
+                        $query->select('id_daftar_absensi_siswa', 'id_siswa', 'id_kelas', 'tingkat', 'semester')
+                            ->whereNotNull('tingkat')
+                            ->whereNotNull('semester')
+                            ->distinct('tingkat', 'semester')
+                            ->with('idTingkat')
+                            ->with('kelas.angkatan');
+                    },
+                    'kelas.angkatan'
+                ])
+                ->firstOrFail();
+
+
+        $historiKBMs = collect($siswa->daftarNilaiSiswa)
+                ->merge($siswa->daftarAbsensiSiswa)
+                ->map(fn($item) => [
+                    'tingkat' => $item->idTingkat->tingkat,
+                    'semester' => $item->semester,
+                    'id_tingkat' => $item->tingkat,
+                    'angkatan' => $item->kelas->angkatan->angkatan,
+                ])
+                ->unique(fn($item) => $item['id_tingkat'].'-'.$item['semester'])
+                ->values();
+
+
+        return view('admin.lihat_detail_siswa',['siswa' => $siswa, 'historiKBMs' => $historiKBMs]);
+        // return view('debug', ['tes' => $siswa, 'tess' => $historiKBMs]);
+    }
+
+    public function historyKBM (Request $request, $idsiswa, $idTingkat, $semester)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $historyNilai = DaftarNilaiSiswa::where('id_siswa', $idsiswa)
+                            ->where('tingkat', $idTingkat)
+                            ->where('semester', $semester)
+                            ->with('siswa')
+                            ->get();
+
+        $historyAbsensi = DaftarAbsensiSiswa::where('id_siswa', $idsiswa)
+                            ->where('tingkat', $idTingkat)
+                            ->where('semester', $semester)
+                            ->get();
+
+
+        $infoSiswa = $historyNilai->first()->siswa;
+
+        if ($infoSiswa->id_sekolah != $id_sekolah) {
+            abort(404, );
         }
 
-        // Eager load relasi untuk efisiensi query ke database
-        $siswa->load('kelas.angkatan');
-
-        // Kirim data siswa ke view baru
-        return view('admin.lihat_detail_siswa', compact('siswa'));
+        return view('admin.lihat_histori_kbm', ['historyNilai' => $historyNilai, 'historyAbsensi' => $historyAbsensi]);
+        // return view('debug', ['tes' => $infoSiswa, 'tess' => $idTingkat, 'tesss' => $historyNilai]);
     }
 
 

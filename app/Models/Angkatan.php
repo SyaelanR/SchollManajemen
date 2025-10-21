@@ -29,4 +29,10 @@ class Angkatan extends Model
     {
         return $this->hasMany(Kelas::class, 'id_angkatan', 'id_angkatan');
     }
+
+    public function idTingkat()
+    {
+        return $this->belongsTo(Tingkat::class, 'id_tingkat', 'id_tingkat');
+    }
+
 }
