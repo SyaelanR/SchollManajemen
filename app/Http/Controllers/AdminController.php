@@ -55,10 +55,22 @@ class AdminController extends Controller
     public function manajGuru(Request $request)
     {
         $id_sekolah = $request->cookie('id_sekolah');
+        $search = $request->input('search');
+
         // Menggunakan whereIn untuk mengambil pengguna dengan role 'guru' atau 'staf'
-        $teachers = User::whereIn('role', ['guru', 'staf'])
-                        ->where('id_sekolah', $id_sekolah)->latest()->paginate(10);
-        return view('admin.manajemen_guru', ['teachers' => $teachers]);
+        $query = User::whereIn('role', ['guru', 'staf'])
+                     ->where('id_sekolah', $id_sekolah);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('alamat', 'like', "%{$search}%")
+                  ->orWhere('no_telp', 'like', "%{$search}%");
+            });
+        }
+
+        $teachers = $query->latest()->paginate(10)->appends(['search' => $search]);
+        return view('admin.manajemen_guru', ['teachers' => $teachers, 'search' => $search]);
     }
 
 
@@ -785,15 +797,10 @@ class AdminController extends Controller
         $id_sekolah = $request->cookie('id_sekolah');
 
         $request->validate([
+            'angkatan' => 'required|exists:angkatans,id_angkatan', //cek apakah id_angkatan ada di tabel angkatans
             'nama' => 'required|string|max:255',
             'jenjang' => 'required|string|in:SMA,SMK,SD,SMP',
             'jumlah_matpel' => 'required|integer|min:1',
-            'id_angkatan' => [
-                'required',
-                'integer',
-                Rule::exists('angkatans', 'id_angkatan')
-                    ->where('id_sekolah', $id_sekolah)
-            ]
         ], [
             'angkatan.required' => 'Angkatan tidak boleh kosong.',
             'angkatan.exists' => 'Angkatan tidak valid.',
@@ -808,6 +815,7 @@ class AdminController extends Controller
         DaftarKurikulum::create([
             'id_sekolah' => $id_sekolah,
             'id_angkatan' => $request->id_angkatan,
+            'id_angkatan' => $request->angkatan,
             'nama_kurikulum' => $request->nama,
             'jenjang' => $request->jenjang,
             'jumlah_matpel' => $request->jumlah_matpel,

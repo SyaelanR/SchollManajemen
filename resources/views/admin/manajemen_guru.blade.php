@@ -177,10 +177,12 @@
                 <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                     <h2 class="text-2xl font-bold text-gray-800">Daftar Guru</h2>
                     <div class="flex items-center gap-4 w-full md:w-auto">
-                        <div class="relative w-full md:w-64">
-                            <input type="text" id="search-input" placeholder="Cari guru..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        </div>
+                        <form action="{{ route('manajemenGuru') }}" method="GET">
+                            <div class="relative w-full md:w-64">
+                                <input type="text" name="search" placeholder="Cari guru..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" value="{{ $search ?? '' }}">
+                                <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            </div>
+                        </form>
                         <button onclick="window.location.href = '{{ route('tambahGuru')}}';" id="add-guru-btn" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap shadow-md hover:shadow-lg">
                             <i class="fa-solid fa-plus mr-2"></i>
                             Tambah Guru
@@ -204,9 +206,9 @@
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="teacher-table-body" class="divide-y">
+                        <tbody class="divide-y">
                         @forelse ($teachers as $teacher)
-                            <tr class="teacher-row hover:bg-gray-50">
+                            <tr class="hover:bg-gray-50">
                                 <td class="p-3 text-gray-800 font-medium">{{ $teacher->name }}</td>
                                 <td class="p-3 text-gray-700">{{ $teacher->alamat ?? '-' }}</td>
                                 <td class="p-3 text-gray-700">{{ $teacher->no_telp ?? '-' }}</td>
@@ -228,23 +230,20 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="p-3 text-center text-gray-500">
-                                    <div class="text-center py-12">
+                                <td colspan="5" class="p-3 text-center text-gray-500 py-12">
+                                    @if ($search)
+                                        <i class="fa-solid fa-magnifying-glass text-4xl text-gray-400 mb-4"></i>
+                                        <p class="text-gray-600 font-semibold text-lg">Guru tidak ditemukan.</p>
+                                        <p class="text-gray-500 mt-1">Tidak ada guru yang cocok dengan kata kunci "{{ $search }}".</p>
+                                    @else
                                         <i class="fa-solid fa-chalkboard-user text-5xl text-gray-400 mb-4"></i>
                                         <p class="text-gray-600 font-semibold text-lg">Belum ada data Guru/Staf.</p>
                                         <p class="text-gray-500 mt-2">Silakan tambahkan data baru.</p>
-                                    </div>
+                                    @endif
                                 </td>
                             </tr>
                         @endforelse
                         </tbody>
-                        <tr id="no-results-row" class="hidden">
-                            <td colspan="5" class="p-3 text-center text-gray-500">
-                                <i class="fa-solid fa-magnifying-glass text-4xl text-gray-400 mb-4"></i>
-                                <p class="text-gray-600 font-semibold text-lg">Guru tidak ditemukan.</p>
-                                <p class="text-gray-500 mt-1">Coba gunakan kata kunci yang berbeda.</p>
-                            </td>
-                        </tr>
                     </table>
                 </div>
             </div>
@@ -265,30 +264,6 @@
 
         menuButton.addEventListener('click', toggleSidebar);
         overlay.addEventListener('click', toggleSidebar);
-
-        // --- Search Functionality ---
-        const searchInput = document.getElementById('search-input');
-        const tableBody = document.getElementById('teacher-table-body');
-        const teacherRows = tableBody.querySelectorAll('.teacher-row');
-        const noResultsRow = document.getElementById('no-results-row');
-
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            let visibleRows = 0;
-
-            teacherRows.forEach(row => {
-                const rowText = row.textContent.toLowerCase();
-                if (rowText.includes(searchTerm)) {
-                    row.style.display = '';
-                    visibleRows++;
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-
-            // Show/hide no results message
-            noResultsRow.style.display = visibleRows === 0 ? '' : 'none';
-        });
 
 
         // --- SweetAlert2 Notifications for Success ---
