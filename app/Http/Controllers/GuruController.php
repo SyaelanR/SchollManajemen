@@ -103,37 +103,34 @@ class GuruController extends Controller
         $id_sekolah = $request->cookie('id_sekolah');
         $id_user = $request->cookie('id_user');
         
-        $infoKelas = Jadwal::with('kelas')
-                    ->where('id_kelas', $id_kelas)
+        $infoJKA = Jadwal::where('id_kelas', $id_kelas)
                     ->where('id_mapel', $id_mapel)
                     ->where('id_sekolah', $id_sekolah)
-                    ->firstOrFail();
-        $infoMapel = Mapel::where('id_mapel', $id_mapel)
-                    ->where('id_guru', $id_user)
-                    ->where('id_sekolah', $id_sekolah)
-                    ->firstOrFail();
-        $infoDaftarNilai = DaftarNilai::where('id_daftar_nilai', $id_daftar_nilai)
-                    ->where('id_mapel', $id_mapel)
-                    ->where('id_kelas', $id_kelas)
-                    ->where('id_sekolah', $id_sekolah)
+                    ->with('kelas.angkatan')
+                    ->with('mapel')
+                    ->whereHas('mapel', function ($query) use ($id_user) {
+                        $query->where('id_guru', $id_user);
+                    })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                    })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                        $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+                    })
                     ->firstOrFail();
 
-
-        $infoAngkatan = Angkatan::where('id_angkatan', $infoKelas->kelas->id_angkatan)->first();
-
-        if(!$infoAngkatan || $infoKelas->semester != $infoAngkatan->semester || $infoKelas->tingkat != $infoAngkatan->id_tingkat || $infoDaftarNilai->semester != $infoAngkatan->semester || $infoDaftarNilai->tingkat != $infoAngkatan->id_tingkat){
-            abort(404);
-        }
+        // dd($infoKelas->semester);
         
         $daftarSiswa = DaftarNilaiSiswa::where('id_kelas', $id_kelas)
-                    ->where('semester', $infoAngkatan->semester)
-                    ->where('tingkat', $infoAngkatan->id_tingkat)
+                    ->where('tingkat', $infoJKA->kelas->angkatan->id_tingkat)
+                    ->where('semester', $infoJKA->kelas->angkatan->semester)
                     ->where('id_mapel', $id_mapel)
                     ->where('id_sekolah', $id_sekolah)
                     ->where('id_daftar_nilai', $id_daftar_nilai)
                     ->with('siswa')->get();
 
-        return view('guru.input_nilai', compact('daftarSiswa', 'infoKelas', 'infoMapel', 'infoDaftarNilai'));
+        return view('guru.input_nilai', compact('daftarSiswa', 'infoJKA'));
     }
 
     public function inputNilaiOnline(Request $request, $id_kelas, $id_mapel, $id_daftar_nilai)
@@ -141,37 +138,34 @@ class GuruController extends Controller
         $id_sekolah = $request->cookie('id_sekolah');
         $id_user = $request->cookie('id_user');
         
-        $infoKelas = Jadwal::with('kelas')
-                    ->where('id_kelas', $id_kelas)
+        $infoJKA = Jadwal::where('id_kelas', $id_kelas)
                     ->where('id_mapel', $id_mapel)
                     ->where('id_sekolah', $id_sekolah)
-                    ->firstOrFail();
-        $infoMapel = Mapel::where('id_mapel', $id_mapel)
-                    ->where('id_guru', $id_user)
-                    ->where('id_sekolah', $id_sekolah)
-                    ->firstOrFail();
-        $infoDaftarNilai = DaftarNilai::where('id_daftar_nilai', $id_daftar_nilai)
-                    ->where('id_mapel', $id_mapel)
-                    ->where('id_kelas', $id_kelas)
-                    ->where('id_sekolah', $id_sekolah)
+                    ->with('kelas.angkatan')
+                    ->with('mapel')
+                    ->whereHas('mapel', function ($query) use ($id_user) {
+                        $query->where('id_guru', $id_user);
+                    })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                    })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                        $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+                    })
                     ->firstOrFail();
 
-
-        $infoAngkatan = Angkatan::where('id_angkatan', $infoKelas->kelas->id_angkatan)->first();
-
-        if(!$infoAngkatan || $infoKelas->semester != $infoAngkatan->semester || $infoKelas->tingkat != $infoAngkatan->id_tingkat || $infoDaftarNilai->semester != $infoAngkatan->semester || $infoDaftarNilai->tingkat != $infoAngkatan->id_tingkat){
-            abort(404);
-        }
+        // dd($infoKelas->semester);
         
         $daftarSiswa = DaftarNilaiSiswa::where('id_kelas', $id_kelas)
-                    ->where('semester', $infoAngkatan->semester)
-                    ->where('tingkat', $infoAngkatan->id_tingkat)
+                    ->where('tingkat', $infoJKA->kelas->angkatan->id_tingkat)
+                    ->where('semester', $infoJKA->kelas->angkatan->semester)
                     ->where('id_mapel', $id_mapel)
                     ->where('id_sekolah', $id_sekolah)
                     ->where('id_daftar_nilai', $id_daftar_nilai)
                     ->with('siswa')->get();
         
-        return view('guru.input_nilai_online', compact('daftarSiswa', 'infoKelas', 'infoMapel', 'infoDaftarNilai'));
+        return view('guru.input_nilai_online', compact('daftarSiswa', 'infoJKA'));
     }
 
     public function lihatTugasSiswa (Request $request, $namaFile)
@@ -199,13 +193,13 @@ class GuruController extends Controller
                     ->whereHas('mapel', function ($query) use ($idUser) {
                         $query->where('id_guru', $idUser);
                     })
-                    ->firstOrFail();
-
-        //cek semester & angkatan aktif
-        $infoDaftarTugasSiswa = DaftarNilaiSiswa::where('nama_fileTugas', $namaFile)
-                    ->where('id_sekolah', $id_sekolah)
-                    ->where('tingkat', $infoJKA->kelas->angkatan->id_tingkat)
-                    ->where('semester', $infoJKA->kelas->angkatan->semester)
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                    })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                        $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+                    })
                     ->firstOrFail();
 
 
@@ -283,22 +277,22 @@ class GuruController extends Controller
         $id_sekolah = $request->cookie('id_sekolah');
         $id_user = $request->cookie('id_user');
 
-        $infoKelas = Jadwal::with('kelas')
-                    ->where('id_kelas', $id_kelas)
+        $infoJKA = Jadwal::where('id_kelas', $id_kelas)
                     ->where('id_mapel', $id_mapel)
                     ->where('id_sekolah', $id_sekolah)
+                    ->with('kelas.angkatan')
+                    ->with('mapel')
+                    ->whereHas('mapel', function ($query) use ($id_user) {
+                        $query->where('id_guru', $id_user);
+                    })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                    })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                        $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+                    })
                     ->firstOrFail();
-        $infoMapel = Mapel::where('id_mapel', $id_mapel)
-                    ->where('id_guru', $id_user)
-                    ->firstOrFail();
-
-        $infoAngkatan = Angkatan::where('id_angkatan', $infoKelas->kelas->id_angkatan)->first();
-
-        // dd($infoKelas->semester);
-
-        if($infoKelas->semester != $infoAngkatan->semester || $infoKelas->tingkat != $infoAngkatan->id_tingkat){
-            abort(404);
-        }
         
 
         $daftarNilai = DaftarNilai::with('mapel')
@@ -308,9 +302,11 @@ class GuruController extends Controller
             ->whereHas('mapel', function ($query) use ($id_user) {
                 $query->where('id_guru', $id_user);
             })
+            ->where('tingkat', $infoJKA->kelas->angkatan->id_tingkat)
+            ->where('semester', $infoJKA->kelas->angkatan->semester)
             ->get();
 
-        return view('guru.manajemen_nilai_daftar', ['daftarNilai' => $daftarNilai, 'infoKelas' => $infoKelas, 'infoMapel' => $infoMapel]);
+        return view('guru.manajemen_nilai_daftar', ['daftarNilai' => $daftarNilai, 'infoJKA' => $infoJKA]);
     }
 
     public function storeDaftarNilai(Request $request, $id_kelas, $id_mapel)
@@ -413,34 +409,37 @@ class GuruController extends Controller
         $id_sekolah = $request->cookie('id_sekolah');
         $id_user = $request->cookie('id_user');
 
-        $infoKelas = Jadwal::with('kelas')
-                    ->where('id_kelas', $id_kelas)
+        $infoJKA = Jadwal::where('id_kelas', $id_kelas)
                     ->where('id_mapel', $id_mapel)
                     ->where('id_sekolah', $id_sekolah)
+                    ->with('kelas.angkatan')
+                    ->with('mapel')
+                    ->whereHas('mapel', function ($query) use ($id_user) {
+                        $query->where('id_guru', $id_user);
+                    })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                    })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                        $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+                    })
                     ->firstOrFail();
-        $infoMapel = Mapel::where('id_mapel', $id_mapel)
-                    ->where('id_guru', $id_user)
-                    ->firstOrFail();
-
-        $infoAngkatan = Angkatan::where('id_angkatan', $infoKelas->kelas->id_angkatan)->first();
-
-        // dd($infoKelas->semester);
-
-        if($infoKelas->semester != $infoAngkatan->semester || $infoKelas->tingkat != $infoAngkatan->id_tingkat){
-            abort(404);
-        }
         
 
         $daftarAbsensi = DaftarAbsensi::with('mapel')
             ->where('id_kelas', $id_kelas)
             ->where('id_mapel', $id_mapel)
             ->where('id_sekolah', $id_sekolah)
+            ->where('tingkat', $infoJKA->kelas->angkatan->id_tingkat)
+            ->where('semester', $infoJKA->kelas->angkatan->semester)
             ->whereHas('mapel', function ($query) use ($id_user) {
                 $query->where('id_guru', $id_user);
             })
             ->get();
 
-        return view('guru.manajemen_absensi_daftar', ['daftarAbsensi' => $daftarAbsensi, 'infoKelas' => $infoKelas, 'infoMapel' => $infoMapel]);
+        // return view('guru.manajemen_absensi_daftar', ['daftarAbsensi' => $daftarAbsensi, 'infoKelas' => $infoKelas, 'infoMapel' => $infoMapel]);
+        return view('guru.manajemen_absensi_daftar', ['daftarAbsensi' => $daftarAbsensi, 'infoJKA' => $infoJKA]);
     }
 
     public function storeAbsensiDaftar (Request $request, $id_kelas, $id_mapel)
@@ -501,38 +500,33 @@ class GuruController extends Controller
         $id_sekolah = $request->cookie('id_sekolah');
         $id_user = $request->cookie('id_user');
         
-        $infoKelas = Jadwal::with('kelas')
-                    ->where('id_kelas', $id_kelas)
+        $infoJKA = Jadwal::where('id_kelas', $id_kelas)
                     ->where('id_mapel', $id_mapel)
                     ->where('id_sekolah', $id_sekolah)
+                    ->with('kelas.angkatan')
+                    ->with('mapel')
+                    ->whereHas('mapel', function ($query) use ($id_user) {
+                        $query->where('id_guru', $id_user);
+                    })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                    })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                        $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+                    })
                     ->firstOrFail();
-        $infoMapel = Mapel::where('id_mapel', $id_mapel)
-                    ->where('id_guru', $id_user)
-                    ->where('id_sekolah', $id_sekolah)
-                    ->firstOrFail();
-        $infoDaftarAbsensi = DaftarAbsensi::where('id_daftar_absensi', $id_daftar_absensi)
-                    ->where('id_mapel', $id_mapel)
-                    ->where('id_kelas', $id_kelas)
-                    ->where('id_sekolah', $id_sekolah)
-                    ->firstOrFail();
-
-
-        $infoAngkatan = Angkatan::where('id_angkatan', $infoKelas->kelas->id_angkatan)->first();
-
-        if(!$infoAngkatan || $infoKelas->semester != $infoAngkatan->semester || $infoKelas->tingkat != $infoAngkatan->id_tingkat || $infoDaftarAbsensi->semester != $infoAngkatan->semester || $infoDaftarAbsensi->tingkat != $infoAngkatan->id_tingkat){
-            abort(404);
-        }
 
         $daftarSiswa = DaftarAbsensiSiswa::where('id_kelas', $id_kelas)
-                    ->where('semester', $infoAngkatan->semester)
-                    ->where('tingkat', $infoAngkatan->id_tingkat)
+                    ->where('tingkat', $infoJKA->kelas->angkatan->id_tingkat)
+                    ->where('semester', $infoJKA->kelas->angkatan->semester)
                     ->where('id_mapel', $id_mapel)
                     ->where('id_sekolah', $id_sekolah)
                     ->where('id_daftar_absensi', $id_daftar_absensi)
                     ->with('siswa')->get();
 
-        // return view('guru.input_absensi', ['daftarSiswa' => $daftarSiswa, 'infoKelas' => $infoKelas, 'infoMapel' => $infoMapel, 'infoDaftarAbsensi' => $infoDaftarAbsensi]);
-        return view('guru.input_absensi', ['daftarSiswa' => $daftarSiswa, 'infoKelas' => $infoKelas, 'infoMapel' => $infoMapel]);
+        // return view('guru.input_absensi', ['daftarSiswa' => $daftarSiswa, 'infoKelas' => $infoKelas, 'infoMapel' => $infoMapel]);
+        return view('guru.input_absensi', ['daftarSiswa' => $daftarSiswa]);
     }
 
     public function storeAbsensiSiswa (Request $request)
@@ -566,7 +560,7 @@ class GuruController extends Controller
     {
         // 1. Validasi input
         $validated = $request->validate([
-            'status' => 'required|string|in:Hadir,Izin,Sakit,Alpha',
+            'status' => 'required|string|in:Hadir,Izin,Sakit,Alfa',
         ]);
 
         // 2. Cari data absensi siswa berdasarkan ID
@@ -624,26 +618,28 @@ class GuruController extends Controller
         $id_sekolah = $request->cookie('id_sekolah');
         $id_user = $request->cookie('id_user');
 
-        $infoKelas = Jadwal::with('kelas')
-                    ->where('id_kelas', $id_kelas)
+        $infoJKA = Jadwal::where('id_kelas', $id_kelas)
                     ->where('id_mapel', $id_mapel)
                     ->where('id_sekolah', $id_sekolah)
+                    ->with('kelas.angkatan')
+                    ->with('mapel')
+                    ->whereHas('mapel', function ($query) use ($id_user) {
+                        $query->where('id_guru', $id_user);
+                    })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                    })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                        $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+                    })
                     ->firstOrFail();
-        $infoMapel = Mapel::where('id_mapel', $id_mapel)
-                    ->where('id_guru', $id_user)
-                    ->firstOrFail();
-
-        $infoAngkatan = Angkatan::where('id_angkatan', $infoKelas->kelas->id_angkatan)->first();
-
-        // dd($infoKelas->semester);
-
-        if($infoKelas->semester != $infoAngkatan->semester || $infoKelas->tingkat != $infoAngkatan->id_tingkat){
-            abort(404);
-        }
 
         $daftarTugas = DaftarTugas::with('mapel')
                     ->where('id_kelas', $id_kelas)
                     ->where('id_mapel', $id_mapel)
+                    ->where('tingkat', $infoJKA->kelas->angkatan->id_tingkat)
+                    ->where('semester', $infoJKA->kelas->angkatan->semester)
                     ->where('id_sekolah', $id_sekolah)->get();
 
     
@@ -653,7 +649,7 @@ class GuruController extends Controller
         //         : null;
         // }
 
-        return view('guru.input_tugas', ['daftarTugas' => $daftarTugas, 'infoKelas' => $infoKelas, 'infoMapel' => $infoMapel]);
+        return view('guru.input_tugas', ['daftarTugas' => $daftarTugas, 'infoJKA' => $infoJKA]);
     }
 
 
@@ -789,6 +785,13 @@ class GuruController extends Controller
                     ->whereHas('mapel', function ($query) use ($idUser) {
                         $query->where('id_guru', $idUser);
                     })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                    })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                        $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+                    })
                     ->firstOrFail();
 
 
@@ -827,6 +830,13 @@ class GuruController extends Controller
                     ->with('mapel')
                     ->whereHas('mapel', function ($query) use ($idUser) {
                         $query->where('id_guru', $idUser);
+                    })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                    })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                        $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
                     })
                     ->firstOrFail();
                     
@@ -873,6 +883,13 @@ class GuruController extends Controller
                     ->with('mapel')
                     ->whereHas('mapel', function ($query) use ($idUser) {
                         $query->where('id_guru', $idUser);
+                    })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                    })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                        $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
                     })
                     ->firstOrFail();
 
@@ -1023,6 +1040,13 @@ class GuruController extends Controller
                     ->whereHas('mapel', function ($query) use ($idUser) {
                         $query->where('id_guru', $idUser);
                     })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                    })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                        $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+                    })
                     ->firstOrFail();
 
         //cek semester & angkatan aktif
@@ -1104,13 +1128,14 @@ class GuruController extends Controller
                     ->whereHas('mapel', function ($query) use ($id_user) {
                         $query->where('id_guru', $id_user);
                     })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                    })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                        $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+                    })
                     ->firstOrFail();
-
-        // dd($infoKelas->semester);
-
-        if($infoJKA->kelas->angkatan->id_tingkat != $infoJKA->tingkat || $infoJKA->kelas->angkatan->semester != $infoJKA->semester){
-            abort(404);
-        }
         
 
         $DaftarPengumuman = DaftarPengumuman::where('id_kelas', $id_kelas)
@@ -1147,13 +1172,16 @@ class GuruController extends Controller
                     ->whereHas('mapel', function ($query) use ($id_user) {
                         $query->where('id_guru', $id_user);
                     })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                    })
+                    ->whereHas('kelas.angkatan', function ($query) {
+                        // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                        $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+                    })
                     ->firstOrFail();
 
         // dd($infoKelas->semester);
-
-        if($infoJKA->kelas->angkatan->id_tingkat != $infoJKA->tingkat || $infoJKA->kelas->angkatan->semester != $infoJKA->semester){
-            abort(404);
-        }
 
         DaftarPengumuman::create([
             'id_sekolah' => $id_sekolah,
@@ -1283,13 +1311,16 @@ public function destroyPengumuman($id_pengumuman, Request $request)
         ->whereHas('mapel', function ($query) use ($id_user) {
             $query->where('id_guru', $id_user);
         })
+        ->whereHas('kelas.angkatan', function ($query) {
+            $query->whereColumn('angkatans.semester', 'jadwals.semester');
+        })
+        ->whereHas('kelas.angkatan', function ($query) {
+            // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+            $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+        })
         ->firstOrFail();
         
         // dd($infoKelas->semester);
-        
-        if($infoJKA->kelas->angkatan->id_tingkat != $infoJKA->tingkat || $infoJKA->kelas->angkatan->semester != $infoJKA->semester){
-            abort(404);
-        }
         
         $namaFile = 'laporan_nilai_siswa_' . $infoJKA->kelas->nama_kelas .'_'. $infoJKA->mapel->nama_mapel .'_'. date('Y-m-d') . '.xlsx';
         $id_tingkat = $infoJKA->kelas->angkatan->id_tingkat;

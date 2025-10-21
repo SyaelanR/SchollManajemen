@@ -133,10 +133,26 @@ class LoginController extends Controller
                 ->where('id_kelas', $idKelas)
                 ->where('id_sekolah', $idSekolah)
                 ->with('mapel.guru')
+                ->with('kelas.angkatan')
+                ->whereHas('kelas.angkatan', function ($query) {
+                    $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                })
+                ->whereHas('kelas.angkatan', function ($query) {
+                    // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                    $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+                })
                 ->get();
 
             $absensi = DaftarAbsensiSiswa::where('id_siswa', $idUser)
                 ->where('id_sekolah', $idSekolah)
+                ->with('daftarAbsensi.kelas.angkatan')
+                ->whereHas('daftarAbsensi.kelas.angkatan', function ($query) {
+                    $query->whereColumn('angkatans.semester', 'daftar_absensi_siswas.semester');
+                })
+                ->whereHas('daftarAbsensi.kelas.angkatan', function ($query) {
+                    // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                    $query->whereColumn('angkatans.id_tingkat', 'daftar_absensi_siswas.tingkat');
+                })
                 ->get();
 
             $totalAbsensi = [];
@@ -147,9 +163,10 @@ class LoginController extends Controller
             $totalAbsensi['Alfa'] = $absensi->where('status', 'Alfa')->count();
 
             $DaftarPengumuman = DaftarPengumuman::where('id_kelas', $idKelas)
-            ->where('id_sekolah', $idSekolah)
-            ->where('created_at', '>=', Carbon::now()->subWeeks(1))
-            ->get();
+                                ->where('id_sekolah', $idSekolah)
+                                ->where('created_at', '>=', Carbon::now()->subWeeks(1))
+                                ->orderBy('created_at', 'desc')
+                                ->get();
 
             $daftarAcara = DaftarAcara::where('id_sekolah', $idSekolah)
                         ->where('tanggal_selesai', '>=', Carbon::now()->subWeeks(1))

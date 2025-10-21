@@ -64,18 +64,21 @@
                 <i class="fa-solid fa-calendar-check mr-3"></i>
                 <span>Acara</span>
             </a>
+            <a href="{{ route('KRS')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('lihatAcaraSiswa')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
+                <i class="fa-solid fa-id-card mr-3"></i>
+                <span>KRS</span>
+            </a>
         </nav>
-        <div class="absolute bottom-0 w-full p-6">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <a href="{{ route('logout') }}"
-                   onclick="event.preventDefault(); this.closest('form').submit();"
-                   class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
-                    <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
-                    <span>Logout</span>
-                </a>
-            </form>
-        </div>
+        <div class="p-6 border-t border-gray-200 flex-shrink-0">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <a href="{{ route('logout') }}"
+                onclick="event.preventDefault(); this.closest('form').submit();"
+                class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full transition duration-200">
+                <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
+                <span>Logout</span>
+            </a>
+        </form>
     </aside>
 
     <!-- Overlay for mobile -->
@@ -102,8 +105,15 @@
 
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
-            <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
-                <h2 class="text-3xl font-bold mb-2">Materi: {{ $infoJadwal->mapel->nama_mapel ?? 'N/A' }}</h2>
+            <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg flex flex-wrap justify-between items-center text-white gap-4">
+                <div>
+                    <h2 class="text-3xl font-bold mb-2">Daftar Materi: {{ $infoJadwal->mapel->nama_mapel ?? 'N/A' }}</h2>
+                    <p class="text-indigo-200 mt-2">Pelajari materi-materi yang diberikan oleh guru!</p>
+                </div>
+                <a href="javascript:void(0)" onclick="history.back()" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
+                    <i class="fa-solid fa-arrow-left mr-2"></i>
+                    <span>Kembali</span>
+                </a>
             </header>
             
             <div class="bg-white rounded-xl shadow-md p-6">
@@ -122,7 +132,7 @@
                             <p class="text-sm text-gray-600 mt-1">{{ $materi->deskripsi_materi }}</p>
                             <p class="text-xs text-gray-400 mt-2">Diunggah pada: {{ \Carbon\Carbon::parse($materi->tanggal)->isoFormat('D MMMM YYYY') }}</p>
                         </div>
-                        <a href="{{ route('lihatMateriS', ['namaFile' => $materi->nama_file]) }}" target="_blank" class="flex-shrink-0 bg-indigo-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-600 transition duration-300 flex items-center gap-2">
+                        <a href="{{ route('lihatMateriS', ['namaFile' => $materi->nama_file]) }}" class="flex-shrink-0 bg-indigo-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-600 transition duration-300 flex items-center gap-2">
                             <i class="fa-solid fa-eye"></i>
                             <span>Lihat Materi</span>
                         </a>

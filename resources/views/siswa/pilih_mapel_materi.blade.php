@@ -65,16 +65,16 @@
                 <span>Lihat Tugas</span>
             </a>
         </nav>
-        <div class="absolute bottom-0 w-full p-6">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <a href="{{ route('logout') }}"
-                   onclick="event.preventDefault(); this.closest('form').submit();" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
-                    <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
-                    <span>Logout</span>
-                </a>
-            </form>
-        </div>
+        <div class="p-6 border-t border-gray-200 flex-shrink-0">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <a href="{{ route('logout') }}"
+                onclick="event.preventDefault(); this.closest('form').submit();"
+                class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full transition duration-200">
+                <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
+                <span>Logout</span>
+            </a>
+        </form>
     </aside>
 
     <!-- Overlay for mobile -->
@@ -115,10 +115,9 @@
                     </div>
                 </div>
                 
-                @if (count($daftarMapel) > 0)
-                <div id="mapel-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    @foreach ($daftarMapel as $jadwal)
-                    <div class="mapel-item bg-gray-50 border rounded-xl p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    @forelse ($daftarMapel as $jadwal)
+                    <div class="bg-gray-50 border rounded-xl p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
                         <!-- Clickable Area -->
                         <a href="{{ route('lihatMateriSiswa', ['id_kelas' => $jadwal->id_kelas, 'id_mapel' => $jadwal->id_mapel]) }}" class="flex flex-col h-full">
                             <div class="flex-grow">
@@ -135,21 +134,14 @@
                             </div>
                         </a>
                     </div>
-                    @endforeach
                 </div>
-                @else
+                @empty
                 <div class="text-center py-12">
                     <i class="fa-solid fa-book-open-reader text-5xl text-gray-400 mb-4"></i>
                     <p class="text-gray-600 font-semibold text-lg">Anda belum memiliki mata pelajaran.</p>
                     <p class="text-gray-500 mt-2">Hubungi administrator untuk informasi lebih lanjut.</p>
                 </div>
-                @endif
-                <!-- No Results Message -->
-                <div id="no-results" class="text-center py-12 hidden">
-                    <i class="fa-solid fa-magnifying-glass text-5xl text-gray-400 mb-4"></i>
-                    <p class="text-gray-600 font-semibold text-lg">Mata pelajaran tidak ditemukan.</p>
-                    <p class="text-gray-500 mt-2">Coba gunakan kata kunci yang berbeda.</p>
-                </div>
+                @endforelse
             </div>
         </main>
     </div>

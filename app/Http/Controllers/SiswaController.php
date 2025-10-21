@@ -474,7 +474,7 @@ class SiswaController extends Controller
 
         // Mengambil daftar mapel yang unik untuk kelas siswa yang sedang login
         // berdasarkan jadwal yang ada.
-        $mapelList = Jadwal::with('mapel.guru')
+        $daftarMapel = Jadwal::with('mapel.guru')
             ->where('id_sekolah', $id_sekolah)
             ->where('id_kelas', $id_kelas)
             // Hanya jalankan filter tambahan jika info angkatan valid
@@ -489,7 +489,7 @@ class SiswaController extends Controller
             ->distinct()
             ->get();
 
-        return view('siswa.lihatmapelnilai', ['mapelList' => $mapelList]);
+        return view('siswa.lihatmapelnilai', ['daftarMapel' => $daftarMapel]);
     }
 
     /**
@@ -549,11 +549,12 @@ class SiswaController extends Controller
                         ->whereColumn('daftar_nilai_siswas.tingkat', 'angkatans.id_tingkat')
                         ->whereColumn('daftar_nilai_siswas.semester', 'angkatans.semester')
                         // Eager load relasi yang dibutuhkan untuk view
-                        ->with(['daftarNilai', 'kelas.angkatan'])
+                        ->with(['daftarNilai', 'kelas.angkatan', 'mapel'])
                         ->get();
 
+        $nama_mapel = $daftarNilai->first()->mapel->nama_mapel;
 
-        return view('siswa.lihatnilai', ['daftarNilai' => $daftarNilai]);
+        return view('siswa.lihatnilai', ['daftarNilai' => $daftarNilai, 'nama_mapel' => $nama_mapel]);
     }
 
     public function lihatAcara(Request $request)
@@ -566,7 +567,7 @@ class SiswaController extends Controller
                         ->orderBy('tanggal_mulai', 'desc')
                         ->get();
 
-        return view('siswa.lihat_acara', compact('daftarAcara'));
+        return view('siswa.lihat_acara_siswa', compact('daftarAcara'));
     }
 ////////////////////////////////lihat pengumuman/////////////////////////////////////////////
     public function lihatPengumuman(Request $request)
@@ -580,12 +581,11 @@ class SiswaController extends Controller
                           ->pluck('id_mapel')->unique();
 
         // Ambil pengumuman yang relevan (berdasarkan id_sekolah, id_kelas, dan id_mapel)
-        $pengumumans = DaftarPengumuman::where('id_sekolah', $id_sekolah)
-            ->where('id_kelas', $id_kelas)
-            ->whereIn('id_mapel', $mapelIds)
-            ->with('mapel') // Eager load relasi mapel untuk efisiensi
-            ->latest('created_at')->get();
+        $DaftarPengumuman = DaftarPengumuman::where('id_kelas', $id_kelas)
+            ->where('id_sekolah', $id_sekolah)
+            ->where('created_at', '>=', Carbon::now()->subWeeks(1))
+            ->get();
 
-        return view('siswa.lihat_pengumuman', compact('pengumumans'));
+        return view('siswa.lihat_pengumuman', ['DaftarPengumuman' => $DaftarPengumuman]);
     }
 }
