@@ -194,15 +194,15 @@
                     <tr>
                         <td>TINGKAT</td>
                         <td>:</td>
-                        <td>{{ $kelasInfo->angkatan->tingkat ?? 'N/A'}}</td>
+                        <td>{{ $infoTS->idTingkat->tingkat ?? 'N/A'}}</td>
                         <td>SEMESTER</td>
                         <td>:</td>
-                        <td>{{ ucfirst($kelasInfo->angkatan->semester ?? 'N/A') }}</td>
+                        <td>{{ ucfirst($infoTS->semester ?? 'N/A') }}</td>
                     </tr>
                     <tr>
                         <td>SEKOLAH</td>
                         <td>:</td>
-                        <td colspan="4">{{$kelasInfo->angkatan->sekolah->nama_sekolah}}</td> {{-- Ganti dengan data sekolah dinamis jika ada --}}
+                        <td colspan="4">{{$kelasInfo->angkatan->sekolah->nama_sekolah ?? 'N/A'}}</td> {{-- Ganti dengan data sekolah dinamis jika ada --}}
                     </tr>
                 </table>
             </div>
@@ -282,7 +282,7 @@
                     <table>
                         <tr><td>Izin</td><td>:</td><td>{{ $data['absensi']['Izin'] ?? 0 }} hari</td></tr>
                         <tr><td>Sakit</td><td>:</td><td>{{ $data['absensi']['Sakit'] ?? 0 }} hari</td></tr>
-                        <tr><td>Tanpa Keterangan (Alpha)</td><td>:</td><td>{{ $data['absensi']['Alpha'] ?? 0 }} hari</td></tr>
+                        <tr><td>Tanpa Keterangan (Alfa)</td><td>:</td><td>{{ $data['absensi']['Alfa'] ?? 0 }} hari</td></tr>
                     </table>
                 </div>
             </div>
@@ -295,7 +295,7 @@
                     <p>(................................)</p>
                 </div>
                 <div class="kanan-tt">
-                    <p>{{$kelasInfo->angkatan->sekolah->alamat}}, {{ \Carbon\Carbon::now()->isoFormat('D MMMM YYYY') }}</p>
+                    <p>{{$kelasInfo->angkatan->sekolah->alamat ?? 'N/A'}}, {{ \Carbon\Carbon::now()->isoFormat('D MMMM YYYY') }}</p>
                     <p>Wali Kelas</p>
                     <div class="spacer"></div>
                     <p><strong>{{ $kelasInfo->wali_kelas ?? '(................................)' }}</strong></p>

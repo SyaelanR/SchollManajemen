@@ -74,13 +74,19 @@
             <!-- Header Section -->
             <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg text-white flex flex-col md:flex-row justify-between items-start gap-4">
                 <div>
-                    <h1 class="text-2xl md:text-3xl font-bold">Budi Santoso</h1>
-                    <p class="text-indigo-200 mt-1">Histori KBM untuk Tahun Ajaran 2023/2024 - Semester Ganjil</p>
+                    <h1 class="text-2xl md:text-3xl font-bold">{{ $infoSiswa->siswa->name ?? '-'}}</h1>
+                    <p class="text-indigo-200 mt-1">Histori KBM Tingkat {{ $infoSiswa->idTingkat->tingkat ?? '-'}}  - Semester {{ $infoSiswa->semester ?? '-'}}</p>
                 </div>
-                <a href="{{-- route('detailSiswa', $siswa->id) --}}" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
-                    <i class="fa-solid fa-arrow-left mr-2"></i>
-                    <span>Kembali ke Detail</span>
-                </a>
+                <div class="flex-shrink-0 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    <a href="{{ route('rapor', [$infoSiswa->siswa->id ?? 0, $infoSiswa->idTingkat->id_tingkat ?? 0, $infoSiswa->semester ?? '-']) }}" class="inline-flex items-center justify-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
+                        <i class="fa-solid fa-print mr-2"></i>
+                        <span>Lihat Rapor</span>
+                    </a>
+                    <a href="{{-- route('detailSiswa', $siswa->id) --}}" class="inline-flex items-center justify-center bg-indigo-500 text-white hover:bg-indigo-400 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>
+                        <span>Kembali</span>
+                    </a>
+                </div>
             </header>
 
             <!-- Main Grid -->
@@ -101,54 +107,17 @@
                             </thead>
                             <tbody class="divide-y">
                                 <!-- Dummy Data Nilai -->
+                                @forelse ($historyNilai ?? [] as $nilai)
                                 <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 font-medium text-gray-800">Matematika</td>
-                                    <td class="px-6 py-4 text-gray-600">15 Okt 2023</td>
+                                    <td class="px-6 py-4 font-medium text-gray-800">{{ $nilai->mapel->nama_mapel}}</td>
+                                    <td class="px-6 py-4 text-gray-600">{{ $nilai->created_at ? \Carbon\Carbon::parse($nilai->created_at)->isoFormat('D MMM YYYY') : '-'}}</td>
                                     <td class="px-6 py-4">
-                                        <span class="bg-yellow-100 text-yellow-800 font-medium py-1 px-3 rounded-full text-xs">UTS</span>
+                                        <span class="bg-blue-100 text-blue-800 font-medium py-1 px-3 rounded-full text-xs">{{ $nilai->daftarnilai->tipe_nilai}}</span>
                                     </td>
-                                    <td class="px-6 py-4 text-center font-semibold text-lg text-gray-700">85</td>
+                                    <td class="px-6 py-4 text-center font-semibold text-lg text-gray-700">{{ $nilai->nilai }}</td>
                                 </tr>
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 font-medium text-gray-800">Bahasa Indonesia</td>
-                                    <td class="px-6 py-4 text-gray-600">12 Okt 2023</td>
-                                    <td class="px-6 py-4">
-                                        <span class="bg-blue-100 text-blue-800 font-medium py-1 px-3 rounded-full text-xs">Tugas</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-center font-semibold text-lg text-gray-700">90</td>
-                                </tr>
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 font-medium text-gray-800">IPA</td>
-                                    <td class="px-6 py-4 text-gray-600">10 Okt 2023</td>
-                                    <td class="px-6 py-4">
-                                        <span class="bg-cyan-100 text-cyan-800 font-medium py-1 px-3 rounded-full text-xs">PR</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-center font-semibold text-lg text-gray-700">78</td>
-                                </tr>
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 font-medium text-gray-800">IPS</td>
-                                    <td class="px-6 py-4 text-gray-600">05 Okt 2023</td>
-                                    <td class="px-6 py-4">
-                                        <span class="bg-blue-100 text-blue-800 font-medium py-1 px-3 rounded-full text-xs">Tugas</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-center font-semibold text-lg text-gray-700">88</td>
-                                </tr>
-                                 <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 font-medium text-gray-800">PKN</td>
-                                    <td class="px-6 py-4 text-gray-600">02 Nov 2023</td>
-                                    <td class="px-6 py-4">
-                                        <span class="bg-green-100 text-green-800 font-medium py-1 px-3 rounded-full text-xs">Hafalan</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-center font-semibold text-lg text-gray-700">92</td>
-                                </tr>
-                                 <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 font-medium text-gray-800">IPS</td>
-                                    <td class="px-6 py-4 text-gray-600">25 Nov 2023</td>
-                                    <td class="px-6 py-4">
-                                        <span class="bg-red-100 text-red-800 font-medium py-1 px-3 rounded-full text-xs">UAS</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-center font-semibold text-lg text-gray-700">82</td>
-                                </tr>
+                                @empty
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -169,54 +138,55 @@
                             </thead>
                             <tbody class="divide-y">
                                 <!-- Dummy Data Absensi -->
+                                @forelse ($historyAbsensi ?? [] as $absensi)
+                                @if ($absensi->status == 'Hadir')
                                 <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 text-gray-600">20 Okt 2023</td>
-                                    <td class="px-6 py-4 font-medium text-gray-800">Matematika</td>
-                                    <td class="px-6 py-4 text-gray-600">Harian</td>
+                                    <td class="px-6 py-4 text-gray-600">{{ $absensi->daftarAbsensi->tanggal ? \Carbon\Carbon::parse($absensi->daftarAbsensi->tanggal)->isoFormat('D MMM YYYY') : '-'}}</td>
+                                    <td class="px-6 py-4 font-medium text-gray-800">{{ $absensi->mapel->nama_mapel }}</td>
+                                    <td class="px-6 py-4 text-gray-600">{{ $absensi->daftarAbsensi->kategori }}</td>
                                     <td class="px-6 py-4 text-center">
-                                        <span class="bg-green-100 text-green-800 font-semibold py-1 px-3 rounded-full text-xs">Hadir</span>
+                                        <span class="bg-green-100 text-green-800 font-semibold py-1 px-3 rounded-full text-xs">{{ $absensi->status }}</span>
                                     </td>
                                 </tr>
+                                @elseif ($absensi->status == 'Sakit')
                                 <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 text-gray-600">18 Okt 2023</td>
-                                    <td class="px-6 py-4 font-medium text-gray-800">B. Indonesia</td>
-                                    <td class="px-6 py-4 text-gray-600">Harian</td>
+                                    <td class="px-6 py-4 text-gray-600">{{ $absensi->daftarAbsensi->tanggal ? \Carbon\Carbon::parse($absensi->daftarAbsensi->tanggal)->isoFormat('D MMM YYYY') : '-'}}</td>
+                                    <td class="px-6 py-4 font-medium text-gray-800">{{ $absensi->mapel->nama_mapel }}</td>
+                                    <td class="px-6 py-4 text-gray-600">{{ $absensi->daftarAbsensi->kategori }}</td>
                                     <td class="px-6 py-4 text-center">
                                         <span class="bg-blue-100 text-blue-800 font-semibold py-1 px-3 rounded-full text-xs">Sakit</span>
                                     </td>
                                 </tr>
+                                @elseif ($absensi->status == 'Alfa')
                                 <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 text-gray-600">15 Okt 2023</td>
-                                    <td class="px-6 py-4 font-medium text-gray-800">Matematika</td>
-                                    <td class="px-6 py-4 text-gray-600">UTS</td>
+                                    <td class="px-6 py-4 text-gray-600">{{ $absensi->daftarAbsensi->tanggal ? \Carbon\Carbon::parse($absensi->daftarAbsensi->tanggal)->isoFormat('D MMM YYYY') : '-'}}</td>
+                                    <td class="px-6 py-4 font-medium text-gray-800">{{ $absensi->mapel->nama_mapel }}</td>
+                                    <td class="px-6 py-4 text-gray-600">{{ $absensi->daftarAbsensi->kategori }}</td>
                                     <td class="px-6 py-4 text-center">
-                                        <span class="bg-green-100 text-green-800 font-semibold py-1 px-3 rounded-full text-xs">Hadir</span>
+                                        <span class="bg-red-100 text-red-800 font-semibold py-1 px-3 rounded-full text-xs">Alfa</span>
                                     </td>
                                 </tr>
+                                @elseif ($absensi->status == 'Izin')
                                 <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 text-gray-600">11 Okt 2023</td>
-                                    <td class="px-6 py-4 font-medium text-gray-800">IPS</td>
-                                    <td class="px-6 py-4 text-gray-600">Harian</td>
-                                    <td class="px-6 py-4 text-center">
-                                        <span class="bg-red-100 text-red-800 font-semibold py-1 px-3 rounded-full text-xs">Alpha</span>
-                                    </td>
-                                </tr>
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 text-gray-600">10 Okt 2023</td>
-                                    <td class="px-6 py-4 font-medium text-gray-800">IPA</td>
-                                    <td class="px-6 py-4 text-gray-600">Harian</td>
+                                    <td class="px-6 py-4 text-gray-600">{{ $absensi->daftarAbsensi->tanggal ? \Carbon\Carbon::parse($absensi->daftarAbsensi->tanggal)->isoFormat('D MMM YYYY') : '-'}}</td>
+                                    <td class="px-6 py-4 font-medium text-gray-800">{{ $absensi->mapel->nama_mapel }}</td>
+                                    <td class="px-6 py-4 text-gray-600">{{ $absensi->daftarAbsensi->kategori }}</td>
                                     <td class="px-6 py-4 text-center">
                                         <span class="bg-yellow-100 text-yellow-800 font-semibold py-1 px-3 rounded-full text-xs">Izin</span>
                                     </td>
                                 </tr>
-                                 <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 text-gray-600">09 Okt 2023</td>
-                                    <td class="px-6 py-4 font-medium text-gray-800">PKN</td>
-                                    <td class="px-6 py-4 text-gray-600">Harian</td>
+                                @else
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 text-gray-600">{{ $absensi->daftarAbsensi->tanggal ? \Carbon\Carbon::parse($absensi->daftarAbsensi->tanggal)->isoFormat('D MMM YYYY') : '-'}}</td>
+                                    <td class="px-6 py-4 font-medium text-gray-800">{{ $absensi->mapel->nama_mapel }}</td>
+                                    <td class="px-6 py-4 text-gray-600">{{ $absensi->daftarAbsensi->kategori }}</td>
                                     <td class="px-6 py-4 text-center">
-                                        <span class="bg-green-100 text-green-800 font-semibold py-1 px-3 rounded-full text-xs">Hadir</span>
+                                        <span>-</span>
                                     </td>
                                 </tr>
+                                @endif
+                                @empty
+                                @endforelse
                             </tbody>
                         </table>
                     </div>

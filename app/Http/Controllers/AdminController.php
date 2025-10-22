@@ -853,18 +853,25 @@ class AdminController extends Controller
         $students = User::where('id_kelas', $id_kelas)
                         ->where('id_sekolah', $id_sekolah)
                         ->with([
+                            // Filter relasi saat eager loading
+                            'daftarNilaiSiswa' => function($query) use ($kelasInfo) {
+                                $query->where('tingkat', $kelasInfo->angkatan->id_tingkat)
+                                      ->where('semester', $kelasInfo->angkatan->semester);
+                            },
                             'daftarNilaiSiswa.mapel', 
                             'daftarNilaiSiswa.daftarNilai',
-                            'daftarAbsensiSiswa' // Eager load relasi absensi
+                            'daftarNilaiSiswa.idTingkat',
+                            'daftarAbsensiSiswa' => function($query) use ($kelasInfo) {
+                                $query->where('tingkat', $kelasInfo->angkatan->id_tingkat)
+                                      ->where('semester', $kelasInfo->angkatan->semester);
+                            }
                         ])
-                        ->whereHas('daftarNilaiSiswa', function($query) use ($kelasInfo) {
-                            $query->where('tingkat', $kelasInfo->angkatan->id_tingkat);
-                            $query->where('semester', $kelasInfo->angkatan->semester);
-                        })
                         ->get();
+
+        $infoTS = $students->first()?->daftarNilaiSiswa?->first() ?? [];
     
         // Proses data untuk setiap siswa
-        $processedRapors = $students->map(function ($student) use ($kelasInfo) {
+        $processedRapors = $students->map(function ($student) {
             // Kelompokkan nilai berdasarkan mapel
             $nilaiByMapel = $student->daftarNilaiSiswa->groupBy('id_mapel');
     
@@ -930,17 +937,12 @@ class AdminController extends Controller
                 ];
             });
     
-            // --- LOGIKA BARU UNTUK MENGHITUNG ABSENSI ---
-            // Filter absensi berdasarkan semester dan tingkat dari kelas saat ini
-            $absensiSemesterIni = $student->daftarAbsensiSiswa
-                ->where('tingkat', $kelasInfo->angkatan->id_tingkat)
-                ->where('semester', $kelasInfo->angkatan->semester);
-
+            // --- LOGIKA PENGHITUNGAN ABSENSI (data sudah terfilter oleh query) ---
             // Hitung jumlah untuk setiap status
             $attendanceCounts = [
-                'Sakit' => $absensiSemesterIni->where('status', 'Sakit')->count(),
-                'Izin'  => $absensiSemesterIni->where('status', 'Izin')->count(),
-                'Alpha' => $absensiSemesterIni->where('status', 'Alpha')->count(),
+                'Sakit' => $student->daftarAbsensiSiswa->where('status', 'Sakit')->count(),
+                'Izin'  => $student->daftarAbsensiSiswa->where('status', 'Izin')->count(),
+                'Alfa' => $student->daftarAbsensiSiswa->where('status', 'Alfa')->count(),
             ];
 
             // Kembalikan data siswa bersama dengan data rapor yang sudah diproses
@@ -950,8 +952,9 @@ class AdminController extends Controller
                 'absensi' => $attendanceCounts, // Tambahkan data absensi ke hasil
             ];
         });
-    
-        return view('admin.rapors', ['processedRapors' => $processedRapors, 'kelasInfo' => $kelasInfo]);
+
+        // return view('debug', ['tes' => $students, 'tess' => $processedRapors]);
+        return view('admin.rapors', ['processedRapors' => $processedRapors, 'kelasInfo' => $kelasInfo, 'infoTS' => $infoTS]);
     }
 
 
@@ -1080,34 +1083,164 @@ class AdminController extends Controller
 
     public function historyKBM (Request $request, $idsiswa, $idTingkat, $semester)
     {
+        if ($semester != 'ganjil' && $semester != 'genap') {
+            abort(404);
+        }
         $id_sekolah = $request->cookie('id_sekolah');
 
         $historyNilai = DaftarNilaiSiswa::where('id_siswa', $idsiswa)
                             ->where('tingkat', $idTingkat)
                             ->where('semester', $semester)
                             ->with('siswa')
+                            ->with('mapel')
+                            ->with('idTingkat')
+                            ->with('daftarNilai')
                             ->get();
 
         $historyAbsensi = DaftarAbsensiSiswa::where('id_siswa', $idsiswa)
                             ->where('tingkat', $idTingkat)
                             ->where('semester', $semester)
+                            ->with('daftarAbsensi')
+                            ->with('mapel')
                             ->get();
 
+        $infoSiswa = $historyNilai->first();
 
-        $infoSiswa = $historyNilai->first()->siswa;
+        $idSekolahSiswa = $historyNilai->first()->siswa->id_sekolah ?? $id_sekolah;
 
-        if ($infoSiswa->id_sekolah != $id_sekolah) {
+        if ($idSekolahSiswa != $id_sekolah) {
             abort(404, );
         }
 
-        return view('admin.lihat_histori_kbm', ['historyNilai' => $historyNilai, 'historyAbsensi' => $historyAbsensi]);
+        return view('admin.lihat_histori_kbm', ['historyNilai' => $historyNilai, 'historyAbsensi' => $historyAbsensi, 'infoSiswa' => $infoSiswa]);
         // return view('debug', ['tes' => $infoSiswa, 'tess' => $idTingkat, 'tesss' => $historyNilai]);
     }
 
+    public function rapor(Request $request, $id_siswa, $id_tingkat, $semester)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+    
+        // Ambil semua siswa dalam kelas beserta relasi nilai mereka
+        $students = User::where('id', $id_siswa)
+                        ->where('id_sekolah', $id_sekolah)
+                        ->with([
+                            // Filter relasi saat eager loading
+                            'daftarNilaiSiswa' => function($query) use ($id_tingkat, $semester) {
+                                $query->where('tingkat', $id_tingkat)
+                                      ->where('semester', $semester);
+                            },
+                            'daftarNilaiSiswa.mapel', 
+                            'daftarNilaiSiswa.daftarNilai',
+                            'daftarNilaiSiswa.idTingkat',
+                            'daftarAbsensiSiswa' => function($query) use ($id_tingkat, $semester) {
+                                $query->where('tingkat', $id_tingkat)
+                                      ->where('semester', $semester);
+                            }
+                        ])
+                        ->with('kelas')
+                        ->get();
+        
+        $infoTS = $students->first()?->daftarNilaiSiswa?->first() ?? [];
+        
+        // Jika siswa tidak ditemukan atau tidak punya kelas, hentikan proses.
+        if ($students->isEmpty() || !$students->first()->kelas) {
+            abort(404, 'Siswa atau data kelas tidak ditemukan.');
+        }
+
+         $kelasInfo = Kelas::with('angkatan.sekolah')
+                        ->whereHas('angkatan', function ($query) {
+                        $query->whereNotNull('id_tingkat');
+                         })//filter alumni
+                        ->findOrFail($students->first()->kelas->id_kelas);
+    
+        // Proses data untuk setiap siswa
+        $processedRapors = $students->map(function ($student) {
+            // Kelompokkan nilai berdasarkan mapel
+            $nilaiByMapel = $student->daftarNilaiSiswa->groupBy('id_mapel');
+    
+            $raporData = $nilaiByMapel->map(function ($nilaiGroup) {
+                $scores = [
+                    'Tugas' => [],
+                    'PR'    => [],
+                    'UTS'   => [],
+                    'UAS'   => [],
+                ];
+    
+                // 1. Kumpulkan semua nilai untuk setiap tipe ke dalam array
+                foreach ($nilaiGroup as $nilai) {
+                    if ($nilai->daftarNilai && is_numeric($nilai->nilai)) {
+                        $tipe = $nilai->daftarNilai->tipe_nilai;
+                        if (array_key_exists($tipe, $scores)) {
+                            $scores[$tipe][] = $nilai->nilai; // Tambahkan nilai ke array
+                        }
+                    }
+                }
+    
+                // Helper function untuk menghitung rata-rata
+                $calculateAverage = function (array $numbers) {
+                    if (empty($numbers)) {
+                        return null;
+                    }
+                    return array_sum($numbers) / count($numbers);
+                };
+    
+                // 2. Hitung rata-rata untuk setiap tipe nilai
+                $avgTugas = $calculateAverage($scores['Tugas']);
+                $avgPR = $calculateAverage($scores['PR']);
+                $avgUTS = $calculateAverage($scores['UTS']);
+                $avgUAS = $calculateAverage($scores['UAS']);
+    
+                // 3. Gabungkan rata-rata PR ke Tugas dengan bobot 30%
+                $nilaiTugasAkhir = $avgTugas;
+                if (is_numeric($avgTugas) && is_numeric($avgPR)) {
+                    // Jika keduanya ada, hitung dengan bobot
+                    $nilaiTugasAkhir = round(($avgTugas * 0.7) + ($avgPR * 0.3));
+                } elseif (is_numeric($avgPR) && !is_numeric($avgTugas)) {
+                    // Jika hanya ada PR, nilai PR menjadi nilai Tugas
+                    $nilaiTugasAkhir = $avgPR;
+                }
+    
+                // 4. Siapkan skor akhir untuk ditampilkan di rapor
+                $finalScores = [
+                    'Tugas' => $nilaiTugasAkhir !== null ? round($nilaiTugasAkhir) : null,
+                    'UTS'   => $avgUTS !== null ? round($avgUTS) : null,
+                    'UAS'   => $avgUAS !== null ? round($avgUAS) : null,
+                    'Nilai Akhir' => 0,
+                ];
+    
+                // 5. Hitung Nilai Akhir Rapor dari rata-rata (Tugas Akhir, UTS, UAS)
+                $validScores = array_filter([$finalScores['Tugas'], $finalScores['UTS'], $finalScores['UAS']], 'is_numeric');
+                if (count($validScores) > 0) {
+                    $finalScores['Nilai Akhir'] = round(array_sum($validScores) / count($validScores));
+                }
+    
+                return [
+                    'mapel' => $nilaiGroup->first()->mapel,
+                    'scores' => $finalScores,
+                ];
+            });
+    
+            // --- LOGIKA PENGHITUNGAN ABSENSI (data sudah terfilter oleh query) ---
+            // Hitung jumlah untuk setiap status
+            $attendanceCounts = [
+                'Sakit' => $student->daftarAbsensiSiswa->where('status', 'Sakit')->count(),
+                'Izin'  => $student->daftarAbsensiSiswa->where('status', 'Izin')->count(),
+                'Alfa' => $student->daftarAbsensiSiswa->where('status', 'Alfa')->count(),
+            ];
+
+            // Kembalikan data siswa bersama dengan data rapor yang sudah diproses
+            return [
+                'siswa' => $student,
+                'rapor' => $raporData,
+                'absensi' => $attendanceCounts, // Tambahkan data absensi ke hasil
+            ];
+        });
+
+        return view('admin.rapors', ['processedRapors' => $processedRapors, 'kelasInfo' => $kelasInfo, 'infoTS' => $infoTS]);
+    }
 
 
-
-        public function destroyKelas(Request $request, $id_kelas) // Should be destroy() for KelasController
+    public function destroyKelas(Request $request, $id_kelas) // Should be destroy() for KelasController
     {
         $id_sekolah = $request->cookie('id_sekolah');
         $kelas = Kelas::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->firstOrFail();

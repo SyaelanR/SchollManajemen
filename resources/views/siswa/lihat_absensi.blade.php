@@ -143,9 +143,9 @@
                                         <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
                                             Izin
                                         </span>
-                                    @elseif ($absensi->status == 'Alpha')
+                                    @elseif ($absensi->status == 'Alfa')
                                         <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                            Alpha
+                                            Alfa
                                         </span>
                                     @else
                                         <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">

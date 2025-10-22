@@ -36,6 +36,8 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{siswa}', [AdminController::class, 'hapusSiswa'])->name('hapusSiswa');
             Route::get('/lihat-detail/{idsiswa}', [AdminController::class, 'lihatDetailSiswa'])->name('lihatDetailSiswa');
             Route::get('/history-kbm/{idsiswa}/{idTingkat}/{semester}', [AdminController::class, 'historyKBM'])->name('historyKBM');
+
+            Route::get('/rapor/{id_siswa}/{id_tingkat}/{semester}', [AdminController::class, 'rapor'])->name('rapor');
         });
         
         Route::prefix('manajemen-guru')->group(function () {

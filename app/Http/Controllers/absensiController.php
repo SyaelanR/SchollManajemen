@@ -245,7 +245,7 @@ class AbsensiController extends Controller
     {
         $validated = $request->validate([
             'status' => 'required|array',
-            'status.*' => 'required|in:Hadir,Sakit,Izin,Alpha',
+            'status.*' => 'required|in:Hadir,Sakit,Izin,Alfa',
         ]);
 
         $tanggal = Carbon::now()->toDateString();

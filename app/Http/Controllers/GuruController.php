@@ -535,7 +535,7 @@ class GuruController extends Controller
         $request->validate([
             // 'status' harus ada dan berupa array
             'status' => 'present|array',
-            // Setiap item di dalam array 'status' harus diisi dan nilainya harus salah satu dari: Hadir, Sakit, Izin, Alpha
+            // Setiap item di dalam array 'status' harus diisi dan nilainya harus salah satu dari: Hadir, Sakit, Izin, Alfa
         ], [
             'status.*.in' => 'Status yang dipilih tidak valid.'
         ]);

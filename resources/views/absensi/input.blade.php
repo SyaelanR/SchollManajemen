@@ -122,7 +122,7 @@
                                             <option value="Hadir">Hadir</option>
                                             <option value="Izin">Izin</option>
                                             <option value="Sakit">Sakit</option>
-                                            <option value="Alpha">Alpha</option>
+                                            <option value="Alfa">Alfa</option>
                                         </select>
                                     </td>
                                 </tr>
@@ -175,7 +175,7 @@
                 case 'Sakit':
                     sel.classList.add('bg-orange-100', 'text-orange-800');
                     break;
-                case 'Alpha':
+                case 'Alfa':
                     sel.classList.add('bg-red-100', 'text-red-800');
                     break;
             }

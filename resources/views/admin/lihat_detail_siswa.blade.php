@@ -272,16 +272,16 @@
                                  <div>
                                     <label class="block text-gray-500">Tingkat</label>
                                     <p class="font-medium text-gray-800">
-                                        <span class="bg-blue-100 text-blue-800 font-medium py-1 px-3 rounded-full text-xs">Tingkat {{ $siswa->kelas->angkatan->idtingkat->tingkat }}</span>
+                                        <span class="bg-blue-100 text-blue-800 font-medium py-1 px-3 rounded-full text-xs">Tingkat {{ $siswa->kelas->angkatan->idtingkat->tingkat ?? '-'}}</span>
                                     </p>
                                 </div>
                                 <div>
                                     <label class="block text-gray-500">Tanggal Mulai</label>
-                                    <p class="font-medium text-gray-800">{{ $siswa->angkatan->tanggal_mulai ? \Carbon\Carbon::parse($siswa->angkatan->tanggal_mulai)->isoFormat('D MMMM YYYY') : '-'}}</p>
+                                    <p class="font-medium text-gray-800">{{ $siswa->angkatan?->tanggal_mulai ? \Carbon\Carbon::parse($siswa->angkatan->tanggal_mulai)->isoFormat('D MMMM YYYY') : '-'}}</p>
                                 </div>
                                 <div>
                                     <label class="block text-gray-500">Tanggal Selesai</label>
-                                    <p class="font-medium text-gray-800">{{ $siswa->angkatan->tanggal_selesai ? \Carbon\Carbon::parse($siswa->angkatan->tanggal_selesai)->isoFormat('D MMMM YYYY') : '-'}}</p>
+                                    <p class="font-medium text-gray-800">{{ $siswa->angkatan?->tanggal_selesai ? \Carbon\Carbon::parse($siswa->angkatan->tanggal_selesai)->isoFormat('D MMMM YYYY') : '-'}}</p>
                                 </div>
                             </div>
                         </div>

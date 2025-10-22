@@ -105,7 +105,7 @@
                                         <option value="Hadir">Hadir</option>
                                         <option value="Sakit">Sakit</option>
                                         <option value="Izin">Izin</option>
-                                        <option value="Alpha">Alpha</option>
+                                        <option value="Alfa">Alfa</option>
                                     </select>
                                 </td>
                             </tr>
@@ -118,7 +118,7 @@
                                         <option value="Hadir">Hadir</option>
                                         <option value="Sakit">Sakit</option>
                                         <option value="Izin">Izin</option>
-                                        <option value="Alpha">Alpha</option>
+                                        <option value="Alfa">Alfa</option>
                                     </select>
                                 </td>
                             </tr>
@@ -131,7 +131,7 @@
                                         <option value="Hadir">Hadir</option>
                                         <option value="Sakit">Sakit</option>
                                         <option value="Izin">Izin</option>
-                                        <option value="Alpha">Alpha</option>
+                                        <option value="Alfa">Alfa</option>
                                     </select>
                                 </td>
                             </tr>
@@ -144,7 +144,7 @@
                                         <option value="Hadir">Hadir</option>
                                         <option value="Sakit">Sakit</option>
                                         <option value="Izin">Izin</option>
-                                        <option value="Alpha">Alpha</option>
+                                        <option value="Alfa">Alfa</option>
                                     </select>
                                 </td>
                             </tr>
@@ -157,7 +157,7 @@
                                         <option value="Hadir">Hadir</option>
                                         <option value="Sakit">Sakit</option>
                                         <option value="Izin">Izin</option>
-                                        <option value="Alpha">Alpha</option>
+                                        <option value="Alfa">Alfa</option>
                                     </select>
                                 </td>
                             </tr>
@@ -170,7 +170,7 @@
                                         <option value="Hadir">Hadir</option>
                                         <option value="Sakit">Sakit</option>
                                         <option value="Izin">Izin</option>
-                                        <option value="Alpha">Alpha</option>
+                                        <option value="Alfa">Alfa</option>
                                     </select>
                                 </td>
                             </tr>
@@ -183,7 +183,7 @@
                                         <option value="Hadir">Hadir</option>
                                         <option value="Sakit">Sakit</option>
                                         <option value="Izin">Izin</option>
-                                        <option value="Alpha">Alpha</option>
+                                        <option value="Alfa">Alfa</option>
                                     </select>
                                 </td>
                             </tr>
@@ -196,7 +196,7 @@
                                         <option value="Hadir">Hadir</option>
                                         <option value="Sakit">Sakit</option>
                                         <option value="Izin">Izin</option>
-                                        <option value="Alpha">Alpha</option>
+                                        <option value="Alfa">Alfa</option>
                                     </select>
                                 </td>
                             </tr>
@@ -209,7 +209,7 @@
                                         <option value="Hadir">Hadir</option>
                                         <option value="Sakit">Sakit</option>
                                         <option value="Izin">Izin</option>
-                                        <option value="Alpha">Alpha</option>
+                                        <option value="Alfa">Alfa</option>
                                     </select>
                                 </td>
                             </tr>
@@ -222,7 +222,7 @@
                                         <option value="Hadir">Hadir</option>
                                         <option value="Sakit">Sakit</option>
                                         <option value="Izin">Izin</option>
-                                        <option value="Alpha">Alpha</option>
+                                        <option value="Alfa">Alfa</option>
                                     </select>
                                 </td>
                             </tr>
