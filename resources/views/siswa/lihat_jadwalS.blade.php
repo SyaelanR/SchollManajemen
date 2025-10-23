@@ -135,27 +135,28 @@
                                     <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Ruang</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y">
+                            <tbody class="divide-y divide-gray-200">
+                                @php $currentDay = ''; @endphp
                                 @forelse ($jadwals as $jadwal)
-                                <tr class="hover:bg-gray-50">
-                                    <td class="p-3 text-gray-800 font-semibold">{{ $jadwal->hari }}</td>
-                                    <td class="p-3 text-indigo-600 font-medium">
-                                        <i class="fa-regular fa-clock mr-2"></i>{{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i') }}
-                                    </td>
-                                    <td class="p-3 text-gray-800 font-medium">{{ $jadwal->mapel->nama_mapel }}</td>
-                                    <td class="p-3 text-gray-600">{{ $jadwal->mapel->guru->name }}</td>
-                                    <td class="p-3 text-gray-600">
-                                        <span class="bg-gray-200 py-1 px-3 rounded-full text-xs font-medium">{{ $jadwal->ruangan }}</span>
-                                    </td>
-                                </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        @if ($jadwal->hari !== $currentDay)
+                                            <td class="p-3 text-gray-800 font-medium align-top" rowspan="{{ $jadwals->where('hari', $jadwal->hari)->count() }}">
+                                                {{ $jadwal->hari }}
+                                            </td>
+                                            @php $currentDay = $jadwal->hari; @endphp
+                                        @endif
+                                        <td class="p-3 text-gray-700 whitespace-nowrap">{{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i') }}</td>
+                                        <td class="p-3 text-gray-700">{{ $jadwal->mapel->nama_mapel ?? 'N/A' }}</td>
+                                        <td class="p-3 text-gray-700">{{ $jadwal->mapel->guru->name ?? 'N/A' }}</td>
+                                        <td class="p-3 text-gray-700">{{ $jadwal->ruangan }}</td>
+                                    </tr>
                                 @empty
-                                <tr>
-                                    <td colspan="5" class="text-center text-gray-500 py-16">
-                                        <i class="fa-solid fa-calendar-xmark text-6xl text-gray-400 mb-4"></i>
-                                        <p class="text-xl font-semibold">Tidak ada jadwal pelajaran.</p>
-                                        <p>Jadwal pelajaran untuk Anda belum diatur oleh administrator.</p>
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td colspan="5" class="text-center p-6 text-gray-500">
+                                            <i class="fa-solid fa-calendar-xmark text-4xl mb-3"></i>
+                                            <p class="font-semibold">Tidak ada jadwal untuk Anda pekan ini.</p>
+                                        </td>
+                                    </tr>
                                 @endforelse
                             </tbody>
                         </table>

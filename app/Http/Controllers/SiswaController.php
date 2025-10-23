@@ -23,18 +23,17 @@ class SiswaController extends Controller
     {
         $idKelas = $request->cookie('id_kelas');
         $idSekolah = $request->cookie('id_sekolah');
-        $idAngkatan = $request->cookie('id_angkatan');
-
-
-        $infoAngkatan = Angkatan::where('id_sekolah', $idSekolah)
-                                ->where('id_angkatan', $idAngkatan)
-                                ->first();
 
         $daftarMapel = Jadwal::where('id_kelas', $idKelas)
-                        ->where('id_sekolah', $idSekolah)
-                        ->where('tingkat', $infoAngkatan->id_tingkat ?? 0)
-                        ->where('semester', $infoAngkatan->semester ?? 0)
                         ->with(['mapel.guru'])
+                        ->with('kelas.angkatan')
+                        ->where('id_sekolah', $idSekolah)
+                        ->whereHas('kelas.angkatan', function ($query) {
+                            $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                        })
+                        ->whereHas('kelas.angkatan', function ($query) {
+                            $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+                        })
                         ->select('id_kelas', 'id_mapel') // hanya ambil kombinasi unik kelas+mapel
                         ->distinct()
                         ->get();
@@ -47,17 +46,23 @@ class SiswaController extends Controller
         $idSiswa = $request->cookie('id_user');
         $idSekolah = $request->cookie('id_sekolah');
         $idKelas = $request->cookie('id_kelas');
-        $idAngkatan = $request->cookie('id_angkatan');
+        // $idAngkatan = $request->cookie('id_angkatan');
 
-        $infoAngkatan = Angkatan::where('id_sekolah', $idSekolah)
-                                ->where('id_angkatan', $idAngkatan)
-                                ->first();
+        // $infoAngkatan = Angkatan::where('id_sekolah', $idSekolah)
+        //                         ->where('id_angkatan', $idAngkatan)
+        //                         ->first();
 
         $infoJadwal = Jadwal::where('id_kelas', $idKelas)
                         ->where('id_sekolah', $idSekolah)
                         ->where('id_mapel', $idMapel)
-                        ->where('tingkat', $infoAngkatan->id_tingkat)
-                        ->where('semester', $infoAngkatan->semester)
+                        ->with('kelas.angkatan')
+                        ->where('id_sekolah', $idSekolah)
+                        ->whereHas('kelas.angkatan', function ($query) {
+                            $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                        })
+                        ->whereHas('kelas.angkatan', function ($query) {
+                            $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+                        })
                         ->with(['mapel'])
                         ->firstOrFail();
 
@@ -65,8 +70,8 @@ class SiswaController extends Controller
         $daftarTugas = DaftarNilaiSiswa::where('id_siswa', $idSiswa)
                         ->where('id_sekolah', $idSekolah)
                         ->where('id_kelas', $idKelas)
-                        ->where('tingkat', $infoAngkatan->id_tingkat)
-                        ->where('semester', $infoAngkatan->semester)
+                        ->where('tingkat', $infoJadwal->kelas->angkatan->id_tingkat)
+                        ->where('semester', $infoJadwal->kelas->angkatan->semester)
                         ->where('id_mapel', $idMapel)
                         ->with(['daftarNilai.tugas.mapel'])
                         ->whereHas('daftarNilai', function ($query) {
@@ -151,18 +156,18 @@ class SiswaController extends Controller
 
     }
 
-    public function halamanUnggahTugas(Request $request, $id_daftar_nilai_siswa)
-    {
-        $idSiswa = $request->cookie('id_user');
+    // public function halamanUnggahTugas(Request $request, $id_daftar_nilai_siswa)
+    // {
+    //     $idSiswa = $request->cookie('id_user');
 
-        // Find the task for the student
-        $tugasSiswa = DaftarNilaiSiswa::where('id_daftar_nilai_siswa', $id_daftar_nilai_siswa)
-            ->where('id_siswa', $idSiswa)
-            ->firstOrFail();
+    //     // Find the task for the student
+    //     $tugasSiswa = DaftarNilaiSiswa::where('id_daftar_nilai_siswa', $id_daftar_nilai_siswa)
+    //         ->where('id_siswa', $idSiswa)
+    //         ->firstOrFail();
 
-        // Pass the task data to the view
-        return view('siswa.upload_tugas', compact('tugasSiswa'));
-    }
+    //     // Pass the task data to the view
+    //     return view('siswa.upload_tugas', compact('tugasSiswa'));
+    // }
 
 
 
@@ -278,33 +283,33 @@ class SiswaController extends Controller
      */
     }
     
-    public function lihatAbsensi(Request $request)
-    {
-        $id_sekolah = $request->cookie('id_sekolah');
-        $id_siswa = $request->cookie('id_user');
+    // public function lihatAbsensi(Request $request)
+    // {
+    //     $id_sekolah = $request->cookie('id_sekolah');
+    //     $id_siswa = $request->cookie('id_user');
 
-        // Ambil data siswa beserta relasi kelas dan angkatan
-        $siswa = User::with('kelas.angkatan')->find($id_siswa);
+    //     // Ambil data siswa beserta relasi kelas dan angkatan
+    //     $siswa = User::with('kelas.angkatan')->find($id_siswa);
 
-        // Jika siswa tidak terdaftar di kelas/angkatan, kembalikan data kosong
-        if (!$siswa || !$siswa->kelas || !$siswa->kelas->angkatan) {
-            return view('siswa.lihat_absensi', ['daftarAbsensi' => collect()]);
-        }
+    //     // Jika siswa tidak terdaftar di kelas/angkatan, kembalikan data kosong
+    //     if (!$siswa || !$siswa->kelas || !$siswa->kelas->angkatan) {
+    //         return view('siswa.lihat_absensi', ['daftarAbsensi' => collect()]);
+    //     }
 
-        $tingkat = $siswa->kelas->angkatan->id_tingkat;
-        $semester = $siswa->kelas->angkatan->semester;
+    //     $tingkat = $siswa->kelas->angkatan->id_tingkat;
+    //     $semester = $siswa->kelas->angkatan->semester;
 
-        // Ambil semua data absensi siswa untuk semester dan tingkat yang aktif
-        $daftarAbsensi = DaftarAbsensiSiswa::where('id_siswa', $id_siswa)
-            ->where('id_sekolah', $id_sekolah)
-            ->where('tingkat', $tingkat)
-            ->where('semester', $semester)
-            ->with(['mapel', 'daftarAbsensi']) // Eager load untuk efisiensi
-            ->latest('created_at') // Urutkan dari yang terbaru
-            ->get();
+    //     // Ambil semua data absensi siswa untuk semester dan tingkat yang aktif
+    //     $daftarAbsensi = DaftarAbsensiSiswa::where('id_siswa', $id_siswa)
+    //         ->where('id_sekolah', $id_sekolah)
+    //         ->where('tingkat', $tingkat)
+    //         ->where('semester', $semester)
+    //         ->with(['mapel', 'daftarAbsensi']) // Eager load untuk efisiensi
+    //         ->latest('created_at') // Urutkan dari yang terbaru
+    //         ->get();
 
-        return view('siswa.lihat_absensi', compact('daftarAbsensi'));
-    }
+    //     return view('siswa.lihat_absensi', compact('daftarAbsensi'));
+    // }
 
     /**
      * Menampilkan daftar materi untuk kelas dan mapel tertentu.
@@ -314,17 +319,15 @@ class SiswaController extends Controller
     {
         $idKelas = $request->cookie('id_kelas');
         $idSekolah = $request->cookie('id_sekolah');
-        $idAngkatan = $request->cookie('id_angkatan');
-
-
-        $infoAngkatan = Angkatan::where('id_sekolah', $idSekolah)
-                                ->where('id_angkatan', $idAngkatan)
-                                ->first();
 
         $daftarMapel = Jadwal::where('id_kelas', $idKelas)
                         ->where('id_sekolah', $idSekolah)
-                        ->where('tingkat', $infoAngkatan->id_tingkat ?? 0)
-                        ->where('semester', $infoAngkatan->semester ?? 0)
+                        ->whereHas('kelas.angkatan', function ($query) {
+                            $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                        })
+                        ->whereHas('kelas.angkatan', function ($query) {
+                            $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+                        })
                         ->with(['mapel.guru'])
                         ->select('id_kelas', 'id_mapel') // hanya ambil kombinasi unik kelas+mapel
                         ->distinct()
@@ -343,22 +346,23 @@ class SiswaController extends Controller
 
         // Validasi apakah siswa terdaftar di kelas ini
 
-        $infoAngkatan = Angkatan::where('id_sekolah', $id_sekolah)
-                                ->where('id_angkatan', $id_angkatan)
-                                ->firstOrFail();
-
         $infoJadwal = Jadwal::where('id_kelas', $id_kelas)
                         ->where('id_sekolah', $id_sekolah)
                         ->where('id_mapel', $id_mapel)
-                        ->where('tingkat', $infoAngkatan->id_tingkat)
-                        ->where('semester', $infoAngkatan->semester)
+                        ->whereHas('kelas.angkatan', function ($query) {
+                            $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                        })
+                        ->whereHas('kelas.angkatan', function ($query) {
+                            $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+                        })
                         ->with(['mapel'])
                         ->firstOrFail();
 
         $daftarMateri = DaftarMateri::where('id_kelas', $id_kelas)
                                     ->where('id_mapel', $id_mapel)
-                                    ->where('tingkat', $infoAngkatan->id_tingkat)
-                                    ->where('semester', $infoAngkatan->semester)
+                                    ->where('tingkat', $infoJadwal->kelas->angkatan->id_tingkat)
+                                    ->where('semester', $infoJadwal->kelas->angkatan->semester)
+                                    ->where('id_sekolah', $id_sekolah)
                                     ->with('mapel')
                                     ->latest('tanggal')->get();
                                     
@@ -406,21 +410,15 @@ class SiswaController extends Controller
         $id_sekolah = $request->cookie('id_sekolah');
         $id_kelas = $request->cookie('id_kelas');
 
-        // Jika siswa tidak punya kelas, kembalikan view dengan data kosong
-        if (!$id_kelas) {
-            return view('siswa.pilih_mapel_absensi', ['daftarMapel' => collect()]);
-        }
-
-        // Ambil info angkatan siswa
-        $infoAngkatan = Angkatan::whereHas('kelas', function ($query) use ($id_kelas) {
-            $query->where('id_kelas', $id_kelas);
-        })->first();
-
         // Ambil semua mapel yang diajarkan di kelas siswa pada semester & tingkat aktif
         $daftarMapel = Jadwal::where('id_kelas', $id_kelas)
             ->where('id_sekolah', $id_sekolah)
-            ->where('tingkat', $infoAngkatan->id_tingkat ?? 0)
-            ->where('semester', $infoAngkatan->semester ?? 'ganjil')
+            ->whereHas('kelas.angkatan', function ($query) {
+                $query->whereColumn('angkatans.semester', 'jadwals.semester');
+            })
+            ->whereHas('kelas.angkatan', function ($query) {
+                $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+            })
             ->with('mapel.guru')
             ->select('id_mapel')
             ->distinct()
@@ -437,21 +435,25 @@ class SiswaController extends Controller
         $id_sekolah = $request->cookie('id_sekolah');
         $id_kelas = $request->cookie('id_kelas');
 
-        // Jika siswa tidak punya kelas, kembalikan view dengan data kosong
-        if (!$id_kelas) {
-            return view('siswa.pilih_mapel_materi', ['daftarMapel' => collect()]);
-        }
+        // // Jika siswa tidak punya kelas, kembalikan view dengan data kosong
+        // if (!$id_kelas) {
+        //     return view('siswa.pilih_mapel_materi', ['daftarMapel' => collect()]);
+        // }
 
-        // Ambil info angkatan siswa
-        $infoAngkatan = Angkatan::whereHas('kelas', function ($query) use ($id_kelas) {
-            $query->where('id_kelas', $id_kelas);
-        })->first();
+        // // Ambil info angkatan siswa
+        // $infoAngkatan = Angkatan::whereHas('kelas', function ($query) use ($id_kelas) {
+        //     $query->where('id_kelas', $id_kelas);
+        // })->first();
 
         // Ambil semua mapel yang diajarkan di kelas siswa pada semester & tingkat aktif
         $daftarMapel = Jadwal::where('id_kelas', $id_kelas)
             ->where('id_sekolah', $id_sekolah)
-            ->where('tingkat', $infoAngkatan->id_tingkat ?? 0)
-            ->where('semester', $infoAngkatan->semester ?? 'ganjil')
+            ->whereHas('kelas.angkatan', function ($query) {
+                $query->whereColumn('angkatans.semester', 'jadwals.semester');
+            })
+            ->whereHas('kelas.angkatan', function ($query) {
+                $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+            })
             ->with('mapel.guru')
             ->select('id_mapel', 'id_kelas')
             ->distinct()
@@ -468,24 +470,22 @@ class SiswaController extends Controller
         $id_angkatan = $request->cookie('id_angkatan');
 
         // Ambil info angkatan untuk mendapatkan semester & tingkat aktif
-        $infoAngkatan = Angkatan::where('id_angkatan', $id_angkatan)
-                                ->where('id_sekolah', $id_sekolah)
-                                ->first();
+        // $infoAngkatan = Angkatan::where('id_angkatan', $id_angkatan)
+        //                         ->where('id_sekolah', $id_sekolah)
+        //                         ->first();
 
         // Mengambil daftar mapel yang unik untuk kelas siswa yang sedang login
         // berdasarkan jadwal yang ada.
-        $daftarMapel = Jadwal::with('mapel.guru')
+        $daftarMapel = Jadwal::where('id_kelas', $id_kelas)
             ->where('id_sekolah', $id_sekolah)
-            ->where('id_kelas', $id_kelas)
-            // Hanya jalankan filter tambahan jika info angkatan valid
-            ->when($infoAngkatan, function ($query) use ($infoAngkatan) {
-                // Filter jadwal yang sesuai dengan semester dan tingkat angkatan siswa saat ini
-                return $query->where('semester', $infoAngkatan->semester)
-                               ->where('tingkat', $infoAngkatan->id_tingkat);
+            ->whereHas('kelas.angkatan', function ($query) {
+                $query->whereColumn('angkatans.semester', 'jadwals.semester');
             })
-            // Pastikan mapel yang terkait ada dan statusnya aktif/null
-            ->whereHas('mapel', fn($q) => $q->where('status', 'aktif')->orWhereNull('status'))
-            ->select('id_mapel')
+            ->whereHas('kelas.angkatan', function ($query) {
+                $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+            })
+            ->with('mapel.guru')
+            ->select('id_mapel', 'id_kelas')
             ->distinct()
             ->get();
 
@@ -552,7 +552,7 @@ class SiswaController extends Controller
                         ->with(['daftarNilai', 'kelas.angkatan', 'mapel'])
                         ->get();
 
-        $nama_mapel = $daftarNilai->first()->mapel->nama_mapel;
+        $nama_mapel = $daftarNilai->first()->mapel->nama_mapel ?? 'Belum ada Nilai';
 
         return view('siswa.lihatnilai', ['daftarNilai' => $daftarNilai, 'nama_mapel' => $nama_mapel]);
     }
@@ -581,9 +581,11 @@ class SiswaController extends Controller
                           ->pluck('id_mapel')->unique();
 
         // Ambil pengumuman yang relevan (berdasarkan id_sekolah, id_kelas, dan id_mapel)
-        $DaftarPengumuman = DaftarPengumuman::where('id_kelas', $id_kelas)
-            ->where('id_sekolah', $id_sekolah)
+        $DaftarPengumuman = DaftarPengumuman::where('id_sekolah', $id_sekolah)
+            ->where('id_kelas', $id_kelas)
+            ->whereIn('id_mapel', $mapelIds)
             ->where('created_at', '>=', Carbon::now()->subWeeks(1))
+            ->with('mapel') // Eager load relasi mapel untuk efisiensi
             ->get();
 
         return view('siswa.lihat_pengumuman', ['DaftarPengumuman' => $DaftarPengumuman]);

@@ -149,14 +149,14 @@
                             </div>
                         </a>
                     </div>
+                    @empty
+                    <div class="text-center py-12">
+                        <i class="fa-solid fa-book-open-reader text-5xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600 font-semibold text-lg">Anda belum memiliki mata pelajaran.</p>
+                        <p class="text-gray-500 mt-2">Hubungi administrator untuk informasi lebih lanjut.</p>
+                    </div>
+                    @endforelse
                 </div>
-                @empty
-                <div class="text-center py-12">
-                    <i class="fa-solid fa-book-open-reader text-5xl text-gray-400 mb-4"></i>
-                    <p class="text-gray-600 font-semibold text-lg">Anda belum memiliki mata pelajaran.</p>
-                    <p class="text-gray-500 mt-2">Hubungi administrator untuk informasi lebih lanjut.</p>
-                </div>
-                @endforelse
             </div>
         </main>
     </div>

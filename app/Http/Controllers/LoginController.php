@@ -162,11 +162,18 @@ class LoginController extends Controller
             $totalAbsensi['Sakit'] = $absensi->where('status', 'Sakit')->count();
             $totalAbsensi['Alfa'] = $absensi->where('status', 'Alfa')->count();
 
-            $DaftarPengumuman = DaftarPengumuman::where('id_kelas', $idKelas)
-                                ->where('id_sekolah', $idSekolah)
-                                ->where('created_at', '>=', Carbon::now()->subWeeks(1))
-                                ->orderBy('created_at', 'desc')
-                                ->get();
+            // Ambil semua ID mapel yang diajarkan di kelas siswa
+            $mapelIds = Jadwal::where('id_kelas', $idKelas)
+                            ->where('id_sekolah', $idSekolah)
+                            ->pluck('id_mapel')->unique();
+
+            // Ambil pengumuman yang relevan (berdasarkan id_sekolah, id_kelas, dan id_mapel)
+            $DaftarPengumuman = DaftarPengumuman::where('id_sekolah', $idSekolah)
+                ->where('id_kelas', $idKelas)
+                ->whereIn('id_mapel', $mapelIds)
+                ->where('created_at', '>=', Carbon::now()->subWeeks(1))
+                ->with('mapel') // Eager load relasi mapel untuk efisiensi
+                ->get();
 
             $daftarAcara = DaftarAcara::where('id_sekolah', $idSekolah)
                         ->where('tanggal_selesai', '>=', Carbon::now()->subWeeks(1))

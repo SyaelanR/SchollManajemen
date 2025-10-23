@@ -133,7 +133,7 @@
                 </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    @forelse ($daftarMapel as $mapel)
+                    @forelse ($daftarMapel ?? [] as $mapel)
                     <div class="bg-gray-50 border rounded-xl p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
                         <!-- Clickable Area -->
                         <a href="{{ route('lihatTugasDaftar', $mapel->mapel->id_mapel)}}" class="flex flex-col h-full">
@@ -151,8 +151,8 @@
                             </div>
                         </a>
                     </div>
+                    @empty
                 </div>
-                @empty
                 <div class="text-center py-12">
                     <i class="fa-solid fa-book-open-reader text-5xl text-gray-400 mb-4"></i>
                     <p class="text-gray-600 font-semibold text-lg">Anda belum memiliki mata pelajaran.</p>
