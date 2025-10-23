@@ -89,13 +89,7 @@
             </button>
             <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Pilih Mata Pelajaran</h1>
             <div class="flex items-center space-x-4">
-                 <button class="text-gray-500 hover:text-gray-700">
-                    <i class="fa-solid fa-bell"></i>
-                </button>
-                <div class="relative">
-                    <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=S" alt="User Avatar">
-                    <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
-                </div>
+                
             </div>
         </header>
 
@@ -109,6 +103,10 @@
             <div class="bg-white rounded-xl shadow-md p-6">
                 <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                     <h2 class="text-xl sm:text-2xl font-semibold text-gray-800">Daftar Mata Pelajaran Anda</h2>
+                    <div class="relative w-full md:w-1/3">
+                        <input type="text" id="searchInput" placeholder="Cari mapel atau guru..." class="w-full pl-10 pr-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <i class="fa-solid fa-search text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>
+                    </div>
                 </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -120,12 +118,12 @@
                                 <div class="bg-indigo-100 text-indigo-600 p-4 rounded-full flex items-center justify-center w-16 h-16 mb-4 shadow-inner">
                                     <i class="fa-solid fa-book-open text-2xl"></i>
                                 </div>
-                                <h3 class="text-xl font-semibold text-gray-800">{{ $jadwal->mapel->nama_mapel ?? 'N/A' }}</h3>
+                                <h3 class="mapel-title text-xl font-semibold text-gray-800">{{ $jadwal->mapel->nama_mapel ?? 'N/A' }}</h3>
                             </div>
                             <div class="border-t mt-4 pt-4 text-sm text-gray-600">
                                 <div class="flex items-center">
                                     <i class="fa-solid fa-user-tie w-4 mr-2 text-gray-400"></i>
-                                    <span>{{ $jadwal->mapel->guru->name ?? 'Guru Belum Diatur' }}</span>
+                                    <span class="guru-name">{{ $jadwal->mapel->guru->name ?? 'Guru Belum Diatur' }}</span>
                                 </div>
                             </div>
                         </a>
@@ -156,6 +154,32 @@ document.addEventListener('DOMContentLoaded', function () {
         };
         menuButton.addEventListener('click', toggleSidebar);
         overlay.addEventListener('click', toggleSidebar);
+    }
+
+    // --- Search Functionality ---
+    const searchInput = document.getElementById('searchInput');
+    const mapelList = document.getElementById('mapel-list');
+    const mapelItems = mapelList ? mapelList.querySelectorAll('.mapel-item') : [];
+    const noResults = document.getElementById('no-results');
+
+    if (searchInput && mapelItems.length > 0) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            let found = false;
+
+            mapelItems.forEach(item => {
+                const title = item.querySelector('.mapel-title').textContent.toLowerCase();
+                const guru = item.querySelector('.guru-name').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || guru.includes(searchTerm)) {
+                    item.style.display = 'block';
+                    found = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            noResults.style.display = found ? 'none' : 'block';
+        });
     }
 });
 </script>

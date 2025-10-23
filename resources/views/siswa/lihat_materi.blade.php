@@ -93,13 +93,7 @@
             </button>
             <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Materi Pelajaran</h1>
             <div class="flex items-center space-x-4">
-                 <button class="text-gray-500 hover:text-gray-700">
-                    <i class="fa-solid fa-bell"></i>
-                </button>
-                <div class="relative">
-                    <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=S" alt="User Avatar">
-                    <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
-                </div>
+                
             </div>
         </header>
 
@@ -117,11 +111,18 @@
             </header>
             
             <div class="bg-white rounded-xl shadow-md p-6">
-                <div class="space-y-6">
+                <!-- Search Input -->
+                <div class="mb-6">
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Cari judul atau deskripsi materi..." class="w-full pl-10 pr-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <i class="fa-solid fa-search text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>
+                    </div>
+                </div>
+                <div id="materi-list" class="space-y-6">
                     @forelse ($daftarMateri as $materi)
-                    <div class="border border-gray-200 rounded-lg p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:bg-gray-50 transition-colors">
+                    <div class="materi-item border border-gray-200 rounded-lg p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:bg-gray-50 transition-colors">
                         <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-gray-800">{{ $materi->judul_materi }}</h3>
+                            <h3 class="materi-title text-lg font-semibold text-gray-800">{{ $materi->judul_materi }}</h3>
                             <p class="text-sm text-gray-600 mt-1">{{ $materi->deskripsi_materi }}</p>
                             <p class="text-xs text-gray-400 mt-2">Diunggah pada: {{ \Carbon\Carbon::parse($materi->tanggal)->isoFormat('D MMMM YYYY') }}</p>
                         </div>
@@ -136,6 +137,12 @@
                         <p class="text-gray-600 font-semibold text-lg">Belum ada materi yang diunggah untuk mata pelajaran ini.</p>
                     </div>
                     @endforelse
+                </div>
+                <!-- No Results Message -->
+                <div id="no-results" class="text-center py-12 hidden">
+                    <i class="fa-solid fa-magnifying-glass text-5xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600 font-semibold text-lg">Materi tidak ditemukan.</p>
+                    <p class="text-gray-500 mt-2">Coba gunakan kata kunci yang berbeda.</p>
                 </div>
             </div>
         </main>
@@ -156,6 +163,31 @@ document.addEventListener('DOMContentLoaded', function () {
         menuButton.addEventListener('click', toggleSidebar);
         overlay.addEventListener('click', toggleSidebar);
     }
+
+    // --- Search Functionality ---
+    const searchInput = document.getElementById('searchInput');
+    const materiList = document.getElementById('materi-list');
+    const materiItems = materiList.querySelectorAll('.materi-item');
+    const noResults = document.getElementById('no-results');
+
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        let found = false;
+
+        materiItems.forEach(item => {
+            const title = item.querySelector('.materi-title').textContent.toLowerCase();
+            const description = item.querySelector('p.text-sm').textContent.toLowerCase();
+            
+            if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                item.style.display = 'flex';
+                found = true;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        noResults.style.display = found ? 'none' : 'block';
+    });
 });
 </script>
 </body>

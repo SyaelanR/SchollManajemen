@@ -93,10 +93,7 @@
             </button>
             <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Papan Pengumuman</h1>
             <div class="flex items-center space-x-4">
-                <div class="relative">
-                    <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=S" alt="User avatar">
-                    <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
-                </div>
+                
             </div>
         </header>
 
