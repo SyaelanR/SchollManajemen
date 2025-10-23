@@ -881,6 +881,7 @@ class AdminController extends Controller
                     'PR'    => [],
                     'UTS'   => [],
                     'UAS'   => [],
+                    'Hafalan' => [],
                 ];
     
                 // 1. Kumpulkan semua nilai untuk setiap tipe ke dalam array
@@ -906,15 +907,27 @@ class AdminController extends Controller
                 $avgPR = $calculateAverage($scores['PR']);
                 $avgUTS = $calculateAverage($scores['UTS']);
                 $avgUAS = $calculateAverage($scores['UAS']);
+                $avgHafalan = $calculateAverage($scores['Hafalan']);
     
-                // 3. Gabungkan rata-rata PR ke Tugas dengan bobot 30%
+                // RUMUS NILAI TUGAS AKHIR
                 $nilaiTugasAkhir = $avgTugas;
-                if (is_numeric($avgTugas) && is_numeric($avgPR)) {
-                    // Jika keduanya ada, hitung dengan bobot
+                if (is_numeric($avgTugas) && is_numeric($avgPR) && !is_numeric($avgHafalan)) {
+                    // Jika ada nilai PR dan tugas, hitung dengan bobot
                     $nilaiTugasAkhir = round(($avgTugas * 0.7) + ($avgPR * 0.3));
-                } elseif (is_numeric($avgPR) && !is_numeric($avgTugas)) {
+                } elseif (is_numeric($avgTugas) && is_numeric($avgPR) && is_numeric($avgHafalan)) {
+                    //jika ada nilai tugas, pr, dan hafalan, hitung dengan bobot
+                    $nilaiTugasAkhir = round(($avgTugas * 0.4) + ($avgPR * 0.2) + ($avgHafalan * 0.4));
+                }
+                elseif (is_numeric($avgTugas) && is_numeric($avgHafalan) && !is_numeric($avgPR)) {
+                    // Jika hanya ada Tugas dan Hafalan, hitung dengan bobot
+                    $nilaiTugasAkhir = round(($avgTugas * 0.5) + ($avgHafalan * 0.5));
+                }
+                elseif (is_numeric($avgPR) && !is_numeric($avgTugas) && !is_numeric($avgHafalan)) {
                     // Jika hanya ada PR, nilai PR menjadi nilai Tugas
                     $nilaiTugasAkhir = $avgPR;
+                } elseif (is_numeric($avgHafalan) && !is_numeric($avgTugas) && !is_numeric($avgPR)) {
+                    // Jika hanya ada Hafalan, nilai Hafalan menjadi nilai Tugas
+                    $nilaiTugasAkhir = $avgHafalan;
                 }
     
                 // 4. Siapkan skor akhir untuk ditampilkan di rapor
@@ -1149,7 +1162,7 @@ class AdminController extends Controller
 
          $kelasInfo = Kelas::with('angkatan.sekolah')
                         ->whereHas('angkatan', function ($query) {
-                        $query->whereNotNull('id_tingkat');
+                        // $query->whereNotNull('id_tingkat');
                          })//filter alumni
                         ->findOrFail($students->first()->kelas->id_kelas);
     
@@ -1164,6 +1177,7 @@ class AdminController extends Controller
                     'PR'    => [],
                     'UTS'   => [],
                     'UAS'   => [],
+                    'Hafalan' => [], // Tambahkan tipe nilai Hafalan
                 ];
     
                 // 1. Kumpulkan semua nilai untuk setiap tipe ke dalam array
@@ -1189,15 +1203,27 @@ class AdminController extends Controller
                 $avgPR = $calculateAverage($scores['PR']);
                 $avgUTS = $calculateAverage($scores['UTS']);
                 $avgUAS = $calculateAverage($scores['UAS']);
+                $avgHafalan = $calculateAverage($scores['Hafalan']); // Hitung rata-rata Hafalan
     
-                // 3. Gabungkan rata-rata PR ke Tugas dengan bobot 30%
+                // RUMUS NILAI TUGAS AKHIR
                 $nilaiTugasAkhir = $avgTugas;
-                if (is_numeric($avgTugas) && is_numeric($avgPR)) {
-                    // Jika keduanya ada, hitung dengan bobot
+                if (is_numeric($avgTugas) && is_numeric($avgPR) && !is_numeric($avgHafalan)) {
+                    // Jika ada nilai PR dan tugas, hitung dengan bobot
                     $nilaiTugasAkhir = round(($avgTugas * 0.7) + ($avgPR * 0.3));
-                } elseif (is_numeric($avgPR) && !is_numeric($avgTugas)) {
+                } elseif (is_numeric($avgTugas) && is_numeric($avgPR) && is_numeric($avgHafalan)) {
+                    //jika ada nilai tugas, pr, dan hafalan, hitung dengan bobot
+                    $nilaiTugasAkhir = round(($avgTugas * 0.4) + ($avgPR * 0.2) + ($avgHafalan * 0.4));
+                }
+                elseif (is_numeric($avgTugas) && is_numeric($avgHafalan) && !is_numeric($avgPR)) {
+                    // Jika hanya ada Tugas dan Hafalan, hitung dengan bobot
+                    $nilaiTugasAkhir = round(($avgTugas * 0.5) + ($avgHafalan * 0.5));
+                }
+                elseif (is_numeric($avgPR) && !is_numeric($avgTugas) && !is_numeric($avgHafalan)) {
                     // Jika hanya ada PR, nilai PR menjadi nilai Tugas
                     $nilaiTugasAkhir = $avgPR;
+                } elseif (is_numeric($avgHafalan) && !is_numeric($avgTugas) && !is_numeric($avgPR)) {
+                    // Jika hanya ada Hafalan, nilai Hafalan menjadi nilai Tugas
+                    $nilaiTugasAkhir = $avgHafalan;
                 }
     
                 // 4. Siapkan skor akhir untuk ditampilkan di rapor
@@ -1211,7 +1237,7 @@ class AdminController extends Controller
                 // 5. Hitung Nilai Akhir Rapor dari rata-rata (Tugas Akhir, UTS, UAS)
                 $validScores = array_filter([$finalScores['Tugas'], $finalScores['UTS'], $finalScores['UAS']], 'is_numeric');
                 if (count($validScores) > 0) {
-                    $finalScores['Nilai Akhir'] = round(array_sum($validScores) / count($validScores));
+                    $finalScores['Nilai Akhir'] = round(array_sum($validScores) / count($validScores)); // merata-rata nilai Tugas, UTS, dan UAS
                 }
     
                 return [
@@ -1236,6 +1262,7 @@ class AdminController extends Controller
             ];
         });
 
+        // return view('debug', ['tes' => $students, 'tess' => $processedRapors]);
         return view('admin.rapors', ['processedRapors' => $processedRapors, 'kelasInfo' => $kelasInfo, 'infoTS' => $infoTS]);
     }
 
