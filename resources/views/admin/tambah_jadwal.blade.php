@@ -231,13 +231,19 @@
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 <!-- Baris jadwal dari Senin sampai Jumat -->
+                                @php $currentDay = ''; @endphp
                                 @forelse ($jadwals as $jadwal)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $jadwal->hari }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $jadwal->mapel->nama_mapel ?? 'Mapel Dihapus' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $jadwal->mapel->guru->name ?? 'Guru Belum Diatur' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $jadwal->ruangan ?? '-' }}</td>
+                                    @if ($jadwal->hari !== $currentDay)
+                                            <td class="p-3 text-gray-800 font-medium align-top" rowspan="{{ $jadwals->where('hari', $jadwal->hari)->count() }}">
+                                                {{ $jadwal->hari }}
+                                            </td>
+                                            @php $currentDay = $jadwal->hari; @endphp
+                                        @endif
+                                        <td class="p-3 text-gray-700 whitespace-nowrap">{{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i') }}</td>
+                                        <td class="p-3 text-gray-700">{{ $jadwal->mapel->nama_mapel ?? 'N/A' }}</td>
+                                        <td class="p-3 text-gray-700">{{ $jadwal->mapel->guru->name ?? 'N/A' }}</td>
+                                        <td class="p-3 text-gray-700">{{ $jadwal->ruangan }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <button onclick="showEditModal({{ json_encode($jadwal) }})"
                                             class="text-indigo-600 hover:text-indigo-900 mx-1">
@@ -269,77 +275,108 @@
 
     <!-- Modal untuk Tambah/Edit Jadwal -->
     <div id="schedule-modal"
-        class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden modal opacity-0">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <!-- Modal Header -->
-            <div class="flex justify-between items-center pb-3">
-                <h3 class="text-xl font-semibold text-gray-900" id="modal-title">Tambah Jadwal Baru</h3>
-                <button id="close-schedule-modal" class="text-gray-400 hover:text-gray-600">
-                    <i class="fa-solid fa-times text-xl"></i>
-                </button>
+    class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 hidden opacity-0 transition-opacity duration-300">
+
+    <!-- Modal Card -->
+    <div class="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-lg p-6">
+        <!-- Header -->
+        <div class="flex justify-between items-center pb-3 border-b">
+            <h3 class="text-xl font-semibold text-gray-900" id="modal-title">Tambah Jadwal Baru</h3>
+            <button id="close-schedule-modal" class="text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <form id="schedule-form" action="{{ route('storeJadwal', ['id_kelas' => $kelas->id_kelas]) }}" method="POST" class="pt-4 space-y-4">
+            @csrf
+            <input type="hidden" name="_method" id="form-method" value="POST">
+
+            <!-- Hari -->
+            <div>
+                <label for="hari" class="block text-sm font-medium text-gray-700">Hari</label>
+                <select id="hari" name="hari"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
+                           focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    required>
+                    <option value="">Pilih Hari</option>
+                    <option>Senin</option>
+                    <option>Selasa</option>
+                    <option>Rabu</option>
+                    <option>Kamis</option>
+                    <option>Jumat</option>
+                    <option>Sabtu</option>
+                </select>
             </div>
 
-            <!-- Modal Body (Form) -->
-            <form id="schedule-form" action="{{ route('storeJadwal', ['id_kelas' => $kelas->id_kelas]) }}" method="POST">
-                {{-- Input untuk method PUT (untuk edit) akan ditambahkan oleh JS --}}
-                <input type="hidden" name="_method" id="form-method" value="POST">
-                @csrf
-                <div class="mb-4">
-                    <label for="hari" class="block text-sm font-medium text-gray-700">Hari</label>
-                    <select id="hari" name="hari"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        required>
-                        <option value="">Pilih Hari</option>
-                        <option value="Senin">Senin</option>
-                        <option value="Selasa">Selasa</option>
-                        <option value="Rabu">Rabu</option>
-                        <option value="Kamis">Kamis</option>
-                        <option value="Jumat">Jumat</option>
-                        <option value="Sabtu">Sabtu</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label for="jam_mulai" class="block text-sm font-medium text-gray-700">Jam Mulai</label>
-                    <input type="time" id="jam_mulai" name="jam_mulai"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="Contoh: 08:00-10:00" required>
-                </div>
-                <div class="mb-4">
-                    <label for="jam_selesai" class="block text-sm font-medium text-gray-700">Jam Selesai</label>
-                    <input type="time" id="jam_selesai" name="jam_selesai"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="Contoh: 08:00-10:00" required>
-                </div>
-                <div class="mb-4">
-                    <label for="mapel" class="block text-sm font-medium text-gray-700">Mata Pelajaran</label>
-                    <select id="mapel" name="id_mapel"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        required>
-                        <option value="">Pilih Mata Pelajaran</option>
+            <!-- Jam Mulai -->
+            <div>
+                <label for="jam_mulai" class="block text-sm font-medium text-gray-700">Jam Mulai</label>
+                <input type="time" id="jam_mulai" name="jam_mulai"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
+                           focus:ring-indigo-500 focus:border-indigo-500"
+                    required>
+            </div>
+
+            <!-- Jam Selesai -->
+            <div>
+                <label for="jam_selesai" class="block text-sm font-medium text-gray-700">Jam Selesai</label>
+                <input type="time" id="jam_selesai" name="jam_selesai"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
+                           focus:ring-indigo-500 focus:border-indigo-500"
+                    required>
+            </div>
+
+            <!-- Mata Pelajaran -->
+            <div>
+                <label for="mapel" class="block text-gray-700 font-medium mb-2">
+                    Mata Pelajaran
+                </label>
+                <div class="relative">
+                    <select id="mapel" name="id_mapel" size="6"
+                        class="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5
+                               text-gray-800 text-sm shadow-sm focus:outline-none focus:ring-2
+                               focus:ring-indigo-500 focus:border-indigo-500
+                               overflow-y-auto max-h-60 appearance-none">
+                        <option value="" disabled>Pilih Mata Pelajaran</option>
                         @forelse ($mapels ?? [] as $mapel)
-                            <option value="{{ $mapel->id_mapel }}">{{ $mapel->nama_mapel }} ({{$mapel->guru->name}})</option>
+                            <option value="{{ $mapel->id_mapel }}">
+                                {{ $mapel->nama_mapel }} ({{ $mapel->guru->name }})
+                            </option>
                         @empty
-                            <option value="" disabled>Tidak ada mata pelajaran tersedia</option>
+                            <option disabled>Tidak ada mata pelajaran tersedia</option>
                         @endforelse
                     </select>
+                    <span class="absolute right-3 top-2.5 text-gray-400 pointer-events-none">
+                        <i class="fa-solid fa-angle-down"></i>
+                    </span>
                 </div>
-                <div class="mb-4">
-                    <label for="ruangan" class="block text-sm font-medium text-gray-700">Ruangan</label>
-                    <input type="text" id="ruangan" name="ruangan"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="Contoh: Lab Komputer 1" required>
-                </div>
+            </div>
 
-                <!-- Modal Footer -->
-                <div class="flex justify-end pt-2">
-                    <button type="button" id="cancel-schedule-modal"
-                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg mr-2 hover:bg-gray-300">Batal</button>
-                    <button type="submit"
-                        class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Simpan</button>
-                </div>
-            </form>
-        </div>
+            <!-- Ruangan -->
+            <div>
+                <label for="ruangan" class="block text-sm font-medium text-gray-700">Ruangan</label>
+                <input type="text" id="ruangan" name="ruangan"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
+                           focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="Contoh: Lab Komputer 1" required>
+            </div>
+
+            <!-- Footer -->
+            <div class="flex justify-end pt-4 border-t">
+                <button type="button" id="cancel-schedule-modal"
+                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg mr-2 hover:bg-gray-300">
+                    Batal
+                </button>
+                <button type="submit"
+                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                    Simpan
+                </button>
+            </div>
+        </form>
     </div>
+</div>
+
 
     <!-- Modal Konfirmasi Hapus -->
     <div id="delete-modal"

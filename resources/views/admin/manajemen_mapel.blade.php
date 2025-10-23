@@ -208,6 +208,7 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Mapel</th>
+                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Kode Mapel</th>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Kategori</th>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">SKS</th>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Guru</th>
@@ -219,6 +220,7 @@
                             @forelse ($mapels as $mapel)
                             <tr class="mapel-row hover:bg-gray-50">
                                 <td class="p-3 text-gray-800 font-medium">{{$mapel->nama_mapel}}</td>
+                                <td class="p-3 text-gray-700">{{$mapel->kode_mapel}}</td>
                                 <td class="p-3 text-gray-700">{{$mapel->kategori}}</td>
                                 <td class="p-3 text-gray-700 text-center">{{$mapel->sks}}</td>
                                 <td class="p-3 text-gray-700">{{$mapel->guru->name ?? 'Belum Diatur'}}</td>
@@ -251,7 +253,7 @@
                             </tr>
                             @empty
                             <tr id="empty-row">
-                                <td colspan="6" class="p-3 text-center text-gray-500">
+                                <td colspan="7" class="p-3 text-center text-gray-500">
                                     <div class="text-center py-12">
                                         <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
                                         <p class="text-gray-600 font-semibold text-lg">Belum ada data Mapel.</p>
@@ -260,7 +262,7 @@
                             </tr>
                             @endforelse
                             <tr id="no-results-row" class="hidden">
-                                <td colspan="6" class="p-3 text-center text-gray-500">
+                                <td colspan="7" class="p-3 text-center text-gray-500">
                                     <div class="text-center py-12">
                                         <i class="fa-solid fa-magnifying-glass text-5xl text-gray-400 mb-4"></i>
                                         <p class="text-gray-600 font-semibold text-lg">Mata pelajaran tidak ditemukan.</p>
@@ -275,24 +277,23 @@
     </div>
 </div>
 
-<!-- Add/Edit Subject Modal -->
-<div id="mapel-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex items-center justify-center p-4 hidden opacity-0">
+<!-- Add Subject Modal -->
+<div id="add-mapel-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex items-center justify-center p-4 hidden opacity-0">
     <div class="modal-content bg-white rounded-xl shadow-2xl w-full max-w-lg transform transition-transform duration-300 scale-95">
         <div class="flex justify-between items-center p-6 border-b">
-            <h3 id="modal-title" class="text-2xl font-semibold text-gray-800">Tambah Mata Pelajaran</h3>
-            <button id="close-modal-btn" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            <h3 class="text-2xl font-semibold text-gray-800">Tambah Mata Pelajaran</h3>
+            <button class="close-modal-btn text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
         </div>
-        <form id="mapel-form" action="{{ route('storeMapel') }}" method="POST">
+        <form id="add-mapel-form" action="{{ route('storeMapel') }}" method="POST">
             @csrf
-            <input type="hidden" id="form-method" name="_method" value="POST">
             <div class="p-6 space-y-4">
                 <div>
                     <label for="nama-mapel" class="block text-gray-700 font-medium mb-2">Nama Mapel</label>
-                    <input name="nama_mapel" type="text" id="nama-mapel" placeholder="Contoh: Kimia" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <input name="nama_mapel" type="text" placeholder="Contoh: Kimia" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
                 </div>
                 <div>
                     <label for="kode-mapel" class="block text-gray-700 font-medium mb-2">Kode Mapel</label>
-                    <input name="kode_mapel" type="text" id="kode-mapel" placeholder="Contoh: STR21" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <input name="kode_mapel" type="text" placeholder="Contoh: STR21" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -306,21 +307,96 @@
                     </div>
                     <div>
                         <label for="sks-mapel" class="block text-gray-700 font-medium mb-2">SKS</label>
-                        <input name="sks" type="number" id="sks-mapel" placeholder="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                        <input name="sks" type="number" placeholder="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
                     </div>
                 </div>
                 <div>
-                    <label for="guru-pengampu" class="block text-gray-700 font-medium mb-2">Guru Pengampu</label>
-                    <select name="guru_id" id="guru-pengampu" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white" required>
-                        <option value="" disabled selected>Pilih Guru</option>
-                        @foreach ($teachers as $teacher)
-                            <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
-                        @endforeach
-                    </select>
+                    <label for="guru-pengampu" class="block text-gray-700 font-medium mb-2">
+                        Guru Pengampu
+                    </label>
+                    <div class="relative">
+                        <select name="guru_id" size="6"
+                            class="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5
+                                text-gray-800 text-sm shadow-sm focus:outline-none focus:ring-2
+                                focus:ring-indigo-500 focus:border-indigo-500
+                                overflow-y-auto max-h-60 appearance-none">
+                            <option value="" disabled class="text-gray-400 italic">
+                                Pilih Guru
+                            </option>
+                            @foreach ($teachers as $teacher)
+                                <option value="{{ $teacher->id }}" class="hover:bg-indigo-100">
+                                    {{ $teacher->name }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <!-- Tambahkan ikon panah kecil (opsional) -->
+                        <span class="absolute right-3 top-2.5 text-gray-400 pointer-events-none">
+                            <i class="fa-solid fa-angle-down"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end gap-4 p-6 bg-gray-50 rounded-b-xl">
+                <button type="button" class="cancel-btn bg-gray-200 text-gray-700 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition duration-300">Batal</button>
+                <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition duration-300">Simpan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Subject Modal -->
+<div id="edit-mapel-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex items-center justify-center p-4 hidden opacity-0">
+    <div class="modal-content bg-white rounded-xl shadow-2xl w-full max-w-lg transform transition-transform duration-300 scale-95">
+        <div class="flex justify-between items-center p-6 border-b">
+            <h3 class="text-2xl font-semibold text-gray-800">Edit Mata Pelajaran</h3>
+            <button class="close-modal-btn text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+        </div>
+        <form id="edit-mapel-form" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="p-6 space-y-4">
+                <div>
+                    <label for="edit-nama-mapel" class="block text-gray-700 font-medium mb-2">Nama Mapel</label>
+                    <input name="nama_mapel" type="text" id="edit-nama-mapel" placeholder="Contoh: Kimia" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
                 </div>
                 <div>
+                    <label for="edit-kode-mapel" class="block text-gray-700 font-medium mb-2">Kode Mapel</label>
+                    <input name="kode_mapel" type="text" id="edit-kode-mapel" placeholder="Contoh: STR21" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="edit-kategori-mapel" class="block text-gray-700 font-medium mb-2">Kategori</label>
+                        <select name="kategori" id="edit-kategori-mapel" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white" required>
+                            <option value="Umum">Umum</option>
+                            <option value="IT">IT</option>
+                            <option value="Tahfidz">Tahfidz</option>
+                            <option value="Eskul">Eskul</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="edit-sks-mapel" class="block text-gray-700 font-medium mb-2">SKS</label>
+                        <input name="sks" type="number" id="edit-sks-mapel" placeholder="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                </div>
+                    <div>
+                        <label for="edit-guru-pengampu" class="block text-gray-700 font-medium mb-2">Guru Pengampu</label>
+                        <div class="relative">
+                            <select name="guru_id" id="edit-guru-pengampu" size="6"
+                                class="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-800 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 overflow-y-auto max-h-60 appearance-none">
+                                <option value="" disabled class="text-gray-400 italic">Pilih Guru</option>
+                                @foreach ($teachers as $teacher)
+                                    <option value="{{ $teacher->id }}" class="hover:bg-indigo-100">{{ $teacher->name }}</option>
+                                @endforeach
+                            </select>
+                            <span class="absolute right-3 top-2.5 text-gray-400 pointer-events-none">
+                                <i class="fa-solid fa-angle-down"></i>
+                            </span>
+                        </div>
+                    </div>
+                <div>
                     <label for="status-mapel" class="block text-gray-700 font-medium mb-2">Status</label>
-                    <select name="status" id="status-mapel" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white" required>
+                    <select name="status" id="edit-status-mapel" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white" required>
                         <option value="aktif">Aktif</option>
                         <option value="nonaktif">Nonaktif</option>
                     </select>
@@ -328,12 +404,12 @@
             </div>
             <div class="flex justify-end gap-4 p-6 bg-gray-50 rounded-b-xl">
                 <button type="button" id="cancel-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition duration-300">Batal</button>
-                <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition duration-300">Simpan</button>
+                <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition duration-300">Simpan Perubahan</button>
             </div>
         </form>
     </div>
 </div>
-    
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // --- Sidebar Toggle Functionality ---
@@ -385,16 +461,16 @@
         }
 
         // --- Add/Edit Modal Functionality ---
-        const mapelModal = document.getElementById('mapel-modal');
-        const modalContent = mapelModal.querySelector('.modal-content');
+        const addMapelModal = document.getElementById('add-mapel-modal');
+        const editMapelModal = document.getElementById('edit-mapel-modal');
         const addMapelBtn = document.getElementById('add-mapel-btn');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-        const cancelBtn = document.getElementById('cancel-btn');
-        
-        const modalTitle = document.getElementById('modal-title');
-        const mapelForm = document.getElementById('mapel-form');
-        const formMethodInput = document.getElementById('form-method');
+        const closeModalBtns = document.querySelectorAll('.close-modal-btn');
+        const cancelBtns = document.querySelectorAll('.cancel-btn');
+
+        const addMapelForm = document.getElementById('add-mapel-form');
+        const editMapelForm = document.getElementById('edit-mapel-form');
         const tableBody = document.getElementById('mapel-table-body');
+
 
         const openModal = (modal, content) => {
             modal.classList.remove('hidden');
@@ -411,35 +487,33 @@
                 modal.classList.add('hidden');
             }, 300);
         };
-        
+
         addMapelBtn.addEventListener('click', () => {
-            mapelForm.reset();
-            modalTitle.textContent = 'Tambah Mata Pelajaran';
-            mapelForm.action = "{{ route('storeMapel') }}";
-            formMethodInput.value = 'POST';
-            openModal(mapelModal, modalContent);
+            addMapelForm.reset();
+            openModal(addMapelModal, addMapelModal.querySelector('.modal-content'));
         });
-        
+
         tableBody.addEventListener('click', function(event) {
             const editBtn = event.target.closest('.edit-btn');
             if (editBtn) {
                 const data = editBtn.dataset;
-                
-                document.getElementById('nama-mapel').value = data.nama_mapel;
-                document.getElementById('kode-mapel').value = data.kode_mapel;
-                document.getElementById('kategori-mapel').value = data.kategori;
-                document.getElementById('sks-mapel').value = data.sks;
-                document.getElementById('guru-pengampu').value = data.guru_id;
-                document.getElementById('status-mapel').value = data.status;
 
-                modalTitle.textContent = 'Edit Mata Pelajaran';
+                // Populate edit form
+                document.getElementById('edit-nama-mapel').value = data.nama_mapel;
+                document.getElementById('edit-kode-mapel').value = data.kode_mapel;
+                document.getElementById('edit-kategori-mapel').value = data.kategori;
+                document.getElementById('edit-sks-mapel').value = data.sks;
+                document.getElementById('edit-guru-pengampu').value = data.guru_id;
+                document.getElementById('edit-status-mapel').value = data.status;
+
+                // Set form action
                 let updateUrl = "{{ route('updateMapel', ':id') }}";
-                mapelForm.action = updateUrl.replace(':id', data.id);
-                formMethodInput.value = 'PUT';
-                
-                openModal(mapelModal, modalContent);
+                editMapelForm.action = updateUrl.replace(':id', data.id);
+
+                openModal(editMapelModal, editMapelModal.querySelector('.modal-content'));
             }
         });
+
 
         // --- DELETE Confirmation ---
         document.querySelectorAll('.delete-form').forEach(form => {
@@ -462,12 +536,25 @@
             });
         });
 
-        closeModalBtn.addEventListener('click', () => closeModal(mapelModal, modalContent));
-        cancelBtn.addEventListener('click', () => closeModal(mapelModal, modalContent));
-        mapelModal.addEventListener('click', (event) => {
-            if (event.target === mapelModal) {
-                closeModal(mapelModal, modalContent);
-            }
+        // Close modal events
+        closeModalBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const modal = btn.closest('.modal');
+                closeModal(modal, modal.querySelector('.modal-content'));
+            });
+        });
+        cancelBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const modal = btn.closest('.modal');
+                closeModal(modal, modal.querySelector('.modal-content'));
+            });
+        });
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    closeModal(modal, modal.querySelector('.modal-content'));
+                }
+            });
         });
 
         // --- Search Functionality ---
@@ -482,10 +569,11 @@
 
             mapelRows.forEach(row => {
                 const mapelName = row.children[0].textContent.toLowerCase();
-                const kategori = row.children[1].textContent.toLowerCase();
-                const guru = row.children[3].textContent.toLowerCase();
+                const kodeMapel = row.children[1].textContent.toLowerCase();
+                const kategori = row.children[2].textContent.toLowerCase();
+                const guru = row.children[4].textContent.toLowerCase();
 
-                if (mapelName.includes(searchTerm) || kategori.includes(searchTerm) || guru.includes(searchTerm)) {
+                if (mapelName.includes(searchTerm) || kodeMapel.includes(searchTerm) || kategori.includes(searchTerm) || guru.includes(searchTerm)) {
                     row.style.display = '';
                     visibleRows++;
                 } else {
