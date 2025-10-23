@@ -179,33 +179,50 @@
                 <p class="text-indigo-200">Silakan pilih kelas untuk melanjutkan proses input materi pelajaran.</p>
             </header>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                @forelse ($daftarkelasYangDiampu ?? [] as $kelas)
-                <a href="{{ route('inputMateri', [$kelas->id_kelas, $kelas->mapel->id_mapel]) }}" class="block bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transform transition-all duration-300 cursor-pointer">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xl font-bold text-gray-800">Kelas {{ $kelas->kelas->nama_kelas }}</h3>
-                        <div class="bg-indigo-100 text-indigo-600 p-3 rounded-full">
-                            <i class="fa-solid fa-chalkboard-user"></i>
-                        </div>
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                    <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 flex-shrink-0">Daftar Kelas & Mapel</h2>
+                    <div class="relative w-full md:w-64">
+                        <input type="text" id="search-input" placeholder="Cari kelas atau mapel..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                     </div>
-                    <div class="space-y-2 border-t pt-4">
-                        <div class="flex items-center text-gray-600">
-                            <i class="fa-solid fa-book w-5 mr-2 text-gray-400"></i>
-                            <span>Mapel: <strong>{{ $kelas->mapel->nama_mapel ?? 'N/A' }}</strong></span>
+                </div>
+
+                @if (count($daftarkelasYangDiampu ?? []) > 0)
+                <div id="class-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach ($daftarkelasYangDiampu as $kelas)
+                    <a href="{{ route('inputMateri', [$kelas->id_kelas, $kelas->mapel->id_mapel]) }}" class="class-card block bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transform transition-all duration-300 cursor-pointer border">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-gray-800">Kelas {{ $kelas->kelas->nama_kelas }}</h3>
+                            <div class="bg-indigo-100 text-indigo-600 p-3 rounded-full">
+                                <i class="fa-solid fa-chalkboard-user"></i>
+                            </div>
                         </div>
-                        <div class="flex items-center text-gray-600">
-                            <i class="fa-solid fa-users w-5 mr-2 text-gray-400"></i>
-                            <span>Jumlah siswa: <strong>{{ $kelas->jumlah_siswa }}</strong></span>
+                        <div class="space-y-2 border-t pt-4 mt-4">
+                            <div class="flex items-center text-gray-600">
+                                <i class="fa-solid fa-book w-5 mr-2 text-gray-400"></i>
+                                <span>Mapel: <strong>{{ $kelas->mapel->nama_mapel ?? 'N/A' }}</strong></span>
+                            </div>
+                            <div class="flex items-center text-gray-600">
+                                <i class="fa-solid fa-users w-5 mr-2 text-gray-400"></i>
+                                <span>Jumlah siswa: <strong>{{ $kelas->jumlah_siswa }}</strong></span>
+                            </div>
                         </div>
-                    </div>
-                </a>
-                @empty
-                <div class="sm:col-span-2 lg:col-span-3 bg-white p-6 rounded-2xl shadow-lg text-center">
+                    </a>
+                    @endforeach
+                </div>
+                <div id="no-results-message" class="text-center py-12 hidden">
+                    <i class="fa-solid fa-magnifying-glass text-5xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600 font-semibold text-lg">Kelas atau mapel tidak ditemukan.</p>
+                    <p class="text-gray-500 mt-2">Coba gunakan kata kunci pencarian yang berbeda.</p>
+                </div>
+                @else
+                <div id="empty-message" class="text-center py-12">
                     <i class="fa-solid fa-school-circle-exclamation text-5xl text-gray-400 mb-4"></i>
                     <p class="text-gray-600 font-semibold text-lg">Tidak ada kelas yang tersedia.</p>
                     <p class="text-gray-500 mt-2">Belum ada data kelas yang dapat ditampilkan.</p>
                 </div>
-                @endforelse
+                @endif
             </div>
         </main>
     </div>
@@ -223,6 +240,36 @@
 
     menuButton.addEventListener('click', toggleSidebar);
     overlay.addEventListener('click', toggleSidebar);
+
+    // --- Search Functionality ---
+    const searchInput = document.getElementById('search-input');
+    const classGrid = document.getElementById('class-grid');
+    const classCards = document.querySelectorAll('.class-card');
+    const noResultsMessage = document.getElementById('no-results-message');
+    const emptyMessage = document.getElementById('empty-message');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            let visibleCards = 0;
+
+            classCards.forEach(card => {
+                const cardText = card.textContent.toLowerCase();
+                if (cardText.includes(searchTerm)) {
+                    card.style.display = 'block';
+                    visibleCards++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            const hasClasses = classCards.length > 0;
+            if (noResultsMessage) noResultsMessage.style.display = (hasClasses && visibleCards === 0) ? 'block' : 'none';
+            // Tampilkan grid jika ada kartu yang terlihat, sembunyikan jika tidak
+            if (classGrid) classGrid.style.display = (visibleCards > 0) ? 'grid' : 'none';
+            if (emptyMessage) emptyMessage.style.display = (hasClasses) ? 'none' : 'block';
+        });
+    }
 </script>
 </body>
 </html>
