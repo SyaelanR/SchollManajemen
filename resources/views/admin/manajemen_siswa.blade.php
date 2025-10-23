@@ -243,14 +243,16 @@
                 <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                     <h2 class="text-2xl font-bold text-gray-800">Daftar Siswa</h2>
                     <div class="flex items-center gap-4 w-full md:w-auto">
-                        <div class="relative w-full md:w-64">
-                            <input type="text" placeholder="Cari siswa..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        </div>
-                        <button onclick="window.location.href = '{{ route('tambahSiswa') }}';" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap shadow-md hover:shadow-lg">
+                        <form action="{{ route('manajemenSiswa') }}" method="GET" class="relative w-full md:w-64">
+                            <input type="text" name="search" placeholder="Cari siswa..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" value="{{ request('search') }}">
+                            <button type="submit" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                <i class="fa-solid fa-search"></i>
+                            </button>
+                        </form>
+                        <a href="{{ route('tambahSiswa') }}" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap shadow-md hover:shadow-lg">
                             <i class="fa-solid fa-plus mr-2"></i>
                             Tambah Siswa
-                        </button>
+                        </a>
                     </div>
                 </div>
 
@@ -267,10 +269,10 @@
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y">
+                        <tbody id="student-table-body" class="divide-y">
                             {{-- Contoh data dummy dengan loop --}}
                             @forelse ($students ?? [] as $student)
-                            <tr class="hover:bg-gray-50">
+                            <tr class="student-row hover:bg-gray-50">
                                 <td class="p-3 text-gray-700">{{ $student->nisn_nik }}</td>
                                 <td class="p-3 text-gray-800 font-medium">{{ $student->name }}</td>
                                 <td class="p-3 text-gray-700">{{ $student->kelas->angkatan->angkatan ?? '-' }}</td>
@@ -302,9 +304,15 @@
                             <tr>
                                 <td colspan="6" class="p-3 text-center text-gray-500">
                                     <div class="text-center py-12">
-                                        <i class="fa-solid fa-users-slash text-5xl text-gray-400 mb-4"></i>
-                                        <p class="text-gray-600 font-semibold text-lg">Belum ada data Siswa.</p>
-                                        <p class="text-gray-500 mt-2">Silakan tambahkan Siswa baru.</p>
+                                        @if (request('search'))
+                                            <i class="fa-solid fa-magnifying-glass text-5xl text-gray-400 mb-4"></i>
+                                            <p class="text-gray-600 font-semibold text-lg">Siswa tidak ditemukan.</p>
+                                            <p class="text-gray-500 mt-2">Tidak ada siswa yang cocok dengan kata kunci "{{ request('search') }}".</p>
+                                        @else
+                                            <i class="fa-solid fa-users-slash text-5xl text-gray-400 mb-4"></i>
+                                            <p class="text-gray-600 font-semibold text-lg">Belum ada data Siswa.</p>
+                                            <p class="text-gray-500 mt-2">Silakan tambahkan Siswa baru.</p>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -316,8 +324,8 @@
                 <!-- Pagination -->
                  <div class="mt-6 color">
                     {{-- Pastikan Anda sudah mem-publish view paginasi Tailwind --}}
-                    {{-- Jalankan: php artisan vendor:publish --tag=laravel-pagination --}}
-                    {!! $students->links() !!}
+                    {{-- Menambahkan query string pencarian ke link paginasi --}}
+                    {!! $students->appends(request()->query())->links() !!}
                 </div>
             </div>
         </main>
@@ -371,6 +379,8 @@
                 });
             });
         });
+
+        // JavaScript untuk pencarian telah dihapus karena sekarang ditangani oleh controller.
     });
 </script>
 

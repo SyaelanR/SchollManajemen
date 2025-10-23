@@ -196,10 +196,16 @@
                 <!-- Action Bar -->
                 <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                     <h2 class="text-2xl font-bold text-gray-800">Daftar Mata Pelajaran</h2>
-                    <button id="add-mapel-btn" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap shadow-md hover:shadow-lg">
-                        <i class="fa-solid fa-plus mr-2"></i>
-                        Tambah Mapel
-                    </button>
+                    <div class="flex items-center gap-4 w-full md:w-auto">
+                        <div class="relative w-full md:w-64">
+                            <input type="text" id="mapel-search-input" placeholder="Cari mapel, guru..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                        <button id="add-mapel-btn" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap shadow-md hover:shadow-lg">
+                            <i class="fa-solid fa-plus mr-2"></i>
+                            Tambah Mapel
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Subjects Table -->
@@ -217,7 +223,7 @@
                         </thead>
                         <tbody class="divide-y" id="mapel-table-body">
                             @forelse ($mapels as $mapel)
-                            <tr class="hover:bg-gray-50">
+                            <tr class="mapel-row hover:bg-gray-50">
                                 <td class="p-3 text-gray-800 font-medium">{{$mapel->nama_mapel}}</td>
                                 <td class="p-3 text-gray-700">{{$mapel->kategori}}</td>
                                 <td class="p-3 text-gray-700 text-center">{{$mapel->sks}}</td>
@@ -250,7 +256,7 @@
                                 </td>
                             </tr>
                             @empty
-                            <tr>
+                            <tr id="empty-row">
                                 <td colspan="6" class="p-3 text-center text-gray-500">
                                     <div class="text-center py-12">
                                         <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
@@ -259,6 +265,14 @@
                                 </td>
                             </tr>
                             @endforelse
+                            <tr id="no-results-row" class="hidden">
+                                <td colspan="6" class="p-3 text-center text-gray-500">
+                                    <div class="text-center py-12">
+                                        <i class="fa-solid fa-magnifying-glass text-5xl text-gray-400 mb-4"></i>
+                                        <p class="text-gray-600 font-semibold text-lg">Mata pelajaran tidak ditemukan.</p>
+                                    </div>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -459,6 +473,37 @@
         mapelModal.addEventListener('click', (event) => {
             if (event.target === mapelModal) {
                 closeModal(mapelModal, modalContent);
+            }
+        });
+
+        // --- Search Functionality ---
+        const searchInput = document.getElementById('mapel-search-input');
+        const mapelRows = document.querySelectorAll('#mapel-table-body .mapel-row');
+        const noResultsRow = document.getElementById('no-results-row');
+        const emptyRow = document.getElementById('empty-row');
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            let visibleRows = 0;
+
+            mapelRows.forEach(row => {
+                const mapelName = row.children[0].textContent.toLowerCase();
+                const kategori = row.children[1].textContent.toLowerCase();
+                const guru = row.children[3].textContent.toLowerCase();
+
+                if (mapelName.includes(searchTerm) || kategori.includes(searchTerm) || guru.includes(searchTerm)) {
+                    row.style.display = '';
+                    visibleRows++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Tampilkan pesan "tidak ditemukan" jika tidak ada baris yang cocok dan tabel tidak kosong
+            if (visibleRows === 0 && mapelRows.length > 0) {
+                noResultsRow.classList.remove('hidden');
+            } else {
+                noResultsRow.classList.add('hidden');
             }
         });
     });
