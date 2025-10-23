@@ -55,9 +55,8 @@ class AdminController extends Controller
             });
         }
 
-        $students = $query->paginate(10);
-
-        return view('admin.manajemen_siswa', ['students' => $students]);
+        $students = $query->latest()->paginate(10)->appends(['search' => $search]);
+        return view('admin.manajemen_siswa', ['students' => $students, 'search' => $search]);
     }
 
     public function tambahSiswa()

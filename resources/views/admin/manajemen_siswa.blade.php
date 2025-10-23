@@ -238,7 +238,7 @@
                     <h2 class="text-2xl font-bold text-gray-800">Daftar Siswa</h2>
                     <div class="flex items-center gap-4 w-full md:w-auto">
                         <form action="{{ route('manajemenSiswa') }}" method="GET" class="relative w-full md:w-64">
-                            <input type="text" name="search" placeholder="Cari siswa..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" value="{{ request('search') }}">
+                            <input type="text" name="search" placeholder="Cari siswa..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" value="{{ $search ?? '' }}">
                             <button type="submit" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
                                 <i class="fa-solid fa-search"></i>
                             </button>
@@ -298,7 +298,7 @@
                             <tr>
                                 <td colspan="6" class="p-3 text-center text-gray-500">
                                     <div class="text-center py-12">
-                                        @if (request('search'))
+                                        @if ($search)
                                             <i class="fa-solid fa-magnifying-glass text-5xl text-gray-400 mb-4"></i>
                                             <p class="text-gray-600 font-semibold text-lg">Siswa tidak ditemukan.</p>
                                             <p class="text-gray-500 mt-2">Tidak ada siswa yang cocok dengan kata kunci "{{ request('search') }}".</p>
