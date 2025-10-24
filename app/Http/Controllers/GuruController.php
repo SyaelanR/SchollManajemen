@@ -506,7 +506,7 @@ class GuruController extends Controller
                     ->with('siswa')->get();
 
         // return view('guru.input_absensi', ['daftarSiswa' => $daftarSiswa, 'infoKelas' => $infoKelas, 'infoMapel' => $infoMapel]);
-        return view('guru.input_absensi', ['daftarSiswa' => $daftarSiswa]);
+        return view('guru.input_absensi', ['daftarSiswa' => $daftarSiswa, 'infoJKA' => $infoJKA]);
     }
 
     public function storeAbsensiSiswa (Request $request)

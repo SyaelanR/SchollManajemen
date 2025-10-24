@@ -156,17 +156,16 @@
             </a>
             @endcan
         </nav>
-        <div class="absolute bottom-0 w-full p-6">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <a href="{{ route('logout') }}"
-                   onclick="event.preventDefault(); this.closest('form').submit();"
-                   class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
-                    <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
-                    <span>Logout</span>
-                </a>
-            </form>
-        </div>
+        <div class="p-6 border-t border-gray-200 flex-shrink-0">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <a href="{{ route('logout') }}"
+                onclick="event.preventDefault(); this.closest('form').submit();"
+                class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full transition duration-200">
+                <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
+                <span>Logout</span>
+            </a>
+        </form>
     </aside>
 
     <!-- Overlay for mobile -->
@@ -194,7 +193,7 @@
 
             <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg flex flex-wrap justify-between items-center text-white gap-4">
                 <div>
-                    <h1 class="text-2xl md:text-3xl font-bold">Absensi Kelas: {{$infoKelas->kelas->nama_kelas ?? 'N/A'}} - {{$infoMapel->nama_mapel ?? 'N/A'}}</h1>
+                    <h1 class="text-2xl md:text-3xl font-bold">Absensi Kelas: {{$infoJKA->kelas->nama_kelas ?? 'N/A'}} - {{$infoJKA->mapel->nama_mapel ?? 'N/A'}}</h1>
                     <p class="text-indigo-200 mt-2"><i class="fa-solid fa-calendar-day mr-2"></i>Tanggal: {{ now()->format('d F Y') }}</p>
                 </div>
                 <a href="{{ route('manajAbsensiDaftar', ['id_kelas' => 1 , 'id_mapel' => 1 ]) }}" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
