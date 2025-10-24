@@ -85,16 +85,6 @@ class GuruController extends Controller
         // ->with('kelas.angkatan', 'mapel') // tetap load relasi
         ->get();
 
-    // Iterasi untuk menghitung jumlah siswa untuk setiap kelas yang diampu
-    foreach ($daftarkelasYangDiampu as $jadwal) {
-        // Muat relasi yang dibutuhkan jika belum ada
-        $jadwal->loadMissing('kelas.angkatan', 'mapel');
-        // Hitung dan tambahkan properti jumlah_siswa ke setiap item jadwal
-        $jadwal->jumlah_siswa = User::where('id_kelas', $jadwal->id_kelas)->count();
-    }
-
-
-        
         return view('guru.manajemen_nilai_kelas', ['daftarkelasYangDiampu' => $daftarkelasYangDiampu]);
     }
 
@@ -388,16 +378,6 @@ class GuruController extends Controller
         ->distinct()
         // ->with('kelas.angkatan', 'mapel') // tetap load relasi
         ->get();
-
-    // Iterasi untuk menghitung jumlah siswa untuk setiap kelas yang diampu
-    foreach ($daftarkelasYangDiampu as $jadwal) {
-        // Muat relasi yang dibutuhkan jika belum ada
-        $jadwal->loadMissing('kelas.angkatan', 'mapel');
-        // Hitung dan tambahkan properti jumlah_siswa ke setiap item jadwal
-        $jadwal->jumlah_siswa = User::where('id_kelas', $jadwal->id_kelas)->count();
-    }
-
-
         
         return view('guru.manajemen_absensi_kelas', ['daftarkelasYangDiampu' => $daftarkelasYangDiampu]);
     }
@@ -602,14 +582,6 @@ class GuruController extends Controller
         ->with('kelas.angkatan', 'mapel') // tetap load relasi
         ->get();
 
-    // Iterasi untuk menghitung jumlah siswa untuk setiap kelas yang diampu
-    foreach ($daftarkelasYangDiampu as $jadwal) {
-        // Muat relasi yang dibutuhkan jika belum ada
-        $jadwal->loadMissing('kelas.angkatan', 'mapel');
-        // Hitung dan tambahkan properti jumlah_siswa ke setiap item jadwal
-        $jadwal->jumlah_siswa = User::where('id_kelas', $jadwal->id_kelas)->count();
-    }
-
         return view('guru.manajemen_tugas_kelas', ['daftarkelasYangDiampu' => $daftarkelasYangDiampu]);
     }
 
@@ -757,14 +729,6 @@ class GuruController extends Controller
         ->distinct()
         // ->with('kelas.angkatan', 'mapel') // tetap load relasi
         ->get();
-
-    // Iterasi untuk menghitung jumlah siswa untuk setiap kelas yang diampu
-    foreach ($daftarkelasYangDiampu as $jadwal) {
-        // Muat relasi yang dibutuhkan jika belum ada
-        $jadwal->loadMissing('kelas.angkatan', 'mapel');
-        // Hitung dan tambahkan properti jumlah_siswa ke setiap item jadwal
-        $jadwal->jumlah_siswa = User::where('id_kelas', $jadwal->id_kelas)->count();
-    }
 
         return view('guru.manajemen_materi_kelas', ['daftarkelasYangDiampu' => $daftarkelasYangDiampu]);
 
@@ -1100,16 +1064,6 @@ class GuruController extends Controller
         // ->with('kelas.angkatan', 'mapel') // tetap load relasi
         ->get();
 
-    // Iterasi untuk menghitung jumlah siswa untuk setiap kelas yang diampu
-    foreach ($daftarkelasYangDiampu as $jadwal) {
-        // Muat relasi yang dibutuhkan jika belum ada
-        $jadwal->loadMissing('kelas.angkatan', 'mapel');
-        // Hitung dan tambahkan properti jumlah_siswa ke setiap item jadwal
-        $jadwal->jumlah_siswa = User::where('id_kelas', $jadwal->id_kelas)->count();
-    }
-
-
-        
         return view('guru.manajemen_pengumuman_kelas', ['daftarkelasYangDiampu' => $daftarkelasYangDiampu]);
     }
 

@@ -205,10 +205,6 @@
                                 <i class="fa-solid fa-book w-5 mr-2 text-gray-400"></i>
                                 <span>Mapel: <strong>{{ $kelas->mapel->nama_mapel ?? 'N/A' }}</strong></span>
                             </div>
-                            <div class="flex items-center text-gray-600">
-                                <i class="fa-solid fa-users w-5 mr-2 text-gray-400"></i>
-                                <span>Jumlah siswa: <strong>{{ $kelas->jumlah_siswa }}</strong></span>
-                            </div>
                         </div>
                     </a>
                     @endforeach
