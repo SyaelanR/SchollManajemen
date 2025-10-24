@@ -211,7 +211,6 @@
                                         <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Alamat</th>
                                         <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Tempat lahir</th>
                                         <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Tanggal lahir</th>
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Usia</th>
                                         <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Nomor Telp</th>
                                         <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Jabatan</th>
                                         <th class="p-3 font-semibold text-gray-600" style="min-width: 180px;">Username</th>
@@ -286,9 +285,6 @@
                 </td>
                 <td class="p-2">
                     <input type="date" name="teacher[${rowCount}][tanggal_lahir]" class="table-input" />
-                </td>
-                <td class="p-2">
-                    <input type="number" name="teacher[${rowCount}][usia]" placeholder="Usia" class="table-input" />
                 </td>
                 <td class="p-2">
                     <input type="tel" name="teacher[${rowCount}][nomor_telp]" placeholder="Nomor Telp" class="table-input" />

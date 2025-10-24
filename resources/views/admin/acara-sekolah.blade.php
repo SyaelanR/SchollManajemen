@@ -252,15 +252,21 @@
                             </div>
                         </div>
                     @empty
-                        <div class="w-full flex flex-col items-center justify-center text-center p-10 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                        <div id="empty-state" class="w-full flex flex-col items-center justify-center text-center p-10 bg-gray-50 rounded-xl border border-dashed border-gray-300">
                             <i class="fa-solid fa-calendar-xmark text-5xl text-gray-400 mb-3"></i>
                             <h3 class="text-lg font-semibold text-gray-600">Belum ada acara</h3>
                             <p class="text-sm text-gray-500 mt-1">Silakan tambahkan acara baru agar muncul di daftar.</p>
-                            <button onclick="openAddModal()" class="mt-4 inline-block px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg shadow hover:bg-indigo-700 transition">
+                            <button id="add-event-from-empty" class="mt-4 inline-block px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg shadow hover:bg-indigo-700 transition">
                                 <i class="fa-solid fa-plus mr-1"></i> Tambah Acara
                             </button>
                         </div>
                     @endforelse
+                </div>
+                <!-- Pesan jika tidak ada hasil pencarian -->
+                <div id="no-results-message" class="hidden w-full flex-col items-center justify-center text-center p-10 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                    <i class="fa-solid fa-magnifying-glass text-5xl text-gray-400 mb-3"></i>
+                    <h3 class="text-lg font-semibold text-gray-600">Acara tidak ditemukan</h3>
+                    <p class="text-sm text-gray-500 mt-1">Coba gunakan kata kunci pencarian yang berbeda.</p>
                 </div>
             </div>
         </main>
@@ -356,6 +362,7 @@
     const saveButton = document.getElementById('save-button');
     const eventListContainer = document.getElementById('event-list-container');
     const emptyState = document.getElementById('empty-state');
+    const addFromEmptyBtn = document.getElementById('add-event-from-empty');
     const searchInput = document.getElementById('search-input');
 
     // route base for update (will append /{id})
@@ -396,6 +403,7 @@
     }
 
     btnAdd.addEventListener('click', openAddModal);
+    if (addFromEmptyBtn) addFromEmptyBtn.addEventListener('click', openAddModal);
     closeModalButton.addEventListener('click', hideModal);
     cancelButton.addEventListener('click', hideModal);
     // close on overlay click
@@ -499,23 +507,27 @@
     // --- Search (client-side filter on rendered cards) ---
     searchInput.addEventListener('keyup', () => {
         const term = searchInput.value.toLowerCase().trim();
+        const allCards = document.querySelectorAll('.event-card');
+        const noResultsMessage = document.getElementById('no-results-message');
+        let visibleCount = 0;
+
         document.querySelectorAll('.event-card').forEach(card => {
             const title = (card.getAttribute('data-judul') || '').toLowerCase();
             const desc = (card.getAttribute('data-deskripsi') || '').toLowerCase();
             const lokasi = (card.getAttribute('data-lokasi') || '').toLowerCase();
             const peserta = (card.getAttribute('data-peserta') || '').toLowerCase();
 
-            const show = title.includes(term) || desc.includes(term) || lokasi.includes(term) || peserta.includes(term);
-            card.style.display = show ? '' : 'none';
+            if (title.includes(term) || desc.includes(term) || lokasi.includes(term) || peserta.includes(term)) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
         });
 
-        // check if all hidden -> show empty state
-        const anyVisible = Array.from(document.querySelectorAll('.event-card')).some(c => c.style.display !== 'none');
-        if (!anyVisible) {
-            emptyState.classList.remove('hidden');
-        } else {
-            emptyState.classList.add('hidden');
-        }
+        // Tampilkan atau sembunyikan pesan "tidak ditemukan"
+        const hasEvents = allCards.length > 0;
+        noResultsMessage.style.display = (hasEvents && visibleCount === 0) ? 'flex' : 'none';
     });
 
     // --- Flash messages (SweetAlert) ---

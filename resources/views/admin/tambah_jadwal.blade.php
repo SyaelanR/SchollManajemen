@@ -341,7 +341,7 @@
                         <option value="" disabled>Pilih Mata Pelajaran</option>
                         @forelse ($mapels ?? [] as $mapel)
                             <option value="{{ $mapel->id_mapel }}">
-                                {{ $mapel->nama_mapel }} ({{ $mapel->guru->name }})
+                                {{ $mapel->nama_mapel ?? '_'}} ({{ $mapel->guru->name ?? '-'}})
                             </option>
                         @empty
                             <option disabled>Tidak ada mata pelajaran tersedia</option>

@@ -183,10 +183,6 @@
                                     <i class="fa-solid fa-user-tie w-4 mr-2 text-gray-400"></i>
                                     <span>Wali kelas : {{ $kelas->wali_kelas }}</span>
                                 </div>
-                                <div class="flex items-center">
-                                    <i class="fa-solid fa-users w-4 mr-2 text-gray-400"></i>
-                                    <span>Jumlah Siswa : {{ $kelas->jumlah_siswa }}</span>
-                                </div>
                             </div>
                         </a>
                     @empty

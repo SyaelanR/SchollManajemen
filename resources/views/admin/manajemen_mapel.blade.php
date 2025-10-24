@@ -191,10 +191,12 @@
                 <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                     <h2 class="text-2xl font-bold text-gray-800">Daftar Mata Pelajaran</h2>
                     <div class="flex items-center gap-4 w-full md:w-auto">
-                        <div class="relative w-full md:w-64">
-                            <input type="text" id="mapel-search-input" placeholder="Cari mapel, guru..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        </div>
+                        <form action="{{ route('manajemenMapel') }}" method="GET">
+                            <div class="relative w-full md:w-64">
+                                <input value="{{ $search }}" name="search" type="text" id="search" placeholder="Cari mapel, guru, kode..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            </div>
+                        </form>
                         <button id="add-mapel-btn" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap shadow-md hover:shadow-lg">
                             <i class="fa-solid fa-plus mr-2"></i>
                             Tambah Mapel
@@ -239,7 +241,7 @@
                                             data-kode_mapel="{{ $mapel->kode_mapel }}"
                                             data-kategori="{{ $mapel->kategori }}"
                                             data-sks="{{ $mapel->sks }}"
-                                            data-guru_id="{{ $mapel->guru_id }}"
+                                            data-guru_id="{{ $mapel->id_guru }}"
                                             data-status="{{ $mapel->status }}">
                                             <i class="fa-solid fa-pencil"></i>
                                         </button> 
@@ -254,23 +256,28 @@
                             @empty
                             <tr id="empty-row">
                                 <td colspan="7" class="p-3 text-center text-gray-500">
+                                    @if ($search)
+                                    <i class="fa-solid fa-magnifying-glass text-4xl text-gray-400 mb-4"></i>
+                                    <p class="text-gray-600 font-semibold text-lg">Mapel tidak ditemukan.</p>
+                                    <p class="text-gray-500 mt-1">Tidak ada mapel yang cocok dengan kata kunci "{{ $search }}".</p>
+                                    @else
                                     <div class="text-center py-12">
                                         <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
                                         <p class="text-gray-600 font-semibold text-lg">Belum ada data Mapel.</p>
                                     </div>
+                                    @endif
                                 </td>
                             </tr>
                             @endforelse
-                            <tr id="no-results-row" class="hidden">
-                                <td colspan="7" class="p-3 text-center text-gray-500">
-                                    <div class="text-center py-12">
-                                        <i class="fa-solid fa-magnifying-glass text-5xl text-gray-400 mb-4"></i>
-                                        <p class="text-gray-600 font-semibold text-lg">Mata pelajaran tidak ditemukan.</p>
-                                    </div>
-                                </td>
-                            </tr>
                         </tbody>
                     </table>
+
+                    {{-- paganation --}}
+                    <div class="mt-6 color">
+                        {{-- Pastikan Anda sudah mem-publish view paginasi Tailwind --}}
+                        {{-- Menambahkan query string pencarian ke link paginasi --}}
+                        {!! $mapels->appends(request()->query())->links() !!}
+                    </div>
                 </div>
             </div>
         </main>
@@ -346,28 +353,41 @@
 </div>
 
 <!-- Edit Subject Modal -->
-<div id="edit-mapel-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex items-center justify-center p-4 hidden opacity-0">
-    <div class="modal-content bg-white rounded-xl shadow-2xl w-full max-w-lg transform transition-transform duration-300 scale-95">
-        <div class="flex justify-between items-center p-6 border-b">
+<div id="edit-mapel-modal"
+    class="modal fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex items-center justify-center p-4 hidden opacity-0">
+    <div
+        class="modal-content bg-white rounded-xl shadow-2xl w-full max-w-lg transform transition-transform duration-300 scale-95 max-h-[90vh] flex flex-col">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center p-6 border-b flex-shrink-0">
             <h3 class="text-2xl font-semibold text-gray-800">Edit Mata Pelajaran</h3>
             <button class="close-modal-btn text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
         </div>
-        <form id="edit-mapel-form" method="POST">
+
+        <!-- Scrollable content -->
+        <form id="edit-mapel-form" method="POST" class="flex-1 overflow-y-auto">
             @csrf
             @method('PUT')
+
             <div class="p-6 space-y-4">
                 <div>
                     <label for="edit-nama-mapel" class="block text-gray-700 font-medium mb-2">Nama Mapel</label>
-                    <input name="nama_mapel" type="text" id="edit-nama-mapel" placeholder="Contoh: Kimia" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <input name="nama_mapel" type="text" id="edit-nama-mapel" placeholder="Contoh: Kimia"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        required>
                 </div>
                 <div>
                     <label for="edit-kode-mapel" class="block text-gray-700 font-medium mb-2">Kode Mapel</label>
-                    <input name="kode_mapel" type="text" id="edit-kode-mapel" placeholder="Contoh: STR21" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <input name="kode_mapel" type="text" id="edit-kode-mapel" placeholder="Contoh: STR21"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        required>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label for="edit-kategori-mapel" class="block text-gray-700 font-medium mb-2">Kategori</label>
-                        <select name="kategori" id="edit-kategori-mapel" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white" required>
+                        <select name="kategori" id="edit-kategori-mapel"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
+                            required>
                             <option value="Umum">Umum</option>
                             <option value="IT">IT</option>
                             <option value="Tahfidz">Tahfidz</option>
@@ -376,39 +396,52 @@
                     </div>
                     <div>
                         <label for="edit-sks-mapel" class="block text-gray-700 font-medium mb-2">SKS</label>
-                        <input name="sks" type="number" id="edit-sks-mapel" placeholder="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                        <input name="sks" type="number" id="edit-sks-mapel" placeholder="3"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            required>
                     </div>
                 </div>
-                    <div>
-                        <label for="edit-guru-pengampu" class="block text-gray-700 font-medium mb-2">Guru Pengampu</label>
-                        <div class="relative">
-                            <select name="guru_id" id="edit-guru-pengampu" size="6"
-                                class="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-800 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 overflow-y-auto max-h-60 appearance-none">
-                                <option value="" disabled class="text-gray-400 italic">Pilih Guru</option>
-                                @foreach ($teachers as $teacher)
-                                    <option value="{{ $teacher->id }}" class="hover:bg-indigo-100">{{ $teacher->name }}</option>
-                                @endforeach
-                            </select>
-                            <span class="absolute right-3 top-2.5 text-gray-400 pointer-events-none">
-                                <i class="fa-solid fa-angle-down"></i>
-                            </span>
-                        </div>
+                <div>
+                    <label for="edit-guru-pengampu" class="block text-gray-700 font-medium mb-2">Guru Pengampu</label>
+                    <div class="relative">
+                        <select name="guru_id" id="edit-guru-pengampu" size="6"
+                            class="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-800 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 overflow-y-auto max-h-60 appearance-none">
+                            <option value="" disabled class="text-gray-400 italic">Pilih Guru</option>
+                            @foreach ($teachers as $teacher)
+                                <option value="{{ $teacher->id }}" class="hover:bg-indigo-100">{{ $teacher->name }}</option>
+                            @endforeach
+                        </select>
+                        <span class="absolute right-3 top-2.5 text-gray-400 pointer-events-none">
+                            <i class="fa-solid fa-angle-down"></i>
+                        </span>
                     </div>
+                </div>
                 <div>
                     <label for="status-mapel" class="block text-gray-700 font-medium mb-2">Status</label>
-                    <select name="status" id="edit-status-mapel" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white" required>
+                    <select name="status" id="edit-status-mapel"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
+                        required>
                         <option value="aktif">Aktif</option>
                         <option value="nonaktif">Nonaktif</option>
                     </select>
                 </div>
             </div>
-            <div class="flex justify-end gap-4 p-6 bg-gray-50 rounded-b-xl">
-                <button type="button" id="cancel-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition duration-300">Batal</button>
-                <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition duration-300">Simpan Perubahan</button>
+
+            <!-- Footer (sticky at bottom) -->
+            <div class="flex justify-end gap-4 p-6 bg-gray-50 rounded-b-xl flex-shrink-0 border-t">
+                <button type="button"
+                    class="cancel-btn bg-gray-200 text-gray-700 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition duration-300">
+                    Batal
+                </button>
+                <button type="submit"
+                    class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition duration-300">
+                    Simpan Perubahan
+                </button>
             </div>
         </form>
     </div>
 </div>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -555,38 +588,6 @@
                     closeModal(modal, modal.querySelector('.modal-content'));
                 }
             });
-        });
-
-        // --- Search Functionality ---
-        const searchInput = document.getElementById('mapel-search-input');
-        const mapelRows = document.querySelectorAll('#mapel-table-body .mapel-row');
-        const noResultsRow = document.getElementById('no-results-row');
-        const emptyRow = document.getElementById('empty-row');
-
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase().trim();
-            let visibleRows = 0;
-
-            mapelRows.forEach(row => {
-                const mapelName = row.children[0].textContent.toLowerCase();
-                const kodeMapel = row.children[1].textContent.toLowerCase();
-                const kategori = row.children[2].textContent.toLowerCase();
-                const guru = row.children[4].textContent.toLowerCase();
-
-                if (mapelName.includes(searchTerm) || kodeMapel.includes(searchTerm) || kategori.includes(searchTerm) || guru.includes(searchTerm)) {
-                    row.style.display = '';
-                    visibleRows++;
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-
-            // Tampilkan pesan "tidak ditemukan" jika tidak ada baris yang cocok dan tabel tidak kosong
-            if (visibleRows === 0 && mapelRows.length > 0) {
-                noResultsRow.classList.remove('hidden');
-            } else {
-                noResultsRow.classList.add('hidden');
-            }
         });
     });
 </script>

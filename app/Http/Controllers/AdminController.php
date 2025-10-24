@@ -41,6 +41,7 @@ class AdminController extends Controller
 
         // Memulai query untuk model User
         $query = User::where('users.role', 'siswa')
+                     ->where('id_sekolah', $id_sekolah)
                      ->with('kelas.angkatan') // Eager load relasi
                      ->latest('users.created_at');
 
@@ -169,7 +170,6 @@ class AdminController extends Controller
             'teacher.*.alamat' => 'nullable|string|max:255',
             'teacher.*.tempat_lahir' => 'nullable|string|max:100',
             'teacher.*.tanggal_lahir' => 'nullable|date',
-            'teacher.*.usia' => 'nullable|integer',
             'teacher.*.nomor_telp' => 'nullable|string|max:15',
             'teacher.*.jabatan' => 'required|string|in:guru,staf', // 'jabatan' dari form akan menjadi 'role'
         ]);
@@ -192,7 +192,6 @@ class AdminController extends Controller
                     'alamat'        => $teacherData['alamat'],
                     'tempat_lahir'  => $teacherData['tempat_lahir'],
                     'tanggal_lahir' => $teacherData['tanggal_lahir'],
-                    'usia'          => $teacherData['usia'],
                     'no_telp'       => $teacherData['nomor_telp'],
                 ]);
             }
@@ -536,18 +535,40 @@ class AdminController extends Controller
         ]);
     }
 
-    public function manajMapel()
+    public function manajMapel(Request $request)
     {
         $id_sekolah = request()->cookie('id_sekolah');
-        // Menggunakan Eloquent untuk mengambil data agar casting (dekripsi) otomatis diterapkan.
-        // 'with('guru')' akan melakukan eager loading relasi 'guru'.
-        $mapels = Mapel::with('guru')
+        $teachers = User::where('role', 'guru')
             ->where('id_sekolah', $id_sekolah)
-            ->where('id_sekolah', $id_sekolah)->latest()->get();
+            ->get();
 
-        $teachers = User::where('role', 'guru')->where('id_sekolah', $id_sekolah)->get();
+        $search = $request->query('search');
+
+        $query = Mapel::with('guru')
+            ->where('id_sekolah', $id_sekolah)
+            ->orderByRaw("CASE WHEN status = 'aktif' THEN 1 ELSE 2 END"); // urutkan status aktif duluan
+
+        // Jika ada pencarian
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('guru', function ($g) use ($search) {
+                    $g->where('name', 'like', "%{$search}%")
+                    ->orWhere('nisn_nik', 'like', "%{$search}%");
+                })
+                ->orWhere('kode_mapel', 'like', "%{$search}%")
+                ->orWhere('nama_mapel', 'like', "%{$search}%")
+                ->orWhere('kategori', 'like', "%{$search}%");
+            });
+        }
+
+        // Gunakan paginate di akhir
+        // $mapels = $query->paginate(10);
+
+
+        $mapels = $query->paginate(10)->appends(['search' => $search]);
+        // return view('admin.manajemen_siswa', ['students' => $students, 'search' => $search]);
         
-        return view('admin.manajemen_mapel', ['mapels' => $mapels, 'teachers' => $teachers]);
+        return view('admin.manajemen_mapel', ['mapels' => $mapels, 'teachers' => $teachers, 'search' => $search]);
 
     }
 
@@ -622,10 +643,10 @@ class AdminController extends Controller
 
         // Mengambil semua mapel yang tersedia untuk sekolah ini untuk form tambah jadwal.
         $mapels = Mapel::with('guru')
-                    ->where('id_sekolah', $id_sekolah)->get();
+                    ->where('id_sekolah', $id_sekolah)
+                    ->where('status', 'aktif')
+                    ->get();
 
-        // Mengambil data jadwal yang sudah ada untuk kelas ini.
-        // Menggunakan nested eager loading 'mapel.guru' untuk mendapatkan nama mapel dan nama guru.
         $jadwals = Jadwal::with('mapel.guru') // Memuat relasi mapel, dan relasi guru di dalam mapel
                         ->where('id_kelas', $id_kelas)
                         ->where('id_sekolah', $id_sekolah)
@@ -851,11 +872,6 @@ class AdminController extends Controller
                          })//filter alumni
                         ->get();
 
-        foreach ($kelaslist as $kelas) {
-        // Hitung dan tambahkan properti jumlah_siswa ke setiap item jadwal
-        $kelas->jumlah_siswa = User::where('id_kelas', $kelas->id_kelas)->count();
-    }
-        
         return view('admin.manajemen_rapor', ['kelasList' => $kelaslist]);
     }
 
@@ -1625,7 +1641,7 @@ class AdminController extends Controller
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
     public function manajAcara(Request $request)
     {
-        $id_sekolah = request()->cookie('id_sekolah');
+        $id_sekolah = $request->cookie('id_sekolah');
 
         // Ambil acara yang masih berlangsung atau akan datang (belum lewat tanggal_selesai)
         $daftarAcara = DaftarAcara::where('id_sekolah', $id_sekolah)

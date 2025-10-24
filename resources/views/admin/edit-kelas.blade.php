@@ -198,7 +198,7 @@
                             </select>
                         </div>
                         <div class="flex flex-col sm:flex-row justify-end gap-4 mt-8">
-                            <a href="#" class="text-center bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300">Batal</a>
+                            <a href="{{ url()->previous() }}" class="text-center bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300">Batal</a>
                             <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">Simpan Perubahan</button>
                         </div>
                     </form>

@@ -239,6 +239,13 @@
                         @endforelse
                         </tbody>
                     </table>
+
+                    {{-- paganation --}}
+                    <div class="mt-6 color">
+                        {{-- Pastikan Anda sudah mem-publish view paginasi Tailwind --}}
+                        {{-- Menambahkan query string pencarian ke link paginasi --}}
+                        {!! $teachers->appends(request()->query())->links() !!}
+                    </div>
                 </div>
             </div>
         </main>

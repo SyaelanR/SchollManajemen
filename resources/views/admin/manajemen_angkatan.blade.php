@@ -186,10 +186,15 @@
                 <!-- Action Bar -->
                 <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                     <h2 class="text-2xl font-bold text-gray-800">Daftar Angkatan</h2>
-                    <button id="add-angkatan-btn" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap shadow-md hover:shadow-lg">
-                        <i class="fa-solid fa-plus mr-2"></i>
-                        Tambah Angkatan
-                    </button>
+                    <div class="flex items-center gap-4 w-full md:w-auto">
+                        <div class="relative w-full md:w-64">
+                            <input type="text" id="search-input" placeholder="Cari angkatan..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                        <button id="add-angkatan-btn" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap shadow-md hover:shadow-lg">
+                            <i class="fa-solid fa-plus mr-2"></i> Tambah Angkatan
+                        </button>
+                    </div>
                 </div>
 
                 <!-- School Year Table -->
@@ -205,9 +210,9 @@
                                 <th class="p-3 font-semibold text-gray-600  text-center">AKSI</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y">
+                        <tbody id="angkatan-table-body" class="divide-y">
                             @forelse ($angkatans as $item)
-                                <tr class="hover:bg-gray-50">
+                                <tr class="angkatan-row hover:bg-gray-50">
                                     <td class="p-3 text-gray-800 font-medium">{{ $item->angkatan }}</td>
                                     <td class="p-3 text-gray-700 capitalize">{{$item->semester}}</td>
                                     <td class="p-3 text-gray-700">{{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d F Y') }}</td>
@@ -243,7 +248,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr>
+                                <tr id="empty-row">
                                     <td colspan="6" class="p-3 text-center text-gray-500">
                                         <div class="text-center py-12">
                                             <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
@@ -253,6 +258,13 @@
                                     </td>
                                 </tr>
                             @endforelse
+                            <tr id="no-results-row" class="hidden">
+                                <td colspan="6" class="text-center py-12">
+                                    <i class="fa-solid fa-magnifying-glass text-5xl text-gray-400 mb-4"></i>
+                                    <p class="text-gray-600 font-semibold text-lg">Angkatan tidak ditemukan.</p>
+                                    <p class="text-gray-500 mt-2">Coba gunakan kata kunci pencarian yang berbeda.</p>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -470,6 +482,38 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // --- Search Functionality ---
+    const searchInput = document.getElementById('search-input');
+    const tableBody = document.getElementById('angkatan-table-body');
+    const angkatanRows = tableBody.querySelectorAll('.angkatan-row');
+    const noResultsRow = document.getElementById('no-results-row');
+    const emptyRow = document.getElementById('empty-row');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            let visibleRows = 0;
+
+            angkatanRows.forEach(row => {
+                const rowText = row.textContent.toLowerCase();
+                if (rowText.includes(searchTerm)) {
+                    row.style.display = ''; // Show row
+                    visibleRows++;
+                } else {
+                    row.style.display = 'none'; // Hide row
+                }
+            });
+
+            const hasData = angkatanRows.length > 0;
+            if (noResultsRow) {
+                noResultsRow.style.display = (hasData && visibleRows === 0) ? 'table-row' : 'none';
+            }
+            if (emptyRow) {
+                emptyRow.style.display = hasData ? 'none' : 'table-row';
+            }
+        });
+    }
+
     // If validation fails, reopen the add modal.
     // This is handled by Blade rendering a variable, which JS then checks.
     const validationFailed = document.getElementById('validation-errors') !== null;
@@ -480,4 +524,3 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
-
