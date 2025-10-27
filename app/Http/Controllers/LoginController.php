@@ -34,7 +34,9 @@ class LoginController extends Controller
         // dd($role);
         if ($role == 'adminDev'){
             $cliens = Clien::all();
-            return view('dashboard', ['username' => $username, 'time' => $time, 'cliens' => $cliens]);
+            $jumlahClien = $cliens->count();
+
+            return view('dashboard', ['username' => $username, 'time' => $time, 'cliens' => $cliens, 'jumlahClien' => $jumlahClien]);
         }else if ($role == 'admin'){
             $idSekolah = $request->cookie('id_sekolah');
 

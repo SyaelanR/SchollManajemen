@@ -511,7 +511,7 @@
                 <div class="bg-white p-6 rounded-xl shadow-md flex items-center justify-between w-full md:w-auto mb-4 md:mb-0">
                     <div>
                         <p class="text-gray-500">Total Klien</p>
-                        <p class="text-3xl font-bold text-gray-800">125</p>
+                        <p class="text-3xl font-bold text-gray-800">{{ $jumlahClien ?? 0}}</p>
                     </div>
                     <div class="bg-indigo-100 text-indigo-600 p-4 rounded-full">
                         <i class="fa-solid fa-users text-2xl"></i>
@@ -552,13 +552,7 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <form action="{{ route('infoKlien')}}" method="POST">
-                                        @csrf
-                                        <a href="{{ route('infoKlien')}}" class="text-indigo-600 hover:text-indigo-900 mr-2" onclick="event.preventDefault(); this.closest('form').submit();">Info</a>
-                                        <select name="id_sekolah" class="hidden">
-                                            <option value="{{$clien->id_sekolah}}"></option>
-                                        </select>
-                                    </form>
+                                    <a href="{{ route('infoKlien', ['id_sekolah' => $clien->id_sekolah]) }}" class="text-indigo-600 hover:text-indigo-900 mr-2">Info</a>
                                     <a href="#" class="text-red-600 hover:text-red-900">Hapus</a>
                                 </td>
                             </tr>

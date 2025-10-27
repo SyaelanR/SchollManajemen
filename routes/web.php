@@ -153,11 +153,17 @@ Route::middleware('auth')->group(function () {
         Route::get('/tambah-admin-klien/{id_sekolah}', [AdminDevController::class, 'tambahAdminKlien'])->name('tambahAdminKlien');
         Route::post('/tambah-admin-klien/{id_sekolah}', [AdminDevController::class, 'storeAdmin'])->name('storeAdmin');
 
-        Route::get('/info-klien', [AdminDevController::class, 'infoKlienD'])->name('infoKlienD');
-        Route::post('/info-klien', [AdminDevController::class, 'infoKlien'])->name('infoKlien');
+        Route::get('/klien', [AdminDevController::class, 'daftarKlien'])->name('daftarKlien');
+        Route::get('/klien/{id_sekolah}', [AdminDevController::class, 'infoKlien'])->name('infoKlien');
 
         Route::get('/tambah-klien', [AdminDevController::class, 'tambahKlien'])->name('tambahKlien');
         Route::post('/tambah-klien', [AdminDevController::class, 'storeKlien'])->name('storeKlien');
+
+        Route::put('/info-klien/{id}', [AdminDevController::class, 'updateAdminKlien'])->name('updateAdminKlien');
+        Route::delete('/info-klien/{id}', [AdminDevController::class, 'destroyAdminKlien'])->name('destroyAdminKlien');
+
+        Route::put('/info-klien/update-klien/{id}', [AdminDevController::class, 'updateKlien'])->name('updateKlien');
+
     });
 
 

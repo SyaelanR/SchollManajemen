@@ -63,46 +63,25 @@
                 </a>
             </div>
             <nav class="mt-6">
-                <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                 <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
-                    <span>Manajemen Siswa</span>
-                </a>
                 <a href="#" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
-                    <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
-                    <span>Manajemen Guru</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
-                    <span>Jadwal Pelajaran</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-book w-6 h-6 mr-3"></i>
-                    <span>Mata Pelajaran</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-money-bill-wave w-6 h-6 mr-3"></i>
-                    <span>Keuangan</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-cog w-6 h-6 mr-3"></i>
-                    <span>Pengaturan</span>
+                    <i class="fa-solid fa-building-user w-6 h-6 mr-3"></i>
+                    <span>Manajemen Klien</span>
                 </a>
             </nav>
-            <div class="absolute bottom-0 w-full p-6">
+              <div class="p-6 border-t border-gray-200 flex-shrink-0">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <a href="{{ route('logout') }}"
-                       onclick="event.preventDefault(); this.closest('form').submit();"
-                       class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
-                        <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
+                        onclick="event.preventDefault(); this.closest('form').submit();"
+                        class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full transition duration-200">
+                        <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
                         <span>Logout</span>
                     </a>
                 </form>
-            </div>
         </aside>
 
         <!-- Overlay for mobile -->
@@ -118,13 +97,6 @@
                 </button>
                 <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Tambah Admin Baru</h1>
                 <div class="flex items-center space-x-4">
-                    <button class="text-gray-500 hover:text-gray-700">
-                        <i class="fa-solid fa-bell"></i>
-                    </button>
-                    <div class="relative">
-                        <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=A" alt="User avatar" onerror="this.onerror=null;this.src='https://placehold.co/100x100/cccccc/ffffff?text=A';">
-                        <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
-                    </div>
                 </div>
             </header>
 
@@ -142,9 +114,9 @@
                         @csrf
                         <div class="overflow-x-auto">
                             <table class="w-full min-w-[800px] text-left">
-                                <thead class="bg-gray-50">
+                                <thead class="bg-gray-50">  
                                     <tr>
-                                        <th class="p-3 font-semibold text-gray-600 w-1/6">NIP</th>
+                                        <th class="p-3 font-semibold text-gray-600 w-1/6">NIK</th>
                                         <th class="p-3 font-semibold text-gray-600 w-2/6">Nama</th>
                                         <th class="p-3 font-semibold text-gray-600 w-1,5/6">Username</th>
                                         <th class="p-3 font-semibold text-gray-600 w-1/6">Password</th>
@@ -205,7 +177,7 @@
             row.className = 'hover:bg-gray-50';
             row.innerHTML = `
                 <td class="p-2">
-                    <input type="text" name="admin[${rowCount}][nip]" placeholder="Contoh: 202400${rowCount}" class="table-input" />
+                    <input type="text" name="admin[${rowCount}][nip]" placeholder="Contoh: opsional${rowCount}" class="table-input" />
                 </td>
                 <td class="p-2">
                     <input type="text" name="admin[${rowCount}][nama]" placeholder="Nama Lengkap" class="table-input" />
@@ -299,7 +271,7 @@
                     const message = errors[key][0];
 
                     // Cari input berdasarkan atribut 'name'
-                    const input = document.querySelector(input[name="admin[${rowKey}][${fieldName}]"]);
+                    const input = document.querySelector(`input[name="admin[${rowKey}][${fieldName}]"]`);
                     
                     if (input) {
                         input.classList.add('border-red-500');
