@@ -13,6 +13,8 @@ use App\Models\Mapel;
 use App\Models\Jadwal;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 // use Illuminate\Container\Attributes\Storage;
 use Illuminate\Http\Request;
@@ -589,5 +591,49 @@ class SiswaController extends Controller
             ->get();
 
         return view('siswa.lihat_pengumuman', ['DaftarPengumuman' => $DaftarPengumuman]);
+    }
+
+    /**
+     * Menampilkan halaman profil siswa.
+     */
+    public function showProfile(Request $request)
+    {
+        $user = Auth::user();
+        return view('siswa.profil', compact('user'));
+    }
+
+    /**
+     * Memperbarui profil siswa.
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'username' => 'required|string|max:255|unique:users,username,' . $user->id,
+            'current_password' => 'nullable|string',
+            'new_password' => 'nullable|string|min:6|confirmed',
+        ], [
+            'username.required' => 'Username tidak boleh kosong.',
+            'username.unique' => 'Username ini sudah digunakan.',
+            'new_password.min' => 'Password baru minimal harus 6 karakter.',
+            'new_password.confirmed' => 'Konfirmasi password baru tidak cocok.',
+        ]);
+
+        // Update username
+        $user->username = $request->username;
+
+        // Update password jika diisi
+        if ($request->filled('current_password') && $request->filled('new_password')) {
+            // Verifikasi password saat ini
+            if (!Hash::check($request->current_password, $user->password)) {
+                return back()->withErrors(['current_password' => 'Password saat ini tidak cocok.'])->withInput();
+            }
+            $user->password = $request->new_password; // Eloquent mutator akan melakukan hashing
+        }
+
+        $user->save();
+
+        return redirect()->route('siswa.profile')->with('success', 'Profil berhasil diperbarui!');
     }
 }

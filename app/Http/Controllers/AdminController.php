@@ -1351,8 +1351,13 @@ class AdminController extends Controller
         // Ambil data angkatan yang tersedia untuk sekolah ini saja
         $angkatans = Angkatan::where('id_sekolah', $id_sekolah)->latest()->get();
 
+        // Ambil daftar guru
+        $teachers = User::where('role', 'guru')
+                        ->where('id_sekolah', $id_sekolah)
+                        ->get();
+
         // Kembalikan view edit, berikan data kelas yang spesifik dan angkatan yang relevan
-        return view('admin.edit-kelas', compact('kelas', 'angkatans'));
+        return view('admin.edit-kelas', compact('kelas', 'angkatans', 'teachers'));
     }
 
     public function updateGuru(Request $request, $id)

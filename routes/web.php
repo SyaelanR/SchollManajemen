@@ -263,6 +263,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/lihat-acara', [SiswaController::class, 'lihatAcara'])->name('lihatAcaraSiswa');
         Route::get('/lihat-pengumuman', [SiswaController::class, 'lihatPengumuman'])->name('lihatPengumumanSiswa');
 
+        // Rute untuk profil siswa
+        Route::get('/profil', [SiswaController::class, 'showProfile'])->name('siswa.profile');
+        Route::put('/profil', [SiswaController::class, 'updateProfile'])->name('siswa.profile.update');
+
     });
 
 });

@@ -37,6 +37,10 @@
                 <i class="fa-solid fa-tachometer-alt w-6 mr-3"></i>
                 <span>Dashboard</span>
             </a>
+            <a href="{{ route('siswa.profile') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('siswa.profile')) bg-indigo-50 text-indigo-600 @endif">
+                <i class="fa-solid fa-user-circle mr-3"></i>
+                <span>Profil</span>
+            </a>
             <a href="{{ route('lihatJadwalS') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('lihatJadwalS')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
                 <i class="fa-solid fa-calendar-days w-6 mr-3"></i>
                 <span>Lihat Jadwal</span>
@@ -134,7 +138,19 @@
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">{{$nilai->daftarNilai->keterangan}}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                        <span class="bg-blue-100 text-blue-800 font-medium py-1 px-3 rounded-full text-xs">{{$nilai->daftarNilai->tipe_nilai}}</span>
+                                        @if($nilai->daftarNilai->tipe_nilai == 'Tugas')
+                                            <span class="bg-blue-100 text-blue-800 font-medium py-1 px-3 rounded-full text-xs capitalize">{{$nilai->daftarNilai->tipe_nilai}}</span>
+                                        @elseif($nilai->daftarNilai->tipe_nilai == 'PR')
+                                            <span class="bg-cyan-100 text-cyan-800 font-medium py-1 px-3 rounded-full text-xs capitalize">{{$nilai->daftarNilai->tipe_nilai}}</span>
+                                        @elseif($nilai->daftarNilai->tipe_nilai == 'UAS')
+                                            <span class="bg-red-100 text-red-800 font-medium py-1 px-3 rounded-full text-xs capitalize">{{$nilai->daftarNilai->tipe_nilai}}</span>
+                                        @elseif($nilai->daftarNilai->tipe_nilai == 'UTS')
+                                            <span class="bg-yellow-100 text-yellow-800 font-medium py-1 px-3 rounded-full text-xs capitalize">{{$nilai->daftarNilai->tipe_nilai}}</span>
+                                        @elseif($nilai->daftarNilai->tipe_nilai == 'Hafalan')
+                                            <span class="bg-green-100 text-green-800 font-medium py-1 px-3 rounded-full text-xs capitalize">{{$nilai->daftarNilai->tipe_nilai}}</span>
+                                        @else
+                                            <span class="bg-gray-100 text-gray-800 font-medium py-1 px-3 rounded-full text-xs capitalize">{{$nilai->daftarNilai->tipe_nilai}}</span>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-lg font-semibold text-gray-700">{{$nilai->nilai}}</td>
                                 </tr>

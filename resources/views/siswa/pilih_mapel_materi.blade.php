@@ -36,6 +36,10 @@
                 <i class="fa-solid fa-tachometer-alt w-6 mr-3"></i>
                 <span>Dashboard</span>
             </a>
+            <a href="{{ route('siswa.profile') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('siswa.profile')) bg-indigo-50 text-indigo-600 @endif">
+                <i class="fa-solid fa-user-circle mr-3"></i>
+                <span>Profil</span>
+            </a>
             <a href="{{ route('lihatJadwalS') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-calendar-days w-6 mr-3"></i>
                 <span>Lihat Jadwal</span>
@@ -88,9 +92,10 @@
                 <i class="fa-solid fa-bars text-2xl"></i>
             </button>
             <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Pilih Mata Pelajaran</h1>
-            <div class="flex items-center space-x-4">
-                
-            </div>
+            <a href="{{ route('siswa.profile') }}" class="flex items-center space-x-4">
+                <span class="text-gray-600 hidden md:block">Halo, {{ Auth::user()->name }}</span>
+                <i class="fa-solid fa-user-circle text-3xl text-gray-400"></i>
+            </a>
         </header>
 
         <!-- Page Content -->
