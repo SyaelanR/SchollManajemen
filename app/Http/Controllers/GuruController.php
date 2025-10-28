@@ -28,6 +28,47 @@ use App\Exports\LaporanNilaiExport;
 
 class GuruController extends Controller
 {
+    public function myProfile(Request $request)
+    {
+        $id_user = Auth::id();
+        $guru = User::findOrFail($id_user);
+
+        // Menghitung beban mengajar dari tabel Jadwal
+        $beban_mengajar_raw = Jadwal::with(['mapel', 'kelas'])
+            ->whereHas('mapel', function ($query) use ($id_user) {
+                $query->where('id_guru', $id_user);
+            })
+            ->get();
+
+        // Mengelompokkan berdasarkan mata pelajaran
+        $beban_mengajar = $beban_mengajar_raw->groupBy('mapel.nama_mapel')
+            ->map(function ($jadwals, $namaMapel) {
+                // Hitung total jam dengan menjumlahkan durasi setiap sesi
+                $totalJam = $jadwals->reduce(function ($carry, $jadwal) {
+                    $jam_mulai = Carbon::parse($jadwal->jam_mulai);
+                    $jam_selesai = Carbon::parse($jadwal->jam_selesai);
+                    // Hitung selisih dalam menit, lalu konversi ke jam (asumsi 1 JP = 45 menit)
+                    $durasiMenit = $jam_selesai->diffInMinutes($jam_mulai);
+                    return $carry + ($durasiMenit / 45); // Sesuaikan pembagi jika 1 JP berbeda
+                }, 0);
+
+                return [
+                    'mapel' => $namaMapel,
+                    'kelas' => $jadwals->pluck('kelas.nama_kelas')->unique()->implode(', '),
+                    'jam' => round($totalJam) // Bulatkan total jam
+                ];
+            })->values(); // Mengubah collection menjadi array
+
+        // Menghitung total jam keseluruhan
+        $total_jam_mengajar = $beban_mengajar->sum('jam');
+
+        return view('guru.profile_guru', [
+            'guru' => $guru,
+            'beban_mengajar' => $beban_mengajar,
+            'total_jam_mengajar' => $total_jam_mengajar
+        ]);
+    }
+
     public function lihatjadwalG(Request $request)
     {
         $id_sekolah = $request->cookie('id_sekolah');
@@ -1387,6 +1428,41 @@ public function destroyPengumuman($id_pengumuman, Request $request)
 
         // 4. Redirect kembali dengan pesan sukses
         return back()->with('success', 'Sesi penilaian berhasil dihapus!');
+    }
+////////////////////////////profilguru//////////////////////////////////////////////
+    public function showProfile(Request $request, $id)
+    {
+        // Ambil data guru dari database berdasarkan ID
+        $guru = User::where('id', $id)
+                    ->whereIn('role', ['guru', 'staf']) // Pastikan yang diakses adalah guru atau staf
+                    ->firstOrFail(); // Akan menampilkan error 404 jika tidak ditemukan
+
+        // Data tambahan (placeholder, idealnya ini juga disimpan di database)
+        $guru->foto_profil = 'https://ui-avatars.com/api/?name='.urlencode($guru->name).'&background=4f46e5&color=fff&size=150';
+        $guru->biografi = 'Seorang pendidik dengan pengalaman lebih dari 15 tahun dalam mengajar. Memiliki hasrat untuk membantu siswa memahami konsep-konsep kompleks dengan cara yang mudah dan menyenangkan. Fokus pada pengembangan kemampuan berpikir kritis dan pemecahan masalah.';
+        
+        // Ambil data mata pelajaran yang diampu oleh guru ini dari tabel jadwal
+        $mata_pelajaran = Jadwal::whereHas('mapel', function ($query) use ($id) {
+                                $query->where('id_guru', $id);
+                            })
+                            ->with('mapel', 'kelas')
+                            ->distinct('id_mapel')
+                            ->get()
+                            ->map(function ($jadwal) {
+                                return $jadwal->mapel->nama_mapel . ' - ' . $jadwal->kelas->nama_kelas;
+                            });
+
+        // Data pendidikan (contoh statis, bisa ditambahkan di database)
+        $pendidikan = [
+            'S2 - Magister Pendidikan, Universitas Negeri Jakarta',
+            'S1 - Sarjana Pendidikan, Universitas Gadjah Mada',
+        ];
+
+        return view('guru.profil_guru', [
+            'guru' => $guru,
+            'mata_pelajaran' => $mata_pelajaran,
+            'pendidikan' => $pendidikan,
+        ]);
     }
 
 

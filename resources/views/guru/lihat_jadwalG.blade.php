@@ -99,6 +99,10 @@
             @endcan
 
             @can('view-guru')
+            <a href="{{ route('guru.profile') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-user-tie w-6 mr-3"></i>
+                <span>Profil Saya</span>
+            </a>
             <a href="{{ route('lihatjadwalG') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
                 <i class="fa-solid fa-calendar-days w-6 mr-3"></i>
                 <span>Jadwal Mengajar</span>

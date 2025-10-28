@@ -164,6 +164,8 @@ Route::middleware('auth')->group(function () {
         //Grup rute ini sekarang hanya bisa diakses oleh pengguna dengan role 'guru'.
     Route::middleware('role:guru')->group(function () {
         Route::get('/lihat-jadwal-guru', [GuruController::class, 'lihatjadwalG'])->name('lihatjadwalG');
+        /////////////////////profile_guru//////////////////////////////////
+        Route::get('/profil-saya', [GuruController::class, 'myProfile'])->name('guru.profile');
 
         Route::prefix('manajemen-nilai')->group(function () {
             Route::get('/', [GuruController::class, 'manajNilaiKelas'])->name('manajemenNilai');
@@ -265,6 +267,9 @@ Route::middleware('auth')->group(function () {
 
     });
 
+    // Rute untuk menampilkan profil guru
+    Route::get('/profil-guru/{id}', [GuruController::class, 'showProfile'])->name('profil_guru.guru');
+
 });
 
 
@@ -337,3 +342,4 @@ Route::get('/input-nilai', [AdminController::class, 'inputnilai'])->name('inputn
 #####################################################################################################################################################
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Halaman lihat tugas
+####################################################################
