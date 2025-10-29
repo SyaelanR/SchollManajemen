@@ -13,6 +13,8 @@ use App\Models\Mapel;
 use App\Models\Jadwal;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 // use Illuminate\Container\Attributes\Storage;
 use Illuminate\Http\Request;
@@ -258,10 +260,11 @@ class SiswaController extends Controller
         // ->with('kelas.angkatan', 'mapel') // tetap load relasi
         ->get();
 
-        $waliKelas = optional($jadwals->first()->kelas)->wali_kelas;
-        $sekolah = optional($jadwals->first()->kelas->angkatan->sekolah)->nama_sekolah;
-        $tingkat = optional($jadwals->first()->kelas->angkatan)->tingkat;
-        $semester = optional($jadwals->first()->kelas->angkatan)->semester;
+        $waliKelas = $jadwals->first()?->kelas?->wali_kelas;
+        $sekolah = $jadwals->first()?->kelas?->angkatan?->sekolah?->nama_sekolah;
+        $tingkat = $jadwals->first()?->kelas?->angkatan?->tingkat;
+        $semester = $jadwals->first()?->kelas?->angkatan?->semester;
+
 
         $jumlahSKS = 0;
         foreach ($jadwals as $jadwal) {
@@ -590,4 +593,14 @@ class SiswaController extends Controller
 
         return view('siswa.lihat_pengumuman', ['DaftarPengumuman' => $DaftarPengumuman]);
     }
+
+    /**
+     * Menampilkan halaman profil siswa.
+     */
+    public function showProfileS(Request $request)
+    {
+        $user = Auth::user();
+        return view('siswa.profil', compact('user'));
+    }
+
 }

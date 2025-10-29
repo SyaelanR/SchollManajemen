@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -1760,4 +1761,11 @@ public function updateKurikulum(Request $request, $id)
 
     return redirect()->route('manajemenKurikulum')->with('success', 'Kurikulum berhasil diperbarui!');
 }
+
+public function showProfileA(Request $request)
+    {
+        $user = Auth::user();
+        return view('admin.profile', compact('user'));
+        // return view('debug');
+    }
 }

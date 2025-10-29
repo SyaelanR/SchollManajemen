@@ -1389,5 +1389,12 @@ public function destroyPengumuman($id_pengumuman, Request $request)
         return back()->with('success', 'Sesi penilaian berhasil dihapus!');
     }
 
+    public function showProfileG(Request $request)
+    {
+        $user = Auth::user();
+        return view('guru.profile', compact('user'));
+        // return view('debug');
+    }
+
 
 }
