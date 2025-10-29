@@ -160,7 +160,7 @@
                 <span>Logout</span>
             </a>
         </form>
-
+    </aside>
     <!-- Overlay for mobile -->
     <div id="overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden lg:hidden"></div>
 

@@ -208,14 +208,6 @@ document.addEventListener('DOMContentLoaded', function () {
             noResults.style.display = found ? 'none' : 'block';
         });
     }
-    if (menuButton && sidebar && overlay) {
-        const toggleSidebar = () => {
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
-        };
-        menuButton.addEventListener('click', toggleSidebar);
-        overlay.addEventListener('click', toggleSidebar);
-    }
 });
 </script>
 </body>
