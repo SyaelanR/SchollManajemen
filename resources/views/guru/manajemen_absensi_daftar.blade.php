@@ -167,6 +167,9 @@
             @if(session('success'))
                 <div id="session-success" data-message="{{ session('success') }}" class="hidden"></div>
             @endif
+            @if ($errors->any())
+                <div id="validation-errors" data-errors='@json($errors->all())' class="hidden"></div>
+            @endif
 
             <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg flex flex-wrap justify-between items-center text-white gap-4">
                 <div>
@@ -305,18 +308,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // The form submission itself is handled by Laravel, no need to preventDefault unless using AJAX.
     }
-    
-    // --- SweetAlert2 Notifications ---
-    const successMessage = document.getElementById('session-success');
-    if (successMessage) {
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil!',
-            text: successMessage.dataset.message,
-            timer: 2500,
-            showConfirmButton: false
-        });
-    }
+
+    window.addEventListener('load', () => {
+        const successEl = document.getElementById('session-success');
+        const errorEl = document.getElementById('session-error');
+        if (successEl) {
+            Swal.fire({ icon: 'success', title: 'Berhasil!', text: successEl.dataset.message, timer: 2000, showConfirmButton: false });
+        }
+        if (errorEl) {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: errorEl.dataset.message, timer: 3000, showConfirmButton: false });
+        }
+
+        // --- Handle Validation Errors ---
+        const validationErrorsEl = document.getElementById('validation-errors');
+        if (validationErrorsEl) {
+            const errors = JSON.parse(validationErrorsEl.dataset.errors);
+            let errorText = '<ul class="list-disc list-inside text-left">';
+            errors.forEach(error => {
+                errorText += `<li>${error}</li>`;
+            });
+            errorText += '</ul>';
+
+            Swal.fire({ icon: 'error', title: 'Gagal Validasi', html: errorText });
+        }
+    });
 });
 </script>
 </body>
