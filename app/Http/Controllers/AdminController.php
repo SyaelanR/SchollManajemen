@@ -834,7 +834,7 @@ class AdminController extends Controller
         $id_sekolah = $request->cookie('id_sekolah');
 
         $request->validate([
-            'angkatan' => 'required|exists:angkatans,id_angkatan', //cek apakah id_angkatan ada di tabel angkatans
+            'id_angkatan' => 'required|exists:angkatans,id_angkatan', //cek apakah id_angkatan ada di tabel angkatans
             'nama' => 'required|string|max:255',
             'jenjang' => 'required|string|in:SMA,SMK,SD,SMP',
             'jumlah_matpel' => 'required|integer|min:1',
@@ -852,7 +852,6 @@ class AdminController extends Controller
         DaftarKurikulum::create([
             'id_sekolah' => $id_sekolah,
             'id_angkatan' => $request->id_angkatan,
-            'id_angkatan' => $request->angkatan,
             'nama_kurikulum' => $request->nama,
             'jenjang' => $request->jenjang,
             'jumlah_matpel' => $request->jumlah_matpel,
