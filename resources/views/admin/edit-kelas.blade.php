@@ -178,14 +178,7 @@
                         </div>
                         <div class="mb-4">
                             <label for="wali-kelas" class="block text-gray-700 font-medium mb-2">Wali Kelas</label>
-                            <select id="wali-kelas" name="wali_kelas" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white" required>
-                                <option value="" disabled>Pilih Wali Kelas</option>
-                                @foreach($teachers as $teacher)
-                                    <option value="{{ $teacher->name }}" {{ old('wali_kelas', $kelas->wali_kelas) == $teacher->name ? 'selected' : '' }}>
-                                        {{ $teacher->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <input type="text" id="wali-kelas" name="wali_kelas" value="{{ old('wali_kelas', $kelas->wali_kelas) }}" placeholder="Contoh: Budi Setiawan, S.Pd." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
                         </div>
                         <div class="mb-4">
                             <label for="jurusan" class="block text-gray-700 font-medium mb-2">Jurusan</label>

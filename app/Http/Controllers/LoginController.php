@@ -269,4 +269,62 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
         return redirect('/');
     }
+
+        public function pengaturanAkun (Request $request)
+    {
+        $user = Auth::user();
+        
+        return view('pengaturan_akun', compact('user'));
+    }
+
+
+    public function updateAkun(Request $request)
+    {
+        $user = User::where('id', $request->cookie('id_user'))->first();
+        $updateData = [];
+
+        // Handle username update
+        if ($request->has('username')) {
+            $request->validate([
+                'username' => 'required|string|max:255|unique:users,username,' . $user->id,
+            ], [
+                'username.required' => 'Username baru tidak boleh kosong.',
+                'username.unique' => 'Username ini sudah digunakan oleh pengguna lain.',
+            ]);
+
+            $updateData['username'] = $request->username;
+            // Asumsi email dibuat dari username, seperti di controller lain
+            $updateData['email'] = $request->username . '@sekolah.sch.id';
+
+            $user->update($updateData);
+
+            return back()->with('success', 'Username berhasil diperbarui!');
+        }
+
+        // Handle password update
+        if ($request->has('current_password') || $request->has('password')) {
+             $request->validate([
+                'current_password' => 'required|string',
+                'password' => 'required|string|min:6|confirmed',
+            ], [
+                'current_password.required' => 'Password saat ini tidak boleh kosong.',
+                'password.required' => 'Password baru tidak boleh kosong.',
+                'password.min' => 'Password baru minimal harus 6 karakter.',
+                'password.confirmed' => 'Konfirmasi password baru tidak cocok.',
+            ]);
+
+            // Verifikasi password saat ini (karena menggunakan AES, kita bandingkan langsung)
+            if ($request->current_password !== $user->password) {
+                return back()->withErrors(['current_password' => 'Password saat ini yang Anda masukkan salah.']);
+            }
+
+            // Update password (model akan mengenkripsi secara otomatis)
+            $user->password = $request->password;
+            $user->save();
+
+            return back()->with('success', 'Password berhasil diperbarui!');
+        }
+
+        return back()->with('error', 'Tidak ada data yang dikirim untuk diperbarui.');
+    }
 }

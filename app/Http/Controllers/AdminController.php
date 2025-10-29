@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -1351,13 +1352,8 @@ class AdminController extends Controller
         // Ambil data angkatan yang tersedia untuk sekolah ini saja
         $angkatans = Angkatan::where('id_sekolah', $id_sekolah)->latest()->get();
 
-        // Ambil daftar guru
-        $teachers = User::where('role', 'guru')
-                        ->where('id_sekolah', $id_sekolah)
-                        ->get();
-
         // Kembalikan view edit, berikan data kelas yang spesifik dan angkatan yang relevan
-        return view('admin.edit-kelas', compact('kelas', 'angkatans', 'teachers'));
+        return view('admin.edit-kelas', compact('kelas', 'angkatans'));
     }
 
     public function updateGuru(Request $request, $id)
@@ -1766,4 +1762,11 @@ public function updateKurikulum(Request $request, $id)
 
     return redirect()->route('manajemenKurikulum')->with('success', 'Kurikulum berhasil diperbarui!');
 }
+
+public function showProfileA(Request $request)
+    {
+        $user = Auth::user();
+        return view('admin.profile', compact('user'));
+        // return view('debug');
+    }
 }

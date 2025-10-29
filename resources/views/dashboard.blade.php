@@ -56,6 +56,10 @@
             </a>
 
             @can('view-admin')
+            <a href="{{ route('admin.profile') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-user-circle mr-3"></i>
+                <span>Profil</span>
+            </a>
             <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-user-graduate w-6 mr-3"></i>
                 <span>Manajemen Siswa</span>
@@ -99,6 +103,10 @@
             @endcan
 
             @can('view-guru')
+            <a href="{{ route('guru.profile') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-user-circle mr-3"></i>
+                <span>Profil</span>
+            </a>
             <a href="{{ route('lihatjadwalG') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-calendar-days w-6 mr-3"></i>
                 <span>Jadwal Mengajar</span>

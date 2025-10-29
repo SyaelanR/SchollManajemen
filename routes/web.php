@@ -23,6 +23,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
     Route::get('/dashboard', [LoginController::class, 'dashboard'])->name('dashboard');
 
+    Route::get('/pengaturan_akun', [LoginController::class, 'pengaturanAkun'])->name('pengaturanAkun');
+    Route::put('/', [LoginController::class, 'updateAkun'])->name('updateAkun');
+
         // Grup rute ini sekarang hanya bisa diakses oleh pengguna dengan role 'admin'.
     Route::middleware('role:admin')->group(function () {
         Route::prefix('manajemen-siswa')->group(function () {
@@ -144,6 +147,8 @@ Route::middleware('auth')->group(function () {
             Route::delete('/acara-sekolah/{id}', [AdminController::class, 'destroyAcara'])->name('admin.acara.destroy');
         });
 
+        Route::get('/profileA', [AdminController::class, 'showProfileA'])->name('admin.profile');
+
     });
 
         
@@ -222,6 +227,8 @@ Route::middleware('auth')->group(function () {
             Route::put('/pengumuman/{id_pengumuman}', [GuruController::class, 'updatePengumuman'])->name('updatePengumuman');
 
         });
+
+        Route::get('/profileG', [GuruController::class, 'showProfileG'])->name('guru.profile');
     
         
     });
@@ -264,8 +271,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/lihat-pengumuman', [SiswaController::class, 'lihatPengumuman'])->name('lihatPengumumanSiswa');
 
         // Rute untuk profil siswa
-        Route::get('/profil', [SiswaController::class, 'showProfile'])->name('siswa.profile');
-        Route::put('/profil', [SiswaController::class, 'updateProfile'])->name('siswa.profile.update');
+        Route::get('/profileS', [SiswaController::class, 'showProfileS'])->name('siswa.profile');
 
     });
 
