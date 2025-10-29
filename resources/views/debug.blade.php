@@ -37,5 +37,7 @@
     {{-- <h1>{{$tess}}</h1> --}}
  
     {{-- <p>{{$daftarSiswa}}</p> --}}
+
+    <img src="{{ asset('asset/school-solid-full.png') }}" alt="hah">
 </body>
 </html>

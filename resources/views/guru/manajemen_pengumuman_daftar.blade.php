@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- SweetAlert2 for notifications -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="icon" type="image/png" href="{{ asset('asset/school-solid-full.png') }}">
     <style>
         /* Custom styles */
         body {
@@ -218,8 +219,11 @@
             </div>
 
             <!-- Announcement List (UPDATED DESIGN) -->
-            <div class="space-y-6">
-                <h3 class="text-xl font-semibold mb-4 text-gray-800">Daftar Pengumuman Aktif</h3>
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                    <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 flex-shrink-0">Daftar Pengumuman</h2>
+                </div>
+
                 <div id="announcement-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Iterasi Daftar Pengumuman -->
                     @forelse ($daftarPengumuman ?? [] as $Pengumuman)

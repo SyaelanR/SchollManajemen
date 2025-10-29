@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale-1.0">
     <title>Rapor Pencapaian Ketuntasan Belajar</title>
+    <link rel="icon" type="image/png" href="{{ asset('asset/school-solid-full.png') }}">
     <style>
         /* Gaya untuk dicetak */
         @page {
@@ -26,12 +27,20 @@
         }
 
         .container {
-            width: 190mm; /* Lebar A4 dikurangi margin */
+            width: 190mm; /* Lebar A4 untuk desktop */
+            max-width: 100%; /* Pastikan tidak melebihi lebar layar */
             margin: 20px auto; /* Memberi jarak atas/bawah */
             background-color: #fff; /* Latar belakang putih untuk kertas rapor */
             padding: 15mm;
             box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Efek bayangan */
             box-sizing: border-box;
+        }
+
+        /* Penyesuaian untuk layar kecil (mobile) */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10mm 5mm; /* Kurangi padding di mobile */
+            }
         }
 
         /* Header */
