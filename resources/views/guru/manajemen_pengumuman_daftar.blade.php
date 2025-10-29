@@ -195,6 +195,9 @@
         @if (session('error'))
             <div id="session-error" data-message="{{ session('error') }}" class="hidden"></div>
         @endif
+        @if ($errors->any())
+            <div id="validation-errors" data-errors='@json($errors->all())' class="hidden"></div>
+        @endif
 
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
@@ -219,9 +222,10 @@
             </div>
 
             <!-- Announcement List (UPDATED DESIGN) -->
-            <div class="space-y-6">
-                <h3 class="text-xl font-semibold mb-4 text-gray-800">Daftar Pengumuman Aktif</h3>
-                <div id="announcement-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                    <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 flex-shrink-0">Daftar Pengumuman</h2>
+                </div>
                     <!-- Iterasi Daftar Pengumuman -->
                     @forelse ($daftarPengumuman ?? [] as $Pengumuman)
                     <!-- Menggunakan data attribute untuk menyimpan detail pengumuman untuk fungsionalitas Edit -->
@@ -352,6 +356,22 @@
                 customClass: {
                     popup: 'rounded-xl'
                 }
+            });
+        }
+
+        const validationErrors = document.getElementById('validation-errors');
+        if (validationErrors) {
+            const errors = JSON.parse(validationErrors.dataset.errors);
+            let errorText = '<ul class="list-disc list-inside text-left">';
+            errors.forEach(error => {
+                errorText += `<li>${error}</li>`;
+            });
+            errorText += '</ul>';
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal Validasi',
+                html: errorText
             });
         }
 

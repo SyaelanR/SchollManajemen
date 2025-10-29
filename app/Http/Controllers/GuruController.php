@@ -432,9 +432,9 @@ class GuruController extends Controller
             'tanggal'=> 'required|date'
         ],[
             'keterangan_absen.required' => 'Keterangan tidak boleh kosong.',
-            'keterangan_absen.max' => 'Keterangan maksimal' ,
+            'keterangan_absen.max' => 'Keterangan maksimal 255 karakter.',
             'kategori_absen.required' => 'Kategori tidak boleh kosong.',
-            'kategori_absen.max' => 'Kategori maksimal ',
+            'kategori_absen.max' => 'Kategori maksimal 20 karakter.',
             'tanggal.required' => 'Tanggal tidak boleh kosong.'
         ]);
 
@@ -1110,11 +1110,6 @@ class GuruController extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'isi' => 'required|string|max:255'
-        ],[
-            'judul.required' => 'Judul tidak boleh kosong.',
-            'judul.max' => 'Judul maksimal 255 karakter.',
-            'isi.required' => 'Isi tidak boleh kosong.',
-            'isi.max' => 'Isi maksimal 255 karakter.',
         ]);
 
 

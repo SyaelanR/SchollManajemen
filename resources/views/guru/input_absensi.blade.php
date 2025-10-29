@@ -190,6 +190,15 @@
 
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
+            <!-- Validation Errors -->
+           <!-- Session Messages Handling -->
+            @if(session('success'))
+                <div id="session-success" data-message="{{ session('success') }}" class="hidden"></div>
+            @endif
+            @if ($errors->any())
+                <div id="validation-errors" data-errors='@json($errors->all())' class="hidden"></div>
+            @endif
+
             <!-- Session Messages Handling -->
             @if(session('success'))
                 <div id="session-success" data-message="{{ session('success') }}" class="hidden"></div>
@@ -470,6 +479,7 @@
         }
 
         // --- SweetAlert2 Notifications ---
+        // --- SweetAlert2 Notifications ---
         const successMessage = document.getElementById('session-success');
         if (successMessage) {
             Swal.fire({
@@ -479,6 +489,18 @@
                 timer: 2500,
                 showConfirmButton: false
             });
+        }
+
+        const validationErrors = document.getElementById('validation-errors');
+        if (validationErrors) {
+            const errors = JSON.parse(validationErrors.dataset.errors);
+            let errorText = '<ul class="list-disc list-inside text-left">';
+            errors.forEach(error => {
+                errorText += `<li>${error}</li>`;
+            });
+            errorText += '</ul>';
+
+            Swal.fire({ icon: 'error', title: 'Gagal Validasi', html: errorText });
         }
     });
     </script>

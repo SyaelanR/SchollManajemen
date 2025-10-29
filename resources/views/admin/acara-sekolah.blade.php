@@ -163,6 +163,9 @@
             @if(session('error'))
                 <div id="session-error" data-message="{{ session('error') }}" class="hidden"></div>
             @endif
+            @if ($errors->any())
+                <div id="validation-errors" data-errors='@json($errors->all())' class="hidden"></div>
+            @endif
 
             <!-- START: Content Header/Intro -->
             <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
@@ -543,6 +546,19 @@
         }
         if (errorEl) {
             Swal.fire({ icon: 'error', title: 'Gagal', text: errorEl.dataset.message, timer: 3000, showConfirmButton: false });
+        }
+
+        // --- Handle Validation Errors ---
+        const validationErrorsEl = document.getElementById('validation-errors');
+        if (validationErrorsEl) {
+            const errors = JSON.parse(validationErrorsEl.dataset.errors);
+            let errorText = '<ul class="list-disc list-inside text-left">';
+            errors.forEach(error => {
+                errorText += `<li>${error}</li>`;
+            });
+            errorText += '</ul>';
+
+            Swal.fire({ icon: 'error', title: 'Gagal Validasi', html: errorText });
         }
     });
 </script>
