@@ -41,10 +41,14 @@ class AdminController extends Controller
         $search = $request->query('search');
 
         // Memulai query untuk model User
-        $query = User::where('users.role', 'siswa')
-                     ->where('id_sekolah', $id_sekolah)
-                     ->with('kelas.angkatan') // Eager load relasi
-                     ->latest('users.created_at');
+        $query = User::select('users.*') // Pilih semua kolom dari tabel users untuk menghindari konflik
+            ->leftJoin('kelas', 'users.id_kelas', '=', 'kelas.id_kelas')
+            ->leftJoin('angkatans', 'kelas.id_angkatan', '=', 'angkatans.id_angkatan')
+            ->where('users.role', 'siswa')
+            ->where('users.id_sekolah', $id_sekolah)
+            ->with('kelas.angkatan') // Eager load tetap diperlukan untuk menampilkan data relasi di view
+            ->orderBy('angkatans.is_alumni', 'asc') // Urutkan berdasarkan kolom is_alumni dari tabel angkatans
+            ->orderBy('users.created_at', 'desc'); // Tambahkan urutan sekunder jika diperlukan
 
         // Jika ada input pencarian, tambahkan kondisi where
         if ($search) {
@@ -57,7 +61,7 @@ class AdminController extends Controller
             });
         }
 
-        $students = $query->latest()->paginate(10)->appends(['search' => $search]);
+        $students = $query->paginate(10)->appends(['search' => $search]);
         return view('admin.manajemen_siswa', ['students' => $students, 'search' => $search]);
     }
 

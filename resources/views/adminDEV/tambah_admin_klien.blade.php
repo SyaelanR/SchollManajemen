@@ -68,7 +68,7 @@
                     <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
+                <a href="{{ url()->previous() }}" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
                     <i class="fa-solid fa-building-user w-6 h-6 mr-3"></i>
                     <span>Manajemen Klien</span>
                 </a>
@@ -106,22 +106,31 @@
                 <div class="bg-white p-6 rounded-xl shadow-md">
                     <!-- Form Header -->
                     <div class="mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800">Form Tambah Admin Massal {{$info_sekolah->nama_sekolah}}</h2>
-                        <p class="text-gray-500 mt-1">Isi data Admin pada baris yang tersedia. Klik "Tambah Baris" untuk menambahkan lebih banyak Admin.</p>
+                        <h2 class="text-2xl font-bold text-gray-800">
+                            Form Tambah Admin Massal {{ $info_sekolah->nama_sekolah }}
+                        </h2>
+                        <p class="text-gray-500 mt-1">
+                            Isi data Admin pada baris yang tersedia. Klik "Tambah Baris" untuk menambahkan lebih banyak Admin.
+                        </p>
                     </div>
 
-                    <!-- admin Form Table -->
+                    <!-- Admin Form Table -->
                     <form id="add-admin-form" method="POST" action="{{ route('storeAdmin', ['id_sekolah' => $info_sekolah->id_sekolah]) }}">
                         @csrf
+
+                        <!-- ✅ Tambahkan wrapper scroll -->
                         <div class="overflow-x-auto">
-                            <table class="w-full min-w-[800px] text-left">
-                                <thead class="bg-gray-50">  
+                            <table class="min-w-full text-left border-collapse">
+                                <thead class="bg-gray-50">
                                     <tr>
-                                        <th class="p-3 font-semibold text-gray-600 w-1/6">NIK</th>
-                                        <th class="p-3 font-semibold text-gray-600 w-2/6">Nama</th>
-                                        <th class="p-3 font-semibold text-gray-600 w-1,5/6">Username</th>
-                                        <th class="p-3 font-semibold text-gray-600 w-1/6">Password</th>
-                                        <th class="p-3 font-semibold text-gray-600 text-center w-[50px]">Aksi</th>
+                                        <th class="p-3 font-semibold text-gray-600 min-w-[150px]">NIK</th>
+                                        <th class="p-3 font-semibold text-gray-600 min-w-[250px]">Nama</th>
+                                        <th class="p-3 font-semibold text-gray-600 min-w-[150px]">Alamat</th>
+                                        <th class="p-3 font-semibold text-gray-600 min-w-[150px]">Nomor Telp</th>
+                                        <th class="p-3 font-semibold text-gray-600 min-w-[150px]">Email</th>
+                                        <th class="p-3 font-semibold text-gray-600 min-w-[180px]">Username</th>
+                                        <th class="p-3 font-semibold text-gray-600 min-w-[180px]">Password</th>
+                                        <th class="p-3 font-semibold text-gray-600 text-center min-w-[80px]">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="admin-table-body" class="divide-y">
@@ -130,14 +139,15 @@
                             </table>
                         </div>
 
-                        <!-- Action Buttons for Table -->
+                        <!-- Action Buttons -->
                         <div class="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
                             <button type="button" id="add-row-btn" class="w-full md:w-auto bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 flex items-center justify-center">
                                 <i class="fa-solid fa-plus mr-2"></i>
                                 Tambah Baris
                             </button>
+
                             <div class="flex w-full md:w-auto gap-4">
-                               <a href="{{ route('dashboard') }}" class="w-full md:w-auto bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300 text-center flex items-center justify-center">
+                                <a href="{{ route('dashboard') }}" class="w-full md:w-auto bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300 text-center flex items-center justify-center">
                                     Batal
                                 </a>
                                 <button type="submit" class="w-full md:w-auto bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">
@@ -182,6 +192,15 @@
                 </td>
                 <td class="p-2">
                     <input type="text" name="admin[${rowCount}][nama]" placeholder="Nama Lengkap" class="table-input" />
+                </td>
+                <td class="p-2">
+                    <input type="text" name="admin[${rowCount}][alamat]" placeholder="alamat" class="table-input" />
+                </td>
+                <td class="p-2">
+                    <input type="text" name="admin[${rowCount}][no_telp]" placeholder="Nomor telephone" class="table-input" />
+                </td>
+                <td class="p-2">
+                    <input type="text" name="admin[${rowCount}][email]" placeholder="Email" class="table-input" />
                 </td>
                 <td class="p-2">
                     <input type="text" name="admin[${rowCount}][username]" placeholder="Username uniq" class="table-input" />

@@ -42,6 +42,10 @@ class AdminDevController extends Controller
             'admin.*.username' => 'required|string|distinct|unique:users',
             'admin.*.nama' => 'required|string|max:255',
             'admin.*.password' => 'required|string|min:6',
+            'admin.*.nip' => 'nullable|string|max:20',
+            'admin.*.email' => 'nullable|email|max:255',
+            'admin.*.alamat' => 'nullable|string|max:255',
+            'admin.*.no_telp' => 'nullable|string|max:20',
         ]);
 
         if ($validator->fails()) {
@@ -53,10 +57,12 @@ class AdminDevController extends Controller
             if (isset($adminData['nama'], $adminData['username'], $adminData['password'])) {
                 User::create([
                     'name' => $adminData['nama'],
-                    'email' => $adminData['username'] . '@sekolah.sch.id', // Membuat email unik berdasarkan NIP
+                    'email' => $adminData['email' ?? ''],
                     'password' => $adminData['password'],
                     'nisn_nik' => $adminData['nip'] ?? '',
                     'username' => $adminData['username'],
+                    'alamat' => $adminData['alamat'] ?? '',
+                    'no_telp' => $adminData['no_telp' ?? ''],
                     'role' => 'admin', // Otomatis mengatur role sebagai guru
                     'id_sekolah' => $id_sekolah,
                 ]);
@@ -101,6 +107,10 @@ class AdminDevController extends Controller
             'email' => 'required|email|max:255|unique:users,email,'.$id,
             'username' => 'required|string|max:255|unique:users,username,'.$id,
             'password' => 'nullable|string|min:6',
+            'admin.*.nik' => 'nullable|string|max:20',
+            'admin.*.email' => 'nullable|email|max:255',
+            'admin.*.alamat' => 'nullable|string|max:255',
+            'admin.*.no_telp' => 'nullable|string|max:20',
         ]);
 
         if ($validator->fails()) {
@@ -113,6 +123,10 @@ class AdminDevController extends Controller
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'username' => $request->input('username'),
+            'nisn_nik' => $request->input('nik') ?? '',
+            'alamat' => $request->input('alamat') ?? '',
+            'no_telp' => $request->input('no_telp') ?? '',
+
         ];
 
         if ($request->input('password')){

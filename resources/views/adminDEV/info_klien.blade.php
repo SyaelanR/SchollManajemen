@@ -211,6 +211,7 @@
                                 <tr>
                                     <th class="p-3 font-semibold text-gray-600">Nama</th>
                                     <th class="p-3 font-semibold text-gray-600">Email</th>
+                                    <th class="p-3 font-semibold text-gray-600">No telp</th>
                                     <th class="p-3 font-semibold text-gray-600">Username</th>
                                     <th class="p-3 font-semibold text-gray-600 text-center">Aksi</th>
                                 </tr>
@@ -220,6 +221,7 @@
                                 <tr class="hover:bg-gray-50">
                                     <td class="p-3 text-gray-800 font-medium">{{$admin->name}}</td>
                                     <td class="p-3 text-gray-700">{{$admin->email}}</td>
+                                    <td class="p-3 text-gray-700">{{$admin->no_telp}}</td>
                                     <td class="p-3 text-gray-700">{{$admin->username}}</td>
                                     <td class="p-3 text-center">
                                         <div class="flex justify-center space-x-4">
@@ -228,6 +230,9 @@
                                                 data-name="{{ $admin->name }}"
                                                 data-email="{{ $admin->email }}"
                                                 data-username="{{ $admin->username }}"
+                                                data-alamat="{{ $admin->alamat }}"
+                                                data-no_telp="{{ $admin->no_telp }}"
+                                                data-nik="{{ $admin->nisn_nik }}"
                                                 >
                                                 <i class="fa-solid fa-pencil"></i>
                                             </button>
@@ -328,12 +333,24 @@
                 @method('PUT')
                 <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
                     <div>
+                        <label for="edit-nik" class="block text-gray-700 font-semibold mb-2">NIK</label>
+                        <input type="text" id="edit-nik" name="nik" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
                         <label for="edit-name" class="block text-gray-700 font-semibold mb-2">Nama Lengkap</label>
                         <input type="text" id="edit-name" name="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
                     </div>
                     <div>
                         <label for="edit-email" class="block text-gray-700 font-semibold mb-2">Email</label>
-                        <input type="email" id="edit-email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                        <input type="email" id="edit-email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label for="edit-no_telp" class="block text-gray-700 font-semibold mb-2">No-telp</label>
+                        <input type="text" id="edit-no_telp" name="no_telp" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label for="edit-alamat" class="block text-gray-700 font-semibold mb-2">Alamat</label>
+                        <input type="text" id="edit-alamat" name="alamat" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
                     <div>
                         <label for="edit-username" class="block text-gray-700 font-semibold mb-2">Username</label>
@@ -425,7 +442,10 @@
                     document.getElementById('edit-email').value = data.email;
                     document.getElementById('edit-username').value = data.username;
                     document.getElementById('edit-password').value = ''; // Clear password
-
+                    document.getElementById('edit-no_telp').value = data.no_telp;
+                    document.getElementById('edit-alamat').value = data.alamat;
+                    document.getElementById('edit-nik').value = data.nik;
+                    
                     openModal(editAdminModal);
                 });
             });
