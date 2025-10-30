@@ -57,10 +57,9 @@
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 min-h-screen flex">
 
-    <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
+    <!-- Sidebar -->
     <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
         <div class="p-6">
             <a href="#" class="flex items-center space-x-3">
@@ -115,6 +114,10 @@
                 <i class="fa-solid fa-layer-group w-6 mr-3"></i>
                 <span>Tingkat</span>
             </a>
+            <a href="{{ route('manajemenAlumni') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-user-friends w-6 mr-3"></i>
+                <span>Manajemen Alumni</span>
+            </a>
             @endcan
 
             @can('view-guru')
@@ -163,26 +166,29 @@
     </div>
     </aside>
 
+    <!-- Overlay for mobile -->
+    <div id="overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden lg:hidden"></div>
 
-        <!-- Overlay for mobile -->
-        <div id="overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden lg:hidden"></div>
-
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-y-auto">
-            <!-- Header -->
-            <header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-30">
-                <!-- Mobile Menu Button -->
-                <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
-                    <i class="fa-solid fa-bars text-2xl"></i>
-                </button>
-                <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Tambah Guru Baru</h1>
-                <div class="flex items-center space-x-4">
-                    
-                </div>
-            </header>
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-y-auto">
+        <!-- Header -->
+        <header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-30">
+            <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
+                <i class="fa-solid fa-bars text-2xl"></i>
+            </button>
+            <h1 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 truncate">Tambah Guru Baru</h1>
+            <div class="flex items-center space-x-4">
+                
+            </div>
+        </header>
 
             <!-- Page Content -->
             <main class="p-6 md:p-8 flex-1">
+                <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
+                    <h2 class="text-3xl font-bold mb-2">Manajemen Guru</h2>
+                    <p class="text-indigo-200">Kelola semua data guru dan staf yang terdaftar di sekolah.</p>
+                </header>
+
                 <div class="bg-white p-6 rounded-xl shadow-md">
                     <!-- Form Header -->
                     <div class="mb-6">
@@ -202,20 +208,20 @@
                     <form id="add-teacher-form" method="POST" action="{{ route('storeGuru') }}">@csrf
                         <!-- MODIFIED: Changed overflow-x: auto for better responsiveness -->
                         <div class="force-scroll-x">
-                            <table class="w-full text-left">
+                            <table class="w-full min-w-[1200px] text-left">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <!-- MODIFIED: Added min-width for better column control -->
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">NIK</th>
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 250px;">Nama Guru</th>
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Alamat</th>
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Tempat lahir</th>
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Tanggal lahir</th>
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Nomor Telp</th>
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Jabatan</th>
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 180px;">Username</th>
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 180px;">Password</th>
-                                        <th class="p-3 font-semibold text-gray-600 text-center" style="min-width: 80px;">Aksi</th>
+                                        <!-- MODIFIED: min-width removed for better responsiveness -->
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap">NIK</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap">Nama Guru</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap">Alamat</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap">Tempat lahir</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap">Tanggal lahir</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap">Nomor Telp</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap">Jabatan</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap">Username</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap">Password</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm text-center whitespace-nowrap">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="teacher-table-body" class="divide-y">
@@ -225,8 +231,8 @@
                         </div>
 
                         <!-- Action Buttons for Table -->
-                        <div class="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-                            <button type="button" id="add-row-btn" class="w-full md:w-auto bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 flex items-center justify-center">
+                        <div class="mt-6 flex flex-col md:flex-row justify-between items-center gap-4 pt-6 border-t">
+                            <button type="button" id="add-row-btn" class="w-full md:w-auto bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 flex items-center justify-center shadow-md">
                                 <i class="fa-solid fa-plus mr-2"></i>
                                 Tambah Baris
                             </button>
@@ -234,7 +240,7 @@
                                <a href="{{ route('manajemenGuru') }}" class="w-full md:w-auto bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300 text-center flex items-center justify-center">
                                     Batal
                                 </a>
-                                <button type="submit" class="w-full md:w-auto bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">
+                                <button type="submit" class="w-full md:w-auto bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 shadow-md">
                                     <i class="fa-solid fa-save mr-2"></i>
                                     Simpan Semua
                                 </button>
@@ -244,7 +250,6 @@
                 </div>
             </main>
         </div>
-    </div>
 
     <script>
         // --- Sidebar Toggle Functionality ---

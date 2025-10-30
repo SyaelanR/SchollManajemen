@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Guru - Sistem Manajemen Sekolah</title>
+    <title>Manajemen Alumni - Sistem Manajemen Sekolah</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
@@ -12,14 +12,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- SweetAlert2 for notifications and delete confirmation -->
+    <!-- SweetAlert2 for notifications -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Custom styles */
         body {
             font-family: 'Inter', sans-serif;
         }
-        /* Custom scrollbar for better aesthetics */
+        /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -34,14 +34,74 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
-        /* Sidebar transition */
         .sidebar {
             transition: transform 0.3s ease-in-out;
         }
+        /* Custom Pagination Styles */
+        .pagination-container nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .pagination-container .pagination-links > a,
+        .pagination-container .pagination-links > span {
+             padding: 0.5rem 1rem;
+             margin: 0 0.25rem;
+             border-radius: 0.5rem;
+             transition: all 0.2s ease-in-out;
+        }
+        .pagination-container .pagination-links > a {
+            background-color: white;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+         .pagination-container .pagination-links > a:hover {
+            background-color: #f7fafc;
+            border-color: #cbd5e0;
+        }
+        .pagination-container .pagination-links > .active {
+            background-color: #4f46e5;
+            color: white;
+            border: 1px solid #4f46e5;
+            font-weight: bold;
+        }
+        .pagination-container .pagination-links > .disabled {
+            background-color: #f7fafc;
+            color: #a0aec0;
+            cursor: not-allowed;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Pagination container */
+        .pagination-wrapper nav {
+            @apply inline-flex items-center space-x-1;
+        }
+
+        /* Pagination links */
+        .pagination-wrapper nav .page-link {
+            @apply px-3 py-1.5 rounded-lg text-gray-700 bg-white border border-gray-300 hover:bg-blue-500 hover:text-white transition-all duration-200;
+        }
+
+        /* Active page */
+        .pagination-wrapper nav .active .page-link {
+            @apply bg-blue-600 text-white border-blue-600;
+        }
+
+        /* Disabled page */
+        .pagination-wrapper nav .disabled .page-link {
+            @apply opacity-50 cursor-not-allowed;
+        }
+
+        /* Arrow icons (prev/next) */
+        .pagination-wrapper nav svg {
+            @apply w-4 h-4;
+        }
+
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex">
 
+    <!-- Sidebar -->
     <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
         <div class="p-6">
             <a href="#" class="flex items-center space-x-3">
@@ -56,11 +116,12 @@
             </a>
 
             @can('view-admin')
-            <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('manajemenAlumni') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-user-graduate w-6 mr-3"></i>
                 <span>Manajemen Siswa</span>
             </a>
-            <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
+
+            <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-chalkboard-user w-6 mr-3"></i>
                 <span>Manajemen Guru</span>
             </a>
@@ -96,7 +157,7 @@
                 <i class="fa-solid fa-layer-group w-6 mr-3"></i>
                 <span>Tingkat</span>
             </a>
-            <a href="{{ route('manajemenAlumni') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('manajemenAlumni') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
                 <i class="fa-solid fa-user-friends w-6 mr-3"></i>
                 <span>Manajemen Alumni</span>
             </a>
@@ -158,98 +219,92 @@
             <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
                 <i class="fa-solid fa-bars text-2xl"></i>
             </button>
-            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Manajemen Data Guru</h1>
+            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Manajemen Data Alumni</h1>
             <div class="flex items-center space-x-4">
-                
+
             </div>
         </header>
 
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
-             <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
-                <h2 class="text-3xl font-bold mb-2">Manajemen Guru</h2>
-                <p class="text-indigo-200">Kelola semua data guru dan staf yang terdaftar di sekolah.</p>
+            <!-- Session Messages Handling -->
+            @if(session('success'))
+                <div id="session-success" data-message="{{ session('success') }}" class="hidden"></div>
+            @endif
+
+             <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg text-white">
+                <h2 class="text-2xl md:text-3xl font-bold mb-1">Manajemen Alumni</h2>
+                <p class="text-indigo-200">Kelola dan lacak data alumni sekolah.</p>
             </header>
 
             <div class="bg-white p-6 rounded-xl shadow-md">
+                <!-- Action Bar -->
                 <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                    <h2 class="text-2xl font-bold text-gray-800">Daftar Guru</h2>
+                    <h2 class="text-2xl font-bold text-gray-800">Daftar Alumni</h2>
                     <div class="flex items-center gap-4 w-full md:w-auto">
-                        <form action="{{ route('manajemenGuru') }}" method="GET">
-                            <div class="relative w-full md:w-64">
-                                <input type="text" name="search" placeholder="Cari guru..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" value="{{ $search ?? '' }}">
-                                <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                            </div>
+                        <form action="{{ route('manajemenAlumni') }}" method="GET" class="relative w-full md:w-64">
+                            <input type="text" name="search" placeholder="Cari alumni..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" value="{{ $search ?? '' }}">
+                            <button type="submit" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                <i class="fa-solid fa-search"></i>
+                            </button>
                         </form>
-                        <button onclick="window.location.href = '{{ route('tambahGuru')}}';" id="add-guru-btn" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap shadow-md hover:shadow-lg">
-                            <i class="fa-solid fa-plus mr-2"></i>
-                            Tambah Guru
-                        </button>
                     </div>
                 </div>
 
-                <!-- Session Messages Handling -->
-                @if(session('success'))
-                    <div id="session-success" data-message="{{ session('success') }}" class="hidden"></div>
-                @endif
-
+                <!-- Alumni Table -->
                 <div class="overflow-x-auto">
                     <table class="w-full min-w-[800px] text-left">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Nama</th>
-                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Alamat</th>
-                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">No Telp</th>
-                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Jabatan</th>
-                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm text-center">Aksi</th>
+                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">NISN</th>
+                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Nama Alumni</th>
+                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Angkatan</th>
+                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Tanggal Lulus</th>
+                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm text-center">Detail</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y">
-                        @forelse ($teachers as $teacher)
-                            <tr class="hover:bg-gray-50">
-                                <td class="p-3 text-gray-800 font-medium">{{ $teacher->name }}</td>
-                                <td class="p-3 text-gray-700">{{ $teacher->alamat ?? '-' }}</td>
-                                <td class="p-3 text-gray-700">{{ $teacher->no_telp ?? '-' }}</td>
-                                <td class="p-3 text-gray-700 capitalize">{{ $teacher->role }}</td>
+                        <tbody id="student-table-body" class="divide-y">
+                            {{-- Gunakan $alumni sebagai nama variabel untuk alumni, bukan $students --}}
+                            @forelse ($alumni ?? [] as $alumnus)
+                            <tr class="student-row hover:bg-gray-50">
+                                <td class="p-3 text-gray-700">{{ $alumnus->nisn_nik }}</td>
+                                <td class="p-3 text-gray-800 font-medium">{{ $alumnus->name }}</td>
+                                {{-- Asumsi data angkatan yang sudah is_alumni=true adalah tahun lulus --}}
+                                <td class="p-3 text-gray-700">{{ $alumnus->angkatan->angkatan ?? '-' }}</td>
+                                <td class="p-3 text-gray-700">{{ $alumnus->angkatan->tanggal_selesai ? \Carbon\Carbon::parse($alumnus->angkatan->tanggal_selesai)->isoFormat('D MMMM YYYY') : '-' }}</td>
                                 <td class="p-3 text-center">
                                     <div class="flex justify-center space-x-4">
-                                        <a href="{{ route('editGuru', $teacher->id) }}" class="text-blue-600 hover:text-blue-800" title="Edit">
-                                            <i class="fa-solid fa-pencil"></i>
-                                        </a>
-                                        <form action="{{ route('hapusGuru', $teacher->id) }}" method="POST" class="inline-block delete-form">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-800" title="Hapus">
-                                                <i class="fa-solid fa-trash"></i>
-                                            </button>
-                                        </form>
+                                        <a href="{{ route('lihatDetailSiswa', ['idsiswa' => $alumnus->id]) }}" class="text-indigo-600 hover:text-indigo-800" title="Lihat Detail">Lihat Detail</a>
+
                                     </div>
                                 </td>
                             </tr>
-                        @empty
+                            @empty
                             <tr>
-                                <td colspan="5" class="p-3 text-center text-gray-500 py-12">
-                                    @if ($search)
-                                        <i class="fa-solid fa-magnifying-glass text-4xl text-gray-400 mb-4"></i>
-                                        <p class="text-gray-600 font-semibold text-lg">Guru tidak ditemukan.</p>
-                                        <p class="text-gray-500 mt-1">Tidak ada guru yang cocok dengan kata kunci "{{ $search }}".</p>
-                                    @else
-                                        <i class="fa-solid fa-chalkboard-user text-5xl text-gray-400 mb-4"></i>
-                                        <p class="text-gray-600 font-semibold text-lg">Belum ada data Guru/Staf.</p>
-                                        <p class="text-gray-500 mt-2">Silakan tambahkan data baru.</p>
-                                    @endif
+                                <td colspan="5" class="p-3 text-center text-gray-500">
+                                    <div class="text-center py-12">
+                                        @if ($search)
+                                            <i class="fa-solid fa-magnifying-glass text-5xl text-gray-400 mb-4"></i>
+                                            <p class="text-gray-600 font-semibold text-lg">Alumni tidak ditemukan.</p>
+                                            <p class="text-gray-500 mt-2">Tidak ada alumni yang cocok dengan kata kunci "{{ request('search') }}".</p>
+                                        @else
+                                            <i class="fa-solid fa-user-times text-5xl text-gray-400 mb-4"></i>
+                                            <p class="text-gray-600 font-semibold text-lg">Belum ada data Alumni.</p>
+                                            <p class="text-gray-500 mt-2">Pastikan siswa yang lulus telah ditandai sebagai alumni pada Manajemen Angkatan.</p>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
-                        @endforelse
+                            @endforelse
                         </tbody>
                     </table>
+                </div>
 
-                    {{-- paganation --}}
-                    <div class="mt-6 color">
-                        {{-- Pastikan Anda sudah mem-publish view paginasi Tailwind --}}
-                        {{-- Menambahkan query string pencarian ke link paginasi --}}
-                        {!! $teachers->appends(request()->query())->links() !!}
-                    </div>
+                <!-- Pagination -->
+                 <div class="mt-6 color">
+                    {{-- Pastikan Anda sudah mem-publish view paginasi Tailwind --}}
+                    {{-- Menambahkan query string pencarian ke link paginasi --}}
+                    {!! $alumni->appends(request()->query())->links() !!}
                 </div>
             </div>
         </main>
@@ -257,21 +312,21 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- Sidebar Toggle ---
         const menuButton = document.getElementById('menu-button');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
+        if(menuButton && sidebar && overlay) {
+            const toggleSidebar = () => {
+                sidebar.classList.toggle('-translate-x-full');
+                overlay.classList.toggle('hidden');
+            };
+            menuButton.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', toggleSidebar);
+        }
 
-        const toggleSidebar = () => {
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
-        };
-
-        menuButton.addEventListener('click', toggleSidebar);
-        overlay.addEventListener('click', toggleSidebar);
-
-
-        // --- SweetAlert2 Notifications for Success ---
+        // --- SweetAlert2 Notifications ---
         const successMessage = document.getElementById('session-success');
         if (successMessage) {
             Swal.fire({
@@ -283,12 +338,15 @@
             });
         }
 
+        // --- Delete Confirmation (dihilangkan, tapi fungsi ini tetap ada untuk jaga-jaga) ---
+        // Jika Anda ingin mengaktifkan fungsi hapus untuk alumni, hapus komentar pada bagian berikut.
+        /*
         document.querySelectorAll('.delete-form').forEach(form => {
-            form.addEventListener('submit', function(event) {
+            form.addEventListener('submit', function (event) {
                 event.preventDefault();
                 Swal.fire({
                     title: 'Apakah Anda yakin?',
-                    text: "Data guru yang dihapus tidak dapat dikembalikan!",
+                    text: "Data alumni yang dihapus tidak dapat dikembalikan!",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#d33',
@@ -302,6 +360,7 @@
                 });
             });
         });
+        */
     });
 </script>
 

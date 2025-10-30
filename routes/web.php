@@ -144,6 +144,16 @@ Route::middleware('auth')->group(function () {
             Route::delete('/acara-sekolah/{id}', [AdminController::class, 'destroyAcara'])->name('admin.acara.destroy');
         });
 
+       /////////////////////////////alumni/////////////////////////////////////////
+        Route::prefix('manajemen-alumni')->group(function () {
+            Route::get('/', [AdminController::class, 'manajAlumni'])->name('manajemenAlumni');
+            Route::get('/{id_angkatan}/siswa', [AdminController::class, 'siswaAlumni'])->name('siswaAlumni');
+            Route::post('/', [AdminController::class, 'storeAlumni'])->name('storeAlumni');
+            // Rute updateAlumni akan menggunakan logic yang sama dengan updateAngkatan
+            // jadi kita bisa arahkan ke sana atau buat method baru jika perlu logic berbeda
+            Route::put('/{id}', [AdminController::class, 'updateAlumni'])->name('updateAlumni');
+            Route::delete('/{id}', [AdminController::class, 'destroyAlumni'])->name('destroyAlumni');
+        });
     });
 
         
