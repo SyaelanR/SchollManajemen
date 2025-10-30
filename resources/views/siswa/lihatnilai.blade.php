@@ -156,7 +156,12 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-lg font-semibold text-gray-700">{{$nilai->nilai}}</td>
                                 </tr>
                                 @empty
-                                    
+                                    <tr>
+                                        <td colspan="3" class="text-center py-12">
+                                            <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
+                                            <p class="text-gray-600 font-semibold text-lg">Belum ada data Nilai untuk mata pelajaran ini.</p>
+                                        </td>
+                                    </tr>
                                 @endforelse
                                 <!-- Akhir Data Dummy -->
                             </tbody>

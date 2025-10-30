@@ -28,7 +28,7 @@ return new class extends Migration
             $table->foreign('id_mapel')->references('id_mapel')->on('mapels')->onDelete('set null');
             $table->foreign('id_sekolah')->references('id_sekolah')->on('cliens')->onDelete('set null');
             $table->foreign('id_kelas')->references('id_kelas')->on('kelas')->onDelete('set null');
-            $table->foreign('id_daftar_tugas')->references('id_daftar_tugas')->on('daftar_tugas')->onDelete('set null');
+            $table->foreign('id_daftar_tugas')->references('id_daftar_tugas')->on('daftar_tugas')->onDelete('cascade');
         });
     }
 

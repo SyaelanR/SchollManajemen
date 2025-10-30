@@ -294,6 +294,7 @@ class GuruController extends Controller
             })
             ->where('tingkat', $infoJKA->kelas->angkatan->id_tingkat)
             ->where('semester', $infoJKA->kelas->angkatan->semester)
+            ->orderBy('created_at', 'desc')
             ->get();
 
         return view('guru.manajemen_nilai_daftar', ['daftarNilai' => $daftarNilai, 'infoJKA' => $infoJKA]);
@@ -416,6 +417,7 @@ class GuruController extends Controller
             ->whereHas('mapel', function ($query) use ($id_user) {
                 $query->where('id_guru', $id_user);
             })
+            ->orderBy('created_at', 'desc')
             ->get();
 
         // return view('guru.manajemen_absensi_daftar', ['daftarAbsensi' => $daftarAbsensi, 'infoKelas' => $infoKelas, 'infoMapel' => $infoMapel]);
@@ -612,7 +614,9 @@ class GuruController extends Controller
                     ->where('id_mapel', $id_mapel)
                     ->where('tingkat', $infoJKA->kelas->angkatan->id_tingkat)
                     ->where('semester', $infoJKA->kelas->angkatan->semester)
-                    ->where('id_sekolah', $id_sekolah)->get();
+                    ->where('id_sekolah', $id_sekolah)
+                    ->orderBy('created_at', 'desc')
+                    ->get();
 
     
         //    foreach ($daftarTugas as $tugas) {
@@ -633,7 +637,7 @@ class GuruController extends Controller
         $request->validate([
             'keterangan_tugas' => 'required|string|max:255',
             'deadline'=> 'required|date',
-            'file' => 'required|file|mimes:pdf|max:5048'
+            'file' => 'required|file|mimes:pdf|max:10048'
         ],[
             'keterangan_tugas.required' => 'Keterangan tidak boleh kosong.',
             'keterangan_tugas.max' => 'Keterangan maksimal 255',
@@ -764,6 +768,7 @@ class GuruController extends Controller
                     ->where('id_sekolah', $idSekolah)
                     ->where('tingkat', $infoJKA->kelas->angkatan->id_tingkat)
                     ->where('semester', $infoJKA->kelas->angkatan->semester)
+                    ->orderBy('created_at', 'desc')
                     ->get();
 
 
@@ -776,7 +781,7 @@ class GuruController extends Controller
         $idUser = $request->cookie('id_user');
 
         $request->validate([
-            'file' => 'required|file|mimes:pdf|max:5048',
+            'file' => 'required|file|mimes:pdf|max:10048',
             'judul_materi' => 'required|string|max:255',
             'deskripsi_materi' => 'required|string|max:255'
         ],[

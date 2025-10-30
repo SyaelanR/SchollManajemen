@@ -79,6 +79,7 @@ class SiswaController extends Controller
                         ->whereHas('daftarNilai', function ($query) {
                             $query->where('sifat', 'online');
                         })
+                        ->orderBy('created_at', 'desc')
                         ->get();
 
         return view('siswa.lihat_daftar_tugas', ['daftarTugas' => $daftarTugas, 'infoJadwal' => $infoJadwal]);
@@ -367,7 +368,8 @@ class SiswaController extends Controller
                                     ->where('semester', $infoJadwal->kelas->angkatan->semester)
                                     ->where('id_sekolah', $id_sekolah)
                                     ->with('mapel')
-                                    ->latest('tanggal')->get();
+                                    ->orderBy('created_at', 'desc')
+                                    ->get();
                                     
 
         return view('siswa.lihat_materi', compact('daftarMateri', 'infoJadwal'));
@@ -553,6 +555,7 @@ class SiswaController extends Controller
                         ->whereColumn('daftar_nilai_siswas.semester', 'angkatans.semester')
                         // Eager load relasi yang dibutuhkan untuk view
                         ->with(['daftarNilai', 'kelas.angkatan', 'mapel'])
+                        ->orderBy('created_at', 'desc')
                         ->get();
 
         $nama_mapel = $daftarNilai->first()->mapel->nama_mapel ?? 'Belum ada Nilai';
@@ -589,6 +592,7 @@ class SiswaController extends Controller
             ->whereIn('id_mapel', $mapelIds)
             ->where('created_at', '>=', Carbon::now()->subWeeks(1))
             ->with('mapel') // Eager load relasi mapel untuk efisiensi
+            ->orderBy('created_at', 'desc')
             ->get();
 
         return view('siswa.lihat_pengumuman', ['DaftarPengumuman' => $DaftarPengumuman]);

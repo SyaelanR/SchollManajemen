@@ -6,20 +6,17 @@
     <title>Pengumuman - EduSys</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" type="image/png" href="{{ asset('asset/school-solid-full.png') }}">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
         .sidebar { transition: transform 0.3s ease-in-out; }
+        .event-card > div { width: 100%; }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex">
@@ -69,7 +66,7 @@
                 <i class="fa-solid fa-calendar-check mr-3"></i>
                 <span>Acara</span>
             </a>
-            <a href="{{ route('KRS')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('lihatAcaraSiswa')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
+            <a href="{{ route('KRS')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('KRS')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
                 <i class="fa-solid fa-id-card mr-3"></i>
                 <span>KRS</span>
             </a>
@@ -91,12 +88,13 @@
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col overflow-y-auto">
+        
         <!-- Header -->
         <header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-30">
             <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
                 <i class="fa-solid fa-bars text-2xl"></i>
             </button>
-            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Papan Pengumuman</h1>
+            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Pengumuman</h1> 
             <div class="flex items-center space-x-4">
                 
             </div>
@@ -104,14 +102,21 @@
 
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
-            <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg text-white">
-                <h1 class="text-2xl md:text-3xl font-bold">Informasi Terbaru</h1>
-                <p class="text-indigo-200 mt-2">Berikut adalah pengumuman penting dari guru-guru Anda.</p>
+            <!-- Content Header -->
+            <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
+                <h2 class="text-3xl font-bold mb-2">Pengumuman Kelas</h2>
+                <p class="text-indigo-200">Lihat semua pengumuman kelas</p>
             </header>
 
-            <!-- Daftar Pengumuman -->
-            <div class="space-y-6">
-                @forelse ($DaftarPengumuman ?? [] as $pengumuman)
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <!-- Action Bar -->
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                    <h2 class="text-2xl font-bold text-gray-800">Daftar Pengumuman</h2>
+                </div>
+                
+                <!-- Card View Acara -->
+                <div class="grid grid-cols-1 gap-6" id="event-list-container">
+                    @forelse ($DaftarPengumuman ?? [] as $pengumuman)
                     <div class="bg-white p-6 border-l-4 border-indigo-500 rounded-r-lg shadow-md transition duration-300 ease-in-out hover:shadow-lg">
                         <div class="flex items-start justify-between mb-2">
                             <div>
@@ -139,11 +144,14 @@
                         <p class="mt-1 text-gray-500">Saat ini tidak ada pengumuman baru untuk Anda.</p>
                     </div>
                 @endforelse
+                </div>
             </div>
         </main>
     </div>
 
-    <script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Sidebar ---
         const menuButton = document.getElementById('menu-button');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
@@ -155,6 +163,7 @@
             sidebar.classList.toggle('-translate-x-full');
             overlay.classList.toggle('hidden');
         });
-    </script>
+    });
+</script>
 </body>
 </html>
