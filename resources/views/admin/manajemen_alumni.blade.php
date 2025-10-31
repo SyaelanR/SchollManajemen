@@ -229,7 +229,7 @@
                                         <td class="p-3 text-center">
                                             {{-- Selalu menampilkan status Alumni --}}
                                             <a href="{{ route('siswaAlumni', ['id_angkatan' => $item->id_angkatan]) }}" class="bg-blue-100 text-blue-800 font-medium py-1 px-3 rounded-full text-xs capitalize hover:bg-blue-200 transition-colors">
-                                                Lihat Siswa
+                                                Lihat
                                             </a>
                                         </td>
                                     </tr>
