@@ -1772,4 +1772,96 @@ public function showProfileA(Request $request)
         return view('admin.profile', compact('user'));
         // return view('debug');
     }
+    // Metode untuk Manajemen Alumni
+    public function manajAlumni(Request $request)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        // Mengambil semua data dari tabel angkatan yang is_alumni = true
+        $angkatans = Angkatan::where('id_sekolah', $id_sekolah)
+                            ->where('is_alumni', true)
+                            ->latest()
+                            ->get();
+
+        return view('admin.manajemen_alumni', ['angkatans' => $angkatans]);
+    }
+
+    public function storeAlumni(Request $request)
+    {   
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $request->validate([
+            'angkatan' => 'required|string|max:255',
+            'id_tingkat' => 'required|integer|exists:tingkats,id_tingkat',
+            'tanggal_mulai' => 'required|date',
+            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
+            'semester' => 'required|in:ganjil,genap',
+        ], [
+            'angkatan.required' => 'Tahun lulus tidak boleh kosong.',
+            'id_tingkat.required' => 'Tingkat kelulusan tidak boleh kosong.',
+            'tanggal_selesai.after_or_equal' => 'Tanggal kelulusan harus setelah atau sama dengan tanggal masuk.',
+        ]);
+
+        Angkatan::create([
+            'angkatan' => $request->angkatan,
+            'id_sekolah' => $id_sekolah,
+            'tanggal_mulai' => $request->tanggal_mulai,
+            'tanggal_selesai' => $request->tanggal_selesai,
+            'id_tingkat' => $request->id_tingkat,
+            'tingkat' => Tingkat::where('id_tingkat', $request->id_tingkat)->value('tingkat'),
+            'semester' => $request->semester,
+            'is_alumni' => true, // Selalu set true untuk data alumni
+        ]);
+
+        return redirect()->route('manajemenAlumni')->with('success', 'Data Alumni berhasil ditambahkan!');
+    }
+
+    public function updateAlumni(Request $request, $id)
+    {
+        // Menggunakan kembali logic dari updateAngkatan karena strukturnya sama
+        // Cukup panggil method updateAngkatan yang sudah ada
+        return $this->updateAngkatan($request, $id);
+    }
+
+    public function destroyAlumni(Request $request, $id)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $alumni = Angkatan::where('id_angkatan', $id)
+                            ->where('id_sekolah', $id_sekolah)
+                            ->where('is_alumni', true)
+                            ->firstOrFail();
+        $alumni->delete();
+
+        return redirect()->route('manajemenAlumni')->with('success', 'Data Alumni berhasil dihapus!');
+    }
+
+    public function siswaAlumni(Request $request, $id_angkatan)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $search = $request->query('search');
+
+        // Query untuk mencari siswa (user dengan role siswa) berdasarkan angkatan
+        $query = User::where('role', 'siswa')
+                     ->where('id_sekolah', $id_sekolah)
+                     ->where('id_angkatan', $id_angkatan)
+                     ->with('kelas.angkatan') // Eager load relasi
+                     ->whereHas('kelas.angkatan', function ($query) {
+                        $query->where('is_alumni', true);
+            });
+
+        // Jika ada input pencarian, tambahkan kondisi where
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('nisn_nik', 'like', '%' . $search . '%');
+            });
+        }
+
+        $alumni = $query->latest()->paginate(10);
+        // $id_angkatan = optional($query->first()->kelas)->angkatan->id_angkatan;
+
+        return view('admin.siswa_alumni', ['alumni' => $alumni, 'search' => $search, 'id_angkatan' => $id_angkatan]);
+        // return view('debug', ['tes' => $alumni, 'tess' => $query, 'tesss' => $id_angkatan]);
+    }
+
 }

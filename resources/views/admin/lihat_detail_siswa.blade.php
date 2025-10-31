@@ -79,6 +79,10 @@
                 <i class="fa-solid fa-layer-group w-6 mr-3"></i>
                 <span>Tingkat</span>
             </a>
+            <a href="{{ route('manajemenAlumni')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('detailSiswaAlumni')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
+                <i class="fa-solid fa-user-friends w-6 mr-3"></i>
+                <span>Manajemen Alumni</span>
+            </a>
             @endcan
 
             @can('view-guru')
@@ -148,7 +152,7 @@
                     <h1 class="text-2xl md:text-3xl font-bold">{{ $siswa->name }}</h1>
                     <p class="text-indigo-200 mt-1">NISN: {{ $siswa->nisn_nik }}</p>
                 </div>
-                <a href="{{ route('manajemenSiswa') }}" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
+                <a href="{{ url()->previous() }}" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
                     <i class="fa-solid fa-arrow-left mr-2"></i>
                     <span>Kembali</span>
                 </a>
@@ -308,10 +312,17 @@
                                     <td class="px-6 py-4 text-gray-600">{{ $historiKBM['semester'] }}</td>
                                     <td class="px-6 py-4 text-gray-600">Tingkat {{ $historiKBM['tingkat'] }}</td>
                                     <td class="px-6 py-4 text-center">
+                                        @if (request()->routeIs('lihatDetailSiswa'))
                                         <a href="{{ route('historyKBM', [$siswa->id, $historiKBM['id_tingkat'], $historiKBM['semester']])}}"
                                         class="bg-indigo-100 text-indigo-700 font-semibold py-1.5 px-4 rounded-lg hover:bg-indigo-200 transition duration-300">
                                             Masuk
                                         </a>
+                                        @elseif (request()->routeIs('detailSiswaAlumni'))
+                                        <a href="{{ route('historyKBMAlumni', [$siswa->id, $historiKBM['id_tingkat'], $historiKBM['semester']])}}"
+                                        class="bg-indigo-100 text-indigo-700 font-semibold py-1.5 px-4 rounded-lg hover:bg-indigo-200 transition duration-300">
+                                            Masuk
+                                        </a>
+                                        @endif
                                     </td>
                                 </tr>
                                 @empty
