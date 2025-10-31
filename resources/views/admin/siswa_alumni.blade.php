@@ -233,7 +233,7 @@
             @endif
 
              <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg text-white">
-                <h2 class="text-2xl md:text-3xl font-bold mb-1">Manajemen Alumni</h2>
+                <h2 class="text-2xl md:text-3xl font-bold mb-1">Daftar Alumni Siswa</h2>
                 <p class="text-indigo-200">Kelola dan lacak data alumni sekolah.</p>
             </header>
 
@@ -242,7 +242,7 @@
                 <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                     <h2 class="text-2xl font-bold text-gray-800">Daftar Alumni</h2>
                     <div class="flex items-center gap-4 w-full md:w-auto">
-                        <form action="{{ route('manajemenAlumni') }}" method="GET" class="relative w-full md:w-64">
+                        <form action="{{ route('siswaAlumni', ['id_angkatan' => $id_angkatan]) }}" method="GET" class="relative w-full md:w-64">
                             <input type="text" name="search" placeholder="Cari alumni..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" value="{{ $search ?? '' }}">
                             <button type="submit" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
                                 <i class="fa-solid fa-search"></i>
@@ -274,7 +274,7 @@
                                 <td class="p-3 text-gray-700">{{ $alumnus->angkatan->tanggal_selesai ? \Carbon\Carbon::parse($alumnus->angkatan->tanggal_selesai)->isoFormat('D MMMM YYYY') : '-' }}</td>
                                 <td class="p-3 text-center">
                                     <div class="flex justify-center space-x-4">
-                                        <a href="{{ route('lihatDetailSiswa', ['idsiswa' => $alumnus->id]) }}" class="text-indigo-600 hover:text-indigo-800" title="Lihat Detail">Lihat Detail</a>
+                                        <a href="{{ route('detailSiswaAlumni', ['id_siswa' => $alumnus->id]) }}" class="text-indigo-600 hover:text-indigo-800" title="Lihat Detail">Lihat Detail</a>
 
                                     </div>
                                 </td>

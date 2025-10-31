@@ -833,7 +833,7 @@ class AdminController extends Controller
         $id_sekolah = $request->cookie('id_sekolah');
 
         $request->validate([
-            'angkatan' => 'required|exists:angkatans,id_angkatan', //cek apakah id_angkatan ada di tabel angkatans
+            'id_angkatan' => 'required|exists:angkatans,id_angkatan', //cek apakah id_angkatan ada di tabel angkatans
             'nama' => 'required|string|max:255',
             'jenjang' => 'required|string|in:SMA,SMK,SD,SMP',
             'jumlah_matpel' => 'required|integer|min:1',
@@ -851,7 +851,6 @@ class AdminController extends Controller
         DaftarKurikulum::create([
             'id_sekolah' => $id_sekolah,
             'id_angkatan' => $request->id_angkatan,
-            'id_angkatan' => $request->angkatan,
             'nama_kurikulum' => $request->nama,
             'jenjang' => $request->jenjang,
             'jumlah_matpel' => $request->jumlah_matpel,
@@ -1771,8 +1770,8 @@ public function updateKurikulum(Request $request, $id)
                             ->where('is_alumni', true)
                             ->latest()
                             ->get();
-        $tingkats = Tingkat::where('id_sekolah', $id_sekolah)->get();
-        return view('admin.manajemen_alumni', ['angkatans' => $angkatans, 'tingkats' => $tingkats]);
+
+        return view('admin.manajemen_alumni', ['angkatans' => $angkatans]);
     }
 
     public function storeAlumni(Request $request)
@@ -1834,7 +1833,10 @@ public function updateKurikulum(Request $request, $id)
         $query = User::where('role', 'siswa')
                      ->where('id_sekolah', $id_sekolah)
                      ->where('id_angkatan', $id_angkatan)
-                     ->with('kelas.angkatan'); // Eager load relasi
+                     ->with('kelas.angkatan') // Eager load relasi
+                     ->whereHas('kelas.angkatan', function ($query) {
+                        $query->where('is_alumni', true);
+            });
 
         // Jika ada input pencarian, tambahkan kondisi where
         if ($search) {
@@ -1845,8 +1847,10 @@ public function updateKurikulum(Request $request, $id)
         }
 
         $alumni = $query->latest()->paginate(10);
+        // $id_angkatan = optional($query->first()->kelas)->angkatan->id_angkatan;
 
-        return view('admin.siswa_alumni', ['alumni' => $alumni, 'search' => $search]);
+        return view('admin.siswa_alumni', ['alumni' => $alumni, 'search' => $search, 'id_angkatan' => $id_angkatan]);
+        // return view('debug', ['tes' => $alumni, 'tess' => $query, 'tesss' => $id_angkatan]);
     }
 
 }

@@ -207,7 +207,7 @@
                                 <th class="p-3 font-semibold text-gray-600 ">SEMESTER KELULUSAN</th>
                                 <th class="p-3 font-semibold text-gray-600 ">TANGGAL MASUK</th>
                                 <th class="p-3 font-semibold text-gray-600 ">TANGGAL KELULUSAN</th>
-                                <th class="p-3 text-center font-semibold text-gray-600 ">STATUS</th>
+                                <th class="p-3 text-center font-semibold text-gray-600 ">AKSi</th>
                             </tr>
                         </thead>
                         <tbody id="alumni-table-body" class="divide-y">

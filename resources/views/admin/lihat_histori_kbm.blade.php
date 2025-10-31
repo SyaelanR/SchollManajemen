@@ -38,7 +38,7 @@
             </a>
 
             @can('view-admin')
-            <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
+            <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('historyKBM')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
                 <i class="fa-solid fa-user-graduate w-6 mr-3"></i>
                 <span>Manajemen Siswa</span>
             </a>
@@ -78,7 +78,7 @@
                 <i class="fa-solid fa-layer-group w-6 mr-3"></i>
                 <span>Tingkat</span>
             </a>
-            <a href="{{ route('manajemenAlumni') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+            <a href="{{ route('manajemenAlumni') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('historyKBMAlumni')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
                 <i class="fa-solid fa-user-friends w-6 mr-3"></i>
                 <span>Manajemen Alumni</span>
             </a>
@@ -159,7 +159,7 @@
                         <i class="fa-solid fa-print mr-2"></i>
                         <span>Lihat Rapor</span>
                     </a>
-                    <a href="{{-- route('detailSiswa', $siswa->id) --}}" class="inline-flex items-center justify-center bg-indigo-500 text-white hover:bg-indigo-400 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
+                    <a href="{{ url()->previous() }}" class="inline-flex items-center justify-center bg-indigo-500 text-white hover:bg-indigo-400 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
                         <i class="fa-solid fa-arrow-left mr-2"></i>
                         <span>Kembali</span>
                     </a>
