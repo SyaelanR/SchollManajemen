@@ -251,6 +251,9 @@ class GuruController extends Controller
 
     public function storeNilaiSiswa(Request $request)
     {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+
         // 1. Validasi input dari form
         $request->validate([
             // 'nilai' harus ada dan berupa array
@@ -266,7 +269,22 @@ class GuruController extends Controller
             // Jika input nilai kosong (null), atur nilainya menjadi 0. Jika tidak, gunakan nilai dari input.
             $nilai_final = $input_nilai ?? 0;
             // Cari record nilai siswa berdasarkan ID dan perbarui nilainya
-            DaftarNilaiSiswa::where('id_daftar_nilai_siswa', $id_daftar_nilai_siswa)->update(['nilai' => $nilai_final]);
+            DaftarNilaiSiswa::where('id_daftar_nilai_siswa', $id_daftar_nilai_siswa)
+                        ->with('kelas.angkatan')
+                        ->with('mapel')
+                        ->where('id_sekolah', $id_sekolah)
+                        ->whereHas('mapel', function ($query) use ($id_user) {
+                            $query->where('id_guru', $id_user);
+                        })
+                        ->whereHas('kelas.angkatan', function ($query) {
+                            $query->whereColumn('angkatans.semester', 'daftar_nilai_siswas.semester');
+                        })
+                        ->whereHas('kelas.angkatan', function ($query) {
+                            // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                            $query->whereColumn('angkatans.id_tingkat', 'daftar_nilai_siswas.tingkat');
+                        })
+                        ->firstOrFail()
+                        ->update(['nilai' => $nilai_final]);
         }
 
         // 3. Kembali ke halaman sebelumnya dengan pesan sukses
@@ -282,13 +300,30 @@ class GuruController extends Controller
      */
     public function updateNilaiSiswa(Request $request, $id_daftar_nilai_siswa)
     {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+        
         // 1. Validasi input
         $validated = $request->validate([
             'nilai' => 'required|numeric|min:0|max:100',
         ]);
 
         // 2. Cari data nilai siswa berdasarkan ID
-        $nilaiSiswa = DaftarNilaiSiswa::find($id_daftar_nilai_siswa);
+        $nilaiSiswa = DaftarNilaiSiswa::where('id_daftar_nilai_siswa',$id_daftar_nilai_siswa)
+                                ->with('kelas.angkatan')
+                                ->with('mapel')
+                                ->where('id_sekolah', $id_sekolah)
+                                ->whereHas('mapel', function ($query) use ($id_user) {
+                                    $query->where('id_guru', $id_user);
+                                })
+                                ->whereHas('kelas.angkatan', function ($query) {
+                                    $query->whereColumn('angkatans.semester', 'daftar_nilai_siswas.semester');
+                                })
+                                ->whereHas('kelas.angkatan', function ($query) {
+                                    // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                                    $query->whereColumn('angkatans.id_tingkat', 'daftar_nilai_siswas.tingkat');
+                                })
+                                ->firstOrFail();
 
         // 3. Jika data tidak ditemukan, kembali dengan pesan error
         if (!$nilaiSiswa) {
@@ -554,6 +589,9 @@ class GuruController extends Controller
 
     public function storeAbsensiSiswa (Request $request)
     {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+
         // 1. Validasi input dari form
         $request->validate([
             // 'status' harus ada dan berupa array
@@ -565,7 +603,22 @@ class GuruController extends Controller
 
         // 2. Lakukan perulangan untuk setiap status yang dikirim
         foreach ($request->status as $id_daftar_absensi_siswa => $status_kehadiran) {
-            DaftarAbsensiSiswa::where('id_daftar_absensi_siswa', $id_daftar_absensi_siswa)->update(['status' => $status_kehadiran ?? null]);
+            DaftarAbsensiSiswa::where('id_daftar_absensi_siswa', $id_daftar_absensi_siswa)
+                        ->with('kelas.angkatan')
+                        ->with('mapel')
+                        ->where('id_sekolah', $id_sekolah)
+                        ->whereHas('mapel', function ($query) use ($id_user) {
+                            $query->where('id_guru', $id_user);
+                        })
+                        ->whereHas('kelas.angkatan', function ($query) {
+                            $query->whereColumn('angkatans.semester', 'daftar_absensi_siswas.semester');
+                        })
+                        ->whereHas('kelas.angkatan', function ($query) {
+                            // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                            $query->whereColumn('angkatans.id_tingkat', 'daftar_absensi_siswas.tingkat');
+                        })
+                        ->firstOrFail()
+                        ->update(['status' => $status_kehadiran ?? null]);
         }
 
         // 3. Kembali ke halaman sebelumnya dengan pesan sukses
@@ -581,13 +634,30 @@ class GuruController extends Controller
      */
     public function updateAbsensiSiswa(Request $request, $id_daftar_absensi_siswa)
     {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+
         // 1. Validasi input
         $validated = $request->validate([
             'status' => 'required|string|in:Hadir,Izin,Sakit,Alfa',
         ]);
 
         // 2. Cari data absensi siswa berdasarkan ID
-        $absensiSiswa = DaftarAbsensiSiswa::find($id_daftar_absensi_siswa);
+        $absensiSiswa = DaftarAbsensiSiswa::where('id_daftar_absensi_siswa',$id_daftar_absensi_siswa)
+                                        ->with('kelas.angkatan')
+                                        ->with('mapel')
+                                        ->where('id_sekolah', $id_sekolah)
+                                        ->whereHas('mapel', function ($query) use ($id_user) {
+                                            $query->where('id_guru', $id_user);
+                                        })
+                                        ->whereHas('kelas.angkatan', function ($query) {
+                                            $query->whereColumn('angkatans.semester', 'daftar_absensi_siswas.semester');
+                                        })
+                                        ->whereHas('kelas.angkatan', function ($query) {
+                                            // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                                            $query->whereColumn('angkatans.id_tingkat', 'daftar_absensi_siswas.tingkat');
+                                        })
+                                        ->firstOrFail();
 
         // 3. Jika data tidak ditemukan, kembali dengan pesan error
         if (!$absensiSiswa) {
@@ -948,14 +1018,17 @@ class GuruController extends Controller
             // 1. Find the material by its ID and school ID
             $materi = DaftarMateri::where('id_daftar_materi', $id_materi)
                 ->where('id_sekolah', $id_sekolah)
-                ->firstOrFail();
-
-            // 2. Authorize: Check if the current teacher teaches this subject in this class
-            Jadwal::where('id_kelas', $materi->id_kelas)
-                ->where('id_mapel', $materi->id_mapel)
-                ->where('id_sekolah', $id_sekolah)
+                ->with('kelas.angkatan')
+                ->with('mapel')
                 ->whereHas('mapel', function ($query) use ($id_user) {
                     $query->where('id_guru', $id_user);
+                })
+                ->whereHas('kelas.angkatan', function ($query) {
+                    $query->whereColumn('angkatans.semester', 'daftar_materis.semester');
+                })
+                ->whereHas('kelas.angkatan', function ($query) {
+                    // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                    $query->whereColumn('angkatans.id_tingkat', 'daftar_materis.tingkat');
                 })
                 ->firstOrFail();
 
@@ -985,7 +1058,7 @@ class GuruController extends Controller
             return redirect()->route('inputMateri', ['id_kelas' => $materi->id_kelas, 'id_mapel' => $materi->id_mapel])
                 ->with('success', 'Materi berhasil diperbarui!');
 
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             // This will trigger a 404 Not Found response if the material or authorization fails
             abort(404, 'Materi tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.');
         }
@@ -1000,6 +1073,19 @@ class GuruController extends Controller
             // 1. Find the material by its ID and school ID
             $materi = DaftarMateri::where('id_daftar_materi', $id_materi)
                 ->where('id_sekolah', $id_sekolah)
+                ->with('kelas.angkatan')
+                ->with('mapel')
+                ->where('id_sekolah', $id_sekolah)
+                ->whereHas('mapel', function ($query) use ($id_user) {
+                    $query->where('id_guru', $id_user);
+                })
+                ->whereHas('kelas.angkatan', function ($query) {
+                    $query->whereColumn('angkatans.semester', 'daftar_materis.semester');
+                })
+                ->whereHas('kelas.angkatan', function ($query) {
+                    // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                    $query->whereColumn('angkatans.id_tingkat', 'daftar_materis.tingkat');
+                })
                 ->firstOrFail();
 
             // 2. Authorize: Check if the current teacher teaches this subject in this class
@@ -1023,7 +1109,7 @@ class GuruController extends Controller
             return redirect()->route('inputMateri', ['id_kelas' => $materi->id_kelas, 'id_mapel' => $materi->id_mapel])
                 ->with('success', 'Materi berhasil dihapus!');
 
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             // This will trigger a 404 Not Found response if the material or authorization fails
             abort(404, 'Materi tidak ditemukan atau Anda tidak memiliki izin untuk menghapusnya.');
         }
@@ -1331,6 +1417,9 @@ public function destroyPengumuman($id_pengumuman, Request $request)
 
     public function updateTugas(Request $request, $id)
     {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
+
         $request->validate([
             'keterangan_tugas' => 'required|string|max:255',
             'deadline' => 'required|date',
@@ -1343,7 +1432,21 @@ public function destroyPengumuman($id_pengumuman, Request $request)
         ]);
 
         // Cari tugas berdasarkan ID
-        $tugas = DaftarTugas::findOrFail($id);
+        $tugas = DaftarTugas::where('id_sekolah', $id_sekolah)
+                ->where('id_daftar_tugas', $id)
+                ->with('kelas.angkatan')
+                ->with('mapel')
+                ->whereHas('mapel', function ($query) use ($id_user) {
+                    $query->where('id_guru', $id_user);
+                })
+                ->whereHas('kelas.angkatan', function ($query) {
+                    $query->whereColumn('angkatans.semester', 'daftar_tugas.semester');
+                })
+                ->whereHas('kelas.angkatan', function ($query) {
+                    // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                    $query->whereColumn('angkatans.id_tingkat', 'daftar_tugas.tingkat');
+                })
+                ->findOrFail($id);
 
         // Update keterangan dan deadline
         $tugas->keterangan = $request->keterangan_tugas;
@@ -1380,13 +1483,30 @@ public function destroyPengumuman($id_pengumuman, Request $request)
     }
 
 
-    public function destroyTugas($id)
+    public function destroyTugas( Request $request, $id)
     {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $id_user = $request->cookie('id_user');
         // Cari tugas berdasarkan ID
         $tugas = DaftarTugas::findOrFail($id);
 
         // Cari daftar nilai yang terkait dengan tugas ini
-        $daftarNilai = DaftarNilai::where('id_daftar_tugas', $tugas->id_daftar_tugas)->first();
+        $daftarNilai = DaftarNilai::where('id_daftar_tugas', $tugas->id_daftar_tugas)->first()
+                        ->with('kelas.angkatan')
+                        ->with('mapel')
+                        ->where('id_sekolah', $id_sekolah)
+                        ->whereHas('mapel', function ($query) use ($id_user) {
+                            $query->where('id_guru', $id_user);
+                        })
+                        ->whereHas('kelas.angkatan', function ($query) {
+                            $query->whereColumn('angkatans.semester', 'daftar_nilais.semester');
+                        })
+                        ->whereHas('kelas.angkatan', function ($query) {
+                            // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                            $query->whereColumn('angkatans.id_tingkat', 'daftar_nilais.tingkat');
+                        })
+                        ->firstOrFail();
+
 
         if ($daftarNilai) {
             // Hapus semua entri nilai siswa yang terkait
@@ -1414,11 +1534,20 @@ public function destroyPengumuman($id_pengumuman, Request $request)
 
         // 1. Cari sesi penilaian yang akan dihapus, pastikan milik guru yang login
         $daftarNilai = DaftarNilai::where('id_daftar_nilai', $id_daftar_nilai)
-            ->where('id_sekolah', $id_sekolah)
-            ->whereHas('mapel', function ($query) use ($id_user) {
-                $query->where('id_guru', $id_user);
-            })
-            ->firstOrFail();
+                        ->with('kelas.angkatan')
+                        ->with('mapel')
+                        ->where('id_sekolah', $id_sekolah)
+                        ->whereHas('mapel', function ($query) use ($id_user) {
+                            $query->where('id_guru', $id_user);
+                        })
+                        ->whereHas('kelas.angkatan', function ($query) {
+                            $query->whereColumn('angkatans.semester', 'daftar_nilais.semester');
+                        })
+                        ->whereHas('kelas.angkatan', function ($query) {
+                            // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                            $query->whereColumn('angkatans.id_tingkat', 'daftar_nilais.tingkat');
+                        })
+                        ->firstOrFail();
 
         // 2. Hapus semua nilai siswa yang terkait dengan sesi ini (Cascading Delete)
         DaftarNilaiSiswa::where('id_daftar_nilai', $daftarNilai->id_daftar_nilai)->delete();

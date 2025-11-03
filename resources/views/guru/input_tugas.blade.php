@@ -172,7 +172,7 @@
                 <h1 class="text-2xl md:text-3xl font-bold">Daftar Tugas: {{$infoJKA->kelas->nama_kelas ?? 'N/A'}} - {{$infoJKA->mapel->nama_mapel ?? 'N/A'}}</h1>
                 <p class="text-indigo-200 mt-2">Kelola semua tugas yang telah diberikan kepada siswa.</p>
             </div>
-            <a href="#" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
+            <a href="{{ url()->previous() }}" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
                 <i class="fa-solid fa-arrow-left mr-2"></i>
                 <span>Kembali</span>
             </a>

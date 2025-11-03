@@ -1379,6 +1379,7 @@ class AdminController extends Controller
 
         $guru = User::where('id', $id)
             ->where('id_sekolah', $id_sekolah)
+            ->where('role', 'guru')
             ->firstOrFail();
 
         $updateData = [
@@ -1606,9 +1607,14 @@ class AdminController extends Controller
         return redirect()->route('manajemenMapel')->with('success', 'Mata pelajaran berhasil dihapus!');
     }
 
-    public function destroySingle($id_jadwal)
+    public function destroySingle(Request $request, $id_jadwal)
     {
-        $jadwal = Jadwal::findOrFail($id_jadwal);
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $jadwal = Jadwal::where($id_jadwal)
+                        ->where('id_sekolah', $id_sekolah)
+                        ->firstOrFail();
+
         $jadwal->delete();
 
         return redirect()->back()->with('success', 'Jadwal berhasil dihapus.');
@@ -1691,6 +1697,8 @@ public function storeAcara(Request $request)
 
 public function updateAcara(Request $request, $id)
 {
+    $id_sekolah = $request->cookie('id_sekolah');
+
     $validatedData = $request->validate([
         'judul_acara'     => 'required|string|max:255',
         'waktu_mulai'     => 'required|date',
@@ -1702,6 +1710,7 @@ public function updateAcara(Request $request, $id)
 
     DB::table('daftar_acaras')
         ->where('id_daftar_acara', $id)
+        ->where('id_sekolah', $id_sekolah)
         ->update([
             'judul_acara'     => $validatedData['judul_acara'],
             'tanggal_mulai'   => $validatedData['waktu_mulai'],
@@ -1717,9 +1726,12 @@ public function updateAcara(Request $request, $id)
 
 
     
-public function destroyAcara($id)
+public function destroyAcara(Request $request, $id)
 {
+    $id_sekolah = $request->cookie('id_sekolah');
+
     DB::table('daftar_acaras')
+        ->where('id_sekolah', $id_sekolah)
         ->where('id_daftar_acara', $id)
         ->delete();
 

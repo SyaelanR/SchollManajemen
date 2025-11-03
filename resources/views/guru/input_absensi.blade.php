@@ -210,7 +210,7 @@
                     <h1 class="text-2xl md:text-3xl font-bold">Absensi Kelas: {{$infoJKA->kelas->nama_kelas ?? 'N/A'}} - {{$infoJKA->mapel->nama_mapel ?? 'N/A'}}</h1>
                     <p class="text-indigo-200 mt-2"><i class="fa-solid fa-calendar-day mr-2"></i>Tanggal: {{ now()->format('d F Y') }}</p>
                 </div>
-                <a href="{{ route('manajAbsensiDaftar', ['id_kelas' => 1 , 'id_mapel' => 1 ]) }}" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
+                <a href="{{ url()->previous() }}" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
                     <i class="fa-solid fa-arrow-left mr-2"></i>
                     <span>Kembali</span>
                 </a>
