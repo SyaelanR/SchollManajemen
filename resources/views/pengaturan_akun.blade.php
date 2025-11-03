@@ -118,7 +118,7 @@
             @endcan
 
             @can('view-siswa')
-            <a href="{{ route('siswa.profile')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('siswa.profile')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
+            <a href="{{ route('siswa.profile')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('pengaturanAkun')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
                 <i class="fa-solid fa-user-circle mr-3"></i>
                 <span>Profil</span>
             </a>
