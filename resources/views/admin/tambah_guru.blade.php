@@ -217,15 +217,15 @@
                                 <thead class="bg-gray-50">
                                     <tr>
                                         <!-- MODIFIED: min-width removed for better responsiveness -->
-                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap">NIK</th>
-                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap">Nama Guru</th>
-                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap">Alamat</th>
-                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap">Tempat lahir</th>
-                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap">Tanggal lahir</th>
-                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap">Nomor Telp</th>
-                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap">Jabatan</th>
-                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap">Username</th>
-                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap">Password</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap" style="min-width: 150px;">NIK</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap" style="min-width: 250px;">Nama Guru</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap" style="min-width: 300px;">Alamat</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap" style="min-width: 200px;">Tempat lahir</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap" style="min-width: 180px;">Tanggal lahir</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap" style="min-width: 250px;">Nomor Telp</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap" style="min-width: 100px;">Jabatan</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap" style="min-width: 180px;">Username</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap" style="min-width: 180px;">Password</th>
                                         <th class="p-3 font-semibold text-gray-600 uppercase text-sm text-center whitespace-nowrap">Aksi</th>
                                     </tr>
                                 </thead>
@@ -302,7 +302,7 @@
                 <td class="p-2">
                     <select name="teacher[${rowCount}][jabatan]" class="table-input">
                         <option value="guru">Guru</option>
-                        <option value="staf">Staf</option>
+                        <option disabled value="staf">Staf</option>
                     </select>
                 </td>
                 <td class="p-2">

@@ -328,7 +328,7 @@
                  <div class="mt-6 color">
                     {{-- Pastikan Anda sudah mem-publish view paginasi Tailwind --}}
                     {{-- Menambahkan query string pencarian ke link paginasi --}}
-                    {!! $students->appends(request()->query())->links() !!}
+                    {!! $students->appends(request()->query())->links('vendor.pagination.custom') !!}
                 </div>
             </div>
         </main>

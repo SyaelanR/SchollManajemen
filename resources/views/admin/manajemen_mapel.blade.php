@@ -282,10 +282,8 @@
                     </table>
 
                     {{-- paganation --}}
-                    <div class="mt-6 color">
-                        {{-- Pastikan Anda sudah mem-publish view paginasi Tailwind --}}
-                        {{-- Menambahkan query string pencarian ke link paginasi --}}
-                        {!! $mapels->appends(request()->query())->links() !!}
+                    <div class="mt-6">
+                        {!! $mapels->appends(request()->query())->links('vendor.pagination.custom') !!}
                     </div>
                 </div>
             </div>
