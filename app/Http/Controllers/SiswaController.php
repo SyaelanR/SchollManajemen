@@ -159,23 +159,6 @@ class SiswaController extends Controller
 
     }
 
-    // public function halamanUnggahTugas(Request $request, $id_daftar_nilai_siswa)
-    // {
-    //     $idSiswa = $request->cookie('id_user');
-
-    //     // Find the task for the student
-    //     $tugasSiswa = DaftarNilaiSiswa::where('id_daftar_nilai_siswa', $id_daftar_nilai_siswa)
-    //         ->where('id_siswa', $idSiswa)
-    //         ->firstOrFail();
-
-    //     // Pass the task data to the view
-    //     return view('siswa.upload_tugas', compact('tugasSiswa'));
-    // }
-
-
-
-
-
 
         public function lihatJawaban (Request $request, $namaFile)
     {
@@ -287,37 +270,6 @@ class SiswaController extends Controller
      */
     }
     
-    // public function lihatAbsensi(Request $request)
-    // {
-    //     $id_sekolah = $request->cookie('id_sekolah');
-    //     $id_siswa = $request->cookie('id_user');
-
-    //     // Ambil data siswa beserta relasi kelas dan angkatan
-    //     $siswa = User::with('kelas.angkatan')->find($id_siswa);
-
-    //     // Jika siswa tidak terdaftar di kelas/angkatan, kembalikan data kosong
-    //     if (!$siswa || !$siswa->kelas || !$siswa->kelas->angkatan) {
-    //         return view('siswa.lihat_absensi', ['daftarAbsensi' => collect()]);
-    //     }
-
-    //     $tingkat = $siswa->kelas->angkatan->id_tingkat;
-    //     $semester = $siswa->kelas->angkatan->semester;
-
-    //     // Ambil semua data absensi siswa untuk semester dan tingkat yang aktif
-    //     $daftarAbsensi = DaftarAbsensiSiswa::where('id_siswa', $id_siswa)
-    //         ->where('id_sekolah', $id_sekolah)
-    //         ->where('tingkat', $tingkat)
-    //         ->where('semester', $semester)
-    //         ->with(['mapel', 'daftarAbsensi']) // Eager load untuk efisiensi
-    //         ->latest('created_at') // Urutkan dari yang terbaru
-    //         ->get();
-
-    //     return view('siswa.lihat_absensi', compact('daftarAbsensi'));
-    // }
-
-    /**
-     * Menampilkan daftar materi untuk kelas dan mapel tertentu.
-     */
 
     public function lihatMateriMapel (Request $request)
     {
@@ -432,40 +384,6 @@ class SiswaController extends Controller
         return view('siswa.pilih_mapel_absensi', compact('daftarMapel'));
     }
 
-    /**
-     * Menampilkan halaman untuk memilih mata pelajaran sebelum melihat materi.
-     */
-    public function pilihMapelMateri(Request $request)
-    {
-        $id_sekolah = $request->cookie('id_sekolah');
-        $id_kelas = $request->cookie('id_kelas');
-
-        // // Jika siswa tidak punya kelas, kembalikan view dengan data kosong
-        // if (!$id_kelas) {
-        //     return view('siswa.pilih_mapel_materi', ['daftarMapel' => collect()]);
-        // }
-
-        // // Ambil info angkatan siswa
-        // $infoAngkatan = Angkatan::whereHas('kelas', function ($query) use ($id_kelas) {
-        //     $query->where('id_kelas', $id_kelas);
-        // })->first();
-
-        // Ambil semua mapel yang diajarkan di kelas siswa pada semester & tingkat aktif
-        $daftarMapel = Jadwal::where('id_kelas', $id_kelas)
-            ->where('id_sekolah', $id_sekolah)
-            ->whereHas('kelas.angkatan', function ($query) {
-                $query->whereColumn('angkatans.semester', 'jadwals.semester');
-            })
-            ->whereHas('kelas.angkatan', function ($query) {
-                $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
-            })
-            ->with('mapel.guru')
-            ->select('id_mapel', 'id_kelas')
-            ->distinct()
-            ->get();
-
-        return view('siswa.pilih_mapel_materi', compact('daftarMapel'));
-    }
 
     /////////////////////////////////lihat nilai///////////////////////////////////////////////////
     public function lihatNilaiMapel(Request $request)

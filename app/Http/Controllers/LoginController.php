@@ -197,7 +197,7 @@ class LoginController extends Controller
         }
     }
 
-    public function create()
+    public function welcome()
     {
         // Mengarahkan ke view yang berisi form login
         return view('welcome');
@@ -209,7 +209,7 @@ class LoginController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request): RedirectResponse
+    public function login(Request $request): RedirectResponse
     {
         // 1. Validasi data input dari form
         $credentials = $request->validate([

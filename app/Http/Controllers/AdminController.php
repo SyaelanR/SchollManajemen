@@ -1323,7 +1323,7 @@ class AdminController extends Controller
         $teacher = User::where('id', $id)
                         ->where('id_sekolah', $id_sekolah) // Tambahkan filter id_sekolah
                         ->whereIn('role', ['guru', 'staf'])->firstOrFail();
-        return view('guru.edit_guru', compact('teacher')); // Sesuaikan path view
+        return view('admin.edit_guru', compact('teacher')); // Sesuaikan path view
     }
 
         public function editSiswa(Request $request, User $siswa) // Menggunakan Route Model Binding untuk User (sebagai siswa)
@@ -1607,11 +1607,11 @@ class AdminController extends Controller
         return redirect()->route('manajemenMapel')->with('success', 'Mata pelajaran berhasil dihapus!');
     }
 
-    public function destroySingle(Request $request, $id_jadwal)
+    public function destroyJadwal(Request $request, $id_jadwal)
     {
         $id_sekolah = $request->cookie('id_sekolah');
 
-        $jadwal = Jadwal::where($id_jadwal)
+        $jadwal = Jadwal::where('id_jadwal',$id_jadwal)
                         ->where('id_sekolah', $id_sekolah)
                         ->firstOrFail();
 
@@ -1646,9 +1646,8 @@ class AdminController extends Controller
 
 
     }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-########################################################################################################################################
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
+
+
     public function manajAcara(Request $request)
     {
         $id_sekolah = $request->cookie('id_sekolah');
@@ -1797,7 +1796,41 @@ public function showProfileA(Request $request)
         return view('admin.manajemen_alumni', ['angkatans' => $angkatans]);
     }
 
-    public function storeAlumni(Request $request)
+
+    public function siswaAlumni(Request $request, $id_angkatan)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $search = $request->query('search');
+
+        // Query untuk mencari siswa (user dengan role siswa) berdasarkan angkatan
+        $query = User::where('role', 'siswa')
+                     ->where('id_sekolah', $id_sekolah)
+                     ->where('id_angkatan', $id_angkatan)
+                     ->with('kelas.angkatan') // Eager load relasi
+                     ->whereHas('kelas.angkatan', function ($query) {
+                        $query->where('is_alumni', true);
+            });
+
+        // Jika ada input pencarian, tambahkan kondisi where
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('nisn_nik', 'like', '%' . $search . '%');
+            });
+        }
+
+        $alumni = $query->latest()->paginate(10);
+        // $id_angkatan = optional($query->first()->kelas)->angkatan->id_angkatan;
+
+        return view('admin.siswa_alumni', ['alumni' => $alumni, 'search' => $search, 'id_angkatan' => $id_angkatan]);
+        // return view('debug', ['tes' => $alumni, 'tess' => $query, 'tesss' => $id_angkatan]);
+    }
+
+    #############################################################################################################################
+    #############################################################################################################################
+
+
+        public function storeAlumni(Request $request)
     {   
         $id_sekolah = $request->cookie('id_sekolah');
 
@@ -1847,33 +1880,5 @@ public function showProfileA(Request $request)
         return redirect()->route('manajemenAlumni')->with('success', 'Data Alumni berhasil dihapus!');
     }
 
-    public function siswaAlumni(Request $request, $id_angkatan)
-    {
-        $id_sekolah = $request->cookie('id_sekolah');
-        $search = $request->query('search');
-
-        // Query untuk mencari siswa (user dengan role siswa) berdasarkan angkatan
-        $query = User::where('role', 'siswa')
-                     ->where('id_sekolah', $id_sekolah)
-                     ->where('id_angkatan', $id_angkatan)
-                     ->with('kelas.angkatan') // Eager load relasi
-                     ->whereHas('kelas.angkatan', function ($query) {
-                        $query->where('is_alumni', true);
-            });
-
-        // Jika ada input pencarian, tambahkan kondisi where
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                  ->orWhere('nisn_nik', 'like', '%' . $search . '%');
-            });
-        }
-
-        $alumni = $query->latest()->paginate(10);
-        // $id_angkatan = optional($query->first()->kelas)->angkatan->id_angkatan;
-
-        return view('admin.siswa_alumni', ['alumni' => $alumni, 'search' => $search, 'id_angkatan' => $id_angkatan]);
-        // return view('debug', ['tes' => $alumni, 'tess' => $query, 'tesss' => $id_angkatan]);
-    }
 
 }

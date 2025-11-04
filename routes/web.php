@@ -12,8 +12,8 @@ use Illuminate\Auth\Events\Login;
 // Rute Autentikasi Kustom
 // Menggunakan middleware 'guest' agar pengguna yang sudah login tidak bisa mengakses halaman login lagi.
 Route::middleware('guest')->group(function () {
-    Route::get('/', [LoginController::class, 'create'])->name('login');
-    Route::post('/', [LoginController::class, 'store']);
+    Route::get('/', [LoginController::class, 'welcome'])->name('welcome');
+    Route::post('/', [LoginController::class, 'login'])->name('login');
 });
 
 
@@ -93,12 +93,12 @@ Route::middleware('auth')->group(function () {
             Route::post('/pengeluaran', [AdminController::class, 'storePengeluaran'])->name('storePengeluaran');
             Route::get('/tagihan-siswa', [AdminController::class, 'tagihanSiswa'])->name('tagihanSiswa');
             Route::post('/tagihan-siswa', [AdminController::class, 'storeTagihan'])->name('storeTagihan');
-            Route::post('/tagihan-siswa/pembayaran-tagihan', [AdminController::class, 'pembayaranTagihansiswa'])->name('pembayaranTagihanSiswa');
+            
+            // Route::post('/tagihan-siswa/pembayaran-tagihan', [AdminController::class, 'pembayaranTagihansiswa'])->name('pembayaranTagihanSiswa');
         });
 
         Route::prefix('manajemen-mapel')->group(function () {
             Route::get('/', [AdminController::class, 'manajMapel'])->name('manajemenMapel');
-            // Route::get('/tambah-mapel', [AdminController::class, 'tambahMapel'])->name('tambahMapel');
             Route::post('/', [AdminController::class, 'storeMapel'])->name('storeMapel');
             Route::put('/{id}', [AdminController::class, 'updateMapel'])->name('updateMapel');
             Route::delete('/{id}', [AdminController::class, 'destroyMapel'])->name('destroyMapel');
@@ -109,11 +109,11 @@ Route::middleware('auth')->group(function () {
             Route::get('/tambah-jadwal/{id_kelas}', [AdminController::class, 'tambahJadwal'])->name('tambahJadwal');
             Route::post('/tambah-jadwal/{id_kelas}', [AdminController::class, 'storeJadwal'])->name('storeJadwal');
             Route::put('/update-jadwal/{id_jadwal}', [AdminController::class, 'updateJadwal'])->name('updateJadwal');
+            Route::delete('/jadwal/{id_jadwal}', [AdminController::class, 'destroyJadwal'])->name('jadwal.destroy.single');
 
             // Rute untuk menghapus SEMUA jadwal berdasarkan ID KELAS
-            Route::delete('/jadwal/kelas/{id_kelas}', [JadwalController::class, 'destroyByClass'])->name('jadwal.destroy.by_class');
+            // Route::delete('/jadwal/kelas/{id_kelas}', [JadwalController::class, 'destroyByClass'])->name('jadwal.destroy.by_class');
             // Rute untuk menghapus SATU jadwal spesifik berdasarkan ID JADWAL
-            Route::delete('/jadwal/{id_jadwal}', [AdminController::class, 'destroySingle'])->name('jadwal.destroy.single');
             
         });
 
@@ -156,7 +156,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/detail_siswa_alumni/{id_siswa}', [AdminController::class, 'lihatDetailSiswa'])->name('detailSiswaAlumni');
             Route::get('/history-kbm-alumni/{idsiswa}/{idTingkat}/{semester}', [AdminController::class, 'historyKBM'])->name('historyKBMAlumni');
             // Route::post('/', [AdminController::class, 'storeAlumni'])->name('storeAlumni');
-            // Rute updateAlumni akan menggunakan logic yang sama dengan updateAngkatan
             // jadi kita bisa arahkan ke sana atau buat method baru jika perlu logic berbeda
             // Route::put('/{id}', [AdminController::class, 'updateAlumni'])->name('updateAlumni');
             // Route::delete('/{id}', [AdminController::class, 'destroyAlumni'])->name('destroyAlumni');
@@ -329,45 +328,22 @@ Route::middleware('auth')->group(function () {
     // Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
     // Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
+    ########################################################################################################################################
+    // Route::get('/tambah-admin-klien/{id_sekolah}', [AdminDevController::class, 'tambahAdminKlien'])->name('tambahAdminKlien');
+    // Route::post('/tambah-admin-klien/{id_sekolah}', [AdminDevController::class, 'storeAdmin'])->name('storeAdmin');
 
+    // Route::get('/klien', [AdminDevController::class, 'daftarKlien'])->name('daftarKlien');
+    // Route::get('/klien/{id_sekolah}', [AdminDevController::class, 'infoKlien'])->name('infoKlien');
 
-use App\Http\Controllers\KelasController;
-use App\Http\Controllers\pelanggaranController;
-use App\Http\Controllers\AbsensiController;
+    // Route::get('/tambah-klien', [AdminDevController::class, 'tambahKlien'])->name('tambahKlien');
+    // Route::post('/tambah-klien', [AdminDevController::class, 'storeKlien'])->name('storeKlien');
 
-// Dashboard (halaman utama)
-// Route::get('/', [KelasController::class, 'index'])->name('dashboard');
+    // Route::put('/info-klien/{id}', [AdminDevController::class, 'updateAdminKlien'])->name('updateAdminKlien');
+    // Route::delete('/info-klien/{id}', [AdminDevController::class, 'destroyAdminKlien'])->name('destroyAdminKlien');
 
-// Jadwal
-Route::get('/jadwal', [KelasController::class, 'jadwal'])->name('jadwal');
-
-// Halaman kelas
-Route::get('/kelas10A', [KelasController::class, 'kelas10A'])->name('kelas10A');
-Route::get('/kelas10B', [KelasController::class, 'kelas10B'])->name('kelas10B');
-Route::get('/kelas11A', [KelasController::class, 'kelas11A'])->name('kelas11A');
-Route::get('/kelas11B', [KelasController::class, 'kelas11B'])->name('kelas11B');
-Route::get('/kelas12A', [KelasController::class, 'kelas12A'])->name('kelas12A');
-Route::get('/kelas12B', [KelasController::class, 'kelas12B'])->name('kelas12B');
-
-// Rute untuk Absensi
-Route::prefix('absensi')->group(function () {
-    Route::get('/   ', [absensiController::class, 'index'])->name('absensi.index');
-    Route::get('/{id}', [absensiController::class, 'show'])->name('absensi.show');
-    Route::post('/store', [absensiController::class, 'store'])->name('absensi.store');
-});
-
-// Rute untuk pelanggaranController
-Route::get('/pelanggaran', [pelanggaranController::class, 'index'])->name('pelanggaran.index');
-Route::post('/pelanggaran', [pelanggaranController::class, 'store'])->name('pelanggaran.store');
-Route::get('/daftarPelanggar', [pelanggaranController::class, 'daftarPelanggar'])->name('pelanggaran.daftar');
-Route::get('/daftarPelanggar/{id_kelas}', [pelanggaranController::class, 'daftarPelanggar'])->name('pelanggaran.daftar');
-
-Route::get('/input-nilai', [AdminController::class, 'inputnilai'])->name('inputnilai');
-
+    // Route::put('/info-klien/update-klien/{id}', [AdminDevController::class, 'updateKlien'])->name('updateKlien');
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #####################################################################################################################################################
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Halaman lihat tugas
-####################################################################
