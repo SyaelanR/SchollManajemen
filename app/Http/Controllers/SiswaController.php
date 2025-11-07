@@ -422,21 +422,28 @@ class SiswaController extends Controller
     {
         $id_sekolah = $request->cookie('id_sekolah');
         $id_siswa = $request->cookie('id_user');
+        $id_kelas = $request->cookie('id_kelas');
 
-        $siswa = User::with('kelas.angkatan')->find($id_siswa);
 
-        if (!$siswa || !$siswa->kelas || !$siswa->kelas->angkatan) {
-            return view('siswa.lihat_absensi_per_mapel', ['daftarAbsensi' => collect(), 'infoMapel' => null]);
-        }
+        $infoJadwal = Jadwal::where('id_kelas', $id_kelas)
+                        ->where('id_sekolah', $id_sekolah)
+                        ->where('id_mapel', $id_mapel)
+                        ->whereHas('kelas.angkatan', function ($query) {
+                            $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                        })
+                        ->whereHas('kelas.angkatan', function ($query) {
+                            $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+                        })
+                        ->with(['mapel'])
+                        ->firstOrFail();
 
-        $tingkat = $siswa->kelas->angkatan->id_tingkat;
-        $semester = $siswa->kelas->angkatan->semester;
 
         $daftarAbsensi = DaftarAbsensiSiswa::where('id_siswa', $id_siswa)
             ->where('id_sekolah', $id_sekolah)
-            ->where('id_mapel', $id_mapel) // Filter berdasarkan mapel
-            ->where('tingkat', $tingkat)
-            ->where('semester', $semester)
+            ->where('id_mapel', $id_mapel)
+            ->where('tingkat', $infoJadwal->kelas->angkatan->id_tingkat)
+            ->where('semester', $infoJadwal->kelas->angkatan->semester)
+            ->where('id_kelas', $id_kelas)
             ->with(['mapel', 'daftarAbsensi'])
             ->latest('created_at')
             ->get();
@@ -457,24 +464,32 @@ class SiswaController extends Controller
      */
     public function lihatNilaiDaftar(Request $request, $id_mapel)
     {
-        $id_user = $request->cookie('id_user');
+        $id_siswa = $request->cookie('id_user');
         $id_sekolah = $request->cookie('id_sekolah');
+        $id_kelas = $request->cookie('id_kelas');
+
+        $infoJadwal = Jadwal::where('id_kelas', $id_kelas)
+                        ->where('id_sekolah', $id_sekolah)
+                        ->where('id_mapel', $id_mapel)
+                        ->whereHas('kelas.angkatan', function ($query) {
+                            $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                        })
+                        ->whereHas('kelas.angkatan', function ($query) {
+                            $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+                        })
+                        ->with(['mapel'])
+                        ->firstOrFail();
 
         // Menggunakan join untuk membandingkan kolom antar tabel
-        $daftarNilai = DaftarNilaiSiswa::query()
-                        ->select('daftar_nilai_siswas.*') // Pilih semua kolom dari tabel utama untuk menghindari ambiguitas
-                        ->join('kelas', 'daftar_nilai_siswas.id_kelas', '=', 'kelas.id_kelas')
-                        ->join('angkatans', 'kelas.id_angkatan', '=', 'angkatans.id_angkatan')
-                        ->where('daftar_nilai_siswas.id_siswa', $id_user)
-                        ->where('daftar_nilai_siswas.id_mapel', $id_mapel)
-                        ->where('daftar_nilai_siswas.id_sekolah', $id_sekolah)
-                        // Sekarang whereColumn akan bekerja karena tabel sudah di-join
-                        ->whereColumn('daftar_nilai_siswas.tingkat', 'angkatans.id_tingkat')
-                        ->whereColumn('daftar_nilai_siswas.semester', 'angkatans.semester')
-                        // Eager load relasi yang dibutuhkan untuk view
-                        ->with(['daftarNilai', 'kelas.angkatan', 'mapel'])
-                        ->orderBy('created_at', 'desc')
-                        ->get();
+        $daftarNilai = DaftarNilaiSiswa::where('id_siswa', $id_siswa)
+                    ->where('id_sekolah', $id_sekolah)
+                    ->where('id_mapel', $id_mapel)
+                    ->where('tingkat', $infoJadwal->kelas->angkatan->id_tingkat)
+                    ->where('semester', $infoJadwal->kelas->angkatan->semester)
+                    ->where('id_kelas', $id_kelas)
+                    ->with(['mapel', 'daftarNilai'])
+                    ->latest('created_at')
+                    ->get();
 
         $nama_mapel = $daftarNilai->first()->mapel->nama_mapel ?? 'Belum ada Nilai';
 
