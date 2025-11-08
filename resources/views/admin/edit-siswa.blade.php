@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Siswa - Sistem Manajemen Sekolah</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/png" href="{{ asset('asset/school-solid-full.png') }}">
     <style>
         body { font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -30,47 +31,105 @@
         </div>
         <nav class="mt-6">
             <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
+                <i class="fa-solid fa-tachometer-alt w-6 mr-3"></i>
                 <span>Dashboard</span>
             </a>
+
+            @can('view-admin')
+            <a href="{{ route('admin.profile') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('admin.profile')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
+                <i class="fa-solid fa-user-circle mr-3"></i>
+                <span>Profil</span>
+            </a>
             <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
-                <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
+                <i class="fa-solid fa-user-graduate w-6 mr-3"></i>
                 <span>Manajemen Siswa</span>
             </a>
             <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
+                <i class="fa-solid fa-chalkboard-user w-6 mr-3"></i>
                 <span>Manajemen Guru</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
-                <span>Jadwal Pelajaran</span>
+            <a href="{{ route('manajemenMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book w-6 mr-3"></i>
+                <span>Manajemen Mapel</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-book w-6 h-6 mr-3"></i>
-                <span>Mata Pelajaran</span>
+            <a href="{{ route('manajemenKelas') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-door-closed w-6 mr-3"></i>
+                <span>Manajemen Kelas</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-money-bill-wave w-6 h-6 mr-3"></i>
-                <span>Keuangan</span>
+            <a href="{{ route('manajemenJadwal')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-alt w-6 mr-3"></i>
+                <span>Manajemen Jadwal</span>
             </a>
-            @can('view-settings')
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                    <i class="fa-solid fa-cog w-6 h-6 mr-3"></i>
-                    <span>Pengaturan</span>
-                </a>
+            <a href="{{ route('manajAcara') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-check w-6 h-6 mr-3"></i>
+                <span>Acara</span>
+            </a>
+            <a href="{{ route('manajemenAngkatan') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-bookmark w-6 mr-3"></i>
+                <span>Angkatan</span>
+            </a>
+            <a href="{{ route('manajemenRapor') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open w-6 mr-3"></i>
+                <span>Rapor</span>
+            </a>
+            <a href="{{ route('manajemenKurikulum') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open-reader w-6 mr-3"></i>
+                <span>Kurikulum</span>
+            </a>
+            <a href="{{ route('manajemenTingkat') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-layer-group w-6 mr-3"></i>
+                <span>Tingkat</span>
+            </a>
+            <a href="{{ route('manajemenAlumni') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-user-friends w-6 mr-3"></i>
+                <span>Manajemen Alumni</span>
+            </a>
+            @endcan
+
+            @can('view-guru')
+            <a href="{{ route('manajemenNilai') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-pen w-6 mr-3"></i>
+                <span>Input Nilai</span>
+            </a>
+            <a href="{{ route('lihatjadwalG') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-days w-6 mr-3"></i>
+                <span>Jadwal Mengajar</span>
+            </a>
+            <a href="{{ route('manajAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-list-check w-6 mr-3"></i>
+                <span>Input Absensi</span>
+            </a>
+            @endcan
+
+            @can('view-siswa')
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-pen w-6 mr-3"></i>
+                <span>Lihat Nilai</span>
+            </a>
+            <a href="{{ route('lihatAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-list-check w-6 mr-3"></i>
+                <span>Lihat Absensi</span>
+            </a>
+            @endcan
+
+            @can('view-adminDev')
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-users w-6 mr-3"></i>
+                <span>Manajemen Klien</span>
+            </a>
             @endcan
         </nav>
-        <div class="absolute bottom-0 w-full p-6">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <a href="{{ route('logout') }}"
-                   onclick="event.preventDefault(); this.closest('form').submit();"
-                   class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
-                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
-                    <span>Logout</span>
-                </a>
-            </form>
-        </div>
+        <div class="p-6 border-t border-gray-200 flex-shrink-0">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <a href="{{ route('logout') }}"
+                onclick="event.preventDefault(); this.closest('form').submit();"
+                class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full transition duration-200">
+                <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
+                <span>Logout</span>
+            </a>
+        </form>
+    </div>
     </aside>
 
     <div id="overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden lg:hidden"></div>
@@ -82,13 +141,7 @@
             </button>
             <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Edit Data Siswa</h1>
             <div class="flex items-center space-x-4">
-                <button class="text-gray-500 hover:text-gray-700">
-                    <i class="fa-solid fa-bell"></i>
-                </button>
-                <div class="relative">
-                    <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=A" alt="User avatar">
-                    <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
-                </div>
+                
             </div>
         </header>
 
@@ -167,8 +220,18 @@
                         </div>
 
                          <div>
-                            <label for="no_telp" class="block text-gray-700 font-medium mb-2">No. Telepon</label>
+                            <label for="no_telp" class="block text-gray-700 font-medium mb-2">No. Telepon Wali</label>
                             <input type="text" id="no_telp" name="no_telp" value="{{ old('no_telp', $siswa->no_telp) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                        </div>
+
+                        <div>
+                            <label for="saudara" class="block text-gray-700 font-medium mb-2">Jumlah saudara</label>
+                            <input type="number" id="saudara" name="jumlah_saudara" value="{{ old('no_telp', $siswa->jumlah_sodara) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                        </div>
+
+                        <div>
+                            <label for="gaji" class="block text-gray-700 font-medium mb-2">Penghasilan Orangtua  </label>
+                            <input type="number" id="gaji" name="gaji_orang_tua" value="{{ old('no_telp', $siswa->gaji_orang_tua) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
                         </div>
                         
                         <div class="md:col-span-2">

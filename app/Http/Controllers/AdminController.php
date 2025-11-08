@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\RiwayatKeuangan;
 use App\Models\User; // Menggunakan model User untuk Siswa dan Guru
 use App\Models\Angkatan;
+use App\Models\DaftarAcara;
+use App\Models\DaftarKurikulum;
+use App\Models\DaftarNilai;
+use App\Models\DaftarNilaiSiswa;
+use App\Models\DaftarAbsensiSiswa;
 use App\Models\Kelas;
 use App\Models\PmabayaranSiswa;
 use App\Models\DaftarTagihan;
@@ -19,6 +24,7 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -32,14 +38,31 @@ class AdminController extends Controller
     public function manajSiswa(Request $request)
     {
         $id_sekolah = $request->cookie('id_sekolah');
-        // Menggunakan leftJoin untuk memastikan semua siswa tetap tampil meskipun belum punya kelas.
-        // 'nama_kelas' akan bernilai null jika siswa belum masuk kelas.
-        $students = User::where('users.role', 'siswa')
-                        ->where('users.id_sekolah', $id_sekolah)
-                        ->leftJoin('kelas', 'users.id_kelas', '=', 'kelas.id_kelas')
-                        ->select('users.*', 'kelas.nama_kelas')
-                        ->latest('users.created_at')->paginate(10);
-        return view('admin.manajemen_siswa', ['students' => $students]);
+        $search = $request->query('search');
+
+        // Memulai query untuk model User
+        $query = User::select('users.*') // Pilih semua kolom dari tabel users untuk menghindari konflik
+            ->leftJoin('kelas', 'users.id_kelas', '=', 'kelas.id_kelas')
+            ->leftJoin('angkatans', 'kelas.id_angkatan', '=', 'angkatans.id_angkatan')
+            ->where('users.role', 'siswa')
+            ->where('users.id_sekolah', $id_sekolah)
+            ->with('kelas.angkatan') // Eager load tetap diperlukan untuk menampilkan data relasi di view
+            ->orderBy('angkatans.is_alumni', 'asc') // Urutkan berdasarkan kolom is_alumni dari tabel angkatans
+            ->orderBy('users.created_at', 'desc'); // Tambahkan urutan sekunder jika diperlukan
+
+        // Jika ada input pencarian, tambahkan kondisi where
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('users.name', 'like', '%' . $search . '%')
+                  ->orWhere('users.nisn_nik', 'like', '%' . $search . '%')
+                  ->orWhereHas('kelas.angkatan', function ($subQuery) use ($search) {
+                      $subQuery->where('angkatan', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
+        $students = $query->paginate(10)->appends(['search' => $search]);
+        return view('admin.manajemen_siswa', ['students' => $students, 'search' => $search]);
     }
 
     public function tambahSiswa()
@@ -53,10 +76,22 @@ class AdminController extends Controller
     public function manajGuru(Request $request)
     {
         $id_sekolah = $request->cookie('id_sekolah');
+        $search = $request->input('search');
+
         // Menggunakan whereIn untuk mengambil pengguna dengan role 'guru' atau 'staf'
-        $teachers = User::whereIn('role', ['guru', 'staf'])
-                        ->where('id_sekolah', $id_sekolah)->latest()->paginate(10);
-        return view('admin.manajemen_guru', ['teachers' => $teachers]);
+        $query = User::whereIn('role', ['guru', 'staf'])
+                     ->where('id_sekolah', $id_sekolah);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('alamat', 'like', "%{$search}%")
+                  ->orWhere('no_telp', 'like', "%{$search}%");
+            });
+        }
+
+        $teachers = $query->latest()->paginate(10)->appends(['search' => $search]);
+        return view('admin.manajemen_guru', ['teachers' => $teachers, 'search' => $search]);
     }
 
 
@@ -92,7 +127,7 @@ class AdminController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
         foreach ($request->input('students', []) as $studentData) {
@@ -121,7 +156,7 @@ class AdminController extends Controller
             }
         }
 
-        return response()->json(['message' => 'Data semua siswa berhasil disimpan!'], 200);
+        return redirect()->route('manajemenSiswa')->with('success', 'Data siswa berhasil ditambahkan!');
     }
 
 
@@ -140,13 +175,12 @@ class AdminController extends Controller
             'teacher.*.alamat' => 'nullable|string|max:255',
             'teacher.*.tempat_lahir' => 'nullable|string|max:100',
             'teacher.*.tanggal_lahir' => 'nullable|date',
-            'teacher.*.usia' => 'nullable|integer',
             'teacher.*.nomor_telp' => 'nullable|string|max:15',
             'teacher.*.jabatan' => 'required|string|in:guru,staf', // 'jabatan' dari form akan menjadi 'role'
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
         foreach ($request->input('teacher', []) as $teacherData) {
@@ -163,13 +197,12 @@ class AdminController extends Controller
                     'alamat'        => $teacherData['alamat'],
                     'tempat_lahir'  => $teacherData['tempat_lahir'],
                     'tanggal_lahir' => $teacherData['tanggal_lahir'],
-                    'usia'          => $teacherData['usia'],
                     'no_telp'       => $teacherData['nomor_telp'],
                 ]);
             }
         }
 
-        return response()->json(['message' => 'Data semua staf/guru berhasil disimpan!'], 200);
+        return redirect()->route('manajemenGuru')->with('success', 'Data guru/staf berhasil ditambahkan!');
     }
 
 
@@ -225,8 +258,16 @@ class AdminController extends Controller
     {
         $id_sekolah = request()->cookie('id_sekolah');
 
-        $angkatans = Angkatan::where('id_sekolah', $id_sekolah)->where('id_sekolah', $id_sekolah)->latest()->get();
-        $kelas = Kelas::latest()->where('id_sekolah', $id_sekolah)->get();
+        $angkatans = Angkatan::where('id_sekolah', $id_sekolah)->where('id_sekolah', $id_sekolah)
+                    ->whereNotNull('id_tingkat')
+                    ->latest()->get();
+
+        $kelas = Kelas::where('id_sekolah', $id_sekolah)
+                    ->with('angkatan')
+                    ->whereHas('angkatan', function ($query) {
+                        $query->whereNotNull('id_tingkat');
+                    })//filter alumni
+                    ->get();
 
         return view('admin.manajemen_kelas', ['angkatans' => $angkatans, 'kelasList' => $kelas]);
     }
@@ -266,7 +307,14 @@ class AdminController extends Controller
     {
         $id_sekolah = $request->cookie('id_sekolah');
         
-        $infoKelas = Kelas::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->with('angkatan')->first();
+        $infoKelas = Kelas::where('id_kelas', $id_kelas)
+                        ->where('id_sekolah', $id_sekolah)
+                        ->with('angkatan')
+                        ->whereHas('angkatan', function ($query) {
+                            $query->whereNotNull('id_tingkat');
+                        }) //filter alumni
+                        ->firstOrFail();
+
         $daftarSiswa = User::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->get();
         $daftarSiswaBelumPunyaKelas = User::where('id_kelas', null)->where('id_sekolah', $id_sekolah)->where('role', 'siswa')->get();
         $jumlahSiswa = $daftarSiswa->count();
@@ -289,7 +337,14 @@ class AdminController extends Controller
         ]);
 
         $id_kelas = $request->input('id_kelas');
-        $id_kelass = Kelas::where('id_kelas', $id_kelas)->where('id_sekolah', $request->cookie('id_sekolah'))->firstOrFail();
+        $id_kelass = Kelas::where('id_kelas', $id_kelas)
+                        ->where('id_sekolah', $request->cookie('id_sekolah'))
+                        ->with('angkatan')
+                        ->whereHas('angkatan', function ($query) {
+                            $query->whereNotNull('id_tingkat');
+                        }) //filter alumni
+                        ->firstOrFail();
+                        
         $siswa_ids = $request->input('siswa_ids');
 
         // 2. Update id_kelas untuk semua siswa yang dipilih
@@ -485,18 +540,40 @@ class AdminController extends Controller
         ]);
     }
 
-    public function manajMapel()
+    public function manajMapel(Request $request)
     {
         $id_sekolah = request()->cookie('id_sekolah');
-        // Menggunakan Eloquent untuk mengambil data agar casting (dekripsi) otomatis diterapkan.
-        // 'with('guru')' akan melakukan eager loading relasi 'guru'.
-        $mapels = Mapel::with('guru')
+        $teachers = User::where('role', 'guru')
             ->where('id_sekolah', $id_sekolah)
-            ->where('id_sekolah', $id_sekolah)->latest()->get();
+            ->get();
 
-        $teachers = User::where('role', 'guru')->where('id_sekolah', $id_sekolah)->get();
+        $search = $request->query('search');
+
+        $query = Mapel::with('guru')
+            ->where('id_sekolah', $id_sekolah)
+            ->orderByRaw("CASE WHEN status = 'aktif' THEN 1 ELSE 2 END"); // urutkan status aktif duluan
+
+        // Jika ada pencarian
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('guru', function ($g) use ($search) {
+                    $g->where('name', 'like', "%{$search}%")
+                    ->orWhere('nisn_nik', 'like', "%{$search}%");
+                })
+                ->orWhere('kode_mapel', 'like', "%{$search}%")
+                ->orWhere('nama_mapel', 'like', "%{$search}%")
+                ->orWhere('kategori', 'like', "%{$search}%");
+            });
+        }
+
+        // Gunakan paginate di akhir
+        // $mapels = $query->paginate(10);
+
+
+        $mapels = $query->paginate(10)->appends(['search' => $search]);
+        // return view('admin.manajemen_siswa', ['students' => $students, 'search' => $search]);
         
-        return view('admin.manajemen_mapel', ['mapels' => $mapels, 'teachers' => $teachers]);
+        return view('admin.manajemen_mapel', ['mapels' => $mapels, 'teachers' => $teachers, 'search' => $search]);
 
     }
 
@@ -529,6 +606,7 @@ class AdminController extends Controller
             'kategori' => $request->kategori,
             'sks' => $request->sks,
             'id_guru' => $request->guru_id,
+            'status' => 'aktif', // Tambahkan ini agar status defaultnya aktif
         ]);
 
         return redirect()->route('manajemenMapel')->with('success', 'Mata pelajaran berhasil ditambahkan!');    
@@ -539,7 +617,15 @@ class AdminController extends Controller
     public function manajJadwal(){
         $id_sekolah = request()->cookie('id_sekolah');
 
-        $kelaslist = Kelas::where('id_sekolah', $id_sekolah)->get();
+        // Menggunakan whereHas untuk memfilter Kelas berdasarkan kondisi pada relasi angkatan.
+        // Di sini, kita mengambil kelas yang angkatannya memiliki id_tingkat bukan alumni(bukan null).
+        $kelaslist = Kelas::where('id_sekolah', $id_sekolah)
+                        ->with('angkatan')
+                        ->whereHas('angkatan', function ($query) {
+                            $query->whereNotNull('id_tingkat');
+                        }) //filter alumni
+                        ->get();
+
         return view('admin.manajemen_jadwal', ['kelasList' => $kelaslist]);
     }
 
@@ -551,6 +637,9 @@ class AdminController extends Controller
         $kelas = Kelas::with('angkatan')
                       ->where('id_kelas', $id_kelas)
                       ->where('id_sekolah', $id_sekolah)
+                      ->whereHas('angkatan', function ($query) {
+                        $query->whereNotNull('id_tingkat');
+                         })//filter alumni
                       ->firstOrFail(); // Akan melempar 404 Not Found jika kelas tidak ada
 
         // Mengambil semester dari relasi angkatan yang sudah di-load, bukan query baru.
@@ -559,10 +648,10 @@ class AdminController extends Controller
 
         // Mengambil semua mapel yang tersedia untuk sekolah ini untuk form tambah jadwal.
         $mapels = Mapel::with('guru')
-                    ->where('id_sekolah', $id_sekolah)->get();
+                    ->where('id_sekolah', $id_sekolah)
+                    ->where('status', 'aktif')
+                    ->get();
 
-        // Mengambil data jadwal yang sudah ada untuk kelas ini.
-        // Menggunakan nested eager loading 'mapel.guru' untuk mendapatkan nama mapel dan nama guru.
         $jadwals = Jadwal::with('mapel.guru') // Memuat relasi mapel, dan relasi guru di dalam mapel
                         ->where('id_kelas', $id_kelas)
                         ->where('id_sekolah', $id_sekolah)
@@ -598,8 +687,13 @@ class AdminController extends Controller
             'ruangan.required' => 'ruangan tidak boleh kosong.',
         ]);
 
-        $idAngkatan = Kelas::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->value('id_angkatan');
-        $angkatan = Angkatan::where('id_angkatan', $idAngkatan)->where('id_sekolah', $id_sekolah)->get();
+        $infoAngkatan = Kelas::with('angkatan')
+                      ->where('id_kelas', $id_kelas)
+                      ->where('id_sekolah', $id_sekolah)
+                      ->whereHas('angkatan', function ($query) {
+                        $query->whereNotNull('id_tingkat');
+                         })//filter alumni
+                      ->firstOrFail(); // Akan melempar 404 Not Found jika kelas tidak ada
 
         Jadwal::create([
             'id_sekolah' => $id_sekolah,
@@ -608,8 +702,8 @@ class AdminController extends Controller
             'jam_mulai' => $request->jam_mulai,
             'jam_selesai' => $request->jam_selesai,
             'id_mapel' => $request->id_mapel,
-            'semester' => $angkatan->first()->semester ?? null,
-            'tingkat' => $angkatan->first()->id_tingkat ?? null,
+            'semester' => $infoAngkatan->angkatan->semester,
+            'tingkat' => $infoAngkatan->angkatan->id_tingkat,
             'ruangan' => $request->ruangan,
         ]);
         return redirect()->route('tambahJadwal', ['id_kelas' => $id_kelas])->with('success', 'Jadwal berhasil ditambahkan!');
@@ -665,24 +759,13 @@ class AdminController extends Controller
         if (!$id_sekolah) {
             return redirect()->back()->with('error', 'Gagal menambahkan tingkat. Sesi sekolah tidak ditemukan.');
         }
-
-        // PERBAIKAN: Validasi input dari form
-        $request->validate([
-            'tingkat' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('tingkats', 'tingkat')->where('id_sekolah', $id_sekolah)
-            ],
-        ], [
-            'tingkat.required' => 'Nama tingkat tidak boleh kosong.',
-            'tingkat.unique' => 'Nama tingkat ini sudah ada.',
-        ]);
+        
+        $jumlahTingkat = Tingkat::where('id_sekolah', $id_sekolah)->count() ?? 0;
 
         // Simpan tingkat baru ke database
         Tingkat::create([
             'id_sekolah' => $id_sekolah,
-            'tingkat' => $request->tingkat, // PERBAIKAN: Gunakan input dari request
+            'tingkat' => $jumlahTingkat + 1,
         ]);
 
         return redirect()->route('manajemenTingkat')->with('success', 'Tingkat berhasil ditambahkan!');
@@ -735,6 +818,197 @@ class AdminController extends Controller
         }
         
         return redirect()->route('manajemenTingkat')->withErrors(['error' => 'Tidak ada tingkat yang bisa dihapus.']);
+    }
+
+    public function manajKurikulum (Request $request) 
+    {
+        $id_sekolah = request()->cookie('id_sekolah');
+
+        $angkatans = Angkatan::where('id_sekolah', $id_sekolah)->latest()->get();
+
+        $kurikulums = DaftarKurikulum::where('id_sekolah', $id_sekolah)
+                    ->with('angkatan')
+                    ->get();
+
+        return view('admin.manajemen_kurikulum', ['kurikulums' => $kurikulums, 'angkatans' => $angkatans]);
+    }
+
+    public function storeKurikulum(Request $request)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $request->validate([
+            'id_angkatan' => 'required|exists:angkatans,id_angkatan', //cek apakah id_angkatan ada di tabel angkatans
+            'nama' => 'required|string|max:255',
+            'jenjang' => 'required|string|in:SMA,SMK,SD,SMP',
+            'jumlah_matpel' => 'required|integer|min:1',
+        ], [
+            'angkatan.required' => 'Angkatan tidak boleh kosong.',
+            'angkatan.exists' => 'Angkatan tidak valid.',
+            'nama.required' => 'Nama kurikulum tidak boleh kosong.',
+            'jenjang.required' => 'Jenjang kurikulum tidak boleh kosong.',
+            'jenjang.in' => 'Jenjang kurikulum tidak valid.',
+            'jumlah_matpel.required' => 'Jumlah mata pelajaran tidak boleh kosong.',
+            'jumlah_matpel.integer' => 'Jumlah mata pelajaran harus berupa angka.',
+            'jumlah_matpel.min' => 'Jumlah mata pelajaran harus minimal 1.', 
+        ]);
+
+        DaftarKurikulum::create([
+            'id_sekolah' => $id_sekolah,
+            'id_angkatan' => $request->id_angkatan,
+            'nama_kurikulum' => $request->nama,
+            'jenjang' => $request->jenjang,
+            'jumlah_matpel' => $request->jumlah_matpel,
+        ]);
+
+        return redirect()->route('manajemenKurikulum')->with('success', 'Kurikulum berhasil ditambahkan!');
+
+    }
+
+    public function manajRapor ()
+    {
+        $id_sekolah = request()->cookie('id_sekolah');
+
+        $kelaslist = Kelas::where('id_sekolah', $id_sekolah)
+                        ->with('angkatan')
+                        ->whereHas('angkatan', function ($query) {
+                        $query->whereNotNull('id_tingkat');
+                         })//filter alumni
+                        ->get();
+
+        return view('admin.manajemen_rapor', ['kelasList' => $kelaslist]);
+    }
+
+    public function Rapors(Request $request, int $id_kelas)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+    
+        // Ambil info kelas dan angkatan untuk data umum di rapor
+        $kelasInfo = Kelas::with('angkatan.sekolah')
+                        ->whereHas('angkatan', function ($query) {
+                        $query->whereNotNull('id_tingkat');
+                         })//filter alumni
+                        ->findOrFail($id_kelas);
+    
+        // Ambil semua siswa dalam kelas beserta relasi nilai mereka
+        $students = User::where('id_kelas', $id_kelas)
+                        ->where('id_sekolah', $id_sekolah)
+                        ->with([
+                            // Filter relasi saat eager loading
+                            'daftarNilaiSiswa' => function($query) use ($kelasInfo) {
+                                $query->where('tingkat', $kelasInfo->angkatan->id_tingkat)
+                                      ->where('semester', $kelasInfo->angkatan->semester);
+                            },
+                            'daftarNilaiSiswa.mapel', 
+                            'daftarNilaiSiswa.daftarNilai',
+                            'daftarNilaiSiswa.idTingkat',
+                            'daftarAbsensiSiswa' => function($query) use ($kelasInfo) {
+                                $query->where('tingkat', $kelasInfo->angkatan->id_tingkat)
+                                      ->where('semester', $kelasInfo->angkatan->semester);
+                            }
+                        ])
+                        ->get();
+
+        $infoTS = $students->first()?->daftarNilaiSiswa?->first() ?? [];
+    
+        // Proses data untuk setiap siswa
+        $processedRapors = $students->map(function ($student) {
+            // Kelompokkan nilai berdasarkan mapel
+            $nilaiByMapel = $student->daftarNilaiSiswa->groupBy('id_mapel');
+    
+            $raporData = $nilaiByMapel->map(function ($nilaiGroup) {
+                $scores = [
+                    'Tugas' => [],
+                    'PR'    => [],
+                    'UTS'   => [],
+                    'UAS'   => [],
+                    'Hafalan' => [],
+                ];
+    
+                // 1. Kumpulkan semua nilai untuk setiap tipe ke dalam array
+                foreach ($nilaiGroup as $nilai) {
+                    if ($nilai->daftarNilai && is_numeric($nilai->nilai)) {
+                        $tipe = $nilai->daftarNilai->tipe_nilai;
+                        if (array_key_exists($tipe, $scores)) {
+                            $scores[$tipe][] = $nilai->nilai; // Tambahkan nilai ke array
+                        }
+                    }
+                }
+    
+                // Helper function untuk menghitung rata-rata
+                $calculateAverage = function (array $numbers) {
+                    if (empty($numbers)) {
+                        return null;
+                    }
+                    return array_sum($numbers) / count($numbers);
+                };
+    
+                // 2. Hitung rata-rata untuk setiap tipe nilai
+                $avgTugas = $calculateAverage($scores['Tugas']);
+                $avgPR = $calculateAverage($scores['PR']);
+                $avgUTS = $calculateAverage($scores['UTS']);
+                $avgUAS = $calculateAverage($scores['UAS']);
+                $avgHafalan = $calculateAverage($scores['Hafalan']);
+    
+                // RUMUS NILAI TUGAS AKHIR
+                $nilaiTugasAkhir = $avgTugas;
+                if (is_numeric($avgTugas) && is_numeric($avgPR) && !is_numeric($avgHafalan)) {
+                    // Jika ada nilai PR dan tugas, hitung dengan bobot
+                    $nilaiTugasAkhir = round(($avgTugas * 0.7) + ($avgPR * 0.3));
+                } elseif (is_numeric($avgTugas) && is_numeric($avgPR) && is_numeric($avgHafalan)) {
+                    //jika ada nilai tugas, pr, dan hafalan, hitung dengan bobot
+                    $nilaiTugasAkhir = round(($avgTugas * 0.4) + ($avgPR * 0.2) + ($avgHafalan * 0.4));
+                }
+                elseif (is_numeric($avgTugas) && is_numeric($avgHafalan) && !is_numeric($avgPR)) {
+                    // Jika hanya ada Tugas dan Hafalan, hitung dengan bobot
+                    $nilaiTugasAkhir = round(($avgTugas * 0.5) + ($avgHafalan * 0.5));
+                }
+                elseif (is_numeric($avgPR) && !is_numeric($avgTugas) && !is_numeric($avgHafalan)) {
+                    // Jika hanya ada PR, nilai PR menjadi nilai Tugas
+                    $nilaiTugasAkhir = $avgPR;
+                } elseif (is_numeric($avgHafalan) && !is_numeric($avgTugas) && !is_numeric($avgPR)) {
+                    // Jika hanya ada Hafalan, nilai Hafalan menjadi nilai Tugas
+                    $nilaiTugasAkhir = $avgHafalan;
+                }
+    
+                // 4. Siapkan skor akhir untuk ditampilkan di rapor
+                $finalScores = [
+                    'Tugas' => $nilaiTugasAkhir !== null ? round($nilaiTugasAkhir) : null,
+                    'UTS'   => $avgUTS !== null ? round($avgUTS) : null,
+                    'UAS'   => $avgUAS !== null ? round($avgUAS) : null,
+                    'Nilai Akhir' => 0,
+                ];
+    
+                // 5. Hitung Nilai Akhir Rapor dari rata-rata (Tugas Akhir, UTS, UAS)
+                $validScores = array_filter([$finalScores['Tugas'], $finalScores['UTS'], $finalScores['UAS']], 'is_numeric');
+                if (count($validScores) > 0) {
+                    $finalScores['Nilai Akhir'] = round(array_sum($validScores) / count($validScores));
+                }
+    
+                return [
+                    'mapel' => $nilaiGroup->first()->mapel,
+                    'scores' => $finalScores,
+                ];
+            });
+    
+            // --- LOGIKA PENGHITUNGAN ABSENSI (data sudah terfilter oleh query) ---
+            // Hitung jumlah untuk setiap status
+            $attendanceCounts = [
+                'Sakit' => $student->daftarAbsensiSiswa->where('status', 'Sakit')->count(),
+                'Izin'  => $student->daftarAbsensiSiswa->where('status', 'Izin')->count(),
+                'Alfa' => $student->daftarAbsensiSiswa->where('status', 'Alfa')->count(),
+            ];
+
+            // Kembalikan data siswa bersama dengan data rapor yang sudah diproses
+            return [
+                'siswa' => $student,
+                'rapor' => $raporData,
+                'absensi' => $attendanceCounts, // Tambahkan data absensi ke hasil
+            ];
+        });
+
+        // return view('debug', ['tes' => $students, 'tess' => $processedRapors]);
+        return view('admin.rapors', ['processedRapors' => $processedRapors, 'kelasInfo' => $kelasInfo, 'infoTS' => $infoTS]);
     }
 
 
@@ -804,8 +1078,237 @@ class AdminController extends Controller
         return redirect()->route('manajemenSiswa')->with('success', 'Data siswa berhasil dihapus!');
     }
 
+    public function lihatDetailSiswa(Request $request, $idsiswa)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
 
-        public function destroyKelas(Request $request, $id_kelas) // Should be destroy() for KelasController
+        
+        // $siswa = User::where('id', $siswa) // $siswa di sini adalah ID dari URL
+        //             ->where('id_sekolah', $id_sekolah)
+        //             ->where('role', 'siswa')
+        //             ->with('kelas.angkatan.idtingkat')
+        //             ->with('daftarNilaiSiswa.kelas.angkatan')
+        //             ->with('daftarAbsensiSiswa.kelas.angkatan')
+        //             ->select('daftarNilaiSiswa.semester', 'daftarNilaiSiswa.tingkat', 'daftarAbsensiSiswa.semester', 'daftarAbsensiSiswa.tingkat')
+        //             ->distinct()
+        //             ->firstOrFail();
+
+        // Ambil data siswa
+        $siswa = User::where('id', $idsiswa)
+                ->where('id_sekolah', $id_sekolah)
+                ->where('role', 'siswa')
+                ->with([
+                    'daftarNilaiSiswa' => function ($query) {
+                        $query->select('id_daftar_nilai_siswa', 'id_siswa', 'id_kelas', 'tingkat', 'semester')
+                            ->whereNotNull('tingkat')
+                            ->whereNotNull('semester')
+                            ->distinct('tingkat', 'semester')
+                            ->with('idTingkat')
+                            ->with('kelas.angkatan');
+                    },
+                    'daftarAbsensiSiswa' => function ($query) {
+                        $query->select('id_daftar_absensi_siswa', 'id_siswa', 'id_kelas', 'tingkat', 'semester')
+                            ->whereNotNull('tingkat')
+                            ->whereNotNull('semester')
+                            ->distinct('tingkat', 'semester')
+                            ->with('idTingkat')
+                            ->with('kelas.angkatan');
+                    },
+                    'kelas.angkatan'
+                ])
+                ->firstOrFail();
+
+
+        $historiKBMs = collect($siswa->daftarNilaiSiswa)
+                ->merge($siswa->daftarAbsensiSiswa)
+                ->map(fn($item) => [
+                    'tingkat' => $item->idTingkat->tingkat,
+                    'semester' => $item->semester,
+                    'id_tingkat' => $item->tingkat,
+                    'angkatan' => $item->kelas->angkatan->angkatan,
+                ])
+                ->unique(fn($item) => $item['id_tingkat'].'-'.$item['semester'])
+                ->values();
+
+
+        return view('admin.lihat_detail_siswa',['siswa' => $siswa, 'historiKBMs' => $historiKBMs]);
+        // return view('debug', ['tes' => $siswa, 'tess' => $historiKBMs]);
+    }
+
+    public function historyKBM (Request $request, $idsiswa, $idTingkat, $semester)
+    {
+        if ($semester != 'ganjil' && $semester != 'genap') {
+            abort(404);
+        }
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $historyNilai = DaftarNilaiSiswa::where('id_siswa', $idsiswa)
+                            ->where('tingkat', $idTingkat)
+                            ->where('semester', $semester)
+                            ->with('siswa')
+                            ->with('mapel')
+                            ->with('idTingkat')
+                            ->with('daftarNilai')
+                            ->get();
+
+        $historyAbsensi = DaftarAbsensiSiswa::where('id_siswa', $idsiswa)
+                            ->where('tingkat', $idTingkat)
+                            ->where('semester', $semester)
+                            ->with('daftarAbsensi')
+                            ->with('mapel')
+                            ->get();
+
+        $infoSiswa = $historyNilai->first();
+
+        $idSekolahSiswa = $historyNilai->first()->siswa->id_sekolah ?? $id_sekolah;
+
+        if ($idSekolahSiswa != $id_sekolah) {
+            abort(404, );
+        }
+
+        return view('admin.lihat_histori_kbm', ['historyNilai' => $historyNilai, 'historyAbsensi' => $historyAbsensi, 'infoSiswa' => $infoSiswa]);
+        // return view('debug', ['tes' => $infoSiswa, 'tess' => $idTingkat, 'tesss' => $historyNilai]);
+    }
+
+    public function rapor(Request $request, $id_siswa, $id_tingkat, $semester)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+    
+        // Ambil semua siswa dalam kelas beserta relasi nilai mereka
+        $students = User::where('id', $id_siswa)
+                        ->where('id_sekolah', $id_sekolah)
+                        ->with([
+                            // Filter relasi saat eager loading
+                            'daftarNilaiSiswa' => function($query) use ($id_tingkat, $semester) {
+                                $query->where('tingkat', $id_tingkat)
+                                      ->where('semester', $semester);
+                            },
+                            'daftarNilaiSiswa.mapel', 
+                            'daftarNilaiSiswa.daftarNilai',
+                            'daftarNilaiSiswa.idTingkat',
+                            'daftarAbsensiSiswa' => function($query) use ($id_tingkat, $semester) {
+                                $query->where('tingkat', $id_tingkat)
+                                      ->where('semester', $semester);
+                            }
+                        ])
+                        ->with('kelas')
+                        ->get();
+        
+        $infoTS = $students->first()?->daftarNilaiSiswa?->first() ?? [];
+        
+        // Jika siswa tidak ditemukan atau tidak punya kelas, hentikan proses.
+        if ($students->isEmpty() || !$students->first()->kelas) {
+            abort(404, 'Siswa atau data kelas tidak ditemukan.');
+        }
+
+         $kelasInfo = Kelas::with('angkatan.sekolah')
+                        ->whereHas('angkatan', function ($query) {
+                        // $query->whereNotNull('id_tingkat');
+                         })//filter alumni
+                        ->findOrFail($students->first()->kelas->id_kelas);
+    
+        // Proses data untuk setiap siswa
+        $processedRapors = $students->map(function ($student) {
+            // Kelompokkan nilai berdasarkan mapel
+            $nilaiByMapel = $student->daftarNilaiSiswa->groupBy('id_mapel');
+    
+            $raporData = $nilaiByMapel->map(function ($nilaiGroup) {
+                $scores = [
+                    'Tugas' => [],
+                    'PR'    => [],
+                    'UTS'   => [],
+                    'UAS'   => [],
+                    'Hafalan' => [], // Tambahkan tipe nilai Hafalan
+                ];
+    
+                // 1. Kumpulkan semua nilai untuk setiap tipe ke dalam array
+                foreach ($nilaiGroup as $nilai) {
+                    if ($nilai->daftarNilai && is_numeric($nilai->nilai)) {
+                        $tipe = $nilai->daftarNilai->tipe_nilai;
+                        if (array_key_exists($tipe, $scores)) {
+                            $scores[$tipe][] = $nilai->nilai; // Tambahkan nilai ke array
+                        }
+                    }
+                }
+    
+                // Helper function untuk menghitung rata-rata
+                $calculateAverage = function (array $numbers) {
+                    if (empty($numbers)) {
+                        return null;
+                    }
+                    return array_sum($numbers) / count($numbers);
+                };
+    
+                // 2. Hitung rata-rata untuk setiap tipe nilai
+                $avgTugas = $calculateAverage($scores['Tugas']);
+                $avgPR = $calculateAverage($scores['PR']);
+                $avgUTS = $calculateAverage($scores['UTS']);
+                $avgUAS = $calculateAverage($scores['UAS']);
+                $avgHafalan = $calculateAverage($scores['Hafalan']); // Hitung rata-rata Hafalan
+    
+                // RUMUS NILAI TUGAS AKHIR
+                $nilaiTugasAkhir = $avgTugas;
+                if (is_numeric($avgTugas) && is_numeric($avgPR) && !is_numeric($avgHafalan)) {
+                    // Jika ada nilai PR dan tugas, hitung dengan bobot
+                    $nilaiTugasAkhir = round(($avgTugas * 0.7) + ($avgPR * 0.3));
+                } elseif (is_numeric($avgTugas) && is_numeric($avgPR) && is_numeric($avgHafalan)) {
+                    //jika ada nilai tugas, pr, dan hafalan, hitung dengan bobot
+                    $nilaiTugasAkhir = round(($avgTugas * 0.4) + ($avgPR * 0.2) + ($avgHafalan * 0.4));
+                }
+                elseif (is_numeric($avgTugas) && is_numeric($avgHafalan) && !is_numeric($avgPR)) {
+                    // Jika hanya ada Tugas dan Hafalan, hitung dengan bobot
+                    $nilaiTugasAkhir = round(($avgTugas * 0.5) + ($avgHafalan * 0.5));
+                }
+                elseif (is_numeric($avgPR) && !is_numeric($avgTugas) && !is_numeric($avgHafalan)) {
+                    // Jika hanya ada PR, nilai PR menjadi nilai Tugas
+                    $nilaiTugasAkhir = $avgPR;
+                } elseif (is_numeric($avgHafalan) && !is_numeric($avgTugas) && !is_numeric($avgPR)) {
+                    // Jika hanya ada Hafalan, nilai Hafalan menjadi nilai Tugas
+                    $nilaiTugasAkhir = $avgHafalan;
+                }
+    
+                // 4. Siapkan skor akhir untuk ditampilkan di rapor
+                $finalScores = [
+                    'Tugas' => $nilaiTugasAkhir !== null ? round($nilaiTugasAkhir) : null,
+                    'UTS'   => $avgUTS !== null ? round($avgUTS) : null,
+                    'UAS'   => $avgUAS !== null ? round($avgUAS) : null,
+                    'Nilai Akhir' => 0,
+                ];
+    
+                // 5. Hitung Nilai Akhir Rapor dari rata-rata (Tugas Akhir, UTS, UAS)
+                $validScores = array_filter([$finalScores['Tugas'], $finalScores['UTS'], $finalScores['UAS']], 'is_numeric');
+                if (count($validScores) > 0) {
+                    $finalScores['Nilai Akhir'] = round(array_sum($validScores) / count($validScores)); // merata-rata nilai Tugas, UTS, dan UAS
+                }
+    
+                return [
+                    'mapel' => $nilaiGroup->first()->mapel,
+                    'scores' => $finalScores,
+                ];
+            });
+    
+            // --- LOGIKA PENGHITUNGAN ABSENSI (data sudah terfilter oleh query) ---
+            // Hitung jumlah untuk setiap status
+            $attendanceCounts = [
+                'Sakit' => $student->daftarAbsensiSiswa->where('status', 'Sakit')->count(),
+                'Izin'  => $student->daftarAbsensiSiswa->where('status', 'Izin')->count(),
+                'Alfa' => $student->daftarAbsensiSiswa->where('status', 'Alfa')->count(),
+            ];
+
+            // Kembalikan data siswa bersama dengan data rapor yang sudah diproses
+            return [
+                'siswa' => $student,
+                'rapor' => $raporData,
+                'absensi' => $attendanceCounts, // Tambahkan data absensi ke hasil
+            ];
+        });
+
+        // return view('debug', ['tes' => $students, 'tess' => $processedRapors]);
+        return view('admin.rapors', ['processedRapors' => $processedRapors, 'kelasInfo' => $kelasInfo, 'infoTS' => $infoTS]);
+    }
+
+
+    public function destroyKelas(Request $request, $id_kelas) // Should be destroy() for KelasController
     {
         $id_sekolah = $request->cookie('id_sekolah');
         $kelas = Kelas::where('id_kelas', $id_kelas)->where('id_sekolah', $id_sekolah)->firstOrFail();
@@ -820,7 +1323,7 @@ class AdminController extends Controller
         $teacher = User::where('id', $id)
                         ->where('id_sekolah', $id_sekolah) // Tambahkan filter id_sekolah
                         ->whereIn('role', ['guru', 'staf'])->firstOrFail();
-        return view('guru.edit_guru', compact('teacher')); // Sesuaikan path view
+        return view('admin.edit_guru', compact('teacher')); // Sesuaikan path view
     }
 
         public function editSiswa(Request $request, User $siswa) // Menggunakan Route Model Binding untuk User (sebagai siswa)
@@ -843,6 +1346,10 @@ class AdminController extends Controller
         // Temukan kelas spesifik dari database berdasarkan ID dan id_sekolah
         $kelas = Kelas::where('id_kelas', $id_kelas)
                       ->where('id_sekolah', $id_sekolah)
+                      ->with('angkatan')
+                      ->whereHas('angkatan', function ($query) {
+                        $query->whereNotNull('id_tingkat');
+                         })//filter alumni
                       ->firstOrFail();
 
         // Ambil data angkatan yang tersedia untuk sekolah ini saja
@@ -872,6 +1379,7 @@ class AdminController extends Controller
 
         $guru = User::where('id', $id)
             ->where('id_sekolah', $id_sekolah)
+            ->where('role', 'guru')
             ->firstOrFail();
 
         $updateData = [
@@ -888,7 +1396,7 @@ class AdminController extends Controller
 
         // Hanya update password jika diisi
         if ($request->filled('password')) {
-            $updateData['password'] = bcrypt($request->password);
+            $updateData['password'] =$request->password;
         }
         
         // Hanya update email jika username berubah (karena email dibuat dari username)
@@ -907,7 +1415,7 @@ class AdminController extends Controller
 
         $request->validate([
             'angkatan' => 'required|string|max:255|unique:angkatans,angkatan,' . $id . ',id_angkatan,id_sekolah,' . $id_sekolah, // Tambahkan id_sekolah ke unique rule
-            'id_tingkat' => 'required|integer|exists:tingkats,id_tingkat',
+            'id_tingkat' => 'required|integer',
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
             'semester' => 'required|in:ganjil,genap', // Tambahkan validasi untuk semester
@@ -923,7 +1431,19 @@ class AdminController extends Controller
         $angkatan = Angkatan::where('id_angkatan', $id)
                             ->where('id_sekolah', $id_sekolah)
                             ->firstOrFail();
+                            
 
+    if ($request->id_tingkat == 2147483646){
+        $angkatan->update([
+        'angkatan' => $request->angkatan,
+        'tanggal_mulai' => $request->tanggal_mulai,
+        'tanggal_selesai' => $request->tanggal_selesai,
+        'semester' => $request->semester, // Tambahkan ini
+        'tingkat' => null,
+        'id_tingkat' => null,
+        'is_alumni' => true
+    ]);
+    } else {
         $angkatan->update([
             'angkatan' => $request->angkatan,
             'id_tingkat' => $request->id_tingkat,
@@ -931,8 +1451,10 @@ class AdminController extends Controller
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
             'semester' => $request->semester, // Tambahkan ini
+            'is_alumni' => false
         ]);
-
+    }
+                            
         return redirect()->route('manajemenAngkatan')->with('success', 'Angkatan berhasil diperbarui!');
     }
 
@@ -956,6 +1478,9 @@ class AdminController extends Controller
             'password' => 'nullable|string|min:6', // Password bisa kosong jika tidak ingin diubah
             'tempat_lahir' => 'nullable|string|max:100', // Tambahkan validasi lain jika diperlukan
             'no_telp' => 'nullable|string|max:20', // Tambahkan validasi lain jika diperlukan
+            'jumlah_saudara' => 'nullable|integer|min:0',
+            'gaji_orang_tua' => 'nullable|integer|min:0',
+
         ]);
 
         $updateData = [
@@ -969,11 +1494,13 @@ class AdminController extends Controller
             'alamat' => $request->alamat,
             'no_telp' => $request->no_telp,
             'id_angkatan' => Kelas::where('id_kelas', $request->id_kelas)->value('id_angkatan'),
+            'jumlah_sodara' => $request->jumlah_saudara,
+            'gaji_orang_tua' => $request->gaji_orang_tua,
         ];
 
         // Hanya update password jika diisi
         if ($request->filled('password')) {
-            $updateData['password'] = Hash::make($request->password);
+            $updateData['password'] = $request->password;
         }
 
         // Hanya update email jika username berubah (karena email dibuat dari username)
@@ -1080,9 +1607,14 @@ class AdminController extends Controller
         return redirect()->route('manajemenMapel')->with('success', 'Mata pelajaran berhasil dihapus!');
     }
 
-    public function destroySingle($id_jadwal)
+    public function destroyJadwal(Request $request, $id_jadwal)
     {
-        $jadwal = Jadwal::findOrFail($id_jadwal);
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $jadwal = Jadwal::where('id_jadwal',$id_jadwal)
+                        ->where('id_sekolah', $id_sekolah)
+                        ->firstOrFail();
+
         $jadwal->delete();
 
         return redirect()->back()->with('success', 'Jadwal berhasil dihapus.');
@@ -1114,62 +1646,20 @@ class AdminController extends Controller
 
 
     }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-########################################################################################################################################
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
-public function index()
-    {
-        // --- SIMULASI DATA DARI DATABASE (DALAM APLIKASI NYATA GUNAKAN MODEL ELOQUENT) ---
-        $events = [
-            // Event 1: Mendatang
-            [
-                'id' => 1,
-                'title' => 'Lomba Debat Bahasa Inggris',
-                'description' => 'Ajang kompetisi kemampuan berbahasa Inggris untuk siswa terpilih.',
-                'date' => '15 Oktober 2025',
-                'time' => '08:00 - 12:00 WIB',
-                'location' => 'Aula Serbaguna',
-                'audience' => 'Kelas XI & XII',
-                'status' => 'Mendatang',
-                'status_color' => 'indigo', // Untuk kustomisasi warna di Blade
-                'status_tag_color' => 'bg-green-100 text-green-800',
-                'border_color' => 'border-indigo-500',
-                'icon_color' => 'text-indigo-500'
-            ],
-            // Event 2: Selesai
-            [
-                'id' => 2,
-                'title' => 'Perayaan Hari Guru Nasional',
-                'description' => 'Apel dan pentas seni untuk menghormati pahlawan tanpa tanda jasa.',
-                'date' => '25 November 2024',
-                'time' => '10:00 - 13:00 WIB',
-                'location' => 'Lapangan Utama',
-                'audience' => 'Semua Siswa & Guru',
-                'status' => 'Selesai',
-                'status_color' => 'gray',
-                'status_tag_color' => 'bg-gray-100 text-gray-600',
-                'border_color' => 'border-gray-400',
-                'icon_color' => 'text-gray-500'
-            ],
-            // Event 3: Khusus Guru
-            [
-                'id' => 3,
-                'title' => 'Workshop Kurikulum Merdeka',
-                'description' => 'Pelatihan implementasi kurikulum baru untuk staf pengajar.',
-                'date' => '05 September 2025',
-                'time' => '09:00 - 15:00 WIB',
-                'location' => 'Ruang Rapat Guru',
-                'audience' => 'Hanya Guru',
-                'status' => 'Mendatang',
-                'status_color' => 'teal',
-                'status_tag_color' => 'bg-blue-100 text-blue-800', // Khusus Guru
-                'border_color' => 'border-teal-500',
-                'icon_color' => 'text-teal-500'
-            ],
-        ];
 
-        // Melewatkan data acara ke view 'admin.acara-sekolah'
-        return View('admin.acara-sekolah', compact('events'));
+
+    public function manajAcara(Request $request)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        // Ambil acara yang masih berlangsung atau akan datang (belum lewat tanggal_selesai)
+        $daftarAcara = DaftarAcara::where('id_sekolah', $id_sekolah)
+                        ->where('tanggal_selesai', '>=', Carbon::now()->subWeeks(1))
+                        ->orderBy('tanggal_mulai', 'desc')
+                        ->get();
+
+
+        return View('admin.acara-sekolah', ['daftarAcara' => $daftarAcara]);
     }
 
     /**
@@ -1179,34 +1669,216 @@ public function index()
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
-    {
-        // 1. Validasi data input
-        $validatedData = $request->validate([
-            'judul_acara' => 'required|string|max:255',
-            'tanggal_acara' => 'required|date',
-            'waktu_acara' => 'required|date_format:H:i',
-            'lokasi' => 'required|string|max:255',
-            'peserta_target' => 'required|string|in:Semua,Siswa,Guru,Kelas XI & XII',
-            'deskripsi' => 'nullable|string|max:500',
+public function storeAcara(Request $request)
+{
+    $validatedData = $request->validate([
+        'judul_acara'     => 'required|string|max:255',
+        'waktu_mulai'     => 'required|date',
+        'waktu_berakhir'  => 'required|date',
+        'lokasi'          => 'required|string|max:255',
+        'peserta_target'  => 'required|string|max:255',
+        'deskripsi'       => 'nullable|string|max:500',
+    ]);
+
+    DaftarAcara::create([
+        'id_sekolah'      => $request->cookie('id_sekolah'),
+        'judul_acara'     => $validatedData['judul_acara'],
+        'tanggal_mulai'   => $validatedData['waktu_mulai'],
+        'tanggal_selesai' => $validatedData['waktu_berakhir'],
+        'lokasi'          => $validatedData['lokasi'],
+        'peserta'         => $validatedData['peserta_target'],
+        'deskripsi'       => $validatedData['deskripsi'],
+    ]);
+
+    return redirect()->route('manajAcara')->with('success', 'Acara baru berhasil ditambahkan!');
+}
+
+
+public function updateAcara(Request $request, $id)
+{
+    $id_sekolah = $request->cookie('id_sekolah');
+
+    $validatedData = $request->validate([
+        'judul_acara'     => 'required|string|max:255',
+        'waktu_mulai'     => 'required|date',
+        'waktu_berakhir'  => 'required|date',
+        'lokasi'          => 'required|string|max:255',
+        'peserta_target'  => 'required|string|max:255',
+        'deskripsi'       => 'nullable|string|max:500',
+    ]);
+
+    DB::table('daftar_acaras')
+        ->where('id_daftar_acara', $id)
+        ->where('id_sekolah', $id_sekolah)
+        ->update([
+            'judul_acara'     => $validatedData['judul_acara'],
+            'tanggal_mulai'   => $validatedData['waktu_mulai'],
+            'tanggal_selesai' => $validatedData['waktu_berakhir'],
+            'lokasi'          => $validatedData['lokasi'],
+            'peserta'         => $validatedData['peserta_target'],
+            'deskripsi'       => $validatedData['deskripsi'],
+            'updated_at'      => now(),
         ]);
 
-        // 2. Simpan ke database (Contoh menggunakan Model Event, yang harus Anda buat)
-        // \App\Models\Event::create($validatedData);
+    return redirect()->route('manajAcara')->with('success', 'Acara berhasil diperbarui!');
+}
 
-        // 3. Redirect ke halaman index dengan pesan sukses
-        return redirect()->route('admin.acara-sekolah')->with('success', 'Acara baru berhasil ditambahkan!');
-    }
+
     
-    /**
-     * Placeholder untuk menghapus acara.
-     * Corresponds to DELETE /admin/acara-sekolah/{id}
-     */
-    public function destroy($id)
+public function destroyAcara(Request $request, $id)
+{
+    $id_sekolah = $request->cookie('id_sekolah');
+
+    DB::table('daftar_acaras')
+        ->where('id_sekolah', $id_sekolah)
+        ->where('id_daftar_acara', $id)
+        ->delete();
+
+    return redirect()->route('manajAcara')->with('success', 'Acara berhasil dihapus.');
+}
+
+public function destroyKurikulum(Request $request, $id)
+{
+    $id_sekolah = $request->cookie('id_sekolah');
+
+    $kurikulum = DaftarKurikulum::where('id_kurikulum', $id)
+                                ->where('id_sekolah', $id_sekolah)
+                                ->firstOrFail();
+
+    $kurikulum->delete();
+
+    return redirect()->route('manajemenKurikulum')->with('success', 'Kurikulum berhasil dihapus!');
+}
+
+public function updateKurikulum(Request $request, $id)
+{
+    $id_sekolah = $request->cookie('id_sekolah');
+
+    $request->validate([
+        'id_angkatan' => 'required|exists:angkatans,id_angkatan,id_sekolah,' . $id_sekolah,
+        'nama' => 'required|string|max:255',
+        'jenjang' => 'required|string|in:SMA,SMK,SD,SMP',
+        'jumlah_matpel' => 'required|integer|min:1',
+        'status' => 'required|in:aktif,non-aktif',
+    ]);
+
+    $kurikulum = DaftarKurikulum::where('id_kurikulum', $id)
+                                ->where('id_sekolah', $id_sekolah)
+                                ->firstOrFail();
+
+    $kurikulum->update([
+        'id_angkatan' => $request->id_angkatan,
+        'nama_kurikulum' => $request->nama,
+        'jenjang' => $request->jenjang,
+        'jumlah_matpel' => $request->jumlah_matpel,
+        'status' => $request->status,
+    ]);
+
+    return redirect()->route('manajemenKurikulum')->with('success', 'Kurikulum berhasil diperbarui!');
+}
+
+public function showProfileA(Request $request)
     {
-        // Temukan dan hapus event
-        // \App\Models\Event::destroy($id);
-        
-        return redirect()->route('admin.acara-sekolah')->with('success', 'Acara berhasil dihapus.');
+        $user = Auth::user();
+        return view('admin.profile', compact('user'));
+        // return view('debug');
     }
+    // Metode untuk Manajemen Alumni
+    public function manajAlumni(Request $request)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        // Mengambil semua data dari tabel angkatan yang is_alumni = true
+        $angkatans = Angkatan::where('id_sekolah', $id_sekolah)
+                            ->where('is_alumni', true)
+                            ->latest()
+                            ->get();
+
+        return view('admin.manajemen_alumni', ['angkatans' => $angkatans]);
+    }
+
+
+    public function siswaAlumni(Request $request, $id_angkatan)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        $search = $request->query('search');
+
+        // Query untuk mencari siswa (user dengan role siswa) berdasarkan angkatan
+        $query = User::where('role', 'siswa')
+                     ->where('id_sekolah', $id_sekolah)
+                     ->where('id_angkatan', $id_angkatan)
+                     ->with('kelas.angkatan') // Eager load relasi
+                     ->whereHas('kelas.angkatan', function ($query) {
+                        $query->where('is_alumni', true);
+            });
+
+        // Jika ada input pencarian, tambahkan kondisi where
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('nisn_nik', 'like', '%' . $search . '%');
+            });
+        }
+
+        $alumni = $query->latest()->paginate(10);
+        // $id_angkatan = optional($query->first()->kelas)->angkatan->id_angkatan;
+
+        return view('admin.siswa_alumni', ['alumni' => $alumni, 'search' => $search, 'id_angkatan' => $id_angkatan]);
+        // return view('debug', ['tes' => $alumni, 'tess' => $query, 'tesss' => $id_angkatan]);
+    }
+
+    #############################################################################################################################
+    #############################################################################################################################
+
+
+        public function storeAlumni(Request $request)
+    {   
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $request->validate([
+            'angkatan' => 'required|string|max:255',
+            'id_tingkat' => 'required|integer|exists:tingkats,id_tingkat',
+            'tanggal_mulai' => 'required|date',
+            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
+            'semester' => 'required|in:ganjil,genap',
+        ], [
+            'angkatan.required' => 'Tahun lulus tidak boleh kosong.',
+            'id_tingkat.required' => 'Tingkat kelulusan tidak boleh kosong.',
+            'tanggal_selesai.after_or_equal' => 'Tanggal kelulusan harus setelah atau sama dengan tanggal masuk.',
+        ]);
+
+        Angkatan::create([
+            'angkatan' => $request->angkatan,
+            'id_sekolah' => $id_sekolah,
+            'tanggal_mulai' => $request->tanggal_mulai,
+            'tanggal_selesai' => $request->tanggal_selesai,
+            'id_tingkat' => $request->id_tingkat,
+            'tingkat' => Tingkat::where('id_tingkat', $request->id_tingkat)->value('tingkat'),
+            'semester' => $request->semester,
+            'is_alumni' => true, // Selalu set true untuk data alumni
+        ]);
+
+        return redirect()->route('manajemenAlumni')->with('success', 'Data Alumni berhasil ditambahkan!');
+    }
+
+    public function updateAlumni(Request $request, $id)
+    {
+        // Menggunakan kembali logic dari updateAngkatan karena strukturnya sama
+        // Cukup panggil method updateAngkatan yang sudah ada
+        return $this->updateAngkatan($request, $id);
+    }
+
+    public function destroyAlumni(Request $request, $id)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $alumni = Angkatan::where('id_angkatan', $id)
+                            ->where('id_sekolah', $id_sekolah)
+                            ->where('is_alumni', true)
+                            ->firstOrFail();
+        $alumni->delete();
+
+        return redirect()->route('manajemenAlumni')->with('success', 'Data Alumni berhasil dihapus!');
+    }
+
+
 }

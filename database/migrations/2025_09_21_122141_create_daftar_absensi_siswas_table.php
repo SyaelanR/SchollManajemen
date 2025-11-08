@@ -20,11 +20,11 @@ return new class extends Migration
             $table->unsignedBigInteger('id_mapel')->nullable();
             $table->unsignedBigInteger('tingkat')->nullable();
             $table->enum('semester', ['ganjil', 'genap']);
-            $table->enum('status',['Hadir', 'Sakit', 'Izin', 'Alpha'])->nullable();
+            $table->enum('status',['Hadir', 'Sakit', 'Izin', 'Alfa'])->nullable();
             $table->timestamps();
 
             $table->foreign('id_siswa')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('id_daftar_absensi')->references('id_daftar_absensi')->on('daftar_absensis')->onDelete('set null');
+            $table->foreign('id_daftar_absensi')->references('id_daftar_absensi')->on('daftar_absensis')->onDelete('cascade');
             $table->foreign('id_sekolah')->references('id_sekolah')->on('cliens')->onDelete('set null');
             $table->foreign('id_kelas')->references('id_kelas')->on('kelas')->onDelete('set null');
             $table->foreign('id_mapel')->references('id_mapel')->on('mapels')->onDelete('set null');

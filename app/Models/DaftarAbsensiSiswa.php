@@ -45,4 +45,9 @@ class DaftarAbsensiSiswa extends Model
         return $this->belongsTo(Mapel::class, 'id_mapel', 'id_mapel');
     }
 
+    function idTingkat()
+    {
+        return $this->belongsTo(Tingkat::class, 'tingkat', 'id_tingkat');
+    }
+
 }

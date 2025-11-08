@@ -3,38 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tugas {{$infoJadwal->mapel->nama_mapel}} - Sistem Manajemen Sekolah</title>
+    <title>Tugas {{ $infoJadwal->mapel->nama_mapel }} - Sistem Manajemen Sekolah</title>
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/png" href="{{ asset('asset/school-solid-full.png') }}">
     <style>
-        /* Custom styles */
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        /* Custom scrollbar for better aesthetics */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-        /* Sidebar transition */
-        .sidebar {
-            transition: transform 0.3s ease-in-out;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        .sidebar { transition: transform 0.3s ease-in-out; }
+        .modal-bg { transition: opacity 0.3s ease; }
+        .modal-content { transition: transform 0.3s ease-out; }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -43,36 +30,63 @@
         <!-- Sidebar -->
         <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
             <div class="p-6">
-                <a href="#" class="flex items-center space-x-3">
+                <a href="{{ route('dashboard') }}" class="flex items-center space-x-3">
                     <i class="fa-solid fa-school text-3xl text-indigo-600"></i>
                     <span class="text-2xl font-bold text-gray-800">EduSys</span>
                 </a>
             </div>
             <nav class="mt-6">
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-tachometer-alt mr-3"></i>
+                <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('dashboard')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
+                    <i class="fa-solid fa-tachometer-alt w-6 mr-3"></i>
                     <span>Dashboard</span>
                 </a>
-                <!-- Menu ini bisa disesuaikan dengan role siswa -->
-                 <a href="#" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
-                    <i class="fa-solid fa-book mr-3"></i>
-                    <span>Mata Pelajaran</span>
+                <a href="{{ route('siswa.profile') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('siswa.profile')) bg-indigo-50 text-indigo-600 @endif">
+                    <i class="fa-solid fa-user-circle mr-3"></i>
+                    <span>Profil</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-pen mr-3"></i>
-                    <span>Lihat Nilai</span>
+                <a href="{{ route('lihatJadwalS') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('lihatJadwalS')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
+                    <i class="fa-solid fa-calendar-days w-6 mr-3"></i>
+                    <span>Lihat Jadwal</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-list-check mr-3"></i>
+                <a href="{{ route('lihatMateriMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('lihatMateriMapel') || request()->routeIs('lihatDaftarMateri')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
+                    <i class="fa-solid fa-book-open w-6 mr-3"></i>
+                    <span>Lihat Materi</span>
+                </a>
+                <a href="{{ route('lihatTugasMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('lihatTugasMapel') || request()->routeIs('lihatTugasDaftar')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
+                    <i class="fa-solid fa-upload w-6 mr-3"></i>
+                    <span>Lihat Tugas</span>
+                </a>
+                 <a href="{{ route('lihatAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('lihatAbsensi') || request()->routeIs('lihatAbsensi.perMapel')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
+                    <i class="fa-solid fa-list-check w-6 mr-3"></i>
                     <span>Lihat Absensi</span>
                 </a>
+                <a href="{{ route('lihatNilaiMapel')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('lihatNilaiMapel') || request()->routeIs('lihatNilaiDaftar')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
+                    <i class="fa-solid fa-pen w-6 mr-3"></i>
+                    <span>Lihat Nilai</span>
+                </a>
+                <a href="{{ route('lihatPengumumanSiswa')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('lihatPengumumanSiswa')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
+                    <i class="fa-solid fa-bullhorn w-6 mr-3"></i>
+                    <span>Pengumuman</span>
+                </a>
+                <a href="{{ route('lihatAcaraSiswa')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('lihatAcaraSiswa')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
+                    <i class="fa-solid fa-calendar-check mr-3"></i>
+                    <span>Acara</span>
+                </a>
+                <a href="{{ route('KRS')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('lihatAcaraSiswa')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
+                <i class="fa-solid fa-id-card mr-3"></i>
+                <span>KRS</span>
+            </a>
             </nav>
-            <div class="absolute bottom-0 w-full p-6">
-                 <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
-                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
+            <div class="p-6 border-t border-gray-200 flex-shrink-0">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <a href="{{ route('logout') }}"
+                    onclick="event.preventDefault(); this.closest('form').submit();"
+                    class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full transition duration-200">
+                    <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
                     <span>Logout</span>
                 </a>
-            </div>
+            </form>
         </aside>
 
         <!-- Overlay for mobile -->
@@ -82,33 +96,31 @@
         <div class="flex-1 flex flex-col overflow-y-auto">
             <!-- Header -->
             <header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-30">
-                <!-- Mobile Menu Button -->
                 <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
                     <i class="fa-solid fa-bars text-2xl"></i>
                 </button>
-                <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Tugas {{$infoJadwal->mapel->nama_mapel}}</h1>
+                <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Tugas {{ $infoJadwal->mapel->nama_mapel }}</h1>
                 <div class="flex items-center space-x-4">
-                    <button class="text-gray-500 hover:text-gray-700">
-                        <i class="fa-solid fa-bell"></i>
-                    </button>
-                    <div class="relative">
-                        <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=S" alt="User avatar">
-                        <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
-                    </div>
+                    
                 </div>
             </header>
 
             <!-- Page Content -->
             <main class="p-6 md:p-8 flex-1">
-                <!-- Breadcrumbs and Title -->
-                <div class="mb-8">
-                    <h2 class="text-3xl font-bold text-gray-900 mt-2">Daftar Tugas</h2>
-                </div>
-                
+                <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg flex flex-wrap justify-between items-center text-white gap-4">
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold">Daftar Tugas: {{ $infoJadwal->mapel->nama_mapel }}</h1>
+                        <p class="text-indigo-200 mt-2">Kerjakan tugas-tugas yang diberikan oleh guru!</p>
+                    </div>
+                    <a href="javascript:void(0)" onclick="history.back()" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>
+                        <span>Kembali</span>
+                    </a>
+                </header>
+
                 <!-- Task Card Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     @forelse ($daftarTugas ?? [] as $tugas)
-
                         {{-- Belum Dikerjakan --}}
                         @if ($tugas->nilai == 0 && $tugas->nama_fileTugas == null)
                             <div class="bg-white rounded-xl shadow-md p-6 flex flex-col ring-2 ring-indigo-500">
@@ -131,8 +143,6 @@
                                     </button>
                                 </div>
                             </div>
-
-                        {{-- Selesai Dikerjakan --}}
                         @elseif ($tugas->nilai == 0 && $tugas->nama_fileTugas != null)
                             <div class="bg-white rounded-xl shadow-md p-6 flex flex-col">
                                 <div class="flex-1">
@@ -145,7 +155,7 @@
                                     </p>
                                 </div>
                                 <div class="border-t pt-4 flex items-center justify-between gap-4">
-                                    <button onclick="window.location.href='{{ route('lihatJawaban',   $tugas->nama_fileTugas ?? 0) }}'" class="w-1/2 bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200 transition-all duration-300 flex items-center justify-center">
+                                    <button onclick="window.location.href='{{ route('lihatJawaban',  $tugas->nama_fileTugas ?? 0) }}'" class="w-1/2 bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200 transition-all duration-300 flex items-center justify-center">
                                         <i class="fa-solid fa-eye mr-2"></i> Lihat Jawaban
                                     </button>
                                     <button data-task-id="{{ $tugas->id_daftar_nilai_siswa }}" class="upload-button w-1/2 bg-blue-100 text-blue-700 font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 transition-all duration-300 flex items-center justify-center">
@@ -153,8 +163,6 @@
                                     </button>
                                 </div>
                             </div>
-
-                        {{-- Sudah Dinilai --}}
                         @elseif ($tugas->nilai != 0)
                             <div class="bg-white rounded-xl shadow-md p-6 flex flex-col">
                                 <div class="flex-1">
@@ -167,38 +175,14 @@
                                     </p>
                                 </div>
                                 <div class="border-t pt-4 flex items-center justify-between gap-4">
-                                    <button onclick="window.location.href='{{ route('lihatJawaban',   $tugas->nama_fileTugas ?? 0) }}'" class="w-full bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200 transition-all duration-300 flex items-center justify-center">
+                                    <button onclick="window.location.href='{{ route('lihatJawaban',  $tugas->nama_fileTugas ?? 0) }}'" class="w-full bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200 transition-all duration-300 flex items-center justify-center">
                                         <i class="fa-solid fa-eye mr-2"></i> Lihat Jawaban
                                     </button>
                                 </div>
                             </div>
-                        {{-- @elseif()
-                        <!-- Assignment Card 3: Terlambat -->
-                     <div class="bg-white rounded-xl shadow-md p-6 flex flex-col">
-                        <div class="flex-1">
-                            <div class="flex justify-between items-start mb-3">
-                                <div>
-                                    <p class="font-semibold text-indigo-600">Bahasa Indonesia</p>
-                                    <p class="text-sm text-gray-500">Siti Nurbaya, S.Pd.</p>
-                                </div>
-                                <span class="text-xs font-semibold bg-red-100 text-red-700 px-3 py-1 rounded-full">Terlambat</span>
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-800 mb-2">Membuat Esai tentang Sumpah Pemuda</h3>
-                             <p class="text-sm text-gray-600 mb-4 flex items-center"><i class="fa-solid fa-calendar-alt w-4 mr-2 text-gray-400"></i>Tenggat: 20 Sep 2025</p>
-                        </div>
-                        <div class="border-t pt-4 flex items-center justify-between gap-4">
-                             <button class="w-1/2 bg-blue-100 text-blue-700 font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 transition-all duration-300 flex items-center justify-center">
-                                <i class="fa-solid fa-download mr-2"></i> Unduh Soal
-                            </button>
-                            <button class="w-1/2 bg-red-600 text-white font-semibold py-2 px-4 rounded-lg flex items-center justify-center cursor-not-allowed" disabled>
-                               <i class="fa-solid fa-times-circle mr-2"></i> Tenggat Lewat
-                            </button>
-                        </div>
-                    </div> --}}
                         @endif
-
                     @empty
-                        <div class="col-span-full text-center py-10">
+                        <div class="col-span-full text-center py-10 bg-white rounded-xl shadow-md">
                             <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
                             <p class="text-gray-600 font-semibold text-lg">Belum ada tugas tersedia.</p>
                         </div>
@@ -209,35 +193,34 @@
     </div>
     
     <!-- Modal for file upload -->
-    <div id="uploadModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden">
-        <div class="bg-white rounded-xl shadow-2xl p-6 md:p-8 w-11/12 max-w-lg transform transition-all duration-300 ease-out scale-95 opacity-0" id="modalContent">
-            <div class="flex justify-between items-center mb-4">
+    <div id="uploadModal" class="modal-bg fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden p-4">
+        <div class="modal-content bg-white rounded-xl shadow-2xl w-11/12 max-w-lg transform transition-all duration-300 ease-out scale-95 opacity-0" id="modalContent">
+            <div class="flex justify-between items-center p-6 border-b">
                 <h3 class="text-2xl font-bold text-gray-800">Unggah Jawaban Tugas</h3>
                 <button id="closeModal" class="text-gray-500 hover:text-gray-800 focus:outline-none">
                     <i class="fa-solid fa-times text-2xl"></i>
                 </button>
             </div>
-            <p class="text-gray-600 mb-6">Unggah file jawaban Anda dalam format PDF.</p>
-            
-            <!-- Form for submission -->
             <form action="{{ route('unggahTugas') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="id_daftar_nilai_siswa" id="modal_task_id">
-                <div id="fileUploadArea" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-indigo-500 transition-colors">
-                    <input type="file" id="fileInput" name="file" class="hidden" accept=".pdf">
-                    <div id="fileUploadPlaceholder">
-                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-indigo-500 mb-4"></i>
-                        <p class="font-semibold text-gray-700">Klik untuk memilih file</p>
-                        <p class="text-sm text-gray-500 mt-1">atau seret dan lepas file di sini</p>
-                        <p class="text-xs text-gray-400 mt-2">Hanya file PDF, maks. 10MB</p>
-                    </div>
-                    <div id="fileNameDisplay" class="hidden items-center justify-center">
-                        <i class="fa-solid fa-file-pdf text-3xl text-red-500 mr-3"></i>
-                        <span class="font-medium text-gray-800"></span>
+                <div class="p-6">
+                    <div id="fileUploadArea" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-indigo-500 transition-colors">
+                        <input type="file" id="fileInput" name="file" class="hidden" accept=".pdf">
+                        <div id="fileUploadPlaceholder">
+                            <i class="fa-solid fa-cloud-arrow-up text-4xl text-indigo-500 mb-4"></i>
+                            <p class="font-semibold text-gray-700">Klik untuk memilih file</p>
+                            <p class="text-sm text-gray-500 mt-1">atau seret dan lepas file di sini</p>
+                            <p class="text-xs text-gray-400 mt-2">Hanya file PDF, maks. 10MB</p>
+                        </div>
+                        <div id="fileNameDisplay" class="hidden items-center justify-center">
+                            <i class="fa-solid fa-file-pdf text-3xl text-red-500 mr-3"></i>
+                            <span class="font-medium text-gray-800"></span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="mt-8 flex justify-end space-x-4">
+                <div class="mt-2 flex justify-end space-x-4 p-6 bg-gray-50 rounded-b-xl">
                     <button type="button" id="cancelButton" class="bg-gray-100 text-gray-700 font-semibold py-2 px-6 rounded-lg hover:bg-gray-200 transition-all duration-300">
                         Batal
                     </button>
@@ -249,23 +232,19 @@
         </div>
     </div>
 
-
     <script>
         const menuButton = document.getElementById('menu-button');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
 
-        // Function to toggle sidebar
         const toggleSidebar = () => {
             sidebar.classList.toggle('-translate-x-full');
             overlay.classList.toggle('hidden');
         };
 
-        // Event listeners
         menuButton.addEventListener('click', toggleSidebar);
         overlay.addEventListener('click', toggleSidebar);
         
-        // Modal Logic
         document.addEventListener('DOMContentLoaded', () => {
             const uploadModal = document.getElementById('uploadModal');
             const modalContent = document.getElementById('modalContent');
@@ -282,18 +261,19 @@
             const modalTaskIdInput = document.getElementById('modal_task_id');
 
             const openModal = (taskId) => {
-                modalTaskIdInput.value = taskId; // Set the task ID in the hidden input
+                modalTaskIdInput.value = taskId;
                 uploadModal.classList.remove('hidden');
                 setTimeout(() => {
+                    uploadModal.classList.remove('opacity-0');
                     modalContent.classList.remove('scale-95', 'opacity-0');
                 }, 10);
             };
 
             const closeModal = () => {
                 modalContent.classList.add('scale-95', 'opacity-0');
+                uploadModal.classList.add('opacity-0');
                 setTimeout(() => {
                     uploadModal.classList.add('hidden');
-                    // Reset file input
                     fileInput.value = '';
                     fileNameDisplay.classList.add('hidden');
                     fileNameDisplay.classList.remove('flex');
@@ -316,7 +296,6 @@
                 }
             });
 
-            // File input logic
             fileUploadArea.addEventListener('click', () => fileInput.click());
 
             fileInput.addEventListener('change', () => {
@@ -328,7 +307,6 @@
                 }
             });
             
-            // Drag and drop logic
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                 fileUploadArea.addEventListener(eventName, e => {
                     e.preventDefault();
@@ -354,6 +332,5 @@
             }, false);
         });
     </script>
-
 </body>
 </html>

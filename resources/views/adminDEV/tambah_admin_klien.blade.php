@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Admin Klien - Sistem Manajemen Sekolah</title>
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/png" href="{{ asset('asset/school-solid-full.png') }}">
     <style>
         /* Custom styles */
         body {
@@ -63,46 +64,25 @@
                 </a>
             </div>
             <nav class="mt-6">
-                <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
+                 <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
                     <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
-                    <span>Manajemen Siswa</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
-                    <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
-                    <span>Manajemen Guru</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
-                    <span>Jadwal Pelajaran</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-book w-6 h-6 mr-3"></i>
-                    <span>Mata Pelajaran</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-money-bill-wave w-6 h-6 mr-3"></i>
-                    <span>Keuangan</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-cog w-6 h-6 mr-3"></i>
-                    <span>Pengaturan</span>
+                <a href="{{ url()->previous() }}" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
+                    <i class="fa-solid fa-building-user w-6 h-6 mr-3"></i>
+                    <span>Manajemen Klien</span>
                 </a>
             </nav>
-            <div class="absolute bottom-0 w-full p-6">
+              <div class="p-6 border-t border-gray-200 flex-shrink-0">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <a href="{{ route('logout') }}"
-                       onclick="event.preventDefault(); this.closest('form').submit();"
-                       class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
-                        <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
+                        onclick="event.preventDefault(); this.closest('form').submit();"
+                        class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full transition duration-200">
+                        <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
                         <span>Logout</span>
                     </a>
                 </form>
-            </div>
         </aside>
 
         <!-- Overlay for mobile -->
@@ -118,13 +98,6 @@
                 </button>
                 <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Tambah Admin Baru</h1>
                 <div class="flex items-center space-x-4">
-                    <button class="text-gray-500 hover:text-gray-700">
-                        <i class="fa-solid fa-bell"></i>
-                    </button>
-                    <div class="relative">
-                        <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=A" alt="User avatar" onerror="this.onerror=null;this.src='https://placehold.co/100x100/cccccc/ffffff?text=A';">
-                        <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
-                    </div>
                 </div>
             </header>
 
@@ -133,22 +106,31 @@
                 <div class="bg-white p-6 rounded-xl shadow-md">
                     <!-- Form Header -->
                     <div class="mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800">Form Tambah Admin Massal {{$info_sekolah->nama_sekolah}}</h2>
-                        <p class="text-gray-500 mt-1">Isi data Admin pada baris yang tersedia. Klik "Tambah Baris" untuk menambahkan lebih banyak Admin.</p>
+                        <h2 class="text-2xl font-bold text-gray-800">
+                            Form Tambah Admin Massal {{ $info_sekolah->nama_sekolah }}
+                        </h2>
+                        <p class="text-gray-500 mt-1">
+                            Isi data Admin pada baris yang tersedia. Klik "Tambah Baris" untuk menambahkan lebih banyak Admin.
+                        </p>
                     </div>
 
-                    <!-- admin Form Table -->
+                    <!-- Admin Form Table -->
                     <form id="add-admin-form" method="POST" action="{{ route('storeAdmin', ['id_sekolah' => $info_sekolah->id_sekolah]) }}">
                         @csrf
+
+                        <!-- ✅ Tambahkan wrapper scroll -->
                         <div class="overflow-x-auto">
-                            <table class="w-full min-w-[800px] text-left">
+                            <table class="min-w-full text-left border-collapse">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <th class="p-3 font-semibold text-gray-600 w-1/6">NIP</th>
-                                        <th class="p-3 font-semibold text-gray-600 w-2/6">Nama</th>
-                                        <th class="p-3 font-semibold text-gray-600 w-1,5/6">Username</th>
-                                        <th class="p-3 font-semibold text-gray-600 w-1/6">Password</th>
-                                        <th class="p-3 font-semibold text-gray-600 text-center w-[50px]">Aksi</th>
+                                        <th class="p-3 font-semibold text-gray-600 min-w-[150px]">NIK</th>
+                                        <th class="p-3 font-semibold text-gray-600 min-w-[250px]">Nama</th>
+                                        <th class="p-3 font-semibold text-gray-600 min-w-[150px]">Alamat</th>
+                                        <th class="p-3 font-semibold text-gray-600 min-w-[150px]">Nomor Telp</th>
+                                        <th class="p-3 font-semibold text-gray-600 min-w-[150px]">Email</th>
+                                        <th class="p-3 font-semibold text-gray-600 min-w-[180px]">Username</th>
+                                        <th class="p-3 font-semibold text-gray-600 min-w-[180px]">Password</th>
+                                        <th class="p-3 font-semibold text-gray-600 text-center min-w-[80px]">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="admin-table-body" class="divide-y">
@@ -157,14 +139,15 @@
                             </table>
                         </div>
 
-                        <!-- Action Buttons for Table -->
+                        <!-- Action Buttons -->
                         <div class="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
                             <button type="button" id="add-row-btn" class="w-full md:w-auto bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 flex items-center justify-center">
                                 <i class="fa-solid fa-plus mr-2"></i>
                                 Tambah Baris
                             </button>
+
                             <div class="flex w-full md:w-auto gap-4">
-                               <a href="{{ route('dashboard') }}" class="w-full md:w-auto bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300 text-center flex items-center justify-center">
+                                <a href="{{ route('dashboard') }}" class="w-full md:w-auto bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300 text-center flex items-center justify-center">
                                     Batal
                                 </a>
                                 <button type="submit" class="w-full md:w-auto bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">
@@ -205,10 +188,19 @@
             row.className = 'hover:bg-gray-50';
             row.innerHTML = `
                 <td class="p-2">
-                    <input type="text" name="admin[${rowCount}][nip]" placeholder="Contoh: 202400${rowCount}" class="table-input" />
+                    <input type="text" name="admin[${rowCount}][nip]" placeholder="Contoh: opsional${rowCount}" class="table-input" />
                 </td>
                 <td class="p-2">
                     <input type="text" name="admin[${rowCount}][nama]" placeholder="Nama Lengkap" class="table-input" />
+                </td>
+                <td class="p-2">
+                    <input type="text" name="admin[${rowCount}][alamat]" placeholder="alamat" class="table-input" />
+                </td>
+                <td class="p-2">
+                    <input type="text" name="admin[${rowCount}][no_telp]" placeholder="Nomor telephone" class="table-input" />
+                </td>
+                <td class="p-2">
+                    <input type="text" name="admin[${rowCount}][email]" placeholder="Email" class="table-input" />
                 </td>
                 <td class="p-2">
                     <input type="text" name="admin[${rowCount}][username]" placeholder="Username uniq" class="table-input" />
@@ -299,7 +291,7 @@
                     const message = errors[key][0];
 
                     // Cari input berdasarkan atribut 'name'
-                    const input = document.querySelector(input[name="admin[${rowKey}][${fieldName}]"]);
+                    const input = document.querySelector(`input[name="admin[${rowKey}][${fieldName}]"]`);
                     
                     if (input) {
                         input.classList.add('border-red-500');

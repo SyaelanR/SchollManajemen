@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Siswa - Sistem Manajemen Sekolah</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- SweetAlert2 for notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="icon" type="image/png" href="{{ asset('asset/school-solid-full.png') }}">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -58,47 +61,105 @@
         </div>
         <nav class="mt-6">
             <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
+                <i class="fa-solid fa-tachometer-alt w-6 mr-3"></i>
                 <span>Dashboard</span>
             </a>
+
+            @can('view-admin')
+            <a href="{{ route('admin.profile') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('admin.profile')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
+                <i class="fa-solid fa-user-circle mr-3"></i>
+                <span>Profil</span>
+            </a>
             <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
-                <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
+                <i class="fa-solid fa-user-graduate w-6 mr-3"></i>
                 <span>Manajemen Siswa</span>
             </a>
             <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
+                <i class="fa-solid fa-chalkboard-user w-6 mr-3"></i>
                 <span>Manajemen Guru</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
-                <span>Jadwal Pelajaran</span>
+            <a href="{{ route('manajemenMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book w-6 mr-3"></i>
+                <span>Manajemen Mapel</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-book w-6 h-6 mr-3"></i>
-                <span>Mata Pelajaran</span>
+            <a href="{{ route('manajemenKelas') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-door-closed w-6 mr-3"></i>
+                <span>Manajemen Kelas</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-money-bill-wave w-6 h-6 mr-3"></i>
-                <span>Keuangan</span>
+            <a href="{{ route('manajemenJadwal')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-alt w-6 mr-3"></i>
+                <span>Manajemen Jadwal</span>
             </a>
-            @can('view-settings')
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                    <i class="fa-solid fa-cog w-6 h-6 mr-3"></i>
-                    <span>Pengaturan</span>
-                </a>
+            <a href="{{ route('manajAcara') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-check w-6 h-6 mr-3"></i>
+                <span>Acara</span>
+            </a>
+            <a href="{{ route('manajemenAngkatan') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-bookmark w-6 mr-3"></i>
+                <span>Angkatan</span>
+            </a>
+            <a href="{{ route('manajemenRapor') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open w-6 mr-3"></i>
+                <span>Rapor</span>
+            </a>
+            <a href="{{ route('manajemenKurikulum') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open-reader w-6 mr-3"></i>
+                <span>Kurikulum</span>
+            </a>
+            <a href="{{ route('manajemenTingkat') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-layer-group w-6 mr-3"></i>
+                <span>Tingkat</span>
+            </a>
+            <a href="{{ route('manajemenAlumni') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-user-friends w-6 mr-3"></i>
+                <span>Manajemen Alumni</span>
+            </a>
+            @endcan
+
+            @can('view-guru')
+            <a href="{{ route('manajemenNilai') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-pen w-6 mr-3"></i>
+                <span>Input Nilai</span>
+            </a>
+            <a href="{{ route('lihatjadwalG') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-days w-6 mr-3"></i>
+                <span>Jadwal Mengajar</span>
+            </a>
+            <a href="{{ route('manajAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-list-check w-6 mr-3"></i>
+                <span>Input Absensi</span>
+            </a>
+            @endcan
+
+            @can('view-siswa')
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-pen w-6 mr-3"></i>
+                <span>Lihat Nilai</span>
+            </a>
+            <a href="{{ route('lihatAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-list-check w-6 mr-3"></i>
+                <span>Lihat Absensi</span>
+            </a>
+            @endcan
+
+            @can('view-adminDev')
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-users w-6 mr-3"></i>
+                <span>Manajemen Klien</span>
+            </a>
             @endcan
         </nav>
-        <div class="absolute bottom-0 w-full p-6">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <a href="{{ route('logout') }}"
-                   onclick="event.preventDefault(); this.closest('form').submit();"
-                   class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
-                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
-                    <span>Logout</span>
-                </a>
-            </form>
-        </div>
+        <div class="p-6 border-t border-gray-200 flex-shrink-0">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <a href="{{ route('logout') }}"
+                onclick="event.preventDefault(); this.closest('form').submit();"
+                class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full transition duration-200">
+                <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
+                <span>Logout</span>
+            </a>
+        </form>
+    </div>
     </aside>
 
     <div id="overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden lg:hidden"></div>
@@ -110,13 +171,7 @@
             </button>
             <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Tambah Siswa Baru</h1>
             <div class="flex items-center space-x-4">
-                <button class="text-gray-500 hover:text-gray-700">
-                    <i class="fa-solid fa-bell"></i>
-                </button>
-                <div class="relative">
-                    <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=A" alt="User avatar" onerror="this.onerror=null;this.src='https://placehold.co/100x100/cccccc/ffffff?text=A';">
-                    <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
-                </div>
+                
             </div>
         </header>
 
@@ -132,6 +187,14 @@
                 </a>
             </header>
             <div class="bg-white p-6 rounded-xl shadow-md">
+                <!-- Session Messages Handling -->
+                @if(session('success'))
+                    <div id="session-success" data-message="{{ session('success') }}" class="hidden"></div>
+                @endif
+                @if ($errors->any())
+                    <div id="validation-errors" data-errors='@json($errors->all())' class="hidden"></div>
+                @endif
+
                 <form id="add-students-form" method="POST" action="{{ route('storeSiswa') }}">
                     @csrf
                     <div class="force-scroll-x">
@@ -270,60 +333,41 @@
         }
     });
 
-    const form = document.getElementById('add-students-form');
-    form.addEventListener('submit', async function(event) {
-        event.preventDefault();
-        document.querySelectorAll('.error-message').forEach(el => el.remove());
-        document.querySelectorAll('.table-input.border-red-500').forEach(el => el.classList.remove('border-red-500'));
-        const formData = new FormData(this);
-        try {
-            const response = await fetch(this.action, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
-                    'Accept': 'application/json',
-                },
-                body: formData
-            });
-            const result = await response.json();
-            if (response.ok) {
-                alert(result.message);
-                window.location.href = "{{ route('manajemenSiswa') }}";
-            } else if (response.status === 422) {
-                displayErrors(result.errors);
-                alert('Terdapat kesalahan pada data yang Anda masukkan. Silakan periksa kembali.');
-            } else {
-                throw new Error(result.message || 'Terjadi kesalahan pada server.');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Gagal mengirim data. Pastikan tidak ada NISN yang duplikat dan semua kolom terisi.');
-        }
-    });
+    // --- SweetAlert2 Notifications for Success ---
+    const successMessage = document.getElementById('session-success');
+    if (successMessage) {
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: successMessage.dataset.message,
+            timer: 2500,
+            showConfirmButton: false
+        });
+    }
 
-    function displayErrors(errors) {
-        for (const key in errors) {
-            const parts = key.split('.');
-            if (parts[0] === 'students' && parts.length === 3) {
-                const rowKey = parts[1];
-                const fieldName = parts[2];
-                const message = errors[key][0];
-                let input;
-                if (fieldName === 'gender') {
-                    input = document.querySelector(`select[name="students[${rowKey}][${fieldName}]"]`);
-                } else {
-                    input = document.querySelector(`input[name="students[${rowKey}][${fieldName}]"]`);
-                }
-                if (input) {
-                    input.classList.add('border-red-500');
-                    const errorElement = document.createElement('p');
-                    errorElement.className = 'text-red-600 text-xs mt-1 error-message';
-                    errorElement.textContent = message;
-                    input.parentNode.appendChild(errorElement);
-                }
-            }
+    // --- SweetAlert2 Notifications for Validation Errors ---
+    const validationErrors = document.getElementById('validation-errors');
+    if (validationErrors) {
+        try {
+            const errorsData = validationErrors.dataset.errors;
+            // Replace HTML entities that might break JSON parsing
+            const sanitizedErrorsData = errorsData.replace(/&quot;/g, '"');
+            const errors = JSON.parse(sanitizedErrorsData);
+            let errorText = '<ul class="list-disc list-inside text-left">';
+            errors.forEach(error => {
+                errorText += `<li>${error}</li>`;
+            });
+            errorText += '</ul>';
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal Validasi',
+                html: errorText,
+            });
+        } catch (e) {
+            console.error("Error parsing validation errors:", e);
         }
     }
+
 </script>
 
 </body>

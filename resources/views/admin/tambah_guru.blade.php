@@ -5,13 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Guru - Sistem Manajemen Sekolah</title>
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- SweetAlert2 for notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="icon" type="image/png" href="{{ asset('asset/school-solid-full.png') }}">
     <style>
         /* Custom styles */
         body {
@@ -55,85 +58,142 @@
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 min-h-screen flex">
 
-    <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
-        <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
-            <div class="p-6">
-                <a href="#" class="flex items-center space-x-3">
-                    <i class="fa-solid fa-school text-3xl text-indigo-600"></i>
-                    <span class="text-2xl font-bold text-gray-800">EduSys</span>
-                </a>
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
+        <div class="p-6">
+            <a href="#" class="flex items-center space-x-3">
+                <i class="fa-solid fa-school text-3xl text-indigo-600"></i>
+                <span class="text-2xl font-bold text-gray-800">EduSys</span>
+            </a>
+        </div>
+        <nav class="mt-6">
+            <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-tachometer-alt w-6 mr-3"></i>
+                <span>Dashboard</span>
+            </a>
+
+            @can('view-admin')
+            <a href="{{ route('admin.profile') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('admin.profile')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
+                <i class="fa-solid fa-user-circle mr-3"></i>
+                <span>Profil</span>
+            </a>
+            <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-user-graduate w-6 mr-3"></i>
+                <span>Manajemen Siswa</span>
+            </a>
+            <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
+                <i class="fa-solid fa-chalkboard-user w-6 mr-3"></i>
+                <span>Manajemen Guru</span>
+            </a>
+            <a href="{{ route('manajemenMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book w-6 mr-3"></i>
+                <span>Manajemen Mapel</span>
+            </a>
+            <a href="{{ route('manajemenKelas') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-door-closed w-6 mr-3"></i>
+                <span>Manajemen Kelas</span>
+            </a>
+            <a href="{{ route('manajemenJadwal')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-alt w-6 mr-3"></i>
+                <span>Manajemen Jadwal</span>
+            </a>
+            <a href="{{ route('manajAcara') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-check w-6 h-6 mr-3"></i>
+                <span>Acara</span>
+            </a>
+            <a href="{{ route('manajemenAngkatan') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-bookmark w-6 mr-3"></i>
+                <span>Angkatan</span>
+            </a>
+            <a href="{{ route('manajemenRapor') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open w-6 mr-3"></i>
+                <span>Rapor</span>
+            </a>
+            <a href="{{ route('manajemenKurikulum') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open-reader w-6 mr-3"></i>
+                <span>Kurikulum</span>
+            </a>
+            <a href="{{ route('manajemenTingkat') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-layer-group w-6 mr-3"></i>
+                <span>Tingkat</span>
+            </a>
+            <a href="{{ route('manajemenAlumni') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-user-friends w-6 mr-3"></i>
+                <span>Manajemen Alumni</span>
+            </a>
+            @endcan
+
+            @can('view-guru')
+            <a href="{{ route('manajemenNilai') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-pen w-6 mr-3"></i>
+                <span>Input Nilai</span>
+            </a>
+            <a href="{{ route('lihatjadwalG') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-days w-6 mr-3"></i>
+                <span>Jadwal Mengajar</span>
+            </a>
+            <a href="{{ route('manajAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-list-check w-6 mr-3"></i>
+                <span>Input Absensi</span>
+            </a>
+            @endcan
+
+            @can('view-siswa')
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-pen w-6 mr-3"></i>
+                <span>Lihat Nilai</span>
+            </a>
+            <a href="{{ route('lihatAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-list-check w-6 mr-3"></i>
+                <span>Lihat Absensi</span>
+            </a>
+            @endcan
+
+            @can('view-adminDev')
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-users w-6 mr-3"></i>
+                <span>Manajemen Klien</span>
+            </a>
+            @endcan
+        </nav>
+        <div class="p-6 border-t border-gray-200 flex-shrink-0">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <a href="{{ route('logout') }}"
+                onclick="event.preventDefault(); this.closest('form').submit();"
+                class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full transition duration-200">
+                <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
+                <span>Logout</span>
+            </a>
+        </form>
+    </div>
+    </aside>
+
+    <!-- Overlay for mobile -->
+    <div id="overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden lg:hidden"></div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-y-auto">
+        <!-- Header -->
+        <header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-30">
+            <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
+                <i class="fa-solid fa-bars text-2xl"></i>
+            </button>
+            <h1 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 truncate">Tambah Guru Baru</h1>
+            <div class="flex items-center space-x-4">
+                
             </div>
-            <nav class="mt-6">
-                <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-tachometer-alt w-6 h-6 mr-3"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-user-graduate w-6 h-6 mr-3"></i>
-                    <span>Manajemen Siswa</span>
-                </a>
-                <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
-                    <i class="fa-solid fa-chalkboard-user w-6 h-6 mr-3"></i>
-                    <span>Manajemen Guru</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
-                    <span>Jadwal Pelajaran</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-book w-6 h-6 mr-3"></i>
-                    <span>Mata Pelajaran</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-money-bill-wave w-6 h-6 mr-3"></i>
-                    <span>Keuangan</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-cog w-6 h-6 mr-3"></i>
-                    <span>Pengaturan</span>
-                </a>
-            </nav>
-            <div class="absolute bottom-0 w-full p-6">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <a href="{{ route('logout') }}"
-                       onclick="event.preventDefault(); this.closest('form').submit();"
-                       class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
-                        <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
-                        <span>Logout</span>
-                    </a>
-                </form>
-            </div>
-        </aside>
-
-        <!-- Overlay for mobile -->
-        <div id="overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden lg:hidden"></div>
-
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-y-auto">
-            <!-- Header -->
-            <header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-30">
-                <!-- Mobile Menu Button -->
-                <button id="menu-button" class="lg:hidden text-gray-600 focus:outline-none">
-                    <i class="fa-solid fa-bars text-2xl"></i>
-                </button>
-                <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Tambah Guru Baru</h1>
-                <div class="flex items-center space-x-4">
-                    <button class="text-gray-500 hover:text-gray-700">
-                        <i class="fa-solid fa-bell"></i>
-                    </button>
-                    <div class="relative">
-                        <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=A" alt="User avatar">
-                        <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
-                    </div>
-                </div>
-            </header>
+        </header>
 
             <!-- Page Content -->
             <main class="p-6 md:p-8 flex-1">
+                <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
+                    <h2 class="text-3xl font-bold mb-2">Manajemen Guru</h2>
+                    <p class="text-indigo-200">Kelola semua data guru dan staf yang terdaftar di sekolah.</p>
+                </header>
+
                 <div class="bg-white p-6 rounded-xl shadow-md">
                     <!-- Form Header -->
                     <div class="mb-6">
@@ -141,25 +201,32 @@
                         <p class="text-gray-500 mt-1">Isi data Guru pada baris yang tersedia. Klik "Tambah Baris" untuk menambahkan lebih banyak Guru.</p>
                     </div>
 
+                    <!-- Session Messages Handling -->
+                    @if(session('success'))
+                        <div id="session-success" data-message="{{ session('success') }}" class="hidden"></div>
+                    @endif
+                    @if ($errors->any())
+                        <div id="validation-errors" data-errors='@json($errors->all())' class="hidden"></div>
+                    @endif
+
                     <!-- teacher Form Table -->
-                    <form id="add-teacher-form" method="POST" action="{{ route('storeGuru') }}">
+                    <form id="add-teacher-form" method="POST" action="{{ route('storeGuru') }}">@csrf
                         <!-- MODIFIED: Changed overflow-x: auto for better responsiveness -->
                         <div class="force-scroll-x">
-                            <table class="w-full text-left">
+                            <table class="w-full min-w-[1200px] text-left">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <!-- MODIFIED: Added min-width for better column control -->
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">NIK</th>
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 250px;">Nama Guru</th>
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Alamat</th>
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Tempat lahir</th>
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Tanggal lahir</th>
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Usia</th>
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Nomor Telp</th>
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 150px;">Jabatan</th>
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 180px;">Username</th>
-                                        <th class="p-3 font-semibold text-gray-600" style="min-width: 180px;">Password</th>
-                                        <th class="p-3 font-semibold text-gray-600 text-center" style="min-width: 80px;">Aksi</th>
+                                        <!-- MODIFIED: min-width removed for better responsiveness -->
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap" style="min-width: 150px;">NIK</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap" style="min-width: 250px;">Nama Guru</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap" style="min-width: 300px;">Alamat</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap" style="min-width: 200px;">Tempat lahir</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap" style="min-width: 180px;">Tanggal lahir</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap" style="min-width: 250px;">Nomor Telp</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap" style="min-width: 100px;">Jabatan</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap" style="min-width: 180px;">Username</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm whitespace-nowrap" style="min-width: 180px;">Password</th>
+                                        <th class="p-3 font-semibold text-gray-600 uppercase text-sm text-center whitespace-nowrap">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="teacher-table-body" class="divide-y">
@@ -169,8 +236,8 @@
                         </div>
 
                         <!-- Action Buttons for Table -->
-                        <div class="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-                            <button type="button" id="add-row-btn" class="w-full md:w-auto bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 flex items-center justify-center">
+                        <div class="mt-6 flex flex-col md:flex-row justify-between items-center gap-4 pt-6 border-t">
+                            <button type="button" id="add-row-btn" class="w-full md:w-auto bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 flex items-center justify-center shadow-md">
                                 <i class="fa-solid fa-plus mr-2"></i>
                                 Tambah Baris
                             </button>
@@ -178,7 +245,7 @@
                                <a href="{{ route('manajemenGuru') }}" class="w-full md:w-auto bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300 text-center flex items-center justify-center">
                                     Batal
                                 </a>
-                                <button type="submit" class="w-full md:w-auto bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">
+                                <button type="submit" class="w-full md:w-auto bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 shadow-md">
                                     <i class="fa-solid fa-save mr-2"></i>
                                     Simpan Semua
                                 </button>
@@ -188,7 +255,6 @@
                 </div>
             </main>
         </div>
-    </div>
 
     <script>
         // --- Sidebar Toggle Functionality ---
@@ -231,15 +297,12 @@
                     <input type="date" name="teacher[${rowCount}][tanggal_lahir]" class="table-input" />
                 </td>
                 <td class="p-2">
-                    <input type="number" name="teacher[${rowCount}][usia]" placeholder="Usia" class="table-input" />
-                </td>
-                <td class="p-2">
                     <input type="tel" name="teacher[${rowCount}][nomor_telp]" placeholder="Nomor Telp" class="table-input" />
                 </td>
                 <td class="p-2">
                     <select name="teacher[${rowCount}][jabatan]" class="table-input">
                         <option value="guru">Guru</option>
-                        <option value="staf">Staf</option>
+                        <option disabled value="staf">Staf</option>
                     </select>
                 </td>
                 <td class="p-2">
@@ -278,71 +341,41 @@
             }
         });
 
-        // Handle form submission
-        const form = document.getElementById('add-teacher-form');
-        form.addEventListener('submit', async function(event) {
-            event.preventDefault();
+        // --- SweetAlert2 Notifications for Success ---
+        const successMessage = document.getElementById('session-success');
+        if (successMessage) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: successMessage.dataset.message,
+                timer: 2500,
+                showConfirmButton: false
+            });
+        }
 
-            // Clear previous errors
-            document.querySelectorAll('.error-message').forEach(el => el.remove());
-            document.querySelectorAll('.table-input.border-red-500').forEach(el => el.classList.remove('border-red-500'));
-
-            const formData = new FormData(this);
-
+        // --- SweetAlert2 Notifications for Validation Errors ---
+        const validationErrors = document.getElementById('validation-errors');
+        if (validationErrors) {
             try {
-                const response = await fetch(this.action, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}', // Pastikan CSRF token ada
-                        'Accept': 'application/json',
-                    },
-                    body: formData
+                const errorsData = validationErrors.dataset.errors;
+                // Replace HTML entities that might break JSON parsing
+                const sanitizedErrorsData = errorsData.replace(/&quot;/g, '"');
+                const errors = JSON.parse(sanitizedErrorsData);
+                let errorText = '<ul class="list-disc list-inside text-left">';
+                errors.forEach(error => {
+                    errorText += `<li>${error}</li>`;
                 });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    // Handle success
-                    alert(result.message);
-                    window.location.href = "{{ route('manajemenGuru') }}"; // Redirect ke manajemen guru
-                } else if (response.status === 422) {
-                    // Handle validation errors
-                    displayErrors(result.errors);
-                    alert('Terdapat kesalahan pada data yang Anda masukkan. Silakan periksa kembali.');
-                } else {
-                    // Handle other server errors
-                    throw new Error(result.message || 'Terjadi kesalahan pada server.');
-                }
-
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Gagal mengirim data. Pastikan tidak ada NIK/Username yang duplikat dan semua kolom terisi.');
-            }
-        });
-
-        function displayErrors(errors) {
-            for (const key in errors) {
-                // key akan berbentuk seperti "teacher.1.nik"
-                const parts = key.split('.');
-                if (parts[0] === 'teacher' && parts.length === 3) {
-                    const rowKey = parts[1];
-                    const fieldName = parts[2];
-                    const message = errors[key][0];
-
-                    // Cari input berdasarkan atribut 'name'
-                    const input = document.querySelector([name="teacher[${rowKey}][${fieldName}]"]);
-                    
-                    if (input) {
-                        input.classList.add('border-red-500');
-                        const errorElement = document.createElement('p');
-                        errorElement.className = 'text-red-600 text-xs mt-1 error-message';
-                        errorElement.textContent = message;
-                        // Sisipkan pesan error setelah input
-                        input.parentNode.appendChild(errorElement);
-                    }
-                }
+                errorText += '</ul>';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Validasi',
+                    html: errorText,
+                });
+            } catch (e) {
+                console.error("Error parsing validation errors:", e);
             }
         }
+
     </script>
 </body>
 </html>

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jadwal Pelajaran</title>
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- SweetAlert2 for notifications -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="icon" type="image/png" href="{{ asset('asset/school-solid-full.png') }}">
     <style>
         /* Custom styles */
         body {
@@ -54,53 +55,115 @@
 
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
-        <aside id="sidebar"
-            class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
-            <div class="p-6">
-                <a href="#" class="flex items-center space-x-3">
-                    <i class="fa-solid fa-school text-3xl text-indigo-600"></i>
-                    <span class="text-2xl font-bold text-gray-800">EduSys</span>
-                </a>
-            </div>
-            <nav class="mt-6">
-                <a href="{{ route('dashboard')}}"
-                    class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-tachometer-alt mr-3"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="{{ route('manajemenSiswa') }}"
-                    class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-user-graduate mr-3"></i>
-                    <span>Manajemen Siswa</span>
-                </a>
-                <a href="{{ route('manajemenGuru') }}"
-                    class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-chalkboard-user mr-3"></i>
-                    <span>Manajemen Guru</span>
-                </a>
-                <a href="#"
-                    class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-solid fa-door-closed mr-3"></i>
-                    <span>Manajemen Kelas</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 text-gray-700 bg-gray-200 font-semibold">
-                    <i class="fa-solid fa-calendar-alt w-6 h-6 mr-3"></i>
-                    <span>Jadwal Pelajaran</span>
-                </a>
-                <a href="#"
-                    class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold">
-                    <i class="fa-solid fa-triangle-exclamation mr-3"></i>
-                    <span>Pelanggaran Siswa</span>
-                </a>
-            </nav>
-            <div class="absolute bottom-0 w-full p-6">
-                <a href="#"
-                    class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full">
-                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i>
-                    <span>Logout</span>
-                </a>
-            </div>
-        </aside>
+        <aside id="sidebar" class="sidebar bg-white w-64 min-h-screen flex-shrink-0 shadow-lg fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0">
+        <div class="p-6">
+            <a href="#" class="flex items-center space-x-3">
+                <i class="fa-solid fa-school text-3xl text-indigo-600"></i>
+                <span class="text-2xl font-bold text-gray-800">EduSys</span>
+            </a>
+        </div>
+        <nav class="mt-6">
+            <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-tachometer-alt w-6 mr-3"></i>
+                <span>Dashboard</span>
+            </a>
+
+            @can('view-admin')
+            <a href="{{ route('admin.profile') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('admin.profile')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
+                <i class="fa-solid fa-user-circle mr-3"></i>
+                <span>Profil</span>
+            </a>
+            <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-user-graduate w-6 mr-3"></i>
+                <span>Manajemen Siswa</span>
+            </a>
+            <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-chalkboard-user w-6 mr-3"></i>
+                <span>Manajemen Guru</span>
+            </a>
+            <a href="{{ route('manajemenMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book w-6 mr-3"></i>
+                <span>Manajemen Mapel</span>
+            </a>
+            <a href="{{ route('manajemenKelas') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-door-closed w-6 mr-3"></i>
+                <span>Manajemen Kelas</span>
+            </a>
+            <a href="{{ route('manajemenJadwal')}}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-alt w-6 mr-3"></i>
+                <span>Manajemen Jadwal</span>
+            </a>
+            <a href="{{ route('manajAcara') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-check w-6 h-6 mr-3"></i>
+                <span>Acara</span>
+            </a>
+            <a href="{{ route('manajemenAngkatan') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-bookmark w-6 mr-3"></i>
+                <span>Angkatan</span>
+            </a>
+            <a href="{{ route('manajemenRapor') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open w-6 mr-3"></i>
+                <span>Rapor</span>
+            </a>
+            <a href="{{ route('manajemenKurikulum') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open-reader w-6 mr-3"></i>
+                <span>Kurikulum</span>
+            </a>
+            <a href="{{ route('manajemenTingkat') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-layer-group w-6 mr-3"></i>
+                <span>Tingkat</span>
+            </a>
+            <a href="{{ route('manajemenAlumni') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-user-friends w-6 mr-3"></i>
+                <span>Manajemen Alumni</span>
+            </a>
+            @endcan
+
+            @can('view-guru')
+            <a href="{{ route('manajemenNilai') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-pen w-6 mr-3"></i>
+                <span>Input Nilai</span>
+            </a>
+            <a href="{{ route('lihatjadwalG') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-days w-6 mr-3"></i>
+                <span>Jadwal Mengajar</span>
+            </a>
+            <a href="{{ route('manajAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-list-check w-6 mr-3"></i>
+                <span>Input Absensi</span>
+            </a>
+            @endcan
+
+            @can('view-siswa')
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-pen w-6 mr-3"></i>
+                <span>Lihat Nilai</span>
+            </a>
+            <a href="{{ route('lihatAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-list-check w-6 mr-3"></i>
+                <span>Lihat Absensi</span>
+            </a>
+            @endcan
+
+            @can('view-adminDev')
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-users w-6 mr-3"></i>
+                <span>Manajemen Klien</span>
+            </a>
+            @endcan
+        </nav>
+        <div class="p-6 border-t border-gray-200 flex-shrink-0">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <a href="{{ route('logout') }}"
+                onclick="event.preventDefault(); this.closest('form').submit();"
+                class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full transition duration-200">
+                <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
+                <span>Logout</span>
+            </a>
+        </form>
+    </div>
+    </aside>
 
         <!-- Overlay for mobile -->
         <div id="overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden lg:hidden"></div>
@@ -115,14 +178,7 @@
                 </button>
                 <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Jadwal Pelajaran</h1>
                 <div class="flex items-center space-x-4">
-                    <button class="text-gray-500 hover:text-gray-700">
-                        <i class="fa-solid fa-bell"></i>
-                    </button>
-                    <div class="relative">
-                        <img class="h-10 w-10 rounded-full object-cover"
-                            src="https://placehold.co/100x100/667eea/ffffff?text=A" alt="User avatar">
-                        <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
-                    </div>
+                    
                 </div>
             </header>
 
@@ -184,13 +240,19 @@
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 <!-- Baris jadwal dari Senin sampai Jumat -->
+                                @php $currentDay = ''; @endphp
                                 @forelse ($jadwals as $jadwal)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $jadwal->hari }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $jadwal->mapel->nama_mapel ?? 'Mapel Dihapus' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $jadwal->mapel->guru->name ?? 'Guru Belum Diatur' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $jadwal->ruangan ?? '-' }}</td>
+                                    @if ($jadwal->hari !== $currentDay)
+                                            <td class="p-3 text-gray-800 font-medium align-top" rowspan="{{ $jadwals->where('hari', $jadwal->hari)->count() }}">
+                                                {{ $jadwal->hari }}
+                                            </td>
+                                            @php $currentDay = $jadwal->hari; @endphp
+                                        @endif
+                                        <td class="p-3 text-gray-700 whitespace-nowrap">{{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i') }}</td>
+                                        <td class="p-3 text-gray-700">{{ $jadwal->mapel->nama_mapel ?? 'N/A' }}</td>
+                                        <td class="p-3 text-gray-700">{{ $jadwal->mapel->guru->name ?? 'N/A' }}</td>
+                                        <td class="p-3 text-gray-700">{{ $jadwal->ruangan }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <button onclick="showEditModal({{ json_encode($jadwal) }})"
                                             class="text-indigo-600 hover:text-indigo-900 mx-1">
@@ -222,77 +284,108 @@
 
     <!-- Modal untuk Tambah/Edit Jadwal -->
     <div id="schedule-modal"
-        class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden modal opacity-0">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <!-- Modal Header -->
-            <div class="flex justify-between items-center pb-3">
-                <h3 class="text-xl font-semibold text-gray-900" id="modal-title">Tambah Jadwal Baru</h3>
-                <button id="close-schedule-modal" class="text-gray-400 hover:text-gray-600">
-                    <i class="fa-solid fa-times text-xl"></i>
-                </button>
+    class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 hidden opacity-0 transition-opacity duration-300">
+
+    <!-- Modal Card -->
+    <div class="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-lg p-6">
+        <!-- Header -->
+        <div class="flex justify-between items-center pb-3 border-b">
+            <h3 class="text-xl font-semibold text-gray-900" id="modal-title">Tambah Jadwal Baru</h3>
+            <button id="close-schedule-modal" class="text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <form id="schedule-form" action="{{ route('storeJadwal', ['id_kelas' => $kelas->id_kelas]) }}" method="POST" class="pt-4 space-y-4">
+            @csrf
+            <input type="hidden" name="_method" id="form-method" value="POST">
+
+            <!-- Hari -->
+            <div>
+                <label for="hari" class="block text-sm font-medium text-gray-700">Hari</label>
+                <select id="hari" name="hari"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
+                           focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    required>
+                    <option value="">Pilih Hari</option>
+                    <option>Senin</option>
+                    <option>Selasa</option>
+                    <option>Rabu</option>
+                    <option>Kamis</option>
+                    <option>Jumat</option>
+                    <option>Sabtu</option>
+                </select>
             </div>
 
-            <!-- Modal Body (Form) -->
-            <form id="schedule-form" action="{{ route('storeJadwal', ['id_kelas' => $kelas->id_kelas]) }}" method="POST">
-                {{-- Input untuk method PUT (untuk edit) akan ditambahkan oleh JS --}}
-                <input type="hidden" name="_method" id="form-method" value="POST">
-                @csrf
-                <div class="mb-4">
-                    <label for="hari" class="block text-sm font-medium text-gray-700">Hari</label>
-                    <select id="hari" name="hari"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        required>
-                        <option value="">Pilih Hari</option>
-                        <option value="Senin">Senin</option>
-                        <option value="Selasa">Selasa</option>
-                        <option value="Rabu">Rabu</option>
-                        <option value="Kamis">Kamis</option>
-                        <option value="Jumat">Jumat</option>
-                        <option value="Sabtu">Sabtu</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label for="jam_mulai" class="block text-sm font-medium text-gray-700">Jam Mulai</label>
-                    <input type="time" id="jam_mulai" name="jam_mulai"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="Contoh: 08:00-10:00" required>
-                </div>
-                <div class="mb-4">
-                    <label for="jam_selesai" class="block text-sm font-medium text-gray-700">Jam Selesai</label>
-                    <input type="time" id="jam_selesai" name="jam_selesai"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="Contoh: 08:00-10:00" required>
-                </div>
-                <div class="mb-4">
-                    <label for="mapel" class="block text-sm font-medium text-gray-700">Mata Pelajaran</label>
-                    <select id="mapel" name="id_mapel"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        required>
-                        <option value="">Pilih Mata Pelajaran</option>
+            <!-- Jam Mulai -->
+            <div>
+                <label for="jam_mulai" class="block text-sm font-medium text-gray-700">Jam Mulai</label>
+                <input type="time" id="jam_mulai" name="jam_mulai"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
+                           focus:ring-indigo-500 focus:border-indigo-500"
+                    required>
+            </div>
+
+            <!-- Jam Selesai -->
+            <div>
+                <label for="jam_selesai" class="block text-sm font-medium text-gray-700">Jam Selesai</label>
+                <input type="time" id="jam_selesai" name="jam_selesai"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
+                           focus:ring-indigo-500 focus:border-indigo-500"
+                    required>
+            </div>
+
+            <!-- Mata Pelajaran -->
+            <div>
+                <label for="mapel" class="block text-gray-700 font-medium mb-2">
+                    Mata Pelajaran
+                </label>
+                <div class="relative">
+                    <select id="mapel" name="id_mapel" size="6"
+                        class="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5
+                               text-gray-800 text-sm shadow-sm focus:outline-none focus:ring-2
+                               focus:ring-indigo-500 focus:border-indigo-500
+                               overflow-y-auto max-h-60 appearance-none">
+                        <option value="" disabled>Pilih Mata Pelajaran</option>
                         @forelse ($mapels ?? [] as $mapel)
-                            <option value="{{ $mapel->id_mapel }}">{{ $mapel->nama_mapel }} ({{$mapel->guru->name}})</option>
+                            <option value="{{ $mapel->id_mapel }}">
+                                {{ $mapel->nama_mapel ?? '_'}} ({{ $mapel->guru->name ?? '-'}})
+                            </option>
                         @empty
-                            <option value="" disabled>Tidak ada mata pelajaran tersedia</option>
+                            <option disabled>Tidak ada mata pelajaran tersedia</option>
                         @endforelse
                     </select>
+                    <span class="absolute right-3 top-2.5 text-gray-400 pointer-events-none">
+                        <i class="fa-solid fa-angle-down"></i>
+                    </span>
                 </div>
-                <div class="mb-4">
-                    <label for="ruangan" class="block text-sm font-medium text-gray-700">Ruangan</label>
-                    <input type="text" id="ruangan" name="ruangan"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="Contoh: Lab Komputer 1" required>
-                </div>
+            </div>
 
-                <!-- Modal Footer -->
-                <div class="flex justify-end pt-2">
-                    <button type="button" id="cancel-schedule-modal"
-                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg mr-2 hover:bg-gray-300">Batal</button>
-                    <button type="submit"
-                        class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Simpan</button>
-                </div>
-            </form>
-        </div>
+            <!-- Ruangan -->
+            <div>
+                <label for="ruangan" class="block text-sm font-medium text-gray-700">Ruangan</label>
+                <input type="text" id="ruangan" name="ruangan"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
+                           focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="Contoh: Lab Komputer 1" required>
+            </div>
+
+            <!-- Footer -->
+            <div class="flex justify-end pt-4 border-t">
+                <button type="button" id="cancel-schedule-modal"
+                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg mr-2 hover:bg-gray-300">
+                    Batal
+                </button>
+                <button type="submit"
+                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                    Simpan
+                </button>
+            </div>
+        </form>
     </div>
+</div>
+
 
     <!-- Modal Konfirmasi Hapus -->
     <div id="delete-modal"

@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Angkatan;
 use App\Models\User;
 use App\Models\Clien;
+use App\Models\DaftarAbsensiSiswa;
+use App\Models\DaftarAcara;
 use App\Models\Jadwal;
+use App\Models\DaftarPengumuman;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
@@ -31,23 +34,89 @@ class LoginController extends Controller
         // dd($role);
         if ($role == 'adminDev'){
             $cliens = Clien::all();
-            return view('dashboard', ['username' => $username, 'time' => $time, 'cliens' => $cliens]);
+            $jumlahClien = $cliens->count();
+
+            return view('dashboard', ['username' => $username, 'time' => $time, 'cliens' => $cliens, 'jumlahClien' => $jumlahClien]);
         }else if ($role == 'admin'){
-            return view('dashboard', ['username' => $username, 'time' => $time]);
+            $idSekolah = $request->cookie('id_sekolah');
+
+            
+            $dataAbsensi = DaftarAbsensiSiswa::with('daftarAbsensi') // penting: eager load relasi
+                ->where('id_sekolah', $idSekolah)
+                ->whereHas('daftarAbsensi', function ($query) {
+                    $query->whereBetween('tanggal', [
+                        Carbon::now()->startOfWeek()->toDateString(),
+                        Carbon::now()->endOfWeek()->toDateString(),
+                    ]);
+                })
+                ->get();
+
+            $totalAbsensiHarian = [];
+
+            $hariList = [
+                'senin' => 0,
+                'selasa' => 1,
+                'rabu' => 2,
+                'kamis' => 3,
+                'jumat' => 4,
+                'sabtu' => 5,
+            ];
+
+            foreach ($hariList as $namaHari => $offset) {
+                $tanggal = Carbon::now()->startOfWeek()->addDays($offset);
+
+                // Ambil data absensi pada hari tersebut
+                $absensiHariIni = $dataAbsensi->filter(function ($item) use ($tanggal) {
+                    return optional($item->daftarAbsensi)->tanggal === $tanggal->toDateString();
+                });
+
+                $total = $absensiHariIni->count();
+                $hadir = $absensiHariIni->where('status', 'Hadir')->count();
+
+                // Hitung persentase kehadiran (hindari pembagian nol)
+                $persentase = $total > 0 ? round(($hadir / $total) * 100, 2) : 0;
+
+                $totalAbsensiHarianHadir[] = $persentase;
+            }
+
+            $infoJumlahSGKA = Clien::where('id_sekolah', $idSekolah)
+                                ->with('users')
+                                ->with('acara')
+                                ->with('kelas')
+                                ->first();
+            
+            $jumlahSiswa = $infoJumlahSGKA->users->where('role', 'siswa')->count();
+            $jumlahGuru = $infoJumlahSGKA->users->where('role', 'guru')->count();
+            $jumlahAcara = $infoJumlahSGKA->acara->count();
+            $jumlahKelas = $infoJumlahSGKA->kelas->count();
+
+
+            return view('dashboard', [
+                                'username' => $username, 
+                                'time' => $time, 
+                                'totalAbsensiHarianHadir' => $totalAbsensiHarianHadir,
+                                'jumlahSiswa' => $jumlahSiswa,
+                                'jumlahGuru' => $jumlahGuru,
+                                'jumlahAcara' => $jumlahAcara,
+                                'jumlahKelas' => $jumlahKelas
+                            ]);
+
+            // return view('debug', ['tes' => $jumlahAcara, 'tess' => $jumlahSiswa, 'tesss'=> $infoJumlahSGKA]);
         }elseif ($role == 'guru'){
             $idUser = $request->cookie('id_user');
 
-            $jadwalHariIni = Jadwal::where('hari', Carbon::now()->isoFormat('dddd'))
-                ->with(['kelas.angkatan', 'mapel']) // Eager load relasi yang dibutuhkan
+            // Set lokal Carbon ke Indonesia untuk mendapatkan nama hari yang benar
+            $hariIni = Carbon::now()->locale('id')->isoFormat('dddd');
+
+            $jadwalHariIni = Jadwal::where('hari', $hariIni)
+                ->with(['kelas.angkatan', 'mapel']) 
                 ->whereHas('mapel', function ($query) use ($idUser) {
                     $query->where('id_guru', $idUser);
                 })
                 ->whereHas('kelas.angkatan', function ($query) {
-                    // Filter Jadwal berdasarkan semester yang ada di relasi angkatan
                     $query->whereColumn('angkatans.semester', 'jadwals.semester');
                 })
                 ->whereHas('kelas.angkatan', function ($query) {
-                    // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
                     $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
                 })
                 ->get();
@@ -56,7 +125,71 @@ class LoginController extends Controller
             return view('dashboard', ['username' => $username, 'time' => $time, 'jadwalHariIni' => $jadwalHariIni, 'jumlahSesi' => $jumlahSesi]);
         
         }elseif ($role == 'siswa'){
-            return view('dashboard', ['username' => $username, 'time' => $time]);
+            $idKelas = $request->cookie('id_kelas');
+            $idSekolah = $request->cookie('id_sekolah');
+            $idUser = $request->cookie('id_user');
+
+
+
+            $jadwalHariIni = Jadwal::where('hari', Carbon::now()->isoFormat('dddd'))
+                ->where('id_kelas', $idKelas)
+                ->where('id_sekolah', $idSekolah)
+                ->with('mapel.guru')
+                ->with('kelas.angkatan')
+                ->whereHas('kelas.angkatan', function ($query) {
+                    $query->whereColumn('angkatans.semester', 'jadwals.semester');
+                })
+                ->whereHas('kelas.angkatan', function ($query) {
+                    // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                    $query->whereColumn('angkatans.id_tingkat', 'jadwals.tingkat');
+                })
+                ->get();
+
+            $absensi = DaftarAbsensiSiswa::where('id_siswa', $idUser)
+                ->where('id_sekolah', $idSekolah)
+                ->with('daftarAbsensi.kelas.angkatan')
+                ->whereHas('daftarAbsensi.kelas.angkatan', function ($query) {
+                    $query->whereColumn('angkatans.semester', 'daftar_absensi_siswas.semester');
+                })
+                ->whereHas('daftarAbsensi.kelas.angkatan', function ($query) {
+                    // Filter Jadwal berdasarkan tingkat yang ada di relasi angkatan
+                    $query->whereColumn('angkatans.id_tingkat', 'daftar_absensi_siswas.tingkat');
+                })
+                ->get();
+
+            $totalAbsensi = [];
+
+            $totalAbsensi['Hadir'] = $absensi->where('status', 'Hadir')->count();
+            $totalAbsensi['Izin'] = $absensi->where('status', 'Izin')->count();
+            $totalAbsensi['Sakit'] = $absensi->where('status', 'Sakit')->count();
+            $totalAbsensi['Alfa'] = $absensi->where('status', 'Alfa')->count();
+
+            // Ambil semua ID mapel yang diajarkan di kelas siswa
+            $mapelIds = Jadwal::where('id_kelas', $idKelas)
+                            ->where('id_sekolah', $idSekolah)
+                            ->pluck('id_mapel')->unique();
+
+            // Ambil pengumuman yang relevan (berdasarkan id_sekolah, id_kelas, dan id_mapel)
+            $DaftarPengumuman = DaftarPengumuman::where('id_sekolah', $idSekolah)
+                ->where('id_kelas', $idKelas)
+                ->whereIn('id_mapel', $mapelIds)
+                ->where('created_at', '>=', Carbon::now()->subWeeks(1))
+                ->with('mapel') // Eager load relasi mapel untuk efisiensi
+                ->get();
+
+            $daftarAcara = DaftarAcara::where('id_sekolah', $idSekolah)
+                        ->where('tanggal_selesai', '>=', Carbon::now()->subWeeks(1))
+                        ->orderBy('tanggal_mulai', 'desc')
+                        ->get();
+
+            return view('dashboard', ['username' => $username, 
+                                                    'time' => $time, 
+                                                    'jadwalHariIni' => $jadwalHariIni, 
+                                                    'totalAbsensi' => $totalAbsensi,
+                                                    'DaftarPengumuman' => $DaftarPengumuman,
+                                                    'daftarAcara' => $daftarAcara
+                                                ]);
+
         }elseif ($role == 'staf'){
             return view('dashboard', ['username' => $username, 'time' => $time]);
         }else{
@@ -64,7 +197,7 @@ class LoginController extends Controller
         }
     }
 
-    public function create()
+    public function welcome()
     {
         // Mengarahkan ke view yang berisi form login
         return view('welcome');
@@ -76,7 +209,7 @@ class LoginController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request): RedirectResponse
+    public function login(Request $request): RedirectResponse
     {
         // 1. Validasi data input dari form
         $credentials = $request->validate([
@@ -137,5 +270,63 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/');
+    }
+
+        public function pengaturanAkun (Request $request)
+    {
+        $user = Auth::user();
+        
+        return view('pengaturan_akun', compact('user'));
+    }
+
+
+    public function updateAkun(Request $request)
+    {
+        $user = User::where('id', $request->cookie('id_user'))->first();
+        $updateData = [];
+
+        // Handle username update
+        if ($request->has('username')) {
+            $request->validate([
+                'username' => 'required|string|max:255|unique:users,username,' . $user->id,
+            ], [
+                'username.required' => 'Username baru tidak boleh kosong.',
+                'username.unique' => 'Username ini sudah digunakan oleh pengguna lain.',
+            ]);
+
+            $updateData['username'] = $request->username;
+            // Asumsi email dibuat dari username, seperti di controller lain
+            $updateData['email'] = $request->username . '@sekolah.sch.id';
+
+            $user->update($updateData);
+
+            return back()->with('success', 'Username berhasil diperbarui!');
+        }
+
+        // Handle password update
+        if ($request->has('current_password') || $request->has('password')) {
+             $request->validate([
+                'current_password' => 'required|string',
+                'password' => 'required|string|min:6|confirmed',
+            ], [
+                'current_password.required' => 'Password saat ini tidak boleh kosong.',
+                'password.required' => 'Password baru tidak boleh kosong.',
+                'password.min' => 'Password baru minimal harus 6 karakter.',
+                'password.confirmed' => 'Konfirmasi password baru tidak cocok.',
+            ]);
+
+            // Verifikasi password saat ini (karena menggunakan AES, kita bandingkan langsung)
+            if ($request->current_password !== $user->password) {
+                return back()->withErrors(['current_password' => 'Password saat ini yang Anda masukkan salah.']);
+            }
+
+            // Update password (model akan mengenkripsi secara otomatis)
+            $user->password = $request->password;
+            $user->save();
+
+            return back()->with('success', 'Password berhasil diperbarui!');
+        }
+
+        return back()->with('error', 'Tidak ada data yang dikirim untuk diperbarui.');
     }
 }

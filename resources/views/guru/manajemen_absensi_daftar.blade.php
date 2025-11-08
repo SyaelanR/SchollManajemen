@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Absensi - EduSys</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- SweetAlert2 for notifications -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="icon" type="image/png" href="{{ asset('asset/school-solid-full.png') }}">
     <style>
         body { font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 8px; }
@@ -32,26 +33,116 @@
         </div>
         <nav class="mt-6">
             <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-tachometer-alt mr-3"></i>
+                <i class="fa-solid fa-tachometer-alt w-6 mr-3"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-pen mr-3"></i>
-                <span>Input Nilai</span>
+
+            @can('view-admin')
+            <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-user-graduate w-6 mr-3"></i>
+                <span>Manajemen Siswa</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
-                <i class="fa-solid fa-list-check mr-3"></i>
+            <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-chalkboard-user w-6 mr-3"></i>
+                <span>Manajemen Guru</span>
+            </a>
+            <a href="{{ route('manajemenMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book w-6 mr-3"></i>
+                <span>Manajemen Mapel</span>
+            </a>
+            <a href="{{ route('manajemenKelas') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-door-closed w-6 mr-3"></i>
+                <span>Manajemen Kelas</span>
+            </a>
+            <a href="{{ route('manajemenJadwal')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-alt w-6 mr-3"></i>
+                <span>Manajemen Jadwal</span>
+            </a>
+            <a href="{{ route('manajAcara')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-check mr-3"></i>
+                <span>Acara</span>
+            </a>
+            <a href="{{ route('manajemenAngkatan') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-bookmark w-6 mr-3"></i>
+                <span>Angkatan</span>
+            </a>
+            <a href="{{ route('manajemenRapor') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open w-6 mr-3"></i>
+                <span>Rapor</span>
+            </a>
+            <a href="{{ route('manajemenKurikulum') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open-reader w-6 mr-3"></i>
+                <span>Kurikulum</span>
+            </a>
+            <a href="{{ route('manajemenTingkat') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-layer-group w-6 mr-3"></i>
+                <span>Tingkat</span>
+            </a>
+            @endcan
+
+            @can('view-guru')
+            <a href="{{ route('guru.profile') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('admin.profile')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
+                <i class="fa-solid fa-user-circle mr-3"></i>
+                <span>Profil</span>
+            </a>
+            <a href="{{ route('lihatjadwalG') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-days w-6 mr-3"></i>
+                <span>Jadwal Mengajar</span>
+            </a>
+            <a href="{{ route('manajAbsensi') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
+                <i class="fa-solid fa-list-check w-6 mr-3"></i>
                 <span>Input Absensi</span>
             </a>
+            <a href="{{ route('manajMateri') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open-reader mr-3"></i>
+                <span>Input Materi</span>
+            </a>
+            <a href="{{ route('manajTugas') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-file-pen w-6 mr-3"></i>
+                <span>Input Tugas</span>
+            </a>
+            <a href="{{ route('manajemenNilai') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-pen w-6 mr-3"></i>
+                <span>Input Nilai</span>
+            </a>
+            <a href="{{ route('manajPengumuman') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-bullhorn w-6 mr-3"></i>
+                <span>Pengumuman</span>
+            </a>
+            @endcan
+
+            @can('view-siswa')
+            <a href="{{ route('pilihMapel')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-pen w-6 mr-3"></i>
+                <span>Lihat Nilai</span>
+            </a>
+            <a href="{{ route('lihatAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-list-check w-6 mr-3"></i>
+                <span>Lihat Absensi</span>
+            </a>
+            <a href="{{ route('lihatAcaraSiswa')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-check mr-3"></i>
+                <span>Acara</span>
+            </a>
+            @endcan
+
+            @can('view-adminDev')
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-users w-6 mr-3"></i>
+                <span>Manajemen Klien</span>
+            </a>
+            @endcan
         </nav>
-        <div class="absolute bottom-0 w-full p-6">
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full text-left">
-                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i><span>Logout</span>
-                </button>
-            </form>
-        </div>
+       <div class="p-6 border-t border-gray-200 flex-shrink-0">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <a href="{{ route('logout') }}"
+                onclick="event.preventDefault(); this.closest('form').submit();"
+                class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full transition duration-200">
+                <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
+                <span>Logout</span>
+            </a>
+        </form>
     </aside>
 
     <!-- Overlay for mobile -->
@@ -66,13 +157,7 @@
             </button>
             <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Daftar Absensi</h1>
             <div class="flex items-center space-x-4">
-                 <button class="text-gray-500 hover:text-gray-700">
-                    <i class="fa-solid fa-bell"></i>
-                </button>
-                <div class="relative">
-                    <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=A" alt="User avatar">
-                    <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
-                </div>
+                
             </div>
         </header>
 
@@ -82,10 +167,13 @@
             @if(session('success'))
                 <div id="session-success" data-message="{{ session('success') }}" class="hidden"></div>
             @endif
+            @if ($errors->any())
+                <div id="validation-errors" data-errors='@json($errors->all())' class="hidden"></div>
+            @endif
 
             <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg flex flex-wrap justify-between items-center text-white gap-4">
                 <div>
-                    <h1 class="text-2xl md:text-3xl font-bold">Daftar Absensi: {{$infoKelas->kelas->nama_kelas ?? 'N/A'}} - {{$infoMapel->nama_mapel ?? 'N/A'}}</h1>
+                    <h1 class="text-2xl md:text-3xl font-bold">Daftar Absensi: {{$infoJKA->kelas->nama_kelas ?? 'N/A'}} - {{$infoJKA->mapel->nama_mapel ?? 'N/A'}}</h1>
                     <p class="text-indigo-200 mt-2">Pilih sesi absensi untuk diisi atau buat sesi baru.</p>
                 </div>
                 <a href="{{ route('manajAbsensi') }}" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
@@ -151,7 +239,7 @@
                 <i class="fa-solid fa-times text-2xl"></i>
             </button>
         </div>
-        <form id="task-form" action="{{route('storeAbsensiDaftar',[$infoKelas->kelas->id_kelas ?? 0, $infoMapel->id_mapel ?? 0])}}" method="POST">
+        <form id="task-form" action="{{route('storeAbsensiDaftar',[$infoJKA->kelas->id_kelas ?? 0, $infoJKA->mapel->id_mapel ?? 0])}}" method="POST">
             @csrf
             <div class="p-6 space-y-4">
                 <div>
@@ -220,18 +308,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // The form submission itself is handled by Laravel, no need to preventDefault unless using AJAX.
     }
-    
-    // --- SweetAlert2 Notifications ---
-    const successMessage = document.getElementById('session-success');
-    if (successMessage) {
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil!',
-            text: successMessage.dataset.message,
-            timer: 2500,
-            showConfirmButton: false
-        });
-    }
+
+    window.addEventListener('load', () => {
+        const successEl = document.getElementById('session-success');
+        const errorEl = document.getElementById('session-error');
+        if (successEl) {
+            Swal.fire({ icon: 'success', title: 'Berhasil!', text: successEl.dataset.message, timer: 2000, showConfirmButton: false });
+        }
+        if (errorEl) {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: errorEl.dataset.message, timer: 3000, showConfirmButton: false });
+        }
+
+        // --- Handle Validation Errors ---
+        const validationErrorsEl = document.getElementById('validation-errors');
+        if (validationErrorsEl) {
+            const errors = JSON.parse(validationErrorsEl.dataset.errors);
+            let errorText = '<ul class="list-disc list-inside text-left">';
+            errors.forEach(error => {
+                errorText += `<li>${error}</li>`;
+            });
+            errorText += '</ul>';
+
+            Swal.fire({ icon: 'error', title: 'Gagal Validasi', html: errorText });
+        }
+    });
 });
 </script>
 </body>

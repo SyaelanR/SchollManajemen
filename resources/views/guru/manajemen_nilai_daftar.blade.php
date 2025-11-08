@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Nilai - Sistem Manajemen Sekolah</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- SweetAlert2 for notifications -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ asset('asset/school-solid-full.png') }}">
     <style>
         body { font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 8px; }
@@ -32,26 +33,116 @@
         </div>
         <nav class="mt-6">
             <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
-                <i class="fa-solid fa-tachometer-alt mr-3"></i>
+                <i class="fa-solid fa-tachometer-alt w-6 mr-3"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
-                <i class="fa-solid fa-pen mr-3"></i>
-                <span>Input Nilai</span>
+
+            @can('view-admin')
+            <a href="{{ route('manajemenSiswa') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-user-graduate w-6 mr-3"></i>
+                <span>Manajemen Siswa</span>
             </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 ">
-                <i class="fa-solid fa-list-check mr-3"></i>
+            <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-chalkboard-user w-6 mr-3"></i>
+                <span>Manajemen Guru</span>
+            </a>
+            <a href="{{ route('manajemenMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book w-6 mr-3"></i>
+                <span>Manajemen Mapel</span>
+            </a>
+            <a href="{{ route('manajemenKelas') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-door-closed w-6 mr-3"></i>
+                <span>Manajemen Kelas</span>
+            </a>
+            <a href="{{ route('manajemenJadwal')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-alt w-6 mr-3"></i>
+                <span>Manajemen Jadwal</span>
+            </a>
+            <a href="{{ route('manajAcara')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-check mr-3"></i>
+                <span>Acara</span>
+            </a>
+            <a href="{{ route('manajemenAngkatan') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-bookmark w-6 mr-3"></i>
+                <span>Angkatan</span>
+            </a>
+            <a href="{{ route('manajemenRapor') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open w-6 mr-3"></i>
+                <span>Rapor</span>
+            </a>
+            <a href="{{ route('manajemenKurikulum') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open-reader w-6 mr-3"></i>
+                <span>Kurikulum</span>
+            </a>
+            <a href="{{ route('manajemenTingkat') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-layer-group w-6 mr-3"></i>
+                <span>Tingkat</span>
+            </a>
+            @endcan
+
+            @can('view-guru')
+            <a href="{{ route('guru.profile') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('admin.profile')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
+                <i class="fa-solid fa-user-circle mr-3"></i>
+                <span>Profil</span>
+            </a>
+            <a href="{{ route('lihatjadwalG') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-days w-6 mr-3"></i>
+                <span>Jadwal Mengajar</span>
+            </a>
+            <a href="{{ route('manajAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-list-check w-6 mr-3"></i>
                 <span>Input Absensi</span>
             </a>
+            <a href="{{ route('manajMateri') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-book-open-reader mr-3"></i>
+                <span>Input Materi</span>
+            </a>
+            <a href="{{ route('manajTugas') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-file-pen w-6 mr-3"></i>
+                <span>Input Tugas</span>
+            </a>
+            <a href="{{ route('manajemenNilai') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
+                <i class="fa-solid fa-pen w-6 mr-3"></i>
+                <span>Input Nilai</span>
+            </a>
+            <a href="{{ route('manajPengumuman') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-bullhorn w-6 mr-3"></i>
+                <span>Pengumuman</span>
+            </a>
+            @endcan
+
+            @can('view-siswa')
+            <a href="{{ route('pilihMapel')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-pen w-6 mr-3"></i>
+                <span>Lihat Nilai</span>
+            </a>
+            <a href="{{ route('lihatAbsensi') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-list-check w-6 mr-3"></i>
+                <span>Lihat Absensi</span>
+            </a>
+            <a href="{{ route('lihatAcaraSiswa')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-calendar-check mr-3"></i>
+                <span>Acara</span>
+            </a>
+            @endcan
+
+            @can('view-adminDev')
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                <i class="fa-solid fa-users w-6 mr-3"></i>
+                <span>Manajemen Klien</span>
+            </a>
+            @endcan
         </nav>
-        <div class="absolute bottom-0 w-full p-6">
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full text-left">
-                    <i class="fa-solid fa-sign-out-alt w-6 h-6 mr-3"></i><span>Logout</span>
-                </button>
-            </form>
-        </div>
+        <div class="p-6 border-t border-gray-200 flex-shrink-0">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <a href="{{ route('logout') }}"
+                onclick="event.preventDefault(); this.closest('form').submit();"
+                class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:font-semibold rounded-lg w-full transition duration-200">
+                <i class="fa-solid fa-sign-out-alt w-6 mr-3"></i>
+                <span>Logout</span>
+            </a>
+        </form>
     </aside>
 
     <!-- Overlay for mobile -->
@@ -66,13 +157,7 @@
             </button>
             <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Daftar Nilai</h1>
              <div class="flex items-center space-x-4">
-                 <button class="text-gray-500 hover:text-gray-700">
-                    <i class="fa-solid fa-bell"></i>
-                </button>
-                <div class="relative">
-                    <img class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/100x100/667eea/ffffff?text=A" alt="User avatar">
-                    <span class="absolute right-0 bottom-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
-                </div>
+                
             </div>
         </header>
 
@@ -88,7 +173,7 @@
             <!-- UPDATED Header -->
             <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg flex flex-wrap justify-between items-center text-white gap-4">
                 <div>
-                    <h1 class="text-2xl md:text-3xl font-bold">Daftar Nilai: {{$infoKelas->kelas->nama_kelas}} - {{$infoMapel->nama_mapel}}</h1>
+                    <h1 class="text-2xl md:text-3xl font-bold">Daftar Nilai: {{$infoJKA->kelas?->nama_kelas ?? 'N/A'}} - {{$infoJKA->mapel?->nama_mapel ?? 'N/A'}}</h1>
                     <p class="text-indigo-200 mt-2">Pilih tugas untuk diisi nilainya atau buat tugas baru.</p>
                 </div>
                 <a href="{{ route('manajemenNilai') }}" class="flex-shrink-0 inline-flex items-center bg-white text-indigo-600 hover:bg-gray-100 transition duration-300 px-4 py-2 rounded-lg shadow-md font-semibold">
@@ -100,9 +185,14 @@
             <div class="bg-white p-6 rounded-xl shadow-md">
                 <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
                     <h2 class="text-2xl font-bold text-gray-800">Sesi Penilaian</h2>
-                    <button id="add-task-btn" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 flex items-center">
-                        <i class="fa-solid fa-plus mr-2"></i> Tambah Sesi
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <button id="add-task-btn" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 flex items-center">
+                            <i class="fa-solid fa-plus mr-2"></i> Tambah Sesi
+                        </button>
+                        <button onclick="window.location.href = '{{ route('exportNilai',[$infoJKA->kelas?->id_kelas ?? 0, $infoJKA->mapel->id_mapel ?? 0]) }}'" class="bg-green-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-green-700 transition duration-300 flex items-center">
+                            <i class="fa-solid fa-file-excel mr-2"></i> Export Nilai
+                        </button>
+                    </div>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -113,6 +203,7 @@
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Tipe Nilai</th>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Tanggal</th>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Sifat</th>
+                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm text-center">Hapus</th>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm text-center">Aksi</th>
                             </tr>
                         </thead>
@@ -136,6 +227,15 @@
                                     @endif
                                 <td class="p-3 text-gray-600">{{$nilai->tanggal}}</td>
                                 <td class="p-3 text-gray-600">{{$nilai->sifat}}</td>
+                                <td class="p-3 text-center">
+                                    <form action="{{ route('destroyDaftarNilai', $nilai->id_daftar_nilai) }}" method="POST" class="delete-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-800 transition duration-200" title="Hapus Sesi">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
                                 @if ($nilai->sifat == 'online')
                                     <td class="p-3 text-center">
                                         <a href="{{route('inputNilaiOnline',[$nilai->id_kelas, $nilai->id_mapel, $nilai->id_daftar_nilai])}}" class="text-indigo-600 hover:text-indigo-800 font-semibold">Masuk</a>
@@ -148,7 +248,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="p-3 text-center text-gray-500">
+                                <td colspan="6" class="p-3 text-center text-gray-500">
                                     <div class="text-center py-12">
                                         <i class="fa-solid fa-folder-open text-5xl text-gray-400 mb-4"></i>
                                         <p class="text-gray-600 font-semibold text-lg">Belum ada daftar nilai.</p>
@@ -173,7 +273,7 @@
                 <i class="fa-solid fa-times text-2xl"></i>
             </button>
         </div>
-        <form id="task-form" action="{{route('storeDaftarNilai',[$infoKelas->kelas->id_kelas, $infoMapel->id_mapel])}}" method="POST">
+        <form id="task-form" action="{{route('storeDaftarNilai',[$infoJKA->kelas?->id_kelas ?? 0, $infoJKA->mapel->id_mapel ?? 0])}}" method="POST">
             @csrf
             <div class="p-6 space-y-4">
                 <div>
@@ -262,6 +362,28 @@ document.addEventListener('DOMContentLoaded', function() {
             if (e.target === taskModal) {
                 closeModal();
             }
+        });
+    }
+
+    // --- Delete Confirmation ---
+    const deleteForms = document.querySelectorAll('.delete-form');
+    if (deleteForms) {
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Sesi penilaian dan semua nilai siswa di dalamnya akan dihapus secara permanen!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) { this.submit(); }
+                });
+            });
         });
     }
 });
