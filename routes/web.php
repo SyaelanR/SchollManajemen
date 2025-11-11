@@ -297,6 +297,11 @@ Route::middleware('auth')->group(function () {
     // Rute untuk menampilkan profil guru
     Route::get('/profil-guru/{id}', [GuruController::class, 'showProfile'])->name('profil_guru.guru');
 
+
+    Route::fallback(function () {
+        abort(404);
+    });
+
 });
 
 
