@@ -840,25 +840,25 @@ class AdminController extends Controller
         $request->validate([
             'id_angkatan' => 'required|exists:angkatans,id_angkatan', //cek apakah id_angkatan ada di tabel angkatans
             'nama' => 'required|string|max:255',
-            'jenjang' => 'required|string|in:SMA,SMK,SD,SMP',
-            'jumlah_matpel' => 'required|integer|min:1',
+            // 'jenjang' => 'required|string|in:SMA,SMK,SD,SMP',
+            // 'jumlah_matpel' => 'required|integer|min:1',
         ], [
             'angkatan.required' => 'Angkatan tidak boleh kosong.',
             'angkatan.exists' => 'Angkatan tidak valid.',
             'nama.required' => 'Nama kurikulum tidak boleh kosong.',
-            'jenjang.required' => 'Jenjang kurikulum tidak boleh kosong.',
+            // 'jenjang.required' => 'Jenjang kurikulum tidak boleh kosong.',
             'jenjang.in' => 'Jenjang kurikulum tidak valid.',
-            'jumlah_matpel.required' => 'Jumlah mata pelajaran tidak boleh kosong.',
-            'jumlah_matpel.integer' => 'Jumlah mata pelajaran harus berupa angka.',
-            'jumlah_matpel.min' => 'Jumlah mata pelajaran harus minimal 1.', 
+            // 'jumlah_matpel.required' => 'Jumlah mata pelajaran tidak boleh kosong.',
+            // 'jumlah_matpel.integer' => 'Jumlah mata pelajaran harus berupa angka.',
+            // 'jumlah_matpel.min' => 'Jumlah mata pelajaran harus minimal 1.', 
         ]);
 
         DaftarKurikulum::create([
             'id_sekolah' => $id_sekolah,
             'id_angkatan' => $request->id_angkatan,
             'nama_kurikulum' => $request->nama,
-            'jenjang' => $request->jenjang,
-            'jumlah_matpel' => $request->jumlah_matpel,
+            // 'jenjang' => $request->jenjang,
+            // 'jumlah_matpel' => $request->jumlah_matpel,
         ]);
 
         return redirect()->route('manajemenKurikulum')->with('success', 'Kurikulum berhasil ditambahkan!');
@@ -1824,6 +1824,18 @@ public function showProfileA(Request $request)
 
         return view('admin.siswa_alumni', ['alumni' => $alumni, 'search' => $search, 'id_angkatan' => $id_angkatan]);
         // return view('debug', ['tes' => $alumni, 'tess' => $query, 'tesss' => $id_angkatan]);
+    }
+
+    public function manajKurikulumMapel (Request $request, $id_kurikulum)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        
+        $kurikulum = DaftarKurikulum::where('id_kurikulum', $id_kurikulum)->firstOrFail();
+
+        $availableMapels = Mapel::where('id_sekolah', $id_sekolah)->get();
+
+        return view('admin.manajemen_kurikulum_mapel', ['kurikulum' => $kurikulum, 'availableMapels' => $availableMapels]);
+        // return view('debug]);
     }
 
     #############################################################################################################################

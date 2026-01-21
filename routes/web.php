@@ -85,6 +85,8 @@ Route::middleware('auth')->group(function () {
             Route::post('/', [AdminController::class, 'storeKurikulum'])->name('storeKurikulum');
             Route::put('/{id}', [AdminController::class, 'updateKurikulum'])->name('updateKurikulum');
             Route::delete('/{id}', [AdminController::class, 'destroyKurikulum'])->name('destroyKurikulum');
+
+            Route::get('/mapel_kurikulum/{id_kurikulum}', [AdminController::class, 'manajKurikulumMapel'])->name('manajKurikulumMapel');
         });
 
         Route::prefix('manajemen-keuangan')->group(function () {

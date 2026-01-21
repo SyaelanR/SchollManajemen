@@ -199,7 +199,6 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Kurikulum</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenjang</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Angkatan</th>
                             <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah Matpel</th>
                             <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -211,9 +210,12 @@
                         @forelse ($kurikulums as $kurikulum)
                         <tr class="kurikulum-row">
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{$kurikulum->nama_kurikulum}}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{$kurikulum->jenjang}}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{$kurikulum->angkatan->angkatan}}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{$kurikulum->jumlah_matpel}}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{$kurikulum->jumlah_matpel}}
+                                <a href="{{ route('manajKurikulumMapel', [$kurikulum->id_kurikulum]) }}" class="edit-btn text-blue-600 hover:text-blue-900 mr-3 p-1" >
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </a>
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center">
                                 @if($kurikulum->status == 'non-aktif')
                                     <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 capitalize">{{$kurikulum->status}}</span>
@@ -225,7 +227,7 @@
                                 <button class="edit-btn text-blue-600 hover:text-blue-900 mr-3" title="Edit"
                                     data-id="{{ $kurikulum->id_kurikulum }}"
                                     data-nama="{{ $kurikulum->nama_kurikulum }}"
-                                    data-jenjang="{{ $kurikulum->jenjang }}"
+                                    {{-- data-jenjang="{{ $kurikulum->jenjang }}" --}}
                                     data-angkatan_id="{{ $kurikulum->id_angkatan }}"
                                     data-jumlah_matpel="{{ $kurikulum->jumlah_matpel }}"
                                     data-status="{{ $kurikulum->status }}">
@@ -275,16 +277,6 @@
                         <input type="text" id="add-nama" name="nama" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Contoh: Kurikulum Merdeka" required>
                     </div>
                     <div>
-                        <label for="add-jenjang" class="block text-gray-700 font-semibold mb-2">Jenjang Pendidikan</label>
-                        <select id="add-jenjang" name="jenjang" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                            <option value="">Pilih Jenjang</option>
-                            <option value="SD">SD</option>
-                            <option value="SMP">SMP</option>
-                            <option value="SMA">SMA</option>
-                            <option value="SMK">SMK</option>
-                        </select>
-                    </div>
-                    <div>
                         <label for="add-angkatan" class="block text-gray-700 font-semibold mb-2">Tahun Angkatan</label>
                         <select id="add-angkatan" name="id_angkatan" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
                             <option value="">Pilih Tahun</option>
@@ -325,7 +317,7 @@
                         <label for="edit-nama" class="block text-gray-700 font-semibold mb-2">Nama Kurikulum</label>
                         <input type="text" id="edit-nama" name="nama" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
                     </div>
-                    <div>
+                    {{-- <div>
                         <label for="edit-jenjang" class="block text-gray-700 font-semibold mb-2">Jenjang Pendidikan</label>
                         <select id="edit-jenjang" name="jenjang" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
                             <option value="">Pilih Jenjang</option>
@@ -334,7 +326,7 @@
                             <option value="SMA">SMA</option>
                             <option value="SMK">SMK</option>
                         </select>
-                    </div>
+                    </div> --}}
                     <div>
                         <label for="edit-angkatan" class="block text-gray-700 font-semibold mb-2">Tahun Angkatan</label>
                         <select id="edit-angkatan" name="id_angkatan" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
@@ -414,7 +406,7 @@
                 
                 // Populate form fields
                 document.getElementById('edit-nama').value = data.nama;
-                document.getElementById('edit-jenjang').value = data.jenjang;
+                //document.getElementById('edit-jenjang').value = data.jenjang;
                 document.getElementById('edit-angkatan').value = data.angkatan_id;
                 document.getElementById('edit-jumlah_matpel').value = data.jumlah_matpel;
                 document.querySelector(`#edit-curriculum-modal input[name="status"][value="${data.status}"]`).checked = true;

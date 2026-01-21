@@ -16,8 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('id_sekolah')->nullable();
             $table->unsignedBigInteger('id_angkatan')->nullable();
             $table->string('nama_kurikulum');
-            $table->enum('jenjang', ['SD', 'SMP', 'SMA', 'SMK']);
-            $table->integer('jumlah_matpel');
+            // $table->enum('jenjang', ['SD', 'SMP', 'SMA', 'SMK']);
+            // $table->integer('jumlah_matpel');
             $table->enum('status', ['aktif', 'non-aktif'])->default('aktif');
             $table->timestamps();
 
