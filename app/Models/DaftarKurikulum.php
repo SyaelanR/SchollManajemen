@@ -26,4 +26,8 @@ class DaftarKurikulum extends Model
     public function angkatan (){
         return $this->belongsTo(Angkatan::class,'id_angkatan', 'id_angkatan');
     }
+
+    public function mapels (){
+        return $this->belongsToMany(Mapel::class, 'mapel_ajars', 'id_kurikulum', 'id_mapel');
+    }
 }

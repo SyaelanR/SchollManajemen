@@ -211,7 +211,7 @@
                         <tr class="kurikulum-row">
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{$kurikulum->nama_kurikulum}}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{$kurikulum->angkatan->angkatan}}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{$kurikulum->jumlah_matpel}}
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center"> {{ $kurikulum->mapels_count }}
                                 <a href="{{ route('manajKurikulumMapel', [$kurikulum->id_kurikulum]) }}" class="edit-btn text-blue-600 hover:text-blue-900 mr-3 p-1" >
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
@@ -227,7 +227,6 @@
                                 <button class="edit-btn text-blue-600 hover:text-blue-900 mr-3" title="Edit"
                                     data-id="{{ $kurikulum->id_kurikulum }}"
                                     data-nama="{{ $kurikulum->nama_kurikulum }}"
-                                    {{-- data-jenjang="{{ $kurikulum->jenjang }}" --}}
                                     data-angkatan_id="{{ $kurikulum->id_angkatan }}"
                                     data-jumlah_matpel="{{ $kurikulum->jumlah_matpel }}"
                                     data-status="{{ $kurikulum->status }}">
@@ -287,10 +286,7 @@
                             @endforelse
                         </select>
                     </div>
-                    <div>
-                        <label for="add-jumlah_matpel" class="block text-gray-700 font-semibold mb-2">Jumlah Mata Pelajaran</label>
-                        <input type="number" id="add-jumlah_matpel" name="jumlah_matpel" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Contoh: 15" required>
-                    </div>
+                 
                 </div>
                 <div class="flex justify-end space-x-4 p-6 bg-gray-50 rounded-b-xl">
                     <button type="button" class="cancel-btn py-2 px-6 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition duration-300">Batal</button>
@@ -317,16 +313,7 @@
                         <label for="edit-nama" class="block text-gray-700 font-semibold mb-2">Nama Kurikulum</label>
                         <input type="text" id="edit-nama" name="nama" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
                     </div>
-                    {{-- <div>
-                        <label for="edit-jenjang" class="block text-gray-700 font-semibold mb-2">Jenjang Pendidikan</label>
-                        <select id="edit-jenjang" name="jenjang" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                            <option value="">Pilih Jenjang</option>
-                            <option value="SD">SD</option>
-                            <option value="SMP">SMP</option>
-                            <option value="SMA">SMA</option>
-                            <option value="SMK">SMK</option>
-                        </select>
-                    </div> --}}
+                
                     <div>
                         <label for="edit-angkatan" class="block text-gray-700 font-semibold mb-2">Tahun Angkatan</label>
                         <select id="edit-angkatan" name="id_angkatan" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
@@ -338,10 +325,7 @@
                             @endforelse
                         </select>
                     </div>
-                    <div>
-                        <label for="edit-jumlah_matpel" class="block text-gray-700 font-semibold mb-2">Jumlah Mata Pelajaran</label>
-                        <input type="number" id="edit-jumlah_matpel" name="jumlah_matpel" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                    </div>
+               
                     <div>
                         <label class="block text-gray-700 font-semibold mb-2">Status</label>
                         <div class="flex items-center space-x-6">
@@ -408,7 +392,6 @@
                 document.getElementById('edit-nama').value = data.nama;
                 //document.getElementById('edit-jenjang').value = data.jenjang;
                 document.getElementById('edit-angkatan').value = data.angkatan_id;
-                document.getElementById('edit-jumlah_matpel').value = data.jumlah_matpel;
                 document.querySelector(`#edit-curriculum-modal input[name="status"][value="${data.status}"]`).checked = true;
 
                 // Update form action

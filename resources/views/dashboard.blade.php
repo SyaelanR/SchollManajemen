@@ -78,6 +78,10 @@
                 <i class="fa-solid fa-door-closed w-6 mr-3"></i>
                 <span>Manajemen Kelas</span>
             </a>
+            <a href="{{ route('manajemenRuang') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('manajemenRuang')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif"">
+                <i class="fa-solid fa-door-open w-6 mr-3"></i>
+                <span>Manajemen Ruangan</span>
+            </a>
             <a href="{{ route('manajemenJadwal')}}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200 @if(request()->routeIs('manajemenJadwal')) bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 @endif">
                 <i class="fa-solid fa-calendar-alt w-6 mr-3"></i>
                 <span>Manajemen Jadwal</span>

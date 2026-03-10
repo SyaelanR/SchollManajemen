@@ -23,4 +23,9 @@ class Mapel extends Model
     {
         return $this->belongsTo(User::class, 'id_guru', 'id');
     }
+
+    public function mapelAjar()
+    {
+        return $this->belongsTo(MapelAjar::class, 'id_mapel', 'id_mapel');
+    }
 }

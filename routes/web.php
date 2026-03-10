@@ -87,6 +87,8 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{id}', [AdminController::class, 'destroyKurikulum'])->name('destroyKurikulum');
 
             Route::get('/mapel_kurikulum/{id_kurikulum}', [AdminController::class, 'manajKurikulumMapel'])->name('manajKurikulumMapel');
+            Route::post('/mapel_kurikulum/{id_kurikulum}', [AdminController::class, 'storeKurikulumMapel'])->name('storeKurikulumMapel');
+            Route::delete('/mapel_kurikulum/{id}/{mapel_id}', [AdminController::class, 'destroyKurikulumMapel'])->name('destroyKurikulumMapel');
         });
 
         Route::prefix('manajemen-keuangan')->group(function () {
@@ -162,6 +164,16 @@ Route::middleware('auth')->group(function () {
             // Route::put('/{id}', [AdminController::class, 'updateAlumni'])->name('updateAlumni');
             // Route::delete('/{id}', [AdminController::class, 'destroyAlumni'])->name('destroyAlumni');
         });
+
+        Route::prefix('manajemen-ruangan')->group(function(){
+            Route::get('/', [AdminController::class, 'manajRuang'])->name('manajemenRuang');
+            Route::post('/', [AdminController::class, 'storeRuangan'])->name('storeRuangan');
+            Route::put('/{id_ruangan}', [AdminController::class, 'updateRuang'])->name('updateRuang');
+            Route::delete('/{id_ruangan}', [AdminController::class, 'destroyRuang'])->name('destroyRuang');
+        });
+
+        Route::get('/requestNgrok', [AdminController::class, 'requestNgrok'])->name('requestNgrok');
+        
     });
 
         

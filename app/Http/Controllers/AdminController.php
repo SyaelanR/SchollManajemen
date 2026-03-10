@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\TimeSlot;
 use App\Models\RiwayatKeuangan;
 use App\Models\User; // Menggunakan model User untuk Siswa dan Guru
 use App\Models\Angkatan;
@@ -16,15 +16,18 @@ use App\Models\DaftarTagihan;
 use App\Models\Jadwal;
 use App\Models\Mapel;
 use App\Models\Tingkat;
+use App\Models\daftar_ruangan;
 use App\Models\Teacher; // Jika ini model terpisah untuk guru, mungkin tidak diperlukan jika semua dihandle User
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Complex\Functions;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class AdminController extends Controller
 {
@@ -828,6 +831,7 @@ class AdminController extends Controller
 
         $kurikulums = DaftarKurikulum::where('id_sekolah', $id_sekolah)
                     ->with('angkatan')
+                    ->withCount('mapels')
                     ->get();
 
         return view('admin.manajemen_kurikulum', ['kurikulums' => $kurikulums, 'angkatans' => $angkatans]);
@@ -1757,8 +1761,6 @@ public function updateKurikulum(Request $request, $id)
     $request->validate([
         'id_angkatan' => 'required|exists:angkatans,id_angkatan,id_sekolah,' . $id_sekolah,
         'nama' => 'required|string|max:255',
-        'jenjang' => 'required|string|in:SMA,SMK,SD,SMP',
-        'jumlah_matpel' => 'required|integer|min:1',
         'status' => 'required|in:aktif,non-aktif',
     ]);
 
@@ -1769,8 +1771,6 @@ public function updateKurikulum(Request $request, $id)
     $kurikulum->update([
         'id_angkatan' => $request->id_angkatan,
         'nama_kurikulum' => $request->nama,
-        'jenjang' => $request->jenjang,
-        'jumlah_matpel' => $request->jumlah_matpel,
         'status' => $request->status,
     ]);
 
@@ -1830,17 +1830,242 @@ public function showProfileA(Request $request)
     {
         $id_sekolah = $request->cookie('id_sekolah');
         
-        $kurikulum = DaftarKurikulum::where('id_kurikulum', $id_kurikulum)->firstOrFail();
+        $kurikulum = DaftarKurikulum::where('id_kurikulum', $id_kurikulum)
+                        ->where('id_sekolah', $id_sekolah)
+                        ->withCount('mapels')
+                        ->firstOrFail();
 
-        $availableMapels = Mapel::where('id_sekolah', $id_sekolah)->get();
+        $availableMapels = Mapel::where('id_sekolah', $id_sekolah)
+                        ->doesntHave('mapelAjar')
+                        ->with('guru')
+                        ->get();
 
         return view('admin.manajemen_kurikulum_mapel', ['kurikulum' => $kurikulum, 'availableMapels' => $availableMapels]);
         // return view('debug]);
     }
 
-    #############################################################################################################################
-    #############################################################################################################################
+    public function storeKurikulumMapel(Request $request, $id_kurikulum)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        
+        $kurikulum = DaftarKurikulum::where('id_kurikulum', $id_kurikulum)
+                                    ->where('id_sekolah', $id_sekolah)
+                                    ->firstOrFail();
 
+        $request->validate([
+            'mapel_ids' => 'required|array',
+            'mapel_ids.*' => 'exists:mapels,id_mapel',
+        ]);
+
+        $kurikulum->mapels()->syncWithoutDetaching($request->mapel_ids);
+
+        return redirect()->back()->with('success', 'Mata pelajaran berhasil ditambahkan ke kurikulum!');
+    }
+
+    public function destroyKurikulumMapel(Request $request, $id, $mapel_id)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        
+        $kurikulum = DaftarKurikulum::where('id_kurikulum', $id)
+                                    ->where('id_sekolah', $id_sekolah)
+                                    ->firstOrFail();
+
+        $kurikulum->mapels()->detach($mapel_id);
+
+        return redirect()->back()->with('success', 'Mata pelajaran berhasil dihapus dari kurikulum!');
+    }
+
+    public function manajRuang(Request $request)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $daftarRuangan = daftar_ruangan::where('id_sekolah', $id_sekolah)->get();
+      
+        return view('admin.manajemen_ruangan', ['ruangans' => $daftarRuangan]);
+
+    }
+
+    
+    public function storeRuangan(Request $request)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+        
+        $request->validate([
+            'nama_ruangan' => 'required|string|max:255',
+            'kapasitas' => 'required|integer|min:1',
+        ]);
+
+        daftar_ruangan::create([
+            'id_sekolah' => $id_sekolah,
+            'nama_ruangan' => $request->nama_ruangan,
+            'kapasitas' => $request->kapasitas,
+        ]);
+
+        return redirect()->route('manajemenRuang')->with('success', 'Ruangan berhasil ditambahkan!');
+    }
+    public function updateRuang(Request $request, $id_ruangan)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $request->validate([
+            'nama_ruangan' => 'required|string|max:255',
+            'kapasitas' => 'required|integer|min:1',
+        ]);
+
+        $ruangan = daftar_ruangan::where('id_ruangan', $id_ruangan)
+                            ->where('id_sekolah', $id_sekolah)
+                            ->firstOrFail();
+
+        $ruangan->update([
+            'nama_ruangan' => $request->nama_ruangan,
+            'kapasitas' => $request->kapasitas,
+        ]);
+
+        return redirect()->route('manajemenRuang')->with('success', 'Ruangan di edit!');
+    }
+
+    public function destroyRuang(Request $request, $id_ruangan)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $ruangan = daftar_ruangan::where('id_ruangan', $id_ruangan)
+                            ->where('id_sekolah', $id_sekolah)
+                            ->firstOrFail();
+
+        $ruangan->delete();
+
+        return redirect()->route('manajemenRuang')->with('success', 'Ruangan berhasil terhapus!');
+    }
+
+
+    public function requestNgrok(Request $request)
+    {
+        $id_sekolah = $request->cookie('id_sekolah');
+
+        $ngrokUrl = 'https://ee85-34-125-234-148.ngrok-free.app/api/process';
+
+        $ruangan = daftar_ruangan::where('id_sekolah', $id_sekolah)
+                        ->select('id_ruangan', 'nama_ruangan')
+                        ->get()
+                        ->toArray();
+
+        $teachers = User::where('id_sekolah', $id_sekolah)
+                        ->where('role', 'guru')
+                        ->select('id', 'name')
+                        ->get()
+                        ->toArray();
+
+        $kelas = Kelas::where('id_sekolah', $id_sekolah)
+                        ->select('id_kelas', 'nama_kelas')
+                        ->get()
+                        ->toArray();
+
+        $kurikulums = DaftarKurikulum::where('id_sekolah', $id_sekolah)
+                        ->with('angkatan.kelas')
+                        ->with('mapels.guru')
+                        ->get();
+        
+        $json = '{
+            "time_slots_5Hari": [
+                {"id_slot": "Senin_1", "hari": "Senin", "jam_ke": 1},
+                {"id_slot": "Senin_2", "hari": "Senin", "jam_ke": 2},
+                {"id_slot": "Senin_3", "hari": "Senin", "jam_ke": 3},
+                {"id_slot": "Senin_4", "hari": "Senin", "jam_ke": 4},
+                {"id_slot": "Senin_5", "hari": "Senin", "jam_ke": 5},
+                {"id_slot": "Senin_6", "hari": "Senin", "jam_ke": 6},
+                {"id_slot": "Senin_7", "hari": "Senin", "jam_ke": 7},
+                {"id_slot": "Senin_8", "hari": "Senin", "jam_ke": 8},
+                {"id_slot": "Selasa_1", "hari": "Selasa", "jam_ke": 1},
+                {"id_slot": "Selasa_2", "hari": "Selasa", "jam_ke": 2},
+                {"id_slot": "Selasa_3", "hari": "Selasa", "jam_ke": 3},
+                {"id_slot": "Selasa_4", "hari": "Selasa", "jam_ke": 4},
+                {"id_slot": "Selasa_5", "hari": "Selasa", "jam_ke": 5},
+                {"id_slot": "Selasa_6", "hari": "Selasa", "jam_ke": 6},
+                {"id_slot": "Selasa_7", "hari": "Selasa", "jam_ke": 7},
+                {"id_slot": "Selasa_8", "hari": "Selasa", "jam_ke": 8},
+                {"id_slot": "Rabu_1", "hari": "Rabu", "jam_ke": 1},
+                {"id_slot": "Rabu_2", "hari": "Rabu", "jam_ke": 2},
+                {"id_slot": "Rabu_3", "hari": "Rabu", "jam_ke": 3},
+                {"id_slot": "Rabu_4", "hari": "Rabu", "jam_ke": 4},
+                {"id_slot": "Rabu_5", "hari": "Rabu", "jam_ke": 5},
+                {"id_slot": "Rabu_6", "hari": "Rabu", "jam_ke": 6},
+                {"id_slot": "Rabu_7", "hari": "Rabu", "jam_ke": 7},
+                {"id_slot": "Rabu_8", "hari": "Rabu", "jam_ke": 8},
+                {"id_slot": "Kamis_1", "hari": "Kamis", "jam_ke": 1},
+                {"id_slot": "Kamis_2", "hari": "Kamis", "jam_ke": 2},
+                {"id_slot": "Kamis_3", "hari": "Kamis", "jam_ke": 3},
+                {"id_slot": "Kamis_4", "hari": "Kamis", "jam_ke": 4},
+                {"id_slot": "Kamis_5", "hari": "Kamis", "jam_ke": 5},
+                {"id_slot": "Kamis_6", "hari": "Kamis", "jam_ke": 6},
+                {"id_slot": "Kamis_7", "hari": "Kamis", "jam_ke": 7},
+                {"id_slot": "Kamis_8", "hari": "Kamis", "jam_ke": 8},
+                {"id_slot": "Jumat_1", "hari": "Jumat", "jam_ke": 1},
+                {"id_slot": "Jumat_2", "hari": "Jumat", "jam_ke": 2},
+                {"id_slot": "Jumat_3", "hari": "Jumat", "jam_ke": 3},
+                {"id_slot": "Jumat_4", "hari": "Jumat", "jam_ke": 4},
+                {"id_slot": "Jumat_5", "hari": "Jumat", "jam_ke": 5},
+                {"id_slot": "Jumat_6", "hari": "Jumat", "jam_ke": 6},
+                {"id_slot": "Jumat_7", "hari": "Jumat", "jam_ke": 7},
+                {"id_slot": "Jumat_8", "hari": "Jumat", "jam_ke": 8}
+            ]
+        }';
+
+        $time_slots = json_decode($json, true);
+
+        $iterasi1 = 0;
+        $iterasi2 = 0;
+        $kurikulumss = [];
+        $assignments = [];
+        foreach ($kurikulums as $kurikulum) {
+            foreach ($kurikulum->angkatan->kelas as $kelasS) {
+            $iterasi1++;
+                foreach ($kurikulum->mapels as $mapelsS) {
+                    $assignments[$iterasi2] = ["id_tugas" => $iterasi2, "id_kelas" => $kelasS->id_kelas, "id" => $mapelsS->guru->id, "id_mapel" => $mapelsS->id_mapel, "nama_mapel" => $mapelsS->nama_mapel, "sks" => $mapelsS->sks] ;
+                    $iterasi2++;
+                    }
+            }
+        }
+            
+        $payload = [
+        'text' => 'Testing koneksi Laravel ke Colab',
+        'time_slots' => $time_slots['time_slots_5Hari'],
+        'rooms' => $ruangan,
+        'teachers' => $teachers,
+        'classes' => $kelas,
+        'assignments' => $assignments,
+        // 'kurikulumss' => $kurikulumss
+        ];
+
+        // return view('debug', ['tess' => $payload, 'tes' => $kurikulumss, 'tesss' => $assignments]);
+        // return view('debug', ['tes' => $payload]);
+        
+        try {
+            // Mengirim POST request ke Colab
+            $response = Http::post($ngrokUrl, $payload);
+
+            // Mengecek apakah request berhasil
+            if ($response->successful()) {
+                // Mengambil response body dalam bentuk array
+                $data = $response->json();
+                return response()->json([
+                    'pesan' => 'Berhasil terhubung!',
+                    'data_dari_colab' => $data,
+                    // 'dataku' => $dataku
+                ]);
+            } else {
+                return response()->json(['error' => 'API Colab mengembalikan error.'], $response->status());
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Gagal terhubung ke Colab: ' . $e->getMessage()]);
+        }
+
+
+    }
+
+
+    #############################################################################################################################
+    #############################################################################################################################
+    
 
         public function storeAlumni(Request $request)
     {   
