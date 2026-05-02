@@ -16,10 +16,10 @@ return new class extends Migration
             $table->unsignedBigInteger('id_sekolah')->nullable();
             $table->unsignedBigInteger('id_kelas')->nullable();
             $table->unsignedBigInteger('id_mapel')->nullable();
-            $table->enum('hari', ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']);
+            $table->unsignedBigInteger('id_ruangan')->nullable();
+            $table->enum('hari', ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu']);
             $table->time('jam_mulai');
             $table->time('jam_selesai');
-            $table->string('ruangan');
             $table->enum('semester', ['ganjil', 'genap'])->nullable();
             $table->unsignedBigInteger('tingkat');
             $table->timestamps();
@@ -27,6 +27,7 @@ return new class extends Migration
             $table->foreign('id_sekolah')->references('id_sekolah')->on('cliens')->onDelete('set null');
             $table->foreign('id_kelas')->references('id_kelas')->on('kelas')->onDelete('set null');
             $table->foreign('id_mapel')->references('id_mapel')->on('mapels')->onDelete('set null');
+            $table->foreign('id_ruangan')->references('id_ruangan')->on('daftar_ruangans')->onDelete('cascade');
         });
     }
 

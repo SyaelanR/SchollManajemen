@@ -223,6 +223,7 @@
                             <tr>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Nama Kelas</th>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Kapasitas</th>
+                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Jenis Ruangan</th>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm text-center">Aksi</th>
                             </tr>
                         </thead>
@@ -232,6 +233,7 @@
                             <tr class="kelas-row hover:bg-gray-50">
                                 <td class="p-3 text-gray-800 font-medium">{{ $ruangan->nama_ruangan }}</td>
                                 <td class="p-3 text-gray-700">{{ $ruangan->kapasitas }} Siswa</td>
+                                <td class="p-3 text-gray-700">{{ $ruangan->jenis_ruangan }}</td>
                                 <td class="p-3 text-center">
                                     <div class="flex justify-center items-center space-x-4">
                                         <button class="edit-btn text-blue-600 hover:text-blue-800 transition-colors duration-200" title="Edit"
@@ -300,9 +302,17 @@
                         <label for="kapasitas-kelas" class="block text-gray-700 font-medium mb-2">Kapasitas (Siswa) <span class="text-red-500">*</span></label>
                         <input name="kapasitas" id="kapasitas-kelas" type="number" placeholder="Contoh: 30" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required min="1">
                     </div>
+
+                    <div>
+                    <label for="jenis-ruangan" class="block text-gray-700 font-medium mb-2">Jenis ruangan</label>
+                    <select name="jenis_ruangan" id="jenis-ruangan" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required min="1" required>
+                        <option value="" disabled selected>Pilih jenis-ruangan</option>
+                        <option value="Teori">Teori</option>
+                        <option value="Praktik">Praktik</option>
+                    </select>
+                </div>
                 </div>
 
-              
             </div>
             <div class="flex justify-end gap-4 p-6 bg-gray-50 rounded-b-xl">
                 <button type="button" class="cancel-btn bg-gray-200 text-gray-700 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition duration-300">Batal</button>

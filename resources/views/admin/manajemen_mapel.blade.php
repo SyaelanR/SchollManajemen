@@ -313,10 +313,8 @@
                     <div>
                         <label for="kategori-mapel" class="block text-gray-700 font-medium mb-2">Kategori</label>
                         <select name="kategori" id="kategori-mapel" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white" required>
-                            <option value="Umum">Umum</option>
-                            <option value="IT">IT</option>
-                            <option value="Tahfidz">Tahfidz</option>
-                            <option value="Eskul">Eskul</option>
+                            <option value="Teori">Teori</option>
+                            <option value="Praktik">Praktik</option>
                         </select>
                     </div>
                     <div>
@@ -395,10 +393,8 @@
                         <select name="kategori" id="edit-kategori-mapel"
                             class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
                             required>
-                            <option value="Umum">Umum</option>
-                            <option value="IT">IT</option>
-                            <option value="Tahfidz">Tahfidz</option>
-                            <option value="Eskul">Eskul</option>
+                            <option value="Teori">Teori</option>
+                            <option value="Praktik">Praktik</option>
                         </select>
                     </div>
                     <div>

@@ -162,16 +162,24 @@
                 </div>
             @endif
             
-            <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white grid grid-cols-1 md:grid-cols-2 gap-8">
+            <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+    
                 <div>
-                <h2 class="text-3xl font-bold mb-2">Jadwal Pelajaran</h2>
-                <p class="text-indigo-200">Pilih kelas untuk melihat dan mengelola jadwal pelajaran.</p>
+                    <h2 class="text-3xl font-bold mb-2">Jadwal Pelajaran</h2>
+                    <p class="text-indigo-200">
+                        Pilih kelas untuk melihat dan mengelola jadwal pelajaran.
+                    </p>
                 </div>
-                <div class="bg-sky-400">
-                    <button onclick="window.location.href = '{{ route('requestNgrok') }}';" class=text-white>
-                        generate jadwal
+
+                <div class="flex justify-start md:justify-end">
+                    <button 
+                        onclick="window.location.href='{{ route('requestNgrok') }}';"
+                        class="bg-white text-indigo-600 font-semibold px-6 py-3 rounded-xl shadow-md hover:bg-indigo-100 transition duration-200"
+                    >
+                        Generate Jadwal
                     </button>
                 </div>
+
             </header>
 
             <!-- Class Card Section -->

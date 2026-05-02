@@ -585,7 +585,7 @@ class AdminController extends Controller
         $id_sekolah = request()->cookie('id_sekolah');
 
         $request->validate([
-            'kode_mapel' => 'required|string|max:20|unique:mapels,kode_mapel,NULL,id_mapel,id_sekolah,' . $id_sekolah,
+            'kode_mapel' => 'required|string|max:20|',
             'nama_mapel' => 'required|string|max:255',
             'kategori' => 'required|string|max:100',
             'sks' => 'required|integer|min:1',
@@ -656,6 +656,7 @@ class AdminController extends Controller
                     ->get();
 
         $jadwals = Jadwal::with('mapel.guru') // Memuat relasi mapel, dan relasi guru di dalam mapel
+                        ->with('ruangan')
                         ->where('id_kelas', $id_kelas)
                         ->where('id_sekolah', $id_sekolah)
                         ->where('semester', $semesterAktif) // Hanya jadwal untuk semester aktif
@@ -1558,7 +1559,7 @@ class AdminController extends Controller
         $id_sekolah = request()->cookie('id_sekolah');
 
         $request->validate([
-            'kode_mapel' => 'required|string|max:20|unique:mapels,kode_mapel,' . $id . ',id_mapel,id_sekolah,' . $id_sekolah,
+            'kode_mapel' => 'required|string|max:20|',
             'nama_mapel' => 'required|string|max:255',
             'kategori' => 'required|string|max:100',
             'sks' => 'required|integer|min:1',
@@ -1835,10 +1836,17 @@ public function showProfileA(Request $request)
                         ->withCount('mapels')
                         ->firstOrFail();
 
+        // $availableMapels = Mapel::where('id_sekolah', $id_sekolah)
+        //                 ->doesntHave('mapelAjar')
+        //                 ->with('guru')
+        //                 ->get();
+
         $availableMapels = Mapel::where('id_sekolah', $id_sekolah)
-                        ->doesntHave('mapelAjar')
-                        ->with('guru')
-                        ->get();
+                            ->whereDoesntHave('mapelAjar', function ($query) use ($id_kurikulum) {
+                                $query->where('id_kurikulum', $id_kurikulum);
+                            })
+                            ->with('guru')
+                            ->get();
 
         return view('admin.manajemen_kurikulum_mapel', ['kurikulum' => $kurikulum, 'availableMapels' => $availableMapels]);
         // return view('debug]);
@@ -1893,12 +1901,14 @@ public function showProfileA(Request $request)
         $request->validate([
             'nama_ruangan' => 'required|string|max:255',
             'kapasitas' => 'required|integer|min:1',
+            'jenis_ruangan' => 'required|string',
         ]);
 
         daftar_ruangan::create([
             'id_sekolah' => $id_sekolah,
             'nama_ruangan' => $request->nama_ruangan,
             'kapasitas' => $request->kapasitas,
+            'jenis_ruangan' => $request->jenis_ruangan,
         ]);
 
         return redirect()->route('manajemenRuang')->with('success', 'Ruangan berhasil ditambahkan!');
@@ -1942,10 +1952,10 @@ public function showProfileA(Request $request)
     {
         $id_sekolah = $request->cookie('id_sekolah');
 
-        $ngrokUrl = 'https://ee85-34-125-234-148.ngrok-free.app/api/process';
+        $ngrokUrl = 'https://e54d-34-80-231-222.ngrok-free.app/api/process';
 
         $ruangan = daftar_ruangan::where('id_sekolah', $id_sekolah)
-                        ->select('id_ruangan', 'nama_ruangan')
+                        ->select('id_ruangan', 'nama_ruangan', 'jenis_ruangan')
                         ->get()
                         ->toArray();
 
@@ -1966,7 +1976,7 @@ public function showProfileA(Request $request)
                         ->get();
         
         $json = '{
-            "time_slots_5Hari": [
+            "time_slots": [
                 {"id_slot": "Senin_1", "hari": "Senin", "jam_ke": 1},
                 {"id_slot": "Senin_2", "hari": "Senin", "jam_ke": 2},
                 {"id_slot": "Senin_3", "hari": "Senin", "jam_ke": 3},
@@ -2012,23 +2022,88 @@ public function showProfileA(Request $request)
 
         $time_slots = json_decode($json, true);
 
-        $iterasi1 = 0;
+        // $iterasi1 = 0;
+        // $iterasi2 = 0;
+        // $kurikulumss = [];
+        // $assignments = [];
+        // foreach ($kurikulums as $kurikulum) {
+        //     foreach ($kurikulum->angkatan->kelas as $kelasS) {
+        //     $iterasi1++;
+        //         foreach ($kurikulum->mapels as $mapelsS) {
+        //             $assignments[$iterasi2] = [
+        //                 "id_tugas" => $iterasi2, 
+        //                 "id_kelas" => $kelasS->id_kelas, 
+        //                 "id_guru" => $mapelsS->guru->id, 
+        //                 "nama_guru" => $mapelsS->guru->name,
+        //                 "id_mapel" => $mapelsS->id_mapel, 
+        //                 "kode_mapel" => $mapelsS->kode_mapel, 
+        //                 "nama_mapel" => $mapelsS->nama_mapel, 
+        //                 "sks" => $mapelsS->sks,
+        //                 "kategori" => $mapelsS->kategori,
+        //                 ];
+        //             $iterasi2++;
+        //             }
+        //     }
+        // }
+
         $iterasi2 = 0;
-        $kurikulumss = [];
         $assignments = [];
+
         foreach ($kurikulums as $kurikulum) {
+            
+            // 1. KELOMPOKKAN MAPEL BERDASARKAN KODE MAPEL TERLEBIH DAHULU
+            // Ini mencegah 1 kode mapel dieksekusi berkali-kali untuk kelas yang sama
+            $mapelGroups = [];
+            foreach ($kurikulum->mapels as $mapel) {
+                $mapelGroups[$mapel->kode_mapel][] = $mapel;
+            }
+
+            // Siapkan counter untuk mencatat giliran beban dosen per mapel
+            $bebanCounter = [];
+
+            // 2. LOOPING KELAS
             foreach ($kurikulum->angkatan->kelas as $kelasS) {
-            $iterasi1++;
-                foreach ($kurikulum->mapels as $mapelsS) {
-                    $assignments[$iterasi2] = ["id_tugas" => $iterasi2, "id_kelas" => $kelasS->id_kelas, "id" => $mapelsS->guru->id, "id_mapel" => $mapelsS->id_mapel, "nama_mapel" => $mapelsS->nama_mapel, "sks" => $mapelsS->sks] ;
-                    $iterasi2++;
+                
+                // 3. LOOPING KELOMPOK KODE MAPEL (Bukan per mapel individual)
+                foreach ($mapelGroups as $kode_mapel => $daftarMapelSama) {
+                    
+                    // Inisialisasi counter jika belum ada
+                    if (!isset($bebanCounter[$kode_mapel])) {
+                        $bebanCounter[$kode_mapel] = 0;
                     }
+
+                    // Hitung ada berapa dosen/data untuk kode mapel ini
+                    $jumlahGuru = count($daftarMapelSama);
+
+                    // LOGIKA ROUND-ROBIN (Pembagian Beban)
+                    // Jika ada 2 guru: Kelas ke-1 dapat Guru index 0, Kelas ke-2 dapat Guru index 1, Kelas ke-3 kembali ke Guru index 0
+                    $indexTerpilih = $bebanCounter[$kode_mapel] % $jumlahGuru;
+                    $mapelTerpilih = $daftarMapelSama[$indexTerpilih];
+
+                    // 4. MASUKKAN KE ASSIGNMENTS
+                    $assignments[] = [
+                        "id_tugas"   => $iterasi2, 
+                        "id_kelas"   => $kelasS->id_kelas, 
+                        "id_guru"    => $mapelTerpilih->guru->id, 
+                        "nama_guru"  => $mapelTerpilih->guru->name,
+                        "id_mapel"   => $mapelTerpilih->id_mapel, 
+                        "kode_mapel" => $mapelTerpilih->kode_mapel, 
+                        "nama_mapel" => $mapelTerpilih->nama_mapel, 
+                        "sks"        => $mapelTerpilih->sks,
+                        "kategori"   => $mapelTerpilih->kategori,
+                    ];
+
+                    $iterasi2++;
+                    
+                    // Naikkan counter agar kelas berikutnya mendapatkan dosen gilirannya
+                    $bebanCounter[$kode_mapel]++;
+                }
             }
         }
             
         $payload = [
         'text' => 'Testing koneksi Laravel ke Colab',
-        'time_slots' => $time_slots['time_slots_5Hari'],
+        'time_slots' => $time_slots['time_slots'],
         'rooms' => $ruangan,
         'teachers' => $teachers,
         'classes' => $kelas,

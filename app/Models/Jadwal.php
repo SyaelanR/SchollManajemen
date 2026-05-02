@@ -15,7 +15,7 @@ class Jadwal extends Model
         'hari',
         'jam_mulai',
         'jam_selesai',
-        'ruangan',
+        'id_ruangan',
         'semester',
         'tingkat',
     ];
@@ -33,5 +33,10 @@ class Jadwal extends Model
     public function mapel()
     {
         return $this->belongsTo(Mapel::class, 'id_mapel', 'id_mapel');
+    }
+
+    public function ruangan()
+    {
+        return $this->belongsTo(daftar_ruangan::class, 'id_ruangan', 'id_ruangan');
     }
 }

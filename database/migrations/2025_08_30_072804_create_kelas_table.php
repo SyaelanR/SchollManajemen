@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('kelas', function (Blueprint $table) {
             $table->id('id_kelas'); // ->primary() sudah implisit
             $table->string('nama_kelas');
-            $table->unsignedBigInteger('id_angkatan')->nullable(); // Tambahkan kolomnya dulu dan buat nullable
+            $table->unsignedBigInteger('id_angkatan')->nullable();
             $table->unsignedBigInteger('id_sekolah')->nullable();
             $table->string('jurusan')->nullable();
             $table->string('wali_kelas')->nullable();

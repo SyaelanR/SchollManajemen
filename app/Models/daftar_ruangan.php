@@ -14,6 +14,9 @@ class daftar_ruangan extends Model
         'id_ruangan',
         'id_sekolah',
         'nama_ruangan',
-        'kapasitas'
+        'kapasitas',
+        'jenis_ruangan',
+        'created_at',
+        'updated_at'
     ];
 }

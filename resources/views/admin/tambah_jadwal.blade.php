@@ -252,7 +252,7 @@
                                         <td class="p-3 text-gray-700 whitespace-nowrap">{{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i') }}</td>
                                         <td class="p-3 text-gray-700">{{ $jadwal->mapel->nama_mapel ?? 'N/A' }}</td>
                                         <td class="p-3 text-gray-700">{{ $jadwal->mapel->guru->name ?? 'N/A' }}</td>
-                                        <td class="p-3 text-gray-700">{{ $jadwal->ruangan }}</td>
+                                        <td class="p-3 text-gray-700">{{ $jadwal->ruangan->nama_ruangan ?? 'N/A'}}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <button onclick="showEditModal({{ json_encode($jadwal) }})"
                                             class="text-indigo-600 hover:text-indigo-900 mx-1">
