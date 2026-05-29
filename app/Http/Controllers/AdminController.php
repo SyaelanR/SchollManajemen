@@ -83,7 +83,8 @@ class AdminController extends Controller
 
         // Menggunakan whereIn untuk mengambil pengguna dengan role 'guru' atau 'staf'
         $query = User::whereIn('role', ['guru', 'staf'])
-                     ->where('id_sekolah', $id_sekolah);
+                     ->where('id_sekolah', $id_sekolah)
+                     ->orderBy('name', 'asc');
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -548,13 +549,16 @@ class AdminController extends Controller
         $id_sekolah = request()->cookie('id_sekolah');
         $teachers = User::where('role', 'guru')
             ->where('id_sekolah', $id_sekolah)
+            ->orderBy('name', 'asc')
             ->get();
 
         $search = $request->query('search');
 
         $query = Mapel::with('guru')
             ->where('id_sekolah', $id_sekolah)
-            ->orderByRaw("CASE WHEN status = 'aktif' THEN 1 ELSE 2 END"); // urutkan status aktif duluan
+            ->orderByRaw("CASE WHEN status = 'aktif' THEN 1 ELSE 2 END") // urutkan status aktif duluan
+            ->orderBy('nama_mapel', 'asc');
+
 
         // Jika ada pencarian
         if ($search) {
@@ -585,7 +589,7 @@ class AdminController extends Controller
         $id_sekolah = request()->cookie('id_sekolah');
 
         $request->validate([
-            'kode_mapel' => 'required|string|max:20|',
+            'kode_mapel' => 'required|string|max:255|',
             'nama_mapel' => 'required|string|max:255',
             'kategori' => 'required|string|max:100',
             'sks' => 'required|integer|min:1',
@@ -1559,7 +1563,7 @@ class AdminController extends Controller
         $id_sekolah = request()->cookie('id_sekolah');
 
         $request->validate([
-            'kode_mapel' => 'required|string|max:20|',
+            'kode_mapel' => 'required|string|max:255|',
             'nama_mapel' => 'required|string|max:255',
             'kategori' => 'required|string|max:100',
             'sks' => 'required|integer|min:1',
@@ -1952,7 +1956,7 @@ public function showProfileA(Request $request)
     {
         $id_sekolah = $request->cookie('id_sekolah');
 
-        $ngrokUrl = 'https://e54d-34-80-231-222.ngrok-free.app/api/process';
+        $ngrokUrl = 'https://b03c-34-170-134-165.ngrok-free.app/api/process';
 
         $ruangan = daftar_ruangan::where('id_sekolah', $id_sekolah)
                         ->select('id_ruangan', 'nama_ruangan', 'jenis_ruangan')
@@ -1985,6 +1989,8 @@ public function showProfileA(Request $request)
                 {"id_slot": "Senin_6", "hari": "Senin", "jam_ke": 6},
                 {"id_slot": "Senin_7", "hari": "Senin", "jam_ke": 7},
                 {"id_slot": "Senin_8", "hari": "Senin", "jam_ke": 8},
+                {"id_slot": "Senin_9", "hari": "Senin", "jam_ke": 9},
+                {"id_slot": "Senin_10", "hari": "Senin", "jam_ke": 10},
                 {"id_slot": "Selasa_1", "hari": "Selasa", "jam_ke": 1},
                 {"id_slot": "Selasa_2", "hari": "Selasa", "jam_ke": 2},
                 {"id_slot": "Selasa_3", "hari": "Selasa", "jam_ke": 3},
@@ -1993,6 +1999,8 @@ public function showProfileA(Request $request)
                 {"id_slot": "Selasa_6", "hari": "Selasa", "jam_ke": 6},
                 {"id_slot": "Selasa_7", "hari": "Selasa", "jam_ke": 7},
                 {"id_slot": "Selasa_8", "hari": "Selasa", "jam_ke": 8},
+                {"id_slot": "Selasa_9", "hari": "Selasa", "jam_ke": 9},
+                {"id_slot": "Selasa_10", "hari": "Selasa", "jam_ke": 10},
                 {"id_slot": "Rabu_1", "hari": "Rabu", "jam_ke": 1},
                 {"id_slot": "Rabu_2", "hari": "Rabu", "jam_ke": 2},
                 {"id_slot": "Rabu_3", "hari": "Rabu", "jam_ke": 3},
@@ -2001,6 +2009,8 @@ public function showProfileA(Request $request)
                 {"id_slot": "Rabu_6", "hari": "Rabu", "jam_ke": 6},
                 {"id_slot": "Rabu_7", "hari": "Rabu", "jam_ke": 7},
                 {"id_slot": "Rabu_8", "hari": "Rabu", "jam_ke": 8},
+                {"id_slot": "Rabu_9", "hari": "Rabu", "jam_ke": 9},
+                {"id_slot": "Rabu_10", "hari": "Rabu", "jam_ke": 10},
                 {"id_slot": "Kamis_1", "hari": "Kamis", "jam_ke": 1},
                 {"id_slot": "Kamis_2", "hari": "Kamis", "jam_ke": 2},
                 {"id_slot": "Kamis_3", "hari": "Kamis", "jam_ke": 3},
@@ -2009,6 +2019,8 @@ public function showProfileA(Request $request)
                 {"id_slot": "Kamis_6", "hari": "Kamis", "jam_ke": 6},
                 {"id_slot": "Kamis_7", "hari": "Kamis", "jam_ke": 7},
                 {"id_slot": "Kamis_8", "hari": "Kamis", "jam_ke": 8},
+                {"id_slot": "Kamis_9", "hari": "Kamis", "jam_ke": 9},
+                {"id_slot": "Kamis_10", "hari": "Kamis", "jam_ke": 10},
                 {"id_slot": "Jumat_1", "hari": "Jumat", "jam_ke": 1},
                 {"id_slot": "Jumat_2", "hari": "Jumat", "jam_ke": 2},
                 {"id_slot": "Jumat_3", "hari": "Jumat", "jam_ke": 3},
@@ -2016,7 +2028,9 @@ public function showProfileA(Request $request)
                 {"id_slot": "Jumat_5", "hari": "Jumat", "jam_ke": 5},
                 {"id_slot": "Jumat_6", "hari": "Jumat", "jam_ke": 6},
                 {"id_slot": "Jumat_7", "hari": "Jumat", "jam_ke": 7},
-                {"id_slot": "Jumat_8", "hari": "Jumat", "jam_ke": 8}
+                {"id_slot": "Jumat_8", "hari": "Jumat", "jam_ke": 8},
+                {"id_slot": "Jumat_9", "hari": "Jumat", "jam_ke": 9},
+                {"id_slot": "Jumat_10", "hari": "Jumat", "jam_ke": 10}
             ]
         }';
 

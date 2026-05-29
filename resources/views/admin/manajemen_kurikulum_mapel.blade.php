@@ -361,7 +361,7 @@
                                         <input type="checkbox" id="select-all-mapel" class="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
                                     </label>
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase bg-gray-50">Kode</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase bg-gray-50">Guru</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase bg-gray-50">Nama Mapel</th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase bg-gray-50">SKS</th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase bg-gray-50">Kategori</th>
@@ -374,7 +374,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap" onclick="event.stopPropagation()">
                                     <input type="checkbox" name="mapel_ids[]" value="{{ $mapel->id_mapel }}" id="check-{{$mapel->id_mapel}}" class="mapel-checkbox form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $mapel->kode_mapel }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $mapel->guru->name }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $mapel->nama_mapel }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $mapel->sks }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
