@@ -1956,7 +1956,7 @@ public function showProfileA(Request $request)
     {
         $id_sekolah = $request->cookie('id_sekolah');
 
-        $ngrokUrl = 'https://b03c-34-170-134-165.ngrok-free.app/api/process';
+        $ngrokUrl = 'https://46c7-35-237-51-127.ngrok-free.app/api/process';
 
         $ruangan = daftar_ruangan::where('id_sekolah', $id_sekolah)
                         ->select('id_ruangan', 'nama_ruangan', 'jenis_ruangan')
@@ -1971,12 +1971,19 @@ public function showProfileA(Request $request)
 
         $kelas = Kelas::where('id_sekolah', $id_sekolah)
                         ->select('id_kelas', 'nama_kelas')
+                        ->with('angkatan')
+                        ->whereHas('angkatan', function ($query) {
+                            $query->where('is_alumni', 0);
+                        })
                         ->get()
                         ->toArray();
 
         $kurikulums = DaftarKurikulum::where('id_sekolah', $id_sekolah)
                         ->with('angkatan.kelas')
                         ->with('mapels.guru')
+                        ->whereHas('angkatan', function ($query) {
+                            $query->where('is_alumni', 0);
+                        })
                         ->get();
         
         $json = '{
@@ -2125,7 +2132,7 @@ public function showProfileA(Request $request)
         // 'kurikulumss' => $kurikulumss
         ];
 
-        // return view('debug', ['tess' => $payload, 'tes' => $kurikulumss, 'tesss' => $assignments]);
+        // return view('debug', ['tess' => $payload, 'tesss' => $assignments]);
         // return view('debug', ['tes' => $payload]);
         
         try {

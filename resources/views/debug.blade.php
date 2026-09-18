@@ -32,6 +32,8 @@
     <pre>{{ json_encode($tess ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
     <br>
     <pre>{{ json_encode($tesss ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+    <br>
+    <pre>{{ json_encode($tes2 ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
 
     {{-- <p>{{$tes}}</p> --}}
     {{-- <h1>{{$tess}}</h1> --}}

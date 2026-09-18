@@ -278,7 +278,7 @@
                         <tbody id="mapel-table-body" class="bg-white divide-y divide-gray-200">
                             @forelse ($kurikulum->mapels ?? [] as $mapel)
                             <tr class="mapel-row hover:bg-gray-50 transition-colors">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">{{ $mapel->kode_mapel }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">{{ $mapel->kode_mapel}}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-800">{{ $mapel->nama_mapel }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 text-center">{{ $mapel->sks }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">

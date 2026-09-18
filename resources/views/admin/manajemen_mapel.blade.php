@@ -78,7 +78,7 @@
             </a>
             <a href="{{ route('manajemenMapel') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
                 <i class="fa-solid fa-book w-6 mr-3"></i>
-                <span>Manajemen Mapel</span>
+                <span>Manajemen Matkul</span>
             </a>
             <a href="{{ route('manajemenKelas') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-door-closed w-6 mr-3"></i>
@@ -191,14 +191,14 @@
             @endif
 
             <header class="mb-8 bg-indigo-600 p-6 rounded-2xl shadow-lg text-white">
-                <h1 class="text-2xl md:text-3xl font-bold">Manajemen Mata Pelajaran</h1>
+                <h1 class="text-2xl md:text-3xl font-bold">Manajemen Mata Kuliah</h1>
                 <p class="text-indigo-200 mt-2">Tambah, edit, atau hapus data mata pelajaran dari sistem.</p>
             </header>
 
             <div class="bg-white p-6 rounded-xl shadow-md">
                 <!-- Action Bar -->
                 <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                    <h2 class="text-2xl font-bold text-gray-800">Daftar Mata Pelajaran</h2>
+                    <h2 class="text-2xl font-bold text-gray-800">Daftar Mata Kuliah</h2>
                     <div class="flex items-center gap-4 w-full md:w-auto">
                         <form action="{{ route('manajemenMapel') }}" method="GET">
                             <div class="relative w-full md:w-64">
@@ -208,7 +208,7 @@
                         </form>
                         <button id="add-mapel-btn" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap shadow-md hover:shadow-lg">
                             <i class="fa-solid fa-plus mr-2"></i>
-                            Tambah Mapel
+                            Tambah Matkul
                         </button>
                     </div>
                 </div>
@@ -218,11 +218,11 @@
                     <table class="w-full min-w-[800px] text-left">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Mapel</th>
-                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Kode Mapel</th>
+                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Matkul</th>
+                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Kode Matkul</th>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Kategori</th>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">SKS</th>
-                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Guru</th>
+                                <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Dosen</th>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm">Status</th>
                                 <th class="p-3 font-semibold text-gray-600 uppercase text-sm text-center">Aksi</th>
                             </tr>
@@ -295,7 +295,7 @@
 <div id="add-mapel-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex items-center justify-center p-4 hidden opacity-0">
     <div class="modal-content bg-white rounded-xl shadow-2xl w-full max-w-lg transform transition-transform duration-300 scale-95">
         <div class="flex justify-between items-center p-6 border-b">
-            <h3 class="text-2xl font-semibold text-gray-800">Tambah Mata Pelajaran</h3>
+            <h3 class="text-2xl font-semibold text-gray-800">Tambah Mata kuliah</h3>
             <button class="close-modal-btn text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
         </div>
         <form id="add-mapel-form" action="{{ route('storeMapel') }}" method="POST">

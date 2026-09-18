@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Clien;
+use App\Models\Mapel;
+use App\Models\Kelas;
+use App\Models\Jadwal;
+use App\Models\daftar_ruangan;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -178,6 +182,30 @@ class AdminDevController extends Controller
         // Redirect back to the client info page with a success message
         return redirect()->route('infoKlien', ['id_sekolah' => $id])
                          ->with('success', 'Data klien berhasil diperbarui!');
+    }
+
+    public function dataMap() {
+        $dosen = User::where('role', 'guru')->count();
+        $matkulT = Mapel::where('kategori', 'Teori')->distinct()->count('kode_mapel');
+        $matkulP = Mapel::where('kategori', 'Praktik')->distinct()->count('kode_mapel');
+        $kelas = Kelas::count();
+        $daftarRuanganT = daftar_ruangan::where('jenis_ruangan', 'Teori')->count();
+        $daftarRuanganP = daftar_ruangan::where('jenis_ruangan', 'Praktik   ')->count();
+        $jadwal = Jadwal::count();
+        $user = User::get();
+
+        $data = [
+            'dosen' => $dosen,
+            'matkulTeori' => $matkulT,
+            'matkulPraktek' => $matkulP,
+            'kelas' => $kelas,
+            'ruangan_teori' => $daftarRuanganT,
+            'ruangan_Praktek' => $daftarRuanganP,
+            'jadwal' => $jadwal,
+            'user' => $user
+        ];
+
+        return view('debug', ['tes' => $data],);
     }
 
 }

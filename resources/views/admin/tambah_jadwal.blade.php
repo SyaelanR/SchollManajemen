@@ -207,10 +207,10 @@
                 <div id="schedule-container" class="bg-indigo-50 p-8 rounded-xl shadow-lg text-gray-900">
                     <div class="flex justify-between items-center mb-4">
                         <h3 id="schedule-title" class="text-xl font-semibold text-indigo-800">Jadwal {{$kelas->nama_kelas}} : {{$kelas->angkatan->angkatan}} : Tingkat {{$kelas->angkatan->tingkat}} : {{$kelas->angkatan->semester}}</h3>
-                        <button id="add-schedule-button"
+                        {{-- <button id="add-schedule-button"
                             class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition duration-200">
                             <i class="fa-solid fa-plus mr-2"></i>Tambah Jadwal
-                        </button>
+                        </button> --}}
                     </div>
 
                     <!-- Table based on the provided image -->
@@ -226,16 +226,16 @@
                                         Jam</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Mata Pelajaran</th>
+                                        Mata Kuliah</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Guru</th>
+                                        Dosen</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Ruangan</th>
-                                    <th
+                                    {{-- <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Aksi</th>
+                                        Aksi</th> --}}
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
@@ -253,7 +253,7 @@
                                         <td class="p-3 text-gray-700">{{ $jadwal->mapel->nama_mapel ?? 'N/A' }}</td>
                                         <td class="p-3 text-gray-700">{{ $jadwal->mapel->guru->name ?? 'N/A' }}</td>
                                         <td class="p-3 text-gray-700">{{ $jadwal->ruangan->nama_ruangan ?? 'N/A'}}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    {{-- <td class="px-6 py-4 whitespace-nowrap">
                                         <button onclick="showEditModal({{ json_encode($jadwal) }})"
                                             class="text-indigo-600 hover:text-indigo-900 mx-1">
                                             <i class="fa-solid fa-edit"></i>
@@ -262,7 +262,7 @@
                                             class="text-red-600 hover:text-red-900 mx-1">
                                             <i class="fa-solid fa-trash-alt"></i>
                                         </button>
-                                    </td>
+                                    </td> --}}
                                 </tr>
                                 @empty
                                 <tr>

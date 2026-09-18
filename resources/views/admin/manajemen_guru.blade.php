@@ -67,11 +67,11 @@
             </a>
             <a href="{{ route('manajemenGuru') }}" class="flex items-center px-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-r-lg border-l-4 border-indigo-600 transition duration-200">
                 <i class="fa-solid fa-chalkboard-user w-6 mr-3"></i>
-                <span>Manajemen Guru</span>
+                <span>Manajemen Dosen</span>
             </a>
             <a href="{{ route('manajemenMapel') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-book w-6 mr-3"></i>
-                <span>Manajemen Mapel</span>
+                <span>Manajemen Matkul</span>
             </a>
             <a href="{{ route('manajemenKelas') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
                 <i class="fa-solid fa-door-closed w-6 mr-3"></i>
@@ -172,13 +172,13 @@
         <!-- Page Content -->
         <main class="p-6 md:p-8 flex-1">
              <header class="mb-8 bg-indigo-600 p-8 rounded-2xl shadow-lg text-white">
-                <h2 class="text-3xl font-bold mb-2">Manajemen Guru</h2>
+                <h2 class="text-3xl font-bold mb-2">Manajemen Dosen</h2>
                 <p class="text-indigo-200">Kelola semua data guru dan staf yang terdaftar di sekolah.</p>
             </header>
 
             <div class="bg-white p-6 rounded-xl shadow-md">
                 <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                    <h2 class="text-2xl font-bold text-gray-800">Daftar Guru</h2>
+                    <h2 class="text-2xl font-bold text-gray-800">Daftar Dosen</h2>
                     <div class="flex items-center gap-4 w-full md:w-auto">
                         <form action="{{ route('manajemenGuru') }}" method="GET">
                             <div class="relative w-full md:w-64">
@@ -188,7 +188,7 @@
                         </form>
                         <button onclick="window.location.href = '{{ route('tambahGuru')}}';" id="add-guru-btn" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center whitespace-nowrap shadow-md hover:shadow-lg">
                             <i class="fa-solid fa-plus mr-2"></i>
-                            Tambah Guru
+                            Tambah Dosen
                         </button>
                     </div>
                 </div>
